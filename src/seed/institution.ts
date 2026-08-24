@@ -79,24 +79,55 @@ const main = async () => {
    * and History pictures vanished from the home page and the only symptom was
    * a warning saying the media had not been seeded, which it had.
    */
+  /*
+   * Payload appends `-1`, `-2`… when the name it wants to write is already
+   * taken on disk, and this repository commits `media/`, so every filename it
+   * ships is taken before the first upload runs. A re-seed therefore leaves the
+   * library holding `kg-play-area-2.jpg` where this file asks for
+   * `kg-play-area.jpg`, and an exact match returns null: the banner, both
+   * photographic bands and the History picture all quietly disappear, with only
+   * a "media not seeded" warning to show for it — when it had been seeded twice.
+   *
+   * So the exact name is tried first, and a collision-suffixed variant of the
+   * same name accepted if that finds nothing. The suffix is Payload's own
+   * counter for one file written repeatedly, not a different photograph.
+   */
+  /** Strips Payload's collision counter, so `kg-handwashing-2.jpg` matches `kg-handwashing.jpg`. */
+  const baseName = (filename: string) => filename.replace(/-\d+(\.[^.]+)$/, "$1")
+
   const photo = async (filename: string): Promise<number | null> => {
-    const { docs } = await payload.find({
+    const exact = await payload.find({
       collection: 'media',
       where: { filename: { equals: filename } },
       limit: 1,
       depth: 0,
       overrideAccess: true,
     })
-    return (docs[0]?.id as number | undefined) ?? null
-  }
+    if (exact.docs[0]) return exact.docs[0].id as number
 
+    const dot = filename.lastIndexOf('.')
+    const stem = dot === -1 ? filename : filename.slice(0, dot)
+    const ext = dot === -1 ? '' : filename.slice(dot)
+
+    const { docs } = await payload.find({
+      collection: 'media',
+      where: { filename: { like: `${stem}-%${ext}` } },
+      limit: 10,
+      depth: 0,
+      overrideAccess: true,
+    })
+    // `like` also matches `kg-play-area-closeup.jpg`; comparing base names
+    // keeps only a numeric counter, which means "the same file, written again".
+    const suffixed = docs.find((d) => baseName(String(d.filename)) === filename)
+    return (suffixed?.id as number | undefined) ?? null
+  }
   /*
    * The banner photograph carries the most weight on the site, so it is the
    * one with people in it looking at each other rather than at a worksheet:
    * a teacher surrounded by her class says "school" in a way that a good
    * photograph of a tidy classroom cannot.
    */
-  const heroImage = await photo('kg-teacher-with-children.jpg')
+  const heroImage = await photo('siws-natya-tarang.jpg')
   /*
    * The divider photographs are reused from the gallery on purpose. They sit
    * under a 95%-to-70% wash, so what reads is tone and shape, not a
@@ -107,19 +138,49 @@ const main = async () => {
   const dividerTwo = await photo('kg-classroom-group.jpg')
   const overviewImage = await photo('kg-play-area.jpg')
   const historyImage = await photo('kg-classroom-activity.jpg')
+  /*
+   * The photograph behind the "Our Vision" band, wired up HERE.
+   *
+   * `seed:vision-bg` uploads it and can attach it too, but this file rebuilds
+   * the home page's whole layout — so whichever of the two ran last won, and
+   * running them in the documented order (content first, nav last) silently
+   * dropped the picture and left the band flat blue again. The layout of this
+   * page belongs to this file, so the reference to the picture does too.
+   */
+  const visionBackground = await photo('portal-vision-background.jpg')
+  /*
+   * The first three tiles are CHOSEN; the rest of the wall fills itself.
+   *
+   * It used to be `pool.slice(0, 6)` — whatever the library happened to return
+   * first, each tile falling back to the photograph's own library caption. That
+   * is fine while the wall is only decoration, but SIWS picked these three and
+   * wrote a line for each, and a query ordered by id cannot express "these,
+   * in this order, saying this".
+   *
+   * Named photographs missing from the library are skipped rather than left as
+   * a hole, so a run before `seed:media` still produces a full wall.
+   */
+  const FEATURED: { filename: string; caption: string }[] = [
+    {
+      filename: 'portal-vision-background.jpg',
+      caption: 'Fostering collaboration and hands-on learning every day.',
+    },
+    {
+      filename: 'siws-fancy-dress-environment.jpg',
+      caption: 'Showcasing creativity and environmental awareness',
+    },
+    {
+      filename: 'siws-yoga-meditation.jpg',
+      caption: 'Practicing mindfulness and focus together.',
+    },
+  ]
 
-  /*
-   * The gallery takes whatever is left, so the page fills out as SIWS sends
-   * more photographs rather than needing this file edited each time.
-   */
-  /*
-   * Only the banner and History hold a photograph back from the gallery.
-   * There are eight in the library, and "Life at SIWS" is meant to read as a
-   * wall — six tiles fill two rows of three, where four left a ragged gap.
-   * The About photograph appears in both, which is normal for a gallery that
-   * is showing the same school the page is describing.
-   */
-  const usedIds = new Set([heroImage, historyImage].filter(Boolean))
+  const featured: { image: number; caption: string }[] = []
+  for (const entry of FEATURED) {
+    const id = await photo(entry.filename)
+    if (id) featured.push({ image: id, caption: entry.caption })
+  }
+
   /*
    * Withdrawn photographs are excluded in the query rather than filtered out
    * afterwards. Filtering a fixed page of results means a run of withdrawals
@@ -133,11 +194,26 @@ const main = async () => {
     depth: 0,
     overrideAccess: true,
   })
-  const galleryImages = galleryPool
-    .filter((m) => !usedIds.has(m.id))
-    .slice(0, 6)
-    .map((m) => ({ image: m.id, caption: '' }))
 
+  /*
+   * Held back from the filler: the banner and History photographs, everything
+   * already placed by hand above, and the two SIWS asked to take off this wall
+   * (the washroom tap and the canteen tray). Those two stay in the library —
+   * the Kindergarten site still uses them — they simply do not belong on the
+   * portal's front page any more.
+   */
+  const RETIRED_FROM_WALL = ['kg-handwashing.jpg', 'kg-canteen-meal.jpg']
+  const usedIds = new Set([heroImage, historyImage].filter(Boolean))
+  featured.forEach((f) => usedIds.add(f.image))
+
+  const galleryImages = [
+    ...featured,
+    ...galleryPool
+      .filter((m) => !usedIds.has(m.id))
+      .filter((m) => !RETIRED_FROM_WALL.includes(baseName(String(m.filename))))
+      .slice(0, Math.max(0, 6 - featured.length))
+      .map((m) => ({ image: m.id, caption: '' })),
+  ]
   if (!heroImage) {
     payload.logger.warn(
       'No photographs found — run `npm run seed:media` first if you want them.',
@@ -500,6 +576,7 @@ const main = async () => {
         width: 'narrow',
         background: 'brand',
         content: richText([VISION]),
+        ...(visionBackground ? { backgroundImage: visionBackground } : {}),
       },
       {
         blockType: 'featureList',

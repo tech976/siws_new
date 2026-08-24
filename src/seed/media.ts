@@ -28,7 +28,20 @@ const { default: config } = await import('@payload-config')
  * Run with:  npm run seed:media
  */
 
-const SOURCE_DIR = path.resolve(process.cwd(), '../assets/images')
+/*
+ * IN the repository, not beside it.
+ *
+ * This pointed at `../assets/images` — a folder on the developer's machine,
+ * outside version control. A fresh clone therefore had no source images at
+ * all: `seed:media` skipped every photograph with "not found", the library
+ * came up empty, and the pages that name a photograph rendered without one.
+ *
+ * These are the web-sized files the seed actually uploads, not the camera
+ * originals — 4 MB in total, against the 1.1 GB of originals that `.gitignore`
+ * deliberately keeps out. Small enough to carry, and carrying them is what
+ * makes `npm run seed:media` work on a clone with nothing else set up.
+ */
+const SOURCE_DIR = path.resolve(process.cwd(), 'assets/images')
 const MAX_WIDTH = 1800
 
 interface ImageSeed {
@@ -45,6 +58,15 @@ interface ImageSeed {
   depictsChildren: boolean
   /** Noted where the image does not look like SIWS's own photography. */
   needsLicenceCheck?: boolean
+  /**
+   * Where the subject sits vertically, as a percentage from the top.
+   *
+   * Payload stores 50/50 on every upload, and a shallow band cropping to the
+   * middle of the file takes the back row's heads off. Set it here for the
+   * photographs the design puts in a band, so a fresh clone is framed
+   * correctly rather than waiting for someone to notice and drag the marker.
+   */
+  focalY?: number
 }
 
 const IMAGES: ImageSeed[] = [
@@ -58,6 +80,11 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'g2.jpeg',
     filename: 'kg-classroom-group.jpg',
+    // Thirteen children stacked front to back over half the frame, and the
+    // band shows a quarter of it. Placed on the two boys nearest the camera,
+    // who are the subject: the rows behind fall outside the strip entirely
+    // rather than being sliced through the chin.
+    focalY: 64,
     alt: 'A kindergarten class seated around a large curved table, smiling towards the camera.',
     caption: 'Small groups and plenty of room to move',
     depictsChildren: true,
@@ -72,6 +99,10 @@ const IMAGES: ImageSeed[] = [
   {
     file: '3.JPG',
     filename: 'kg-play-area.jpg',
+    // A tall portrait in a wide band shows about a tenth of its height. The
+    // children stand across its middle, so the strip sits on them — higher and
+    // it lands on the empty wall behind, lower and it is all artificial turf.
+    focalY: 49,
     alt: 'Kindergarten children in sports uniform standing in rows on the green artificial-turf play area during a physical activity session.',
     caption: 'Safe play and activity area',
     depictsChildren: true,
@@ -106,7 +137,44 @@ const IMAGES: ImageSeed[] = [
     depictsChildren: true,
     needsLicenceCheck: true,
   },
+  /*
+   * Two photographs SIWS chose for the "Life at SIWS" wall on the portal home
+   * page. Both show identifiable children, so both need a permission record
+   * before the page carrying them will publish (FR-PRV-11).
+   */
+  {
+    file: 'fancy-dress-environment.jpg',
+    filename: 'siws-fancy-dress-environment.jpg',
+    alt: 'Two young pupils in a fancy-dress competition, one wearing a painted globe costume and the other holding a model of the Earth.',
+    caption: 'Showcasing creativity and environmental awareness',
+    depictsChildren: true,
+  },
+  /*
+   * The portal's banner photograph. A full stage of children mid-performance
+   * carries a front page in a way a tidy classroom cannot — and it is wide,
+   * which the banner needs.
+   */
+  {
+    file: 'natya-tarang.jpg',
+    filename: 'siws-natya-tarang.jpg',
+    alt: 'A stage full of young SIWS pupils in bright regional costume, arms raised mid-performance, at the Natya Tarang inter-school dance competition.',
+    caption: 'Natya Tarang — our inter-school dance and music competition',
+    depictsChildren: true,
+  },
+  {
+    file: 'yoga-meditation.jpeg',
+    filename: 'siws-yoga-meditation.jpg',
+    alt: 'Rows of secondary pupils in house-colour sports shirts seated cross-legged on mats in the school hall, eyes closed, during a guided meditation session.',
+    caption: 'Practicing mindfulness and focus together.',
+    depictsChildren: true,
+  },
 ]
+
+/** `kg-play-area-2.jpg` -> `kg-play-area.jpg`; anything else is left alone. */
+const baseName = (filename: string) => filename.replace(/-d+(.[^.]+)$/, "$1")
+
+/** `kg-play-area.jpg` -> `kg-play-area`, for a prefix query. */
+const stemOf = (filename: string) => filename.replace(/.[^.]+$/, "")
 
 const main = async () => {
   const payload = await getPayload({ config })
@@ -143,27 +211,49 @@ const main = async () => {
         .jpeg({ quality: 82, mozjpeg: true })
         .toFile(resized)
 
-      const existing = await payload.find({
+      /*
+       * Matched on the base name, not the exact one.
+       *
+       * Payload appends `-1`, `-2`… when the name it wants is taken on disk,
+       * and this repository commits `media/`, so every name here is taken
+       * before the first run. An exact match therefore stopped finding the
+       * rows this script had written itself and uploaded the whole library
+       * again: eight photographs became sixteen, and the focal points and
+       * consent records stayed on the copies nothing pointed at any more.
+       */
+      const found = await payload.find({
         collection: 'media',
-        where: { filename: { equals: image.filename } },
-        limit: 1,
+        where: { filename: { like: `${stemOf(image.filename)}%` } },
+        limit: 10,
         depth: 0,
         overrideAccess: true,
       })
+      const existingDoc = found.docs.find(
+        (d) => baseName(String(d.filename)) === image.filename,
+      )
 
       const data = {
         alt: image.alt,
         caption: image.caption,
         unit: kg.id,
         depictsChildren: image.depictsChildren,
+        ...(image.focalY === undefined ? {} : { focalX: 50, focalY: image.focalY }),
       }
 
-      if (existing.docs[0]) {
+      if (existingDoc) {
+        /*
+         * No `filePath` on the update path. Passing one made Payload write
+         * the binary again on every run, and because the name was already
+         * taken it landed as `kg-play-area-2.jpg` — so a re-run renamed the
+         * library out from under `photo('kg-play-area.jpg')` and the banner,
+         * both photographic bands and the History picture vanished from the
+         * home page. The picture has not changed between runs; only the words
+         * and the focal point can, so only those are written.
+         */
         await payload.update({
           collection: 'media',
-          id: existing.docs[0].id,
+          id: existingDoc.id,
           data: data as never,
-          filePath: resized,
           overrideAccess: true,
         })
         updated += 1

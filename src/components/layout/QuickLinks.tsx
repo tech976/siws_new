@@ -66,7 +66,24 @@ export const QuickLinks = ({ links }: { links: QuickLink[] }) => {
         aria-expanded={open}
         aria-controls="quick-links"
         onClick={() => setOpen((value) => !value)}
-        className="flex items-center gap-1.5 rounded-pill border border-line px-3.5 py-2 text-sm font-semibold text-brand transition-colors hover:border-brand hover:text-brand-deep"
+        /*
+          `min-h-12` and the roomier padding are what put this level with the
+          enquiry button beside it.
+
+          It used to be `px-3.5 py-2` on a 1px border, which measures 38px
+          against the CTA's 48px — the two sat in the same row at obviously
+          different heights. A height FLOOR rather than more padding, because
+          the gap is not only padding: `.btn-primary` carries a 2px border to
+          this button's 1px, so padding matched to the pixel would still leave
+          them 2px apart. 3rem is what the CTA actually measures, so the two
+          agree whatever either one's border does next. Comfortably past the
+          44px minimum target size (SC 2.5.8) as well.
+
+          The quiet 1px border stays: matching the CTA's HEIGHT is the point,
+          not its weight — two solid pills of equal presence would leave a
+          visitor no idea which one the school wants them to press.
+        */
+        className="flex min-h-12 items-center gap-2 rounded-pill border border-line px-5 py-3 text-sm font-semibold text-brand transition-colors hover:border-brand hover:text-brand-deep"
       >
         {/*
           The label is spelled out from `sm` up and reduced to the icon on the

@@ -39,10 +39,30 @@ const OVERLAY_CLASS: Record<string, string> = {
   accent: 'bg-gradient-to-r from-accent-deep/92 via-accent-deep/85 to-accent-deep/92',
 }
 
+/*
+ * A FIXED height, not a ratio.
+ *
+ * A band is a rule between two sections, and a rule keeps the same weight
+ * whatever the screen. An `aspect-` ratio does the opposite: it grows with the
+ * viewport, and `aspect-[8/3]` turned a 208px strip into a 715px slab on a
+ * wide monitor that read as a second hero rather than a divider.
+ *
+ * Slightly deeper than the 160/208px it was, which buys back some of the
+ * picture without changing what the band IS. The framing problem it used to
+ * have is not solved here at all — it is solved by `objectPosition` below and
+ * by the focal point on each photograph, which put the strip over the faces
+ * instead of the middle of the file.
+ *
+ * A strip this shallow shows about a quarter of a landscape photograph and a
+ * tenth of a portrait one, so it cannot hold a deep row of faces however it is
+ * placed. It wants a WIDE photograph whose subject sits in a band across it;
+ * given one, nobody is cut.
+ */
 const HEIGHT_CLASS: Record<string, string> = {
-  slim: 'min-h-40 sm:min-h-52',
+  slim: 'min-h-44 sm:min-h-60',
   tall: 'min-h-72 sm:min-h-96',
 }
+
 
 export const DividerBlockView = ({ block }: { block: DividerBlock }) => {
   if (!block.image) return null
@@ -60,7 +80,14 @@ export const DividerBlockView = ({ block }: { block: DividerBlock }) => {
         resource={block.image}
         sizes="100vw"
         fill
-        className="absolute inset-0 -z-20 object-cover object-[center_38%]"
+        className="absolute inset-0 -z-20 object-cover"
+        /* A fallback, used only until someone moves this photograph's focal
+           point off centre. Faces sit high in a classroom or assembly frame —
+           from roughly an eighth to two-thirds of the way down — so a centred
+           crop in a band this shallow takes the back row's heads off and
+           spends the space on floor. 30% holds the whole face row for both
+           photographs currently on the home page. */
+        objectPosition="center 30%"
         // Decorative: the band says nothing the surrounding sections do not.
         alt="-"
       />

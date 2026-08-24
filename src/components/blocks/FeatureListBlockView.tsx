@@ -111,11 +111,18 @@ export const FeatureListBlockView = ({ block }: { block: FeatureListBlock }) => 
 
   return (
     <Section background={block.background as BlockBackground}>
+      {/*
+        `mb-4` is the gap to an intro paragraph, which then carries `mb-9` down
+        to the list. With no intro that 16px was the ENTIRE gap between the
+        heading and the first tick, so "Our Mission" read as one crowded block.
+        Without one, the heading takes the same 40px the compact and card
+        layouts below give it.
+      */}
       <SectionHeading
         heading={block.heading}
         accentWord={block.accentWord}
         level={block.headingLevel}
-        className="mb-4"
+        className={block.intro ? 'mb-4' : 'mb-10'}
       />
 
       {block.intro ? <RichText data={block.intro} className="mb-9 siws-centre mx-auto max-w-3xl" /> : null}

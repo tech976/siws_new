@@ -810,6 +810,10 @@ export interface RichTextBlock {
     [k: string]: unknown;
   };
   /**
+   * Optional, and only used by the Narrow width. The photograph runs behind the whole section under a brand-colour gradient dense enough to keep the text readable — the same overlay the photographic divider uses, so it cannot be made unreadable from here.
+   */
+  backgroundImage?: (number | null) | Media;
+  /**
    * Use “Smaller” when this section sits underneath another heading.
    */
   headingLevel?: ('h2' | 'h3') | null;
@@ -2325,6 +2329,7 @@ export interface HeroCarouselBlockSelect<T extends boolean = true> {
 export interface RichTextBlockSelect<T extends boolean = true> {
   heading?: T;
   content?: T;
+  backgroundImage?: T;
   headingLevel?: T;
   accentWord?: T;
   width?: T;

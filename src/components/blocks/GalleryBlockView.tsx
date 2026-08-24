@@ -2,18 +2,23 @@ import { Media } from '@/components/Media'
 import { RichText } from '@/components/RichText'
 import type { GalleryBlock, Media as MediaDoc } from '@/payload-types'
 
+import { GalleryCarousel } from './GalleryCarousel'
 import { GalleryPager } from './GalleryPager'
 import { Section, SectionHeading, type BlockBackground } from './Section'
 
 /**
- * Renders a photo gallery.
+ * Renders a photo gallery, as a grid or as a continuously looping row.
  *
- * The scrolling variant uses CSS scroll-snap rather than a carousel library.
- * That means: no JavaScript at all, native touch and trackpad scrolling, real
- * keyboard scrolling, and it degrades to a plain scrollable row if anything
- * fails. A Swiper-style carousel would need ~40 KB of JS to reimplement
- * behaviour the browser already has, and would hide most of the photographs
- * behind controls that screen-reader users navigate poorly.
+ * The scrolling variant used to be `overflow-x: auto` with a thin scrollbar and
+ * a line of text telling the visitor to scroll sideways. It is now a CSS loop —
+ * see `GalleryCarousel` for why, and for how it stays reachable for anyone who
+ * cannot take the motion.
+ *
+ * It is still not a carousel library. A Swiper-style component would need
+ * ~40 KB of JavaScript to reimplement behaviour the browser already has, and
+ * would hide most of the photographs behind controls that screen readers
+ * navigate poorly. The movement here is a CSS transform on the compositor and
+ * the only JavaScript is a boolean saying whether it is paused.
  */
 export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
   const images = (block.images ?? []).filter(
@@ -25,25 +30,28 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
   const isGrid = block.layout === 'grid'
   /**
    * 12 fills four rows of three on a desktop and reads as a complete page.
-   * Only applied to the grid: the scrolling row is already self-limiting, and
-   * paginating something you scroll through would be two controls for one job.
+   * Only applied to the grid: the looping row shows everything by itself, and
+   * paginating something that scrolls on its own would be two controls for one
+   * job.
    */
   const perPageSetting = Number(block.perPage ?? '12')
   const perPage = perPageSetting > 0 ? perPageSetting : images.length
 
-  const cards = images.map((entry, index) => {
+  /*
+   * The card's INSIDE, with no list item around it.
+   *
+   * The grid needs each card to be an `<li>`, because it and `GalleryPager`
+   * drop them straight into a `<ul>`. The carousel supplies its own `<li>`
+   * around each card so that the two copies of the track are each a proper
+   * list. Returning an `<li>` from here served the grid and gave the carousel
+   * `<li>` inside `<li>` — invalid HTML, and React refused to hydrate it.
+   */
+  const cardBody = (entry: (typeof images)[number], index: number) => {
     const media = entry.image as MediaDoc
     const caption = entry.caption || media.caption
 
     return (
-      <li
-        key={entry.id ?? index}
-        className={
-          isGrid
-            ? 'group overflow-hidden rounded-2xl border border-line bg-white shadow-card'
-            : 'group w-76 shrink-0 snap-start overflow-hidden rounded-2xl border border-line bg-white shadow-card sm:w-92'
-        }
-      >
+      <>
         {/*
           The ratio lives on this wrapper with the photograph filling it.
           `aspect-*` on the image itself is overridden by the base
@@ -57,7 +65,7 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
             sizes={
               isGrid
                 ? '(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw'
-                : '(min-width: 640px) 23rem, 19rem'
+                : '(min-width: 640px) 21rem, 19rem'
             }
             // Only the first image is likely above the fold.
             priority={index === 0}
@@ -79,11 +87,33 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
         </div>
 
         {caption ? (
-          <p className="px-4 py-3.5 text-sm font-medium text-ink-soft">{caption}</p>
+          <p className="flex-1 px-4 py-3.5 text-sm font-medium text-ink-soft">{caption}</p>
         ) : null}
-      </li>
+      </>
     )
-  })
+  }
+
+  const GRID_CARD =
+    'group flex flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-card'
+  /*
+   * `h-full` so a row of cards whose captions run to different lengths still
+   * finishes level, and a lift on hover so a card the pointer has stopped on
+   * separates from the ones sliding past it.
+   */
+  const CAROUSEL_CARD =
+    'group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-card transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-raised'
+
+  const gridCards = images.map((entry, index) => (
+    <li key={entry.id ?? index} className={GRID_CARD}>
+      {cardBody(entry, index)}
+    </li>
+  ))
+
+  const loopCards = images.map((entry, index) => (
+    <article key={entry.id ?? index} className={CAROUSEL_CARD}>
+      {cardBody(entry, index)}
+    </article>
+  ))
 
   return (
     <Section background={block.background as BlockBackground}>
@@ -94,33 +124,32 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
         className="mb-4"
       />
 
-      {block.intro ? <RichText data={block.intro} className="mb-8 siws-centre mx-auto max-w-3xl" /> : null}
-
-      {isGrid && images.length > perPage ? (
-        <GalleryPager items={cards} perPage={perPage} />
-      ) : (
-      <ul
-        className={
-          isGrid
-            ? 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3'
-            : /*
-               * `snap-x` plus `overflow-x-auto` gives native, momentum-friendly
-               * scrolling. The negative margin lets cards bleed to the viewport
-               * edge on a phone while the padding keeps the first one aligned
-               * with the surrounding text.
-               */
-              'flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 -mx-5 px-5 [scrollbar-width:thin]'
-        }
-      >
-        {cards}
-      </ul>
-      )}
-
-      {!isGrid && images.length > 1 ? (
-        <p className="mt-1 text-sm text-ink-muted">
-          Scroll sideways to see all {images.length} photographs.
-        </p>
+      {block.intro ? (
+        <RichText data={block.intro} className="mb-8 siws-centre mx-auto max-w-3xl" />
       ) : null}
+
+      {isGrid ? (
+        images.length > perPage ? (
+          <GalleryPager items={gridCards} perPage={perPage} />
+        ) : (
+          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{gridCards}</ul>
+        )
+      ) : images.length > 2 ? (
+        <GalleryCarousel items={loopCards} label={block.heading ?? 'gallery'} />
+      ) : (
+        /*
+         * Two photographs are not a loop. Sliding them past themselves for ever
+         * is worse than simply showing them, so below the threshold the row
+         * stays put and centres.
+         */
+        <ul className="mx-auto flex max-w-4xl justify-center gap-5">
+          {loopCards.map((card, index) => (
+            <li key={index} className="flex w-76 shrink-0 sm:w-84">
+              {card}
+            </li>
+          ))}
+        </ul>
+      )}
     </Section>
   )
 }

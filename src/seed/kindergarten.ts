@@ -110,14 +110,36 @@ const mediaByFilename = async (
   payload: Awaited<ReturnType<typeof getPayload>>,
   filename: string,
 ): Promise<number | null> => {
-  const { docs } = await payload.find({
+  const exact = await payload.find({
     collection: 'media',
     where: { filename: { equals: filename } },
     limit: 1,
     depth: 0,
     overrideAccess: true,
   })
-  return (docs[0]?.id as number | undefined) ?? null
+  if (exact.docs[0]) return exact.docs[0].id as number
+
+  /*
+   * Payload appends `-1`, `-2`… when the name it wants is already taken on
+   * disk, and this repository commits `media/`, so every name it ships is
+   * taken before the first upload. A re-seed then left the library holding
+   * `kg-play-area-2.jpg` where this file asks for `kg-play-area.jpg`, every
+   * lookup returned null, and "Campus and Facilities" seeded with ZERO
+   * photographs — the block was written, the gallery had nothing to render,
+   * and the whole section disappeared off the Kindergarten page.
+   */
+  const stem = filename.replace(/.[^.]+$/, "")
+  const { docs } = await payload.find({
+    collection: 'media',
+    where: { filename: { like: stem + "-%" } },
+    limit: 10,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const suffixed = docs.find(
+    (d) => String(d.filename).replace(/-d+(.[^.]+)$/, "$1") === filename,
+  )
+  return (suffixed?.id as number | undefined) ?? null
 }
 
 const main = async () => {

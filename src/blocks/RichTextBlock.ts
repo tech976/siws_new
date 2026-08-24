@@ -13,6 +13,17 @@ export const RichTextBlock: Block = {
   fields: [
     headingField,
     richTextField({ name: 'content', required: true }),
+    {
+      name: 'backgroundImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Background photograph',
+      admin: {
+        description:
+          'Optional, and only used by the Narrow width. The photograph runs behind the whole section under a brand-colour gradient dense enough to keep the text readable — the same overlay the photographic divider uses, so it cannot be made unreadable from here.',
+        condition: (_data, siblingData) => siblingData?.width === 'narrow',
+      },
+    },
     sectionOptions([
       {
         name: 'width',

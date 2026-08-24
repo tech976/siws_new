@@ -599,3 +599,84 @@
     flex-wrap: wrap;
   }
 }
+
+/* ==========================================================================
+   THE PHOTO CAROUSEL — a continuous loop, not a scrollbar.
+
+   Same mechanism as the news ticker above and for the same reasons: the track
+   holds the list twice and translates by -50%, so at the halfway point the
+   second copy sits exactly where the first began and the loop restarts with no
+   visible jump. Pausing is one declaration the component toggles.
+
+   Slower than the ticker (60s against 45s) over cards that are far wider than
+   a headline: the eye needs longer on a photograph than on a line of text, and
+   a card should not cross the viewport before it can be looked at.
+
+   The mask fades both edges instead of letting cards collide with the section
+   boundary. It is what stops a continuous loop reading as a row that has been
+   cut off — the picture arrives and leaves rather than appearing and vanishing.
+   ========================================================================== */
+
+@keyframes siws-carousel-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.siws-carousel {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 4rem,
+    black calc(100% - 4rem),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 4rem,
+    black calc(100% - 4rem),
+    transparent
+  );
+}
+
+.siws-carousel-track {
+  display: flex;
+  width: max-content;
+  animation: siws-carousel-scroll 60s linear infinite;
+}
+
+.siws-carousel-track[data-paused='true'] {
+  animation-play-state: paused;
+}
+
+/*
+  WCAG 2.1 SC 2.3.3, and the vestibular case behind it: someone who has asked
+  their system for less movement should never see the first frame, not merely
+  be able to stop it afterwards.
+
+  It falls back to the thing it replaced — a plain scrollable row — rather than
+  to a static crop, because every photograph must stay reachable. The mask goes
+  too: fading the edges of something the visitor scrolls by hand hides where
+  the row actually ends.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .siws-carousel {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .siws-carousel-track {
+    animation: none;
+    width: auto;
+  }
+
+  .siws-carousel-track > ul[aria-hidden='true'] {
+    display: none;
+  }
+}

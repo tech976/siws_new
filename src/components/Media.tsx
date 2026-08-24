@@ -30,6 +30,20 @@ interface MediaProps {
    * organisation. There the page is the authority, and letting the library win
    * risks announcing "logo" six times in a row.
    */
+  /**
+   * Where to anchor the crop when `fill` is set, as an `object-position` value.
+   *
+   * Only a FALLBACK: an editor who has moved the focal-point marker in the
+   * admin panel overrides it, because they are looking at the actual
+   * photograph and this is a guess made in advance about photographs that do
+   * not exist yet.
+   *
+   * Passing the equivalent Tailwind class instead does nothing. The focal
+   * point is applied as an inline style, and an inline style beats a class —
+   * so `object-[center_38%]` on a divider band was silently discarded for as
+   * long as it had been there, and every band was centre-cropped.
+   */
+  objectPosition?: string
   alt?: string
 }
 
@@ -43,6 +57,7 @@ export const Media = ({
   priority = false,
   fill = false,
   alt: altOverride,
+  objectPosition,
 }: MediaProps) => {
   // An unpopulated relationship means the file was deleted or is not readable;
   // rendering nothing is preferable to a broken image icon.
@@ -83,12 +98,23 @@ export const Media = ({
      * luck. Wide group photographs in a tall card lose most of their width, and
      * whoever was standing off to one side goes with it.
      *
-     * Both default to 50, so this is centre-crop unless someone has moved the
-     * marker in the admin panel. That makes reframing an editor's job rather
-     * than a code change.
+     * Payload writes 50/50 on every upload rather than leaving the pair null,
+     * so "dead centre" is what an untouched photograph looks like and there is
+     * no flag that separates it from a deliberate choice. It is therefore read
+     * as untouched, which lets a block that knows it is a shallow letterbox
+     * supply a better starting guess than the middle of the file. Moving the
+     * marker anywhere off-centre hands control back to the editor, who is
+     * looking at the actual photograph.
+     *
+     * The cost is that an editor who deliberately chooses the exact centre of
+     * a band gets the band's guess instead. That is worth it: the alternative
+     * left every shallow band centre-cropped, which is what cut a row of
+     * children off at the chin on the home page.
      */
     const focalX = typeof resource.focalX === 'number' ? resource.focalX : 50
     const focalY = typeof resource.focalY === 'number' ? resource.focalY : 50
+    const placed = focalX !== 50 || focalY !== 50
+    const position = placed ? `${focalX}% ${focalY}%` : (objectPosition ?? '50% 50%')
 
     return (
       <Image
@@ -98,7 +124,7 @@ export const Media = ({
         sizes={sizes}
         className={className}
         priority={priority}
-        style={{ objectPosition: `${focalX}% ${focalY}%` }}
+        style={{ objectPosition: position }}
       />
     )
   }

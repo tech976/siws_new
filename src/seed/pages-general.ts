@@ -116,8 +116,6 @@ const RECIPES: Record<string, Recipe> = {
           "Sport, the arts and other activities beyond the classroom.",
       },
     ],
-    outro:
-      "Photographs of pupils are published only where the school holds permission from a parent or guardian.",
   },
   academics: {
     eyebrow: "Academics",

@@ -33,7 +33,10 @@ export const UnitLinksBlockView = ({
 
   return (
     <Section background={block.background as BlockBackground}>
-      <div className="mx-auto max-w-2xl text-center">
+      {/* `siws-centre` and not `text-center` alone: `.siws-prose` justifies by
+          default, which leaves a one-line intro ranged left inside its centred
+          box and optically off from the heading above it. */}
+      <div className="siws-centre mx-auto max-w-2xl text-center">
         <SectionHeading
           heading={block.heading}
           accentWord={block.accentWord}
