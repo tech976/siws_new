@@ -99,12 +99,112 @@ const ROW_PLAN: Record<number, number[]> = {
   6: [3, 3],
 }
 
+/**
+ * The showcase layout: a photograph beside the words, one card per item.
+ *
+ * For a handful of items that each have a picture worth showing — prizes,
+ * events, achievements. The list layout gave these a tick and a line of text,
+ * which is right for rules and curricula and wrong for something a parent
+ * would like to SEE. The cards layout was the other option and is worse here:
+ * it centres a large icon above the words, and an icon standing in for a
+ * photograph that exists is a wasted opportunity.
+ *
+ * The picture is a fixed column and the words take the rest, so three cards
+ * in a row stay the same shape whatever length the titles run to. It stacks
+ * to one card per row on a phone, where side-by-side would leave the text
+ * about twenty characters wide.
+ *
+ * An item with no photograph keeps its card and simply gives the whole width
+ * to the words, so a set that is only half illustrated does not come out
+ * ragged.
+ */
+const FeatureShowcase = ({ block }: { block: FeatureListBlock }) => {
+  const items = block.items ?? []
+
+  /*
+   * One level below whatever the section heading turned out to be, so the
+   * outline never skips a rank (WCAG 2.1 SC 1.3.1).
+   */
+  const CardTitle = block.heading && block.headingLevel === 'h3' ? 'h4' : 'h3'
+
+  return (
+    <Section background={block.background as BlockBackground}>
+      <SectionHeading
+        heading={block.heading}
+        accentWord={block.accentWord}
+        level={block.headingLevel}
+      />
+
+      {block.intro ? (
+        <RichText data={block.intro} className="mt-6 siws-centre mx-auto max-w-3xl" />
+      ) : null}
+
+      <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((item, index) => {
+          const photo = item.photo
+          return (
+            <li
+              key={item.id ?? index}
+              /*
+                `min-h-44` is what gives the photograph room. Without it the
+                card collapses to whatever two lines of text need — about
+                100px — and a wide photograph in a box that shallow is a strip.
+                All three cards take the same floor, so a one-line title and a
+                three-line one still produce a level row.
+              */
+              className="group flex min-h-44 overflow-hidden rounded-3xl bg-white ring-1 ring-line/70 shadow-[0_1px_2px_rgba(36,39,111,0.04),0_8px_24px_-12px_rgba(36,39,111,0.18)] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_2px_4px_rgba(36,39,111,0.06),0_18px_40px_-16px_rgba(36,39,111,0.32)]"
+            >
+              {photo ? (
+                /*
+                 * A fixed-width column, not a share of the card. A percentage
+                 * made the picture shrink as the title grew, so three cards in
+                 * a row each showed the photograph at a different size.
+                 *
+                 * 42% of the card and stretched to its full height. The first
+                 * pass gave it a 7rem column, which on a 373px card left the
+                 * photograph about 112px wide — and every picture SIWS has for
+                 * this section is a wide one, a stage or a hall, so a column
+                 * that narrow showed a slice through the middle and none of the
+                 * occasion. The card's own height floor below is what stops
+                 * that slice being a letterbox as well.
+                 */
+                <div className="relative w-[42%] shrink-0 self-stretch overflow-hidden">
+                  <Media
+                    resource={photo}
+                    sizes="(min-width: 1024px) 11rem, (min-width: 640px) 14rem, 9rem"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+              ) : null}
+
+              <div className="flex flex-1 flex-col justify-center gap-1.5 p-5">
+                <CardTitle className="text-[1.0625rem] leading-snug font-bold text-balance text-brand">
+                  {item.title}
+                </CardTitle>
+                {item.description ? (
+                  <p className="text-sm leading-snug text-ink-muted">{item.description}</p>
+                ) : null}
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+
+      {block.footnote ? (
+        <p className="mt-8 text-center text-sm text-ink-muted">{block.footnote}</p>
+      ) : null}
+    </Section>
+  )
+}
+
 export const FeatureListBlockView = ({ block }: { block: FeatureListBlock }) => {
   const items = block.items ?? []
   if (items.length === 0) return null
 
   if (block.layout === 'cards') return <FeatureCards block={block} />
   if (block.layout === 'compact') return <FeatureCompact block={block} />
+  if (block.layout === 'showcase') return <FeatureShowcase block={block} />
 
   const numbered = block.marker === 'number'
   const twoColumns = block.columns !== '1'

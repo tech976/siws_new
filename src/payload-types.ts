@@ -1223,9 +1223,9 @@ export interface FeatureListBlock {
    */
   accentWord?: string | null;
   /**
-   * Cards suit a handful of facilities a parent should be able to scan. A list suits rules, curricula and anything long. Compact suits a set of short labels — a subject list, a set of methods — where a full card per item is mostly empty space.
+   * Cards suit a handful of facilities a parent should be able to scan. A list suits rules, curricula and anything long. Compact suits a set of short labels — a subject list, a set of methods — where a full card per item is mostly empty space. Showcase is for a few items that each have a photograph worth showing: prizes, events, achievements.
    */
-  layout?: ('list' | 'cards' | 'compact') | null;
+  layout?: ('list' | 'cards' | 'compact' | 'showcase') | null;
   /**
    * Choose numbers when the order matters, otherwise ticks. On cards, numbers add a coloured badge and rule to each one.
    */

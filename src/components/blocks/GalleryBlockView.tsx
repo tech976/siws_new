@@ -9,16 +9,18 @@ import { Section, SectionHeading, type BlockBackground } from './Section'
 /**
  * Renders a photo gallery, as a grid or as a continuously looping row.
  *
- * The scrolling variant used to be `overflow-x: auto` with a thin scrollbar and
- * a line of text telling the visitor to scroll sideways. It is now a CSS loop —
- * see `GalleryCarousel` for why, and for how it stays reachable for anyone who
+ * The scrolling variant used to be `overflow-x: auto` with a thin scrollbar, a
+ * pair of arrows and a line of text telling the visitor to scroll sideways. It
+ * is now a row that loops by itself and can be dragged, swiped or scrolled —
+ * see `GalleryCarousel` for how, and for how it stays usable for anyone who
  * cannot take the motion.
  *
  * It is still not a carousel library. A Swiper-style component would need
  * ~40 KB of JavaScript to reimplement behaviour the browser already has, and
  * would hide most of the photographs behind controls that screen readers
- * navigate poorly. The movement here is a CSS transform on the compositor and
- * the only JavaScript is a boolean saying whether it is paused.
+ * navigate poorly. What is scripted here is one `scrollLeft` advance per frame
+ * and a mouse-drag handler; the touch feel, the momentum and the scrolling
+ * itself are all still the browser's.
  */
 export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
   const images = (block.images ?? []).filter(
@@ -65,12 +67,12 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
             sizes={
               isGrid
                 ? '(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw'
-                : '(min-width: 640px) 21rem, 19rem'
+                : '(min-width: 1024px) 22rem, (min-width: 640px) 20rem, 17rem'
             }
             // Only the first image is likely above the fold.
             priority={index === 0}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="pointer-events-none object-cover transition-transform duration-500 select-none group-hover:scale-[1.06]"
           />
           {/*
             A gallery is the one place the photographs should be seen at full
@@ -87,7 +89,9 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
         </div>
 
         {caption ? (
-          <p className="flex-1 px-4 py-3.5 text-sm font-medium text-ink-soft">{caption}</p>
+          <p className="flex-1 px-5 py-4 text-[0.9375rem] leading-snug font-medium text-balance text-ink-soft">
+            {caption}
+          </p>
         ) : null}
       </>
     )
@@ -101,7 +105,7 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
    * separates from the ones sliding past it.
    */
   const CAROUSEL_CARD =
-    'group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-card transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-raised'
+    'group flex h-full w-full flex-col overflow-hidden rounded-3xl bg-white ring-1 ring-line/70 shadow-[0_1px_2px_rgba(36,39,111,0.04),0_8px_24px_-12px_rgba(36,39,111,0.18)] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_2px_4px_rgba(36,39,111,0.06),0_18px_40px_-16px_rgba(36,39,111,0.32)]'
 
   const gridCards = images.map((entry, index) => (
     <li key={entry.id ?? index} className={GRID_CARD}>

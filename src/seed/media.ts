@@ -154,6 +154,66 @@ const IMAGES: ImageSeed[] = [
    * carries a front page in a way a tidy classroom cannot — and it is wide,
    * which the banner needs.
    */
+  /*
+   * The three the Kindergarten programme cards name. `media/` already ships
+   * these as `kindergarten-activities-photos-1/2/7`, but only as FILES —
+   * that set came in through `photos:import` on another machine and its
+   * library rows were never part of the repository, so nothing could
+   * reference them and two of the five cards rendered with no picture.
+   *
+   * Seeded here under their own names rather than the originals, because a
+   * name already taken on disk makes Payload write `-1` and the library ends
+   * up pointing somewhere nobody expects.
+   */
+  {
+    file: 'award-andhra.jpg',
+    filename: 'siws-award-andhra.jpg',
+    alt: 'A kindergarten pupil in costume being handed a certificate on stage by a teacher, with three staff members alongside and a sunflower backdrop behind.',
+    caption: 'Receiving a prize at an interschool competition',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-activity-literacy.jpg',
+    filename: 'kg-activity-literacy.jpg',
+    alt: 'Kindergarten children seated at curved tables working through printed worksheets, with a number line on the blackboard behind them.',
+    caption: 'Worksheets and number work in the early years',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-activity-creative.jpg',
+    filename: 'kg-activity-creative.jpg',
+    alt: 'Kindergarten children gathered around a table making a finger-painting in orange and green on yellow paper.',
+    caption: 'Finger painting and activity-based learning',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-activity-motor.jpg',
+    filename: 'kg-activity-motor.jpg',
+    alt: 'A full kindergarten class standing around a curved table, one child holding up a handprint flag they have made together.',
+    caption: 'Hands-on work the whole class makes together',
+    depictsChildren: true,
+  },
+  {
+    file: 'smart-board.jpg',
+    filename: 'kg-smart-board.jpg',
+    alt: 'A young pupil in school uniform reaching up to draw on an interactive smart board with a stylus.',
+    caption: 'Interactive smart boards in every classroom',
+    depictsChildren: true,
+  },
+  {
+    file: 'drawing-class.jpg',
+    filename: 'kg-drawing-class.jpg',
+    alt: 'Pupils at wooden desks in a classroom, each colouring a drawing with crayons.',
+    caption: 'Quiet, focused work at every desk',
+    depictsChildren: true,
+  },
+  {
+    file: 'green-skills.jpg',
+    filename: 'siws-green-skills.jpg',
+    alt: 'Sixteen Secondary School pupils in two rows on a school veranda, each holding a potted plant or sapling they have grown.',
+    caption: 'Nurturing nature and building green skills together.',
+    depictsChildren: true,
+  },
   {
     file: 'natya-tarang.jpg',
     filename: 'siws-natya-tarang.jpg',

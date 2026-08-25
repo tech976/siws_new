@@ -173,6 +173,10 @@ const main = async () => {
       filename: 'siws-yoga-meditation.jpg',
       caption: 'Practicing mindfulness and focus together.',
     },
+    {
+      filename: 'siws-green-skills.jpg',
+      caption: 'Nurturing nature and building green skills together.',
+    },
   ]
 
   const featured: { image: number; caption: string }[] = []
@@ -202,7 +206,11 @@ const main = async () => {
    * the Kindergarten site still uses them — they simply do not belong on the
    * portal's front page any more.
    */
-  const RETIRED_FROM_WALL = ['kg-handwashing.jpg', 'kg-canteen-meal.jpg']
+  const RETIRED_FROM_WALL = [
+    'kg-handwashing.jpg',
+    'kg-canteen-meal.jpg',
+    'kg-children-together.jpg',
+  ]
   const usedIds = new Set([heroImage, historyImage].filter(Boolean))
   featured.forEach((f) => usedIds.add(f.image))
 

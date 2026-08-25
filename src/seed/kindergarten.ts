@@ -128,7 +128,7 @@ const mediaByFilename = async (
    * photographs — the block was written, the gallery had nothing to render,
    * and the whole section disappeared off the Kindergarten page.
    */
-  const stem = filename.replace(/.[^.]+$/, "")
+  const stem = filename.replace(/\.[^.]+$/, "")
   const { docs } = await payload.find({
     collection: 'media',
     where: { filename: { like: stem + "-%" } },
@@ -137,7 +137,7 @@ const mediaByFilename = async (
     overrideAccess: true,
   })
   const suffixed = docs.find(
-    (d) => String(d.filename).replace(/-d+(.[^.]+)$/, "$1") === filename,
+    (d) => String(d.filename).replace(/-\d+(\.[^.]+)$/, "$1") === filename,
   )
   return (suffixed?.id as number | undefined) ?? null
 }
@@ -166,6 +166,20 @@ const main = async () => {
     childrenTogether: await mediaByFilename(payload, 'kg-children-together.jpg'),
     canteen: await mediaByFilename(payload, 'kg-canteen-meal.jpg'),
     handwashing: await mediaByFilename(payload, 'kg-handwashing.jpg'),
+    smartBoard: await mediaByFilename(payload, 'kg-smart-board.jpg'),
+    drawingClass: await mediaByFilename(payload, 'kg-drawing-class.jpg'),
+    activityLiteracy: await mediaByFilename(payload, 'kg-activity-literacy.jpg'),
+    activityCreative: await mediaByFilename(payload, 'kg-activity-creative.jpg'),
+    activityMotor: await mediaByFilename(payload, 'kg-activity-motor.jpg'),
+    /*
+     * The three prize photographs. Two are already in the library for the
+     * portal — the fancy-dress costume is the portal's own 'Life at SIWS'
+     * tile and the Natya Tarang stage is its banner — so they are reused
+     * rather than uploaded twice under a second name.
+     */
+    awardAuxilium: await mediaByFilename(payload, 'siws-fancy-dress-environment.jpg'),
+    awardAndhra: await mediaByFilename(payload, 'siws-award-andhra.jpg'),
+    awardNatyaTarang: await mediaByFilename(payload, 'siws-natya-tarang.jpg'),
     // From the school's own Activities set, for the programme cards below.
     fingerPainting: await mediaByFilename(payload, 'pre-primary-section-activities-photos-1.jpg'),
     paperLanterns: await mediaByFilename(payload, 'pre-primary-section-activities-photos-4.jpg'),
@@ -425,8 +439,15 @@ const main = async () => {
             ...shot(img.classroomGroup, 'Group tables sized for young children'),
             ...shot(img.teacherWithChildren, 'Supportive and trained school staff'),
             ...shot(img.classroomSeated, 'Dedicated activity rooms'),
-            ...shot(img.canteen, 'Pure vegetarian canteen'),
-            ...shot(img.handwashing, 'Clean and hygienic washrooms'),
+            /*
+             * The canteen tray and the washroom tap came off this row at the
+             * school's request (2026-08-25). Both are also the two the media
+             * seed flags as not looking like SIWS's own photography, so they
+             * were the weakest of the nine either way. They stay in the
+             * library, and the facilities LIST below still names both.
+             */
+            ...shot(img.smartBoard, 'Interactive smart boards in every classroom'),
+            ...shot(img.drawingClass, 'Quiet, focused work at every desk'),
           ],
         },
         /*
@@ -503,13 +524,13 @@ const main = async () => {
               description: 'Letters, numbers, reading readiness and writing skills.',
               icon: 'library',
               // The blackboard behind this class is counting one to ten.
-              photo: img.classroomActivity,
+              photo: img.activityLiteracy,
             },
             {
               title: 'Creative Expression',
               description: 'Art, music, storytelling and activity-based learning.',
               icon: 'activity',
-              photo: img.fingerPainting,
+              photo: img.activityCreative,
             },
             {
               title: 'Communication and Social Skills',
@@ -521,7 +542,7 @@ const main = async () => {
               title: 'Cognitive and Motor Development',
               description: 'Hands-on activities supporting mental and physical growth.',
               icon: 'thinking',
-              photo: img.paperLanterns,
+              photo: img.activityMotor,
             },
             {
               title: 'Physical Activity and Play',
@@ -575,7 +596,7 @@ const main = async () => {
              * Rewritten against SIWS's own answers. The list previously offered
              * general claims from the landing page; these are the specifics the
              * school actually gave — a KG-to-PG pathway, Educom, the ground and
-             * garden, and staff with 15 to 25 years behind them.
+             * garden, and staff with 18 to 30 years behind them.
              */
             {
               title: 'A pathway from KG to PG',
@@ -599,9 +620,21 @@ const main = async () => {
             {
               title: 'Experienced staff',
               description:
-                'Our teachers and staff have between 15 and 25 years of experience with young children.',
+                'Our teachers and staff have between 18 and 30 years of experience with young children.',
               icon: 'staff',
-              photo: img.teacherWithChildren,
+              /*
+               * NO PHOTOGRAPH, deliberately.
+               *
+               * Every card in this list names one, but only this card's was
+               * ever in the library — the rest point at the `photos:import`
+               * set whose rows are not in the repository, so they resolve to
+               * null and run on their icon. That left one card in six wearing
+               * a picture and looking like a mistake rather than a choice.
+               *
+               * Taking it off makes the grid one thing. If those photographs
+               * are ever imported, this card should get one back at the same
+               * time as the other five, not on its own.
+               */
             },
             {
               title: 'A safe and disciplined environment',
@@ -643,6 +676,14 @@ const main = async () => {
           marker: 'tick',
           columns: '1',
           background: 'tint',
+          /*
+           * Showcase rather than the tick list this was.
+           *
+           * A prize is the one thing on this page a parent wants to SEE, and
+           * the school has a photograph of each. A tick and a line of text
+           * spent none of that.
+           */
+          layout: 'showcase',
           intro: richText([
             'Our children take part in interschool competitions and have won awards.',
           ]),
@@ -650,9 +691,18 @@ const main = async () => {
             {
               title: 'Our Lady’s Garden, Auxilium Convent',
               description: 'Four prizes.',
+              photo: img.awardAuxilium,
             },
-            { title: 'Andhra Education Society', description: 'One prize.' },
-            { title: 'Natya Tarang', description: 'One prize.' },
+            {
+              title: 'Andhra Education Society',
+              description: 'One prize.',
+              photo: img.awardAndhra,
+            },
+            {
+              title: 'Natya Tarang',
+              description: 'One prize.',
+              photo: img.awardNatyaTarang,
+            },
           ],
         },
         {
@@ -859,12 +909,12 @@ const main = async () => {
       slug: 'teachers',
       title: 'Our teachers',
       intro:
-        'Our teachers and staff have between 15 and 25 years of experience with young children.',
+        'Our teachers and staff have between 18 and 30 years of experience with young children.',
       showInNav: true,
       navLabel: 'Teachers',
       navOrder: 8,
       metaDescription:
-        'Meet the Kindergarten teaching team at SIWS — qualified early childhood educators with 15 to 25 years of experience.',
+        'Meet the Kindergarten teaching team at SIWS — qualified early childhood educators with 18 to 30 years of experience.',
       layout: [
         {
           blockType: 'faculty',

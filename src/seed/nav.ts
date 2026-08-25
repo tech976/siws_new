@@ -74,11 +74,20 @@ const PORTAL: Entry[] = [
   {
     slug: 'about',
     label: 'About SIWS',
+    /*
+     * Two entries, plus the "About SIWS overview" link the drop-down adds to
+     * its own parent.
+     *
+     * Leadership and Facilities & Campus came off at SIWS's request: both are
+     * still the placeholder page saying content is on its way, and a menu that
+     * offers four destinations and delivers two spends a parent's attention on
+     * nothing. Both pages stay published at their own addresses, so anything
+     * already linking to one still works — putting either back is a line here
+     * and a re-run of this script.
+     */
     children: [
       { slug: 'history', label: 'Our History' },
       { slug: 'vision-mission', label: 'Vision & Mission' },
-      { slug: 'leadership', label: 'Leadership', srs: '4.1' },
-      { slug: 'facilities', label: 'Facilities & Campus', srs: '5.10' },
     ],
   },
   // Top level and no drop-down: the scholarships page is written and is the
@@ -161,7 +170,10 @@ const UNIT: Entry[] = [
  * (2026-08-24). Junior College keeps it.
  */
 const UNIT_OMIT: Record<string, string[]> = {
-  kindergarten: ['annual-calendar'],
+  // Kindergarten also drops Rules & Uniform (2026-08-25), leaving Academics as
+  // its overview and Our Teachers. Primary and Secondary keep it: only the
+  // Kindergarten section asked for it off.
+  kindergarten: ['annual-calendar', 'school-rules'],
   primary: ['annual-calendar'],
   secondary: ['annual-calendar'],
 }
