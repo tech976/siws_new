@@ -132,6 +132,7 @@ const mediaByFilename = async (
   const { docs } = await payload.find({
     collection: 'media',
     where: { filename: { like: stem + "-%" } },
+    sort: 'id',
     limit: 10,
     depth: 0,
     overrideAccess: true,

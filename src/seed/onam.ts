@@ -161,6 +161,7 @@ const main = async () => {
       const found = await payload.find({
         collection: 'media',
         where: { filename: { like: `${stemOf(image.filename)}%` } },
+        sort: 'id',
         limit: 10,
         depth: 0,
         overrideAccess: true,

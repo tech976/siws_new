@@ -133,6 +133,7 @@ const main = async () => {
     const { docs } = await payload.find({
       collection: 'media',
       where: { filename: { like: `${stem}-%${ext}` } },
+      sort: 'id',
       limit: 10,
       depth: 0,
       overrideAccess: true,

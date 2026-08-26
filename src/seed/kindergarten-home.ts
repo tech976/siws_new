@@ -72,6 +72,7 @@ const run = async () => {
 
   const { docs: allMedia } = await payload.find({
     collection: 'media',
+    sort: 'id',
     limit: 600,
     depth: 0,
     overrideAccess: true,

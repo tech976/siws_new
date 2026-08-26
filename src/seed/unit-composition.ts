@@ -92,6 +92,23 @@ const run = async () => {
 
   const { docs: allMedia } = await payload.find({
     collection: 'media',
+    /*
+     * SORTED, and this is the one that mattered most.
+     *
+     * This page's banner, its About photograph and its nine gallery tiles are
+     * all taken from this list — the first atmospheric match for the banner,
+     * `.slice(0, 9)` for the gallery. Unsorted, the list came back in whatever
+     * order the database felt like, which is insertion order and therefore
+     * different on every machine. Two people running the same seed against the
+     * same photographs got different pictures on the home page, and each
+     * concluded the other had changed them.
+     *
+     * `id` is stable and shared, so the same library now composes the same page
+     * everywhere. It also means the oldest photographs are preferred, which is
+     * what a reader expects: adding a new set for one event should not silently
+     * re-cast the banner of every unit.
+     */
+    sort: 'id',
     limit: 600,
     depth: 0,
     overrideAccess: true,

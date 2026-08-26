@@ -531,6 +531,7 @@ const importPhotos = async () => {
         { 'parentalConsent.obtained': { not_equals: true } },
       ],
     },
+    sort: 'id',
     limit: 2000,
     depth: 0,
     overrideAccess: true,
