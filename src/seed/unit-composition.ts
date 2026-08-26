@@ -96,7 +96,18 @@ const run = async () => {
     depth: 0,
     overrideAccess: true,
   })
-  const usable = allMedia.filter((m) => m.withdrawn?.isWithdrawn !== true)
+  /*
+   * Withdrawn images out (FR-SW-05), and posters out too.
+   *
+   * An event invitation is artwork the school made to announce a day, not a
+   * photograph of it. It belongs on the event's own page; in the home page's
+   * gallery it sat among pictures taken at the celebration and read as a
+   * mistake. `excludeFromGallery` is the flag staff set for exactly this, and
+   * this gallery was not reading it.
+   */
+  const usable = allMedia.filter(
+    (m) => m.withdrawn?.isWithdrawn !== true && m.excludeFromGallery !== true,
+  )
 
   const unitOf = (v: unknown) =>
     typeof v === 'object' && v !== null ? String((v as { id: number }).id) : v ? String(v) : null

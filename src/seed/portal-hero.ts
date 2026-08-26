@@ -1,4 +1,5 @@
 import { loadEnv } from '@/utilities/load-env'
+import { findMediaId } from '@/utilities/media-lookup'
 
 loadEnv()
 
@@ -33,15 +34,11 @@ const IMAGE_FILENAME = 'kg-classroom-activity.jpg'
 const run = async () => {
   const payload = await getPayload({ config })
 
-  const { docs: media } = await payload.find({
-    collection: 'media',
-    where: { filename: { equals: IMAGE_FILENAME } },
-    limit: 1,
-    overrideAccess: true,
-  })
+  // Suffix-tolerant: `media/` is committed, so the stored row is very often
+  // `kg-classroom-activity-1.jpg` rather than the name written above.
+  const imageId = await findMediaId(payload, IMAGE_FILENAME)
 
-  const image = media[0]
-  if (!image) {
+  if (imageId === null) {
     payload.logger.error(`${IMAGE_FILENAME} is not in the media library. Run: npm run seed:media`)
     process.exit(1)
   }
@@ -62,7 +59,7 @@ const run = async () => {
   }
 
   const layout = (page.layout ?? []).map((block) =>
-    block.blockType === 'hero' ? { ...block, image: image.id, highlights: HIGHLIGHTS } : block,
+    block.blockType === 'hero' ? { ...block, image: imageId, highlights: HIGHLIGHTS } : block,
   )
 
   if (!layout.some((block) => block.blockType === 'hero')) {

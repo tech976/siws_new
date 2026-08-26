@@ -1,4 +1,5 @@
 import { loadEnv } from '@/utilities/load-env'
+import { findMediaId } from '@/utilities/media-lookup'
 
 loadEnv()
 
@@ -50,15 +51,14 @@ const run = async () => {
   if (!fs.existsSync(source)) throw new Error(`No file at ${source}`)
 
   /* ------------------------------------------------------------- the upload */
-  const { docs: found } = await payload.find({
-    collection: 'media',
-    where: { filename: { equals: FILENAME } },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  })
-
-  let mediaId = found[0]?.id
+  /*
+   * Suffix-tolerant, because it has to be. This matched on the exact name, and
+   * `media/` is committed — so the name was already taken on disk, the upload
+   * landed as `portal-vision-background-1.jpg`, and the next run failed to
+   * recognise it and uploaded it again as `-2`. Every run added a copy and
+   * re-pointed the Vision band at the newest one.
+   */
+  let mediaId: number | null = await findMediaId(payload, FILENAME)
 
   if (mediaId) {
     /*

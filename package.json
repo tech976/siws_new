@@ -8,6 +8,7 @@
     "node": ">=20.9.0"
   },
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks || exit 0",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev -p 3001",
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start -p 3001",
@@ -50,6 +51,8 @@
     "seed:galleries": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/galleries.ts",
     "seed:portal-hero": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/portal-hero.ts",
     "photos:consent": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/record-photo-consent.ts",
+    "media:dedupe": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/dedupe-media.ts",
+    "seed:refresh": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-refresh.ts",
     "seed:onam": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/onam.ts",
     "seed:vision-bg": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/vision-background.ts"
   },

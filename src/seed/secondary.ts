@@ -1,4 +1,5 @@
 import { loadEnv } from '@/utilities/load-env'
+import { findMediaId } from '@/utilities/media-lookup'
 
 loadEnv()
 
@@ -321,26 +322,32 @@ const main = async () => {
   /**
    * Photographs, by the filename the importer gave them.
    *
+   * THE PREFIX IS `secondary-section-`, not `secondary-`.
+   *
+   * These three read `secondary-...` and no such rows exist: `photos:import`
+   * names a photograph after the folder it came from, and that folder is
+   * "Secondary Section". Every lookup returned null, the three "Image with
+   * text" blocks that require an image failed validation, and `seed:secondary`
+   * could not complete at all — on any machine. It surfaced as a wall of field
+   * errors about a required image rather than as a missing photograph.
+   *
    * Every one is from SIWS's own Secondary folder — no picture from another
    * section appears on this site, because a Standard V parent looking at a
    * kindergarten classroom has been told something untrue about the school
    * their child would attend.
    */
   const photo = async (filename: string) => {
-    const { docs } = await payload.find({
-      collection: 'media',
-      where: { filename: { equals: filename } },
-      limit: 1,
-      depth: 0,
-      overrideAccess: true,
-    })
-    if (!docs[0]) payload.logger.warn(`Photograph missing from the library: ${filename}`)
-    return docs[0]?.id ?? null
+    // Suffix-tolerant — see `@/utilities/media-lookup`. An exact match missed
+    // every photograph Payload had renamed on upload, and the page then
+    // rendered without it.
+    const id = await findMediaId(payload, filename)
+    if (id === null) payload.logger.warn(`Photograph missing from the library: ${filename}`)
+    return id
   }
 
-  const classroomAtWork = await photo('secondary-campus-facility-2-3.jpg')
-  const classroomActivity = await photo('secondary-extra-co-curricular-activities-11.jpg')
-  const recognition = await photo('secondary-award-recongnition-recongnition.jpg')
+  const classroomAtWork = await photo('secondary-section-campus-facility-2-3.jpg')
+  const classroomActivity = await photo('secondary-section-extra-co-curricular-activities-11.jpg')
+  const recognition = await photo('secondary-section-award-recongnition-recongnition.jpg')
 
   // --------------------------------------------------------------- CONTACT
   /** Seeded before `home`, which links to it — see the note in primary.ts. */
