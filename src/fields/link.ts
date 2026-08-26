@@ -71,12 +71,46 @@ export const linkField = ({
       type: 'relationship',
       relationTo,
       required: true,
-      maxDepth: 1,
+      /*
+       * TWO, not one.
+       *
+       * `pageHref` builds a unit page's address as `/{unit.slug}/{page.slug}`,
+       * so it needs the target page's `unit` populated, not just the page. At
+       * maxDepth 1 the page came back with `unit` as a bare ID, `pageHref`
+       * correctly refused to guess the path and returned null, and the caller
+       * rendered the link as inert text — a card pointing at a unit page was
+       * silently unclickable. Institution-wide pages were unaffected (their
+       * `unit` is null, which resolves to `/{slug}`), which is why this went
+       * unnoticed.
+       */
+      maxDepth: 2,
       label: 'Page',
       admin: {
         condition: isInternal,
         description:
           'If that page is later removed, this link hides itself instead of breaking.',
+      },
+    },
+    {
+      /**
+       * An optional section to land on within the linked page.
+       *
+       * A gallery page can hold a dozen groups — "Sports", "Annual Day", "Onam
+       * Event" — and linking to the page alone drops a visitor at the top of
+       * all of them. Every gallery section renders an `id` slugified from its
+       * heading, so naming that heading here lands the visitor on it.
+       *
+       * Deliberately not an external-style URL: the target is still a real
+       * relationship, so FR-QL-06 keeps working — unpublish the page and the
+       * link still hides itself rather than 404ing with a fragment attached.
+       */
+      name: 'anchor',
+      type: 'text',
+      label: 'Section on that page (optional)',
+      admin: {
+        condition: isInternal,
+        description:
+          'Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.',
       },
     },
     {

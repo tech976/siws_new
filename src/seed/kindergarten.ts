@@ -595,8 +595,8 @@ const main = async () => {
             /**
              * Rewritten against SIWS's own answers. The list previously offered
              * general claims from the landing page; these are the specifics the
-             * school actually gave — a KG-to-PG pathway, Educom, the ground and
-             * garden, and staff with 18 to 30 years behind them.
+             * school actually gave — a KG-to-PG pathway, the digital board, the
+             * ground and garden, and staff with 18 to 30 years behind them.
              */
             {
               title: 'A pathway from KG to PG',
@@ -613,7 +613,7 @@ const main = async () => {
                * child will not be taught in. The card runs on its icon until
                * the school sends one.
                */
-              title: 'Digital board and Educom facility',
+              title: 'Digital board facility',
               description: 'Technology-supported teaching in the early years classroom.',
               icon: 'computers',
             },

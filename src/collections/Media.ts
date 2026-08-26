@@ -316,6 +316,31 @@ export const Media: CollectionConfig = {
       index: true,
     },
     {
+      /**
+       * Not every image in the library is a photograph of the school.
+       *
+       * An event poster, an invitation or a designed banner is something the
+       * school made to announce an occasion — it belongs on the event's own
+       * page, not in a grid of pictures taken at it. The gallery is built from
+       * whatever the library holds for a section, so without a way to say "this
+       * one is artwork, not a photograph" a poster ends up sitting among the
+       * photographs of the event it advertised.
+       *
+       * It only removes the image from gallery pages. Anything that names the
+       * image directly — an event card, a hero, a page banner — is unaffected.
+       */
+      name: 'excludeFromGallery',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Keep out of the gallery',
+      admin: {
+        position: 'sidebar',
+        description:
+          'Tick for posters, invitations and designed banners — images that announce an event rather than show it. They still work anywhere a page points at them by name.',
+      },
+      index: true,
+    },
+    {
       name: 'depictsChildren',
       type: 'checkbox',
       defaultValue: false,

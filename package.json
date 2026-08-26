@@ -50,6 +50,7 @@
     "seed:galleries": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/galleries.ts",
     "seed:portal-hero": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/portal-hero.ts",
     "photos:consent": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/record-photo-consent.ts",
+    "seed:onam": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/onam.ts",
     "seed:vision-bg": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/vision-background.ts"
   },
   "dependencies": {

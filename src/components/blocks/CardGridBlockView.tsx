@@ -17,9 +17,21 @@ const SIZES: Record<string, string> = {
   '4': '(min-width: 1024px) 23vw, (min-width: 640px) 45vw, 100vw',
 }
 
+/*
+ * A photograph fills its window and is cropped to it; a poster is fitted whole
+ * inside one. `object-contain` leaves bars where the image does not fill the
+ * frame, so the poster frame paints a tinted ground behind it rather than
+ * leaving the card's white showing through as a mismatched border.
+ */
+const FRAME_CLASS: Record<string, string> = {
+  photo: 'aspect-4/3 w-full object-cover',
+  poster: 'aspect-4/3 w-full object-contain bg-brand-tint',
+}
+
 export const CardGridBlockView = ({ block }: { block: CardGridBlock }) => {
   const columns = block.columns ?? '3'
   const cards = block.cards ?? []
+  const frame = FRAME_CLASS[block.imageFrame ?? 'photo'] ?? FRAME_CLASS.photo
 
   if (cards.length === 0) return null
 
@@ -52,7 +64,7 @@ export const CardGridBlockView = ({ block }: { block: CardGridBlock }) => {
                 <Media
                   resource={card.image}
                   sizes={SIZES[columns] ?? SIZES['3']}
-                  className="aspect-4/3 w-full object-cover"
+                  className={frame}
                 />
               ) : null}
 

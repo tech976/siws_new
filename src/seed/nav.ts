@@ -127,7 +127,17 @@ const UNIT: Entry[] = [
     label: 'Updates',
     srs: '5.2',
     children: [
-      { slug: 'news', label: 'News & Events', srs: '5.2' },
+      /*
+       * News and Events are two tabs, not one.
+       *
+       * This was a single "News & Events" entry. A parent looking for what
+       * happened at the school last month does not think of it as news, and an
+       * events listing buried inside a page labelled News is a page nobody
+       * opens — which is exactly what happened. The News entry keeps the `news`
+       * slug so no existing address breaks; only its label narrows.
+       */
+      { slug: 'news', label: 'News', srs: '5.2' },
+      { slug: 'events', label: 'Events', srs: '5.2' },
       { slug: 'achievements', label: 'Achievements', srs: '5.6' },
       { slug: 'download-centre', label: 'Download Centre', srs: '5.21' },
     ],
@@ -265,13 +275,13 @@ const run = async () => {
     for (const top of tree) {
       const topId = await ensure(top)
       order += 10
-      await setNav(topId, order, null)
+      await setNav(topId, order, null, top.label)
       placed += 1
 
       for (const child of top.children ?? []) {
         const childId = await ensure(child)
         order += 1
-        await setNav(childId, order, topId)
+        await setNav(childId, order, topId, child.label)
         placed += 1
       }
     }
@@ -348,10 +358,29 @@ const run = async () => {
     }
   ).pool
 
-  const setNav = (id: number | string, order: number, parent: number | string | null) =>
+  /*
+   * `nav_label` is written too, not just the position.
+   *
+   * It was left alone at first, on the reasoning that the menu owns where an
+   * item sits and the page owns what it is called. That fell over the moment an
+   * entry was renamed here: the template said "News", the page still carried
+   * the title it was created with, and the menu went on printing "News &
+   * Events" beside a new "Events" tab. The label is part of the menu's shape,
+   * so the template is the one place that decides it.
+   *
+   * This does overwrite a label edited by hand in the admin panel, exactly as
+   * `nav_order` and `nav_parent_id` already do. The page's own `title` is not
+   * touched — only the words the menu prints.
+   */
+  const setNav = (
+    id: number | string,
+    order: number,
+    parent: number | string | null,
+    label: string,
+  ) =>
     pool.query(
-      'UPDATE pages SET show_in_nav = TRUE, nav_order = $1, nav_parent_id = $2 WHERE id = $3',
-      [order, parent, id],
+      'UPDATE pages SET show_in_nav = TRUE, nav_order = $1, nav_parent_id = $2, nav_label = $3 WHERE id = $4',
+      [order, parent, label, id],
     )
 
   /*

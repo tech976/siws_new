@@ -30,9 +30,24 @@ export interface CMSLinkValue {
   type?: ('internal' | 'external') | null
   reference?: CMSLinkReference
   url?: string | null
+  anchor?: string | null
   newTab?: boolean | null
   appearance?: ('primary' | 'secondary' | 'plain') | null
 }
+
+/**
+ * Slugified the same way `GalleryBlockView` builds its section `id`, so an
+ * editor can type the heading as they see it — "Onam Event" — and still hit
+ * `#onam-event`. A value that is already a slug passes through unchanged.
+ */
+const toAnchor = (value: string): string =>
+  value
+    .trim()
+    .replace(/^#/, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
 
 const unwrapReference = (
   reference: CMSLinkReference | undefined,
@@ -77,9 +92,18 @@ export const resolveCMSHref = (link: CMSLinkValue | null | undefined): string | 
   }
 
   const { kind, value } = unwrapReference(link.reference)
-  return kind === 'media'
-    ? mediaHref(value as Media | number | null)
-    : pageHref(value as Page | number | null)
+  const href =
+    kind === 'media'
+      ? mediaHref(value as Media | number | null)
+      : pageHref(value as Page | number | null)
+
+  // The fragment is appended only to a href that actually resolved, so an
+  // unpublished target still returns null and renders inert (FR-QL-06) rather
+  // than becoming a bare "#onam-event" that scrolls the current page.
+  if (!href || kind === 'media' || !link.anchor) return href
+
+  const fragment = toAnchor(link.anchor)
+  return fragment ? `${href}#${fragment}` : href
 }
 
 export const CMSLink = ({

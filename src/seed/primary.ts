@@ -7,7 +7,7 @@ const { default: config } = await import('@payload-config')
 const { richText } = await import('./lexical')
 
 /**
- * Seeds the Primary section (Wadala campus) from the information requirement
+ * Seeds the Primary section — one school, no campus split — from the information requirement
  * document SIWS returned.
  *
  * Everything published here is SIWS's own wording. Where the document left a
@@ -216,29 +216,16 @@ const MATUNGA_RULES: string[] = [
   'Follow the Library Rules.',
 ]
 
-/**
- * Matunga's subject list, as written. It differs from Wadala's only in wording
- * — "Environmental Studies Part 1 and 2" where Wadala wrote "EVS", and
- * "Physical Training" where Wadala wrote "Physical Education" — so the two are
- * kept distinct rather than silently harmonised.
- */
-const MATUNGA_SUBJECTS = [
-  { title: 'English' },
-  { title: 'Mathematics' },
-  { title: 'Marathi' },
-  { title: 'Environmental Studies', description: 'Part 1 and Part 2.' },
-  { title: 'Art' },
-  { title: 'Work Experience' },
-  { title: 'Physical Training' },
-]
 
-const MATUNGA_BENEFITS = [
-  { title: 'Strong academic foundation' },
-  { title: 'Value-based education' },
-  { title: 'Co-curricular activities' },
-  { title: 'Sports' },
-  { title: 'Holistic development' },
-]
+/*
+ * MATUNGA_SUBJECTS and MATUNGA_BENEFITS lived here.
+ *
+ * They existed only to fill the Matunga campus page, which is gone now that
+ * the Primary Section is one school. Their content was a differently-worded
+ * copy of SUBJECTS and PROGRAMME_BENEFITS above ("Environmental Studies Part 1
+ * and 2" for "EVS", "Physical Training" for "Physical Education"), so nothing
+ * the school actually teaches is lost by dropping them.
+ */
 
 /** Head teacher first; the rest in the order SIWS listed them. */
 const FACULTY = [
@@ -284,6 +271,44 @@ const GENERAL_RULES: string[] = [
   'Railway concession forms and other certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — will be issued between 1.00 p.m. and 2.30 p.m. only.',
 ]
 
+/**
+ * THE MERGED HOUSE RULES.
+ *
+ * These were published as two numbered lists — one per campus — precisely
+ * because they are not the same document. The second list sets an 80%
+ * attendance requirement and an English-only rule the first does not contain,
+ * and the first covers infectious illness, identity cards and railway
+ * concession hours the second does not.
+ *
+ * The section is one school now, so it gets one list, and the union is the only
+ * safe way to build it: dropping either document's rules would quietly release
+ * families from something the school still asks of them. That does mean every
+ * family is now shown every rule, including ones that previously applied to
+ * only half the school — SIWS should read this list once and strike anything
+ * the merged school no longer enforces.
+ *
+ * Deduplicated on a normalised form so "Wear proper school uniform." and
+ * "Wear proper school uniform" do not both appear.
+ */
+const normalise = (rule: string) =>
+  rule
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+const MERGED_RULES: string[] = (() => {
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const rule of [...GENERAL_RULES, ...MATUNGA_RULES]) {
+    const key = normalise(rule)
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(rule)
+  }
+  return out
+})()
+
 const main = async () => {
   const payload = await getPayload({ config })
 
@@ -325,13 +350,20 @@ const main = async () => {
     id: primary.id,
     overrideAccess: true,
     data: {
-      // Not "…, Wadala" any more: the unit now covers both campuses, and the
-      // main portal prints this name in its school list.
+      /*
+       * ONE SCHOOL, NOT TWO CAMPUSES.
+       *
+       * The Primary Section used to be published as a Wadala campus and a
+       * Matunga campus with separate pages, separate rosters and separate rule
+       * lists. SIWS has since merged them, so nothing here names a location:
+       * it is one Primary School with one teaching team, and a parent reading
+       * this should not have to work out which half of it applies to them.
+       */
       name: 'SIWS Primary School',
       shortName: 'Primary School',
-      tagline: 'Maharashtra State Board | Grades 1 to 4 | Wadala & Matunga',
+      tagline: 'Maharashtra State Board | Grades 1 to 4',
       description:
-        'Grades 1 to 4 following the Maharashtra State Board curriculum, aligned with NEP 2020, at our Wadala and Matunga campuses — nurturing confident, responsible and joyful learners.',
+        'Grades 1 to 4 following the Maharashtra State Board curriculum, aligned with NEP 2020 — nurturing confident, responsible and joyful learners.',
     } as never,
   })
 
@@ -340,49 +372,48 @@ const main = async () => {
   let facultyUpdated = 0
 
   /**
-   * BACKFILL, and it must run before the upsert loop.
+   * UNTAG, and it must run before the upsert loop.
    *
-   * The 13 Wadala teachers were seeded before the campus field existed, so they
-   * carry no campus. The loop below matches on name + unit + campus, which
-   * would miss every one of them and create a second, duplicate roster. They
-   * were all Wadala — that is the only campus this seed had ever covered — so
-   * they are stamped as such first.
+   * Every Primary teacher already in the database carries `campus: wadala` or
+   * `campus: matunga` from when the section was published as two schools. The
+   * Teachers page is now a single list with no campus filter, so the tag has
+   * nothing left to select on — and leaving it set would keep the old split
+   * alive anywhere a block or report still groups by it. Clearing it is what
+   * actually merges the two rosters, rather than merely hiding the seam.
    */
-  const { docs: untagged } = await payload.find({
+  const { docs: tagged } = await payload.find({
     collection: 'faculty',
-    where: { and: [{ unit: { equals: primary.id } }, { campus: { exists: false } }] },
+    where: { and: [{ unit: { equals: primary.id } }, { campus: { exists: true } }] },
     limit: 200,
     depth: 0,
     overrideAccess: true,
   })
 
-  for (const teacher of untagged) {
+  for (const teacher of tagged) {
     await payload.update({
       collection: 'faculty',
       id: teacher.id,
-      data: { campus: 'wadala' } as never,
+      data: { campus: null } as never,
       overrideAccess: true,
     })
   }
 
-  if (untagged.length > 0) {
-    payload.logger.info(`Tagged ${untagged.length} existing teachers as the Wadala campus.`)
+  if (tagged.length > 0) {
+    payload.logger.info(`Untagged ${tagged.length} teachers — the Primary roster is now one list.`)
   }
 
   /**
-   * Both rosters, each tagged with its campus. `order` restarts per campus so
-   * each campus's head teacher sits at 1 — the Faculty block filters by campus,
-   * and a shared sequence would put Matunga's head teacher tenth in her own
-   * list.
+   * ONE ROSTER.
+   *
+   * Both teaching teams in a single sequence, so `order` runs 1..n across the
+   * whole school rather than restarting per campus. The head teacher of the
+   * merged school sits at 1; the second team follows in its own order behind
+   * the first. No entry carries a campus.
    */
-  const roster = [
-    ...FACULTY.map((teacher, index) => ({ ...teacher, campus: 'wadala', order: index + 1 })),
-    ...MATUNGA_FACULTY.map((teacher, index) => ({
-      ...teacher,
-      campus: 'matunga',
-      order: index + 1,
-    })),
-  ]
+  const roster = [...FACULTY, ...MATUNGA_FACULTY].map((teacher, index) => ({
+    ...teacher,
+    order: index + 1,
+  }))
 
   for (const teacher of roster) {
     const existing = await payload.find({
@@ -391,10 +422,9 @@ const main = async () => {
         and: [
           { name: { equals: teacher.name } },
           { unit: { equals: primary.id } },
-          // Campus is part of the identity: two campuses may one day employ
-          // people of the same name, and matching on name alone would have one
-          // seed overwrite the other's teacher.
-          { campus: { equals: teacher.campus } },
+          // Name and unit are the whole identity now. If the same person was
+          // on both rosters, the two rows collapse into one — which is the
+          // right answer for a school that no longer has two of anything.
         ],
       },
       limit: 1,
@@ -458,331 +488,6 @@ const main = async () => {
     return doc.id
   }
 
-  // --------------------------------------------------------- CAMPUS PAGES
-  /**
-   * Seeded before the home page, because the campus cards there link to these
-   * by relationship and the IDs have to exist first.
-   */
-  const wadalaPageId = await upsert({
-    slug: 'wadala',
-    title: 'Wadala campus',
-    intro:
-      'The Primary Section at Wadala — Grades 1 to 4, on the same campus as the K.G. Section and the Secondary School.',
-    showInNav: true,
-    navLabel: 'Wadala',
-    navOrder: 11,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'SIWS Primary School, Wadala — Grades 1 to 4 on the Maharashtra State Board curriculum, with smart classrooms, experienced teachers and a CCTV-monitored campus.',
-    layout: [
-      {
-        blockType: 'hero',
-        title: 'SIWS Primary School, Wadala',
-        accentWord: 'Wadala',
-        eyebrow: 'Maharashtra State Board | Grades 1 to 4',
-        intro:
-          'A caring, inclusive and stimulating school where the focus extends beyond academic excellence to developing confident, responsible and compassionate individuals.',
-      },
-      {
-        blockType: 'statistics',
-        heading: 'A legacy parents trust',
-        background: 'sea',
-        stats: [
-          { value: '1934', label: 'Serving Mumbai since' },
-          { value: '90+', label: 'Years of educational service' },
-          { value: 'A Grade', label: 'Department of Education' },
-          { value: '20+', label: 'Years average teaching experience' },
-        ],
-      },
-      {
-        blockType: 'richText',
-        heading: 'On one campus, from K.G. to Standard X',
-        accentWord: 'K.G. to Standard X',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'The Wadala campus is the full SIWS school — a K.G. Section, Primary School and Secondary School on one site, so a child can move from Kindergarten to Standard X without ever changing schools.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Subjects',
-        accentWord: 'Subjects',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'sea',
-        items: SUBJECTS,
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Grade by grade',
-        accentWord: 'Grade by grade',
-        headingLevel: 'h2',
-        marker: 'number',
-        columns: '1',
-        background: 'white',
-        intro: richText([
-          'Our Primary Section follows the Maharashtra State Board curriculum (SCERT Maharashtra / Balbharati), aligned with the National Education Policy 2020 and its competency-based approach (PARAKH).',
-        ]),
-        items: GRADE_CURRICULUM,
-      },
-      {
-        blockType: 'featureList',
-        heading: 'How we teach',
-        accentWord: 'teach',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'sea',
-        intro: richText([
-          'Every child learns differently. Our classrooms are interactive, inclusive and learner-centred, with teachers acting as facilitators who encourage children to think, explore and discover.',
-        ]),
-        items: TEACHING_PRACTICES,
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Beyond academics',
-        accentWord: 'Beyond academics',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'white',
-        items: HOLISTIC,
-      },
-      {
-        blockType: 'featureList',
-        heading: 'What the Wadala programme offers',
-        accentWord: 'Wadala programme',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'sea',
-        items: PROGRAMME_BENEFITS,
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Why parents choose SIWS Wadala',
-        accentWord: 'SIWS Wadala',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'white',
-        items: USPS,
-      },
-      {
-        blockType: 'faculty',
-        heading: 'Teachers at Wadala',
-        accentWord: 'Wadala',
-        headingLevel: 'h2',
-        campus: 'wadala',
-        showQualifications: true,
-        background: 'sea',
-        intro: richText([
-          'Our teachers are well trained, with over 20 years of teaching experience.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Competitions and prizes',
-        accentWord: 'Competitions',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'white',
-        items: COMPETITIONS,
-      },
-      {
-        blockType: 'richText',
-        heading: 'Safe, secure and disciplined',
-        accentWord: 'Safe',
-        headingLevel: 'h2',
-        width: 'narrow',
-        background: 'sea',
-        content: richText([
-          'The entire campus — classrooms, corridors, entrances and common areas — is monitored by CCTV. Well-defined safety protocols, disciplined practices and vigilant supervision give parents confidence that their children are learning in a safe, caring and protected atmosphere.',
-        ]),
-      },
-    ],
-  })
-
-  const matungaPageId = await upsert({
-    slug: 'matunga',
-    title: 'Matunga campus',
-    intro:
-      'The Primary Section at Matunga — Grades 1 to 4, opened within two years of the school’s founding.',
-    showInNav: true,
-    navLabel: 'Matunga',
-    navOrder: 12,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'SIWS Primary School, Matunga — Grades 1 to 4 on the Maharashtra State Board curriculum, with a nine-strong teaching team and a safe, disciplined campus.',
-    layout: [
-      {
-        blockType: 'hero',
-        title: 'SIWS Primary School, Matunga',
-        accentWord: 'Matunga',
-        eyebrow: 'Maharashtra State Board | Standards I to IV',
-        intro:
-          'A journey of learning, growing and achieving — building tomorrow’s achievers through personalised learning, innovative teaching, strong values and a nurturing environment from the very first step.',
-      },
-      {
-        blockType: 'statistics',
-        heading: 'A legacy parents trust',
-        background: 'sea',
-        stats: [
-          { value: '1934', label: 'SIWS founded' },
-          { value: '1936', label: 'Matunga Primary opened' },
-          { value: 'A Grade', label: 'Department of Education' },
-          { value: 'State Board', label: 'Maharashtra' },
-        ],
-      },
-      {
-        blockType: 'richText',
-        heading: 'SIWS Primary School, Matunga',
-        accentWord: 'Matunga',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'A journey of learning, growing and achieving. The school provides a seamless educational pathway from Standard I to Standard IV, with a strong focus on knowledge, values, creativity and confidence.',
-          'Building tomorrow’s achievers through personalised learning, innovative teaching, strong values, and a nurturing environment from the very first step.',
-        ]),
-      },
-      {
-        blockType: 'richText',
-        heading: 'How Matunga began',
-        accentWord: 'Matunga',
-        headingLevel: 'h2',
-        width: 'narrow',
-        background: 'sea',
-        content: richText([
-          'SIWS School made a humble beginning in the year 1934 with just 4 students at Shivaji Park. Within the next two years the Primary Section was opened at Matunga, and in order to cope with the heavy demand for admission the Wadala School was opened.',
-          'Years of dedication, learning and success have shaped our journey of nurturing confident and compassionate young minds.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Subjects taught at Matunga',
-        accentWord: 'Subjects',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'white',
-        items: MATUNGA_SUBJECTS,
-      },
-      {
-        blockType: 'featureList',
-        heading: 'What the Matunga programme offers',
-        accentWord: 'Matunga programme',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'tint',
-        items: MATUNGA_BENEFITS,
-      },
-      {
-        blockType: 'richText',
-        heading: 'Our curriculum',
-        headingLevel: 'h2',
-        width: 'narrow',
-        background: 'white',
-        content: richText([
-          'Our primary curriculum nurtures curiosity through activity-based, experiential learning that strengthens literacy, numeracy, creativity, critical thinking and life skills in a joyful classroom environment.',
-          'Where learning extends beyond books — empowering young minds through creativity, expression, exploration and meaningful experiences every day, through festival and event celebrations.',
-        ]),
-      },
-      {
-        blockType: 'faculty',
-        heading: 'Teachers at Matunga',
-        accentWord: 'Matunga',
-        headingLevel: 'h2',
-        campus: 'matunga',
-        showQualifications: true,
-        background: 'sea',
-        intro: richText([
-          'With knowledge and passion, our teachers create a classroom where every child feels encouraged to explore and succeed.',
-        ]),
-      },
-      {
-        blockType: 'richText',
-        heading: 'Admission to Matunga',
-        accentWord: 'Admission',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'Our admission process is simple, transparent and parent-friendly. Eligible students can apply by submitting the required documents, completing the admission formalities and interacting with the school as per the prescribed guidelines.',
-          'Every pupil seeking admission for the first time must produce their Birth Certificate, Aadhaar card and Ration card issued by a competent authority.',
-        ]),
-      },
-      {
-        blockType: 'richText',
-        heading: 'The academic year',
-        headingLevel: 'h2',
-        width: 'narrow',
-        background: 'sea',
-        content: richText([
-          'An enriching year-round learning experience, with a balanced schedule that encourages academic excellence and holistic growth.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'School rules — Matunga',
-        accentWord: 'Matunga',
-        headingLevel: 'h2',
-        marker: 'number',
-        columns: '1',
-        background: 'white',
-        items: MATUNGA_RULES.map((title) => ({ title })),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'What sets Matunga apart',
-        accentWord: 'Matunga',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'sea',
-        items: [
-          {
-            title: 'A Grade recognition',
-            description:
-              'Granted A Grade status by the Department of Education following improvements in infrastructure, teaching and other parameters. Recognised by the Maharashtra State Board.',
-          },
-          {
-            title: 'Experienced faculty',
-            description:
-              'With knowledge and passion, our teachers create a classroom where every child feels encouraged to explore and succeed.',
-          },
-          {
-            title: 'Modern facilities',
-            description: 'Smart classrooms and well-equipped labs.',
-          },
-          {
-            title: 'Personalised learning',
-            description:
-              'Building tomorrow’s achievers through personalised learning, innovative teaching and strong values.',
-          },
-        ],
-      },
-      {
-        blockType: 'richText',
-        heading: 'A safe and disciplined campus',
-        accentWord: 'safe',
-        headingLevel: 'h2',
-        width: 'narrow',
-        background: 'white',
-        content: richText([
-          'A secure and caring environment where children learn with confidence, respect, responsibility and positive values.',
-        ]),
-      },
-    ],
-  })
-
   // --------------------------------------------------------------- CONTACT
   /**
    * The enquiry form lives here now, not on the home page.
@@ -793,19 +498,19 @@ const main = async () => {
   const contactPageId = await upsert({
     slug: 'contact',
     title: 'Contact us',
-    intro: 'Ask us about admission to Grades 1 to 4 at Wadala or Matunga.',
+    intro: 'Ask us about admission to Grades 1 to 4.',
     showInNav: true,
     navLabel: 'Contact',
     navOrder: 50,
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'Contact SIWS Primary School — enquire about admission to Grades 1 to 4 at our Wadala and Matunga campuses.',
+      'Contact SIWS Primary School — enquire about admission to Grades 1 to 4.',
     layout: [
       {
         blockType: 'heroEnquiry',
         title: 'Enquire about admission',
-        subtitle: 'Maharashtra State Board | Grades 1 to 4 | Wadala & Matunga',
+        subtitle: 'Maharashtra State Board | Grades 1 to 4',
         benefitsIntro: 'At SIWS, your child benefits from:',
         benefits: [
           { text: 'A strong academic foundation on the Maharashtra State Board curriculum' },
@@ -821,9 +526,12 @@ const main = async () => {
           title: 'Enquire about admission',
           subtitle: 'Tell us about your child and we will get in touch.',
           classOptions: CLASS_OPTIONS.map((label) => ({ label })),
-          // Both campuses, so the parent chooses and the enquiry reaches the
-          // right head teacher.
-          campusOptions: [{ campus: 'wadala' }, { campus: 'matunga' }],
+          /*
+           * No campus choice. The form used to ask which campus so the enquiry
+           * could reach the right head teacher; there is one Primary School and
+           * one head teacher now, so the question has no answer to offer and is
+           * left off entirely rather than shown with a single option.
+           */
           trustPoints: [
             { text: 'Over 90 years of educational service since 1934' },
             { text: 'A Grade school' },
@@ -860,7 +568,7 @@ const main = async () => {
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'SIWS Primary School — Grades 1 to 4 on the Maharashtra State Board curriculum at two campuses, Wadala and Matunga. Smart classrooms, experienced teachers and safe, CCTV-monitored campuses.',
+      'SIWS Primary School — Grades 1 to 4 on the Maharashtra State Board curriculum. Smart classrooms, experienced teachers and a safe, CCTV-monitored campus.',
     layout: [
       /**
        * The enquiry form moved to the contact page. This hero carries the same
@@ -872,10 +580,10 @@ const main = async () => {
         blockType: 'hero',
         title: 'SIWS Primary School',
         accentWord: 'Primary',
-        eyebrow: 'Maharashtra State Board | Grades 1 to 4 | Wadala & Matunga',
+        eyebrow: 'Maharashtra State Board | Grades 1 to 4',
         // Plain string: the hero's `intro` is a textarea, not rich text.
         intro:
-          'A caring, inclusive and stimulating school for Grades 1 to 4 — with smart classrooms, teachers of 20+ years’ experience, and safe, CCTV-monitored campuses at Wadala and Matunga.',
+          'A caring, inclusive and stimulating school for Grades 1 to 4 — with smart classrooms, teachers of 20+ years’ experience, and a safe, CCTV-monitored campus.',
         links: [
           {
             link: {
@@ -887,53 +595,12 @@ const main = async () => {
           },
         ],
       },
-      {
-        blockType: 'cardGrid',
-        heading: 'Our two campuses',
-        accentWord: 'two campuses',
-        headingLevel: 'h2',
-        background: 'white',
-        intro: richText([
-          'The Primary Section runs at Wadala and at Matunga. Both follow the same board and the same curriculum for Grades 1 to 4, and each has its own head teacher and teaching team.',
-        ]),
-        columns: '2',
-        cards: [
-          {
-            /**
-             * No teacher count. A raw headcount invites a parent to read one
-             * campus as better resourced than the other, when the two have
-             * different intakes — and it would go stale the moment somebody
-             * joins or leaves. The rosters themselves are on the teachers page.
-             */
-            title: 'Wadala campus',
-            description:
-              'Part of the full SIWS campus at Wadala, alongside the K.G. Section and the Secondary School.',
-            cta: [
-              {
-                link: {
-                  label: 'About the Wadala campus',
-                  type: 'internal',
-                  reference: { relationTo: 'pages', value: wadalaPageId },
-                },
-              },
-            ],
-          },
-          {
-            title: 'Matunga campus',
-            description:
-              'The Primary Section opened at Matunga within two years of the school’s founding in 1934.',
-            cta: [
-              {
-                link: {
-                  label: 'About the Matunga campus',
-                  type: 'internal',
-                  reference: { relationTo: 'pages', value: matungaPageId },
-                },
-              },
-            ],
-          },
-        ],
-      },
+      /*
+       * The "Our two campuses" card pair used to sit here, sending parents off
+       * to a Wadala page and a Matunga page. Both are gone: there is one
+       * Primary School, so there is nothing to choose between and no second
+       * page to link to.
+       */
       {
         blockType: 'richText',
         heading: 'A caring, inclusive and stimulating school',
@@ -1118,35 +785,27 @@ const main = async () => {
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'Meet the teaching teams at SIWS Primary School — experienced, qualified staff at both the Wadala and Matunga campuses.',
+      'Meet the teaching team at SIWS Primary School — experienced, qualified staff for Grades 1 to 4.',
     layout: [
       /**
-       * Two blocks, one per campus, rather than a single list of 22 names. A
-       * parent reading this page has already chosen a location; an unlabelled
-       * merged roster would leave them unable to tell who teaches their child.
+       * ONE LIST.
+       *
+       * This was two faculty blocks, one per campus, on the reasoning that a
+       * parent had already chosen a location and needed to know which half of
+       * the roster taught their child. That reasoning is spent: the section is
+       * one school now, so a split list would ask a parent to pick between two
+       * things that no longer exist. No `campus` key, so the block takes the
+       * whole Primary roster in `order`.
        */
       {
         blockType: 'faculty',
-        heading: 'Teachers at Wadala',
-        accentWord: 'Wadala',
+        heading: 'Our teachers',
+        accentWord: 'teachers',
         headingLevel: 'h2',
-        campus: 'wadala',
         showQualifications: true,
         background: 'white',
         intro: richText([
-          'Our teachers are well trained, with over 20 years of teaching experience.',
-        ]),
-      },
-      {
-        blockType: 'faculty',
-        heading: 'Teachers at Matunga',
-        accentWord: 'Matunga',
-        headingLevel: 'h2',
-        campus: 'matunga',
-        showQualifications: true,
-        background: 'sea',
-        intro: richText([
-          'With knowledge and passion, our teachers create a classroom where every child feels encouraged to explore and succeed.',
+          'Our teachers are well trained, with over 20 years of teaching experience. With knowledge and passion, they create classrooms where every child feels encouraged to explore and succeed.',
         ]),
       },
     ],
@@ -1164,7 +823,7 @@ const main = async () => {
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'How admission to SIWS Primary School, Wadala works for Grades 1 to 4, under Education Department norms.',
+      'How admission to SIWS Primary School works for Grades 1 to 4, under Education Department norms.',
     layout: [
       {
         blockType: 'featureList',
@@ -1315,19 +974,23 @@ const main = async () => {
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'General rules, discipline and uniform guidelines for SIWS Primary School — Wadala and Matunga campuses.',
+      'General rules, discipline and uniform guidelines for SIWS Primary School.',
     layout: [
       {
         /**
-         * The uniform specification below is the one Wadala supplied. Matunga's
-         * document says only "wear proper school uniform" and gives no detail,
-         * so this is labelled as Wadala's rather than presented as the Primary
-         * Section's — a family at Matunga must not buy a uniform on the
-         * strength of a page that never checked.
+         * ONE UNIFORM SPECIFICATION, AND IT NEEDS CONFIRMING.
+         *
+         * Only one of the two merged documents ever described the uniform in
+         * detail; the other said no more than "wear proper school uniform". It
+         * used to be labelled as that campus's own so no family bought a
+         * uniform on the strength of a page that had never checked. With the
+         * campuses merged there is no label left to qualify it, so it now reads
+         * as the school's — which is only true if SIWS has in fact standardised
+         * on it. That is flagged at the end of this run.
          */
         blockType: 'featureList',
-        heading: 'Uniform — Wadala campus',
-        accentWord: 'Wadala campus',
+        heading: 'Uniform',
+        accentWord: 'Uniform',
         headingLevel: 'h2',
         marker: 'tick',
         columns: '1',
@@ -1360,44 +1023,28 @@ const main = async () => {
         ],
       },
       {
+        // Both campuses' lists, merged and deduplicated. See MERGED_RULES.
         blockType: 'featureList',
-        heading: 'General rules — Wadala campus',
-        accentWord: 'Wadala campus',
+        heading: 'General rules',
+        accentWord: 'rules',
         headingLevel: 'h2',
         marker: 'number',
         columns: '1',
         background: 'sea',
-        items: GENERAL_RULES.map((title) => ({ title })),
-      },
-      {
-        /**
-         * Matunga's rules are kept as their own list rather than merged with
-         * Wadala's. They are not a shortened version of the same document —
-         * Matunga sets an 80% attendance requirement and an English-only rule
-         * that Wadala's list does not contain, and Wadala's covers infectious
-         * illness, identity cards and railway concession hours that Matunga's
-         * does not. Merging them would attach each campus's rules to families
-         * who are not bound by them.
-         */
-        blockType: 'featureList',
-        heading: 'General rules — Matunga campus',
-        accentWord: 'Matunga campus',
-        headingLevel: 'h2',
-        marker: 'number',
-        columns: '1',
-        background: 'white',
-        items: MATUNGA_RULES.map((title) => ({ title })),
+        items: MERGED_RULES.map((title) => ({ title })),
       },
     ],
   })
 
-  payload.logger.info('Primary content seeded — Wadala and Matunga campuses.')
+  payload.logger.info(`Primary content seeded — one school, ${MERGED_RULES.length} merged house rules.`)
 
   payload.logger.warn(
-    'STILL TO COME from SIWS (both campuses): fee details; campus, classroom and facility photographs; teacher photographs; parent testimonials; alumni achievements; press mentions; awards and certifications; social media handles; and the legal documents (privacy policy, terms, fee/refund policy, RTI disclosures). No page invents any of these.',
+    'STILL TO COME from SIWS: fee details; campus, classroom and facility photographs; teacher photographs; parent testimonials; alumni achievements; press mentions; awards and certifications; social media handles; and the legal documents (privacy policy, terms, fee/refund policy, RTI disclosures). No page invents any of these.',
   )
   payload.logger.warn(
-    'MATUNGA SPECIFICALLY: no uniform specification, no admission age criteria and no campus contact details were supplied. The uniform section is labelled as Wadala’s only, and no Matunga uniform is stated.',
+    `TO CONFIRM AFTER THE MERGE — the two campuses were published separately until now, and merging them forced two decisions this seed could not make on its own:\n` +
+      `  • HOUSE RULES — the two documents were not the same. The page now shows the union of both (${MERGED_RULES.length} rules), because dropping either set would release families from something the school may still ask of them. That means every family is shown rules that previously applied to only half the school — notably the 80% attendance requirement and the English-only rule. Please strike anything the merged school no longer enforces.\n` +
+      `  • UNIFORM — only one of the two documents ever specified a uniform; the other said only "wear proper school uniform". That specification is now published as the school's, unqualified. Confirm SIWS has standardised on it before a family buys one.`,
   )
 }
 

@@ -41,6 +41,7 @@ interface MediaDoc {
   category?: string | null
   unit?: number | null
   depictsChildren?: boolean | null
+  excludeFromGallery?: boolean | null
   parentalConsent?: { obtained?: boolean | null } | null
   withdrawn?: { isWithdrawn?: boolean | null } | null
 }
@@ -73,6 +74,17 @@ const main = async () => {
   })
 
   const heldBack = all.length - publishable.length
+
+  /*
+   * Posters and invitations come out here, not in the filter above.
+   *
+   * They are perfectly publishable — the event page shows them — so counting
+   * them as "held back" would report a consent problem that does not exist.
+   * They are simply not photographs of the school, and a designed banner sitting
+   * in a grid of pictures taken at the event reads as a mistake.
+   */
+  const photographs = publishable.filter((item) => !item.excludeFromGallery)
+  const posters = publishable.length - photographs.length
 
   const gallery = (item: MediaDoc) => ({
     image: item.id,
@@ -113,24 +125,18 @@ const main = async () => {
        */
       layout: (() => {
         /**
-         * Grouped by CAMPUS first, then category.
+         * Grouped by CATEGORY only.
          *
-         * The Primary Section runs at Wadala and Matunga and they are separate
-         * schools to a parent — different head teacher, different roster,
-         * different house rules. Merging their photographs into one grid would
-         * show a family the wrong campus. The campus prefix is added only when
-         * a unit actually has more than one, so single-campus sections read as
-         * they did before.
+         * This used to group by campus first, on the reasoning that Wadala and
+         * Matunga were separate schools to a parent - different head teacher,
+         * different roster, different house rules - so one combined grid would
+         * show a family the wrong campus. The Primary Section has since merged
+         * into a single school, so a campus prefix would now split one school's
+         * photographs under two headings that mean nothing to a visitor.
          */
-        const campuses = new Set(images.map((item) => (item.campus ?? '').trim()).filter(Boolean))
-        const label: Record<string, string> = { wadala: 'Wadala', matunga: 'Matunga' }
-
         const groups = new Map<string, MediaDoc[]>()
         for (const item of images) {
-          const cat = (item.category ?? '').trim() || 'Other photographs'
-          const camp = (item.campus ?? '').trim()
-          const key =
-            campuses.size > 1 && camp ? `${label[camp] ?? camp} campus — ${cat}` : cat
+          const key = (item.category ?? '').trim() || 'Other photographs'
           const bucket = groups.get(key)
           if (bucket) bucket.push(item)
           else groups.set(key, [item])
@@ -183,7 +189,7 @@ const main = async () => {
   }
 
   // Institution-wide: only photographs not tied to one section.
-  const shared = publishable.filter((item) => !item.unit)
+  const shared = photographs.filter((item) => !item.unit)
   await upsert(
     null,
     'gallery',
@@ -194,7 +200,7 @@ const main = async () => {
 
   // Per section: its own photographs, plus the shared ones.
   for (const unit of units) {
-    const own = publishable.filter((item) => item.unit === unit.id)
+    const own = photographs.filter((item) => item.unit === unit.id)
     await upsert(
       unit.id as number,
       'gallery',
@@ -204,78 +210,20 @@ const main = async () => {
     )
   }
 
-  /**
-   * A gallery on each campus page too.
+  /*
+   * The per-campus gallery pages are gone.
    *
-   * Wadala and Matunga are separate schools to a parent, and a visitor on the
-   * Matunga page should see Matunga's photographs there rather than be sent to
-   * a combined gallery to find them.
-   *
-   * This APPENDS to the page rather than owning it: existing gallery blocks are
-   * stripped and rebuilt, everything else in the layout is left alone. So
-   * `seed:primary` can rewrite the campus content and this can refresh the
-   * photographs, without either clobbering the other. Run order is content
-   * first, galleries second.
+   * This used to append a photograph grid to the `wadala` and `matunga` pages
+   * so a visitor on either did not have to go to a combined gallery to find
+   * that campus's pictures. Those pages no longer exist - the Primary Section
+   * is one school - so there is nothing to append to, and every photograph now
+   * reaches visitors through the section gallery above.
    */
-  const CAMPUS_PAGES: { slug: string; campus: string; label: string }[] = [
-    { slug: 'wadala', campus: 'wadala', label: 'Wadala' },
-    { slug: 'matunga', campus: 'matunga', label: 'Matunga' },
-  ]
 
-  for (const unit of units) {
-    for (const entry of CAMPUS_PAGES) {
-      const shots = publishable.filter(
-        (item) => item.unit === unit.id && (item.campus ?? '') === entry.campus,
-      )
-      if (shots.length === 0) continue
-
-      const { docs: pages } = await payload.find({
-        collection: 'pages',
-        where: { and: [{ slug: { equals: entry.slug } }, { unit: { equals: unit.id } }] },
-        limit: 1,
-        depth: 0,
-        overrideAccess: true,
-      })
-      const page = pages[0]
-      if (!page) continue
-
-      const kept = (page.layout ?? []).filter(
-        (block: { blockType?: string }) => block.blockType !== 'gallery',
-      )
-
-      const byCategory = new Map<string, MediaDoc[]>()
-      for (const item of shots) {
-        const key = (item.category ?? '').trim() || 'Photographs'
-        const bucket = byCategory.get(key)
-        if (bucket) bucket.push(item)
-        else byCategory.set(key, [item])
-      }
-
-      const galleryBlocks = [...byCategory.entries()]
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([heading, group], index) => ({
-          blockType: 'gallery',
-          heading,
-          headingLevel: 'h2',
-          layout: 'grid',
-          perPage: '12',
-          background: index % 2 === 0 ? 'white' : 'sea',
-          ...(index === 0
-            ? { intro: richText([`Photographs from our ${entry.label} campus.`]) }
-            : {}),
-          images: group.map(gallery),
-        }))
-
-      await payload.update({
-        collection: 'pages',
-        id: page.id,
-        data: { layout: [...kept, ...galleryBlocks] } as never,
-        overrideAccess: true,
-      })
-      payload.logger.info(
-        `${entry.label} campus page — ${shots.length} photograph(s) in ${galleryBlocks.length} group(s).`,
-      )
-    }
+  if (posters > 0) {
+    payload.logger.info(
+      `${posters} poster(s) or banner(s) were kept out of the galleries — they are marked "Keep out of the gallery" and still show wherever a page names them.`,
+    )
   }
 
   if (heldBack > 0) {

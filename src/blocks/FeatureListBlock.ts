@@ -71,8 +71,12 @@ export const FeatureListBlock: Block = {
        * The original figures were a guess at what "reads well", which is not a
        * limit worth enforcing against real content a school needs to publish.
        * These are now a guard against runaway input, not an editorial opinion.
+       *
+       * Raised again, 30 → 60, when the Primary Section merged its two campuses:
+       * the combined house rules come to more than 30 points, and splitting one
+       * numbered list across two blocks would restart it at 1 halfway down.
        */
-      maxRows: 30,
+      maxRows: 60,
       labels: { singular: 'Point', plural: 'Points' },
       admin: { initCollapsed: false },
       fields: [
