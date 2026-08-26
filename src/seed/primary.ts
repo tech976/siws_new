@@ -802,6 +802,13 @@ const main = async () => {
         heading: 'Our teachers',
         accentWord: 'teachers',
         headingLevel: 'h2',
+        /*
+         * Monogram above the name rather than beside it. Beside it, the text
+         * column on a three-across grid is narrow enough that the longer names
+         * on this roster — "Nadar Alagumathi Selvaganeshan" — wrap to two lines
+         * while the monogram sits alone against the space underneath.
+         */
+        layout: 'centred',
         showQualifications: true,
         background: 'white',
         intro: richText([

@@ -51,6 +51,13 @@ export const FacultyBlockView = async ({
 
   if (teachers.length === 0) return null
 
+  /*
+   * Unset means the row layout, because that is what every block saved before
+   * this field existed was rendered as. A new default would silently restyle
+   * the Secondary and Junior College rosters, which nobody asked for.
+   */
+  const centred = block.layout === 'centred'
+
   const initials = (name: string) =>
     name
       .replace(/^(Mrs|Mr|Ms|Miss|Dr)\.?\s+/i, '')
@@ -74,13 +81,19 @@ export const FacultyBlockView = async ({
         {teachers.map((teacher) => (
           <li
             key={teacher.id}
-            className="flex items-start gap-4 rounded-2xl border border-line bg-white p-5 shadow-card"
+            className={
+              centred
+                ? 'flex flex-col items-center rounded-2xl border border-line bg-white p-6 text-center shadow-card'
+                : 'flex items-start gap-4 rounded-2xl border border-line bg-white p-5 shadow-card'
+            }
           >
             {teacher.photo ? (
               <Media
                 resource={teacher.photo}
-                sizes="88px"
-                className="size-20 shrink-0 rounded-full object-cover"
+                sizes={centred ? '104px' : '88px'}
+                className={`${
+                  centred ? 'size-24' : 'size-20'
+                } shrink-0 rounded-full object-cover`}
               />
             ) : (
               /* A neutral monogram rather than a stock silhouette — most of the
@@ -88,13 +101,18 @@ export const FacultyBlockView = async ({
                  as a real person. */
               <span
                 aria-hidden="true"
-                className="grid size-20 shrink-0 place-items-center rounded-full bg-brand-tint text-lg font-bold text-brand"
+                className={`grid ${
+                  centred ? 'size-24 text-xl' : 'size-20 text-lg'
+                } shrink-0 place-items-center rounded-full bg-brand-tint font-bold text-brand`}
               >
                 {initials(teacher.name)}
               </span>
             )}
 
-            <span className="min-w-0">
+            {/* `min-w-0` only in the row layout, where the text shares its line
+                with the monogram and has to be allowed to shrink. Centred, the
+                text owns the full card width and needs no such permission. */}
+            <span className={centred ? 'mt-4' : 'min-w-0'}>
               <strong className="block text-[1.02rem] leading-snug text-brand">
                 {teacher.name}
               </strong>

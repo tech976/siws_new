@@ -1301,6 +1301,7 @@ export interface FacultyBlock {
    * Choose a campus to list only its teachers. Most schools can leave this on “Every campus”.
    */
   campus?: ('all' | 'wadala' | 'matunga') | null;
+  layout?: ('beside' | 'centred') | null;
   showQualifications?: boolean | null;
   /**
    * Use “Smaller” when this section sits underneath another heading.
@@ -2546,6 +2547,7 @@ export interface FacultyBlockSelect<T extends boolean = true> {
   heading?: T;
   intro?: T;
   campus?: T;
+  layout?: T;
   showQualifications?: T;
   headingLevel?: T;
   accentWord?: T;
