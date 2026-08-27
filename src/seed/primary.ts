@@ -29,14 +29,29 @@ const { richText } = await import('./lexical')
  */
 const CLASS_OPTIONS = ['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4']
 
+/*
+ * The subjects, each with an icon so the list reads as a syllabus rather than
+ * eight ticks in a column. The icons come from the block's fixed set — see
+ * FEATURE_ICON_OPTIONS — so the section keeps one visual voice.
+ *
+ * COMPUTER was added at SIWS's instruction (2026-08-26). It is not in the
+ * requirement document the rest of this file is built from, so it carries no
+ * description: what is taught in it, and from which grade, has not been
+ * supplied. The seed reports it at the end of the run for confirmation.
+ */
 const SUBJECTS = [
-  { title: 'English' },
-  { title: 'Marathi' },
-  { title: 'Mathematics' },
-  { title: 'EVS', description: 'Includes Science, History, Geography and Civics.' },
-  { title: 'Art' },
-  { title: 'Work Experience' },
-  { title: 'Physical Education' },
+  { title: 'English', icon: 'communication' },
+  { title: 'Marathi', icon: 'library' },
+  { title: 'Mathematics', icon: 'thinking' },
+  {
+    title: 'EVS',
+    description: 'Includes Science, History, Geography and Civics.',
+    icon: 'garden',
+  },
+  { title: 'Computer', icon: 'computers' },
+  { title: 'Art', icon: 'activity' },
+  { title: 'Work Experience', icon: 'classroom' },
+  { title: 'Physical Education', icon: 'sport' },
 ]
 
 const GRADE_CURRICULUM = [
@@ -702,11 +717,28 @@ const main = async () => {
         ]),
       },
       {
+        /*
+         * The compact layout, not a tick list and not cards.
+         *
+         * Ticks in two columns said nothing about the subjects and gave a
+         * parent scanning the page nothing to catch on. Cards are the other
+         * extreme: this block's own note explains that a card earns its size
+         * when it carries a picture and a sentence, and a one-word label given
+         * a card becomes a tall box that is mostly empty — eight of them, with
+         * a ragged last row.
+         *
+         * Compact is the middle: a labelled tile per subject, icon beside the
+         * words, three across. It reads as a syllabus at a glance, and the
+         * tiles are a fixed height so the last row not dividing by three stops
+         * mattering.
+         */
         blockType: 'featureList',
         heading: 'Subjects taught',
+        accentWord: 'Subjects',
         headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
+        layout: 'compact',
+        // No `columns`: compact sizes its own grid — three across on a desktop,
+        // one on a phone — and the field only offers one or two.
         background: 'sea',
         items: SUBJECTS,
       },
@@ -1052,6 +1084,9 @@ const main = async () => {
     `TO CONFIRM AFTER THE MERGE — the two campuses were published separately until now, and merging them forced two decisions this seed could not make on its own:\n` +
       `  • HOUSE RULES — the two documents were not the same. The page now shows the union of both (${MERGED_RULES.length} rules), because dropping either set would release families from something the school may still ask of them. That means every family is shown rules that previously applied to only half the school — notably the 80% attendance requirement and the English-only rule. Please strike anything the merged school no longer enforces.\n` +
       `  • UNIFORM — only one of the two documents ever specified a uniform; the other said only "wear proper school uniform". That specification is now published as the school's, unqualified. Confirm SIWS has standardised on it before a family buys one.`,
+  )
+  payload.logger.warn(
+    'COMPUTER is published as a subject on SIWS\'s instruction (2026-08-26), and is not in the requirement document. The Academics page now tells parents the Primary Section teaches it. Confirm it is taught, and from which grade — the tile carries no description because that was not supplied.',
   )
 }
 

@@ -48,9 +48,16 @@ script; pulling it brings the script onto your disk and changes nothing on
 screen until you run it against your database.
 
 ```bash
-git pull
+git pull            # the post-merge hook says if this changed what the site shows
 npm run seed:refresh
 ```
+
+The hook in `.githooks/post-merge` is installed automatically by `npm install`
+(via the `prepare` script, which points `core.hooksPath` at it). It warns rather
+than re-seeding on its own, because a re-seed takes a couple of minutes and one
+interrupted half-way leaves the site part-updated — the exact failure it exists
+to prevent. Set `SIWS_AUTO_SEED=1` in your shell profile if you would rather it
+just ran.
 
 It runs every content seed in dependency order, stops at the first failure and
 tells you how to carry on:
@@ -77,6 +84,30 @@ browser and obvious on a terminal:
 
 Read the warnings the seeds print. A seed that cannot find a photograph still
 *succeeds* — it says so on the terminal and fills the gap.
+
+### Is my database actually right?
+
+```bash
+npm run seed:verify
+```
+
+Read-only, writes nothing, answers in one command. It checks the faults that do
+not announce themselves in a browser:
+
+- **Stale** — it records which commit the database was built from and compares
+  that to your checkout, naming the seed scripts that have changed since.
+- **Dangling references** — a page pointing at a photograph that no longer
+  exists. Found by walking the foreign keys, so a block added next year is
+  covered without anyone remembering to update the check.
+- **Library rows with no file on disk**, so a page can point at a picture that
+  cannot be served.
+- **Duplicate uploads**, which is how two machines end up showing different
+  photographs.
+- **Photographs of identifiable students with no permission recorded**, which
+  will fail the next seed run part-way.
+
+It exits non-zero when something needs attention, so it can gate a deploy as
+easily as it can answer a question.
 
 ### If the same photograph appears twice
 

@@ -1,4 +1,6 @@
-import { spawnSync } from 'child_process'
+import { execSync, spawnSync } from 'child_process'
+import { writeFileSync } from 'fs'
+import path from 'path'
 
 import { loadEnv } from '@/utilities/load-env'
 
@@ -38,6 +40,9 @@ const { default: config } = await import('@payload-config')
  *   npm run seed:refresh -- --dry-run # print the order, run nothing
  *   npm run seed:refresh -- --from=seed:kg   # resume after fixing a failure
  */
+
+/** Records which commit this database was built from. Git-ignored, local state. */
+const STATE_FILE = path.resolve(process.cwd(), '.seed-state.json')
 
 interface Step {
   /** The npm script to run. */
@@ -227,11 +232,38 @@ const main = async () => {
     done += 1
   }
 
+  /*
+   * Stamp the commit this database was built from.
+   *
+   * It is the only way to answer "is my database stale?" without diffing the
+   * whole site: `seed:verify` reads this, compares it to HEAD, and lists the
+   * seed files that have changed since. Written only on a clean run — a stamp
+   * after a part-finished refresh would claim the database matches a commit it
+   * does not.
+   *
+   * Local state, so it is git-ignored: it records what THIS machine built.
+   */
+  if (!from) {
+    try {
+      const commit = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim()
+      writeFileSync(
+        STATE_FILE,
+        `${JSON.stringify({ commit, steps: done }, null, 2)}\n`,
+        'utf8',
+      )
+    } catch {
+      // No git, or no write access. The refresh still worked; only the
+      // staleness check loses its reference point.
+    }
+  }
+
   console.log(
     `\n  Done — ${done} step(s), no failures.\n\n` +
       `  Read the warnings above before assuming the site is right. A seed that\n` +
       `  cannot find a photograph it names still succeeds; it says so on the\n` +
-      `  terminal and fills the gap with whatever else is in the library.\n`,
+      `  terminal and fills the gap with whatever else is in the library.\n\n` +
+      `  \`npm run seed:verify\` checks this database for the faults that do not\n` +
+      `  announce themselves — stale content, missing photographs, duplicates.\n`,
   )
   process.exit(0)
 }
