@@ -52,11 +52,46 @@ const SHAPE_CLASS: Record<string, string> = {
   rounded: 'rounded-2xl aspect-[5/4] lg:aspect-auto lg:h-full',
   square: 'rounded-none aspect-[5/4] lg:aspect-auto lg:h-full',
   circle: 'rounded-full aspect-square',
+  /*
+   * The one shape that does NOT stretch to the row.
+   *
+   * For an upright photograph. The rule above — upload landscape — holds
+   * wherever there is a choice, but some pictures only exist upright: three
+   * pupils standing together is one, and stretching 1200x1600 into a frame
+   * twice as wide as it is tall keeps the middle 43% and cuts the heads off.
+   *
+   * So this frame keeps its own height instead of stretching to the row,
+   * and the text column centres against it.
+   *
+   * Square rather than the full 3:4, which is a crop of the CEILING. At 3:4
+   * an upright photograph beside two paragraphs left the words floating in
+   * the middle of a 900px band with 300px of empty tint above and below
+   * them. A square takes a quarter off the height, and the focal point saved
+   * with the picture decides which quarter — set it low and the ceiling goes
+   * while the faces stay whole. That is the trade the wide frame could not
+   * make: it needed to lose HALF the height, which is faces.
+   */
+  portrait: 'rounded-2xl aspect-square',
 }
 
 export const MediaTextBlockView = ({ block }: { block: MediaTextBlock }) => {
   const imageFirst = block.imagePosition !== 'right'
   const cta = block.cta?.[0]?.link
+  /*
+   * An upright frame keeps its own height instead of stretching to the row,
+   * which changes how the row is put together: the words centre against the
+   * picture rather than filling beside it, and they sit CLOSE to it. The wide
+   * gutter is there to separate a photograph from a column of prose of the
+   * same height; against a tall frame it just reads as a hole between them.
+   */
+  const upright = block.imageShape === 'portrait'
+  /*
+   * This section IS the top of the page — the route hands its header over to
+   * any first block whose heading is the page title. So the words beside the
+   * picture are the page's lead paragraph, and they take the lead size the
+   * route's own header used to give them, not body size.
+   */
+  const isPageLead = block.headingLevel === 'h1'
 
   /* ------------------------------------------------------------- image above
    *
@@ -73,6 +108,56 @@ export const MediaTextBlockView = ({ block }: { block: MediaTextBlock }) => {
    * The frame keeps a wide ratio rather than stretching: there is no text
    * column beside it to match a height to.
    */
+  /* ------------------------------------------------------------- figure
+   *
+   * A single photograph, centred, with its caption underneath — what a print
+   * figure does.
+   *
+   * The `above` band would not serve this: it stretches the picture to the
+   * full measure at 21:9, which is right for a wide campus shot and wrong for
+   * a portrait group photograph, where it would crop three people down to a
+   * strip of their shoulders. Here the frame follows the picture instead —
+   * capped in width and left to take its own height.
+   *
+   * The caption is centred and set in brand weight, so it reads as a label
+   * belonging to the image rather than as the first line of the next section.
+   */
+  if (block.imagePosition === 'figure') {
+    return (
+      <Section background={block.background as BlockBackground}>
+        {block.heading ? (
+          <div className="mb-10">
+            <span aria-hidden="true" className="mx-auto mb-5 block h-1 w-12 rounded-full bg-accent" />
+            <SectionHeading
+              heading={block.heading}
+              accentWord={block.accentWord}
+              level={block.headingLevel}
+            />
+          </div>
+        ) : null}
+
+        <figure className="mx-auto w-full max-w-lg">
+          {/*
+            `w-full h-auto` with real intrinsic dimensions rather than a fixed
+            ratio: the picture keeps its own shape, so nothing is cropped and a
+            portrait and a landscape both sit correctly in the same block.
+          */}
+          <div className="overflow-hidden rounded-3xl bg-brand-tint ring-1 ring-line/70 shadow-[0_2px_6px_rgba(36,39,111,0.06),0_18px_44px_-18px_rgba(36,39,111,0.30)]">
+            <Media
+              resource={block.image}
+              sizes="(min-width: 768px) 32rem, 100vw"
+              className="h-auto w-full object-cover"
+            />
+          </div>
+
+          <figcaption className="mt-6 text-center text-xl font-bold text-balance text-brand">
+            <RichText data={block.content} className="siws-centre" />
+          </figcaption>
+        </figure>
+      </Section>
+    )
+  }
+
   if (block.imagePosition === 'above') {
     return (
       <Section background={block.background as BlockBackground}>
@@ -137,7 +222,13 @@ export const MediaTextBlockView = ({ block }: { block: MediaTextBlock }) => {
         and read as an illustration beside the text rather than as the subject
         of the band — which is what "the image is small" meant.
       */}
-      <div className="grid items-stretch gap-10 lg:grid-cols-12 lg:gap-14">
+      <div
+        className={`grid lg:grid-cols-12 ${
+          upright
+            ? 'items-center gap-8 lg:gap-10'
+            : 'items-stretch gap-10 lg:gap-14'
+        }`}
+      >
         <div
           className={[
             // On a phone the image always leads, whichever side was chosen —
@@ -175,7 +266,28 @@ export const MediaTextBlockView = ({ block }: { block: MediaTextBlock }) => {
         </div>
 
         <div className={`flex flex-col justify-center lg:col-span-5 ${imageFirst ? 'lg:order-2' : 'lg:order-1'}`}>
-          <RichText data={block.content} />
+          {/*
+            RAGGED RIGHT, not justified, and this is the one place on the site
+            that overrides it.
+
+            `.siws-prose` justifies with `hyphens: auto`, which is right for
+            the full-measure columns it was written for. This column is five
+            of twelve — about 37 characters a line. Justification works by
+            spreading the slack across the word spaces on a line, and with
+            only six or seven words to spread it over there is nowhere for it
+            to go: the gaps opened up wide enough to read as holes, which is
+            what made the paragraph hard to follow. Hyphenation cannot save
+            it either, since a line that short often has no breakable word in
+            the right place.
+
+            Ragged right puts every space back to its normal width and moves
+            the unevenness to the right margin, where the eye does not have
+            to travel through it.
+          */}
+          <RichText
+            data={block.content}
+            className={isPageLead ? 'text-left text-[1.1875rem]' : undefined}
+          />
 
           {cta ? (
             <div className="mt-7">

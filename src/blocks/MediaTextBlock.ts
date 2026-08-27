@@ -34,6 +34,10 @@ export const MediaTextBlock: Block = {
             { label: 'Image on the left', value: 'left' },
             { label: 'Image on the right', value: 'right' },
             { label: 'Image above the text', value: 'above' },
+            {
+              label: 'Figure — a centred picture with a caption beneath it',
+              value: 'figure',
+            },
           ],
           admin: {
             width: '50%',
@@ -49,6 +53,7 @@ export const MediaTextBlock: Block = {
             { label: 'Rounded corners', value: 'rounded' },
             { label: 'Square', value: 'square' },
             { label: 'Circle', value: 'circle' },
+            { label: 'Upright (never cropped)', value: 'portrait' },
           ],
           admin: { width: '50%' },
         },

@@ -660,7 +660,11 @@ export interface HeroBlock {
    */
   accentWord?: string | null;
   /**
-   * Optional. One or two sentences below the heading.
+   * Optional. One line, set larger than the introduction — the promise the heading is making. Leave it out and the introduction simply follows the heading.
+   */
+  subtitle?: string | null;
+  /**
+   * Optional. One or two sentences below the subheading.
    */
   intro?: string | null;
   /**
@@ -770,9 +774,9 @@ export interface HeroCarouselBlock {
     | null;
   height?: ('standard' | 'tall') | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -814,9 +818,9 @@ export interface RichTextBlock {
    */
   backgroundImage?: (number | null) | Media;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -861,8 +865,8 @@ export interface MediaTextBlock {
   /**
    * On phones the image always appears above the text, whichever side is chosen.
    */
-  imagePosition?: ('left' | 'right' | 'above') | null;
-  imageShape?: ('rounded' | 'square' | 'circle') | null;
+  imagePosition?: ('left' | 'right' | 'above' | 'figure') | null;
+  imageShape?: ('rounded' | 'square' | 'circle' | 'portrait') | null;
   /**
    * Optional. Add one button beneath the text.
    */
@@ -895,9 +899,9 @@ export interface MediaTextBlock {
       }[]
     | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -984,9 +988,9 @@ export interface CardGridBlock {
     | null;
   placedBySeed?: boolean | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1037,9 +1041,9 @@ export interface BentoBlock {
     | null;
   placedBySeed?: boolean | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1120,9 +1124,9 @@ export interface ProgramCardsBlock {
       }[]
     | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1215,9 +1219,9 @@ export interface FeatureListBlock {
    */
   footnote?: string | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1231,9 +1235,9 @@ export interface FeatureListBlock {
    */
   marker?: ('tick' | 'number') | null;
   /**
-   * Always a single column on phones.
+   * Always a single column on phones. “Kept together” narrows the two columns and centres them under the heading — for a SHORT list, where columns spread across the full width leave each one with a long empty tail and the section stops looking composed.
    */
-  columns?: ('1' | '2') | null;
+  columns?: ('1' | '2' | '2-centre') | null;
   /**
    * Text colour adjusts automatically so it stays readable.
    */
@@ -1275,9 +1279,9 @@ export interface FacultyBlock {
   campus?: ('all' | 'wadala' | 'matunga') | null;
   showQualifications?: boolean | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1332,13 +1336,13 @@ export interface GalleryBlock {
    */
   perPage?: ('9' | '12' | '24' | '0') | null;
   /**
-   * A scrolling row suits a handful of photographs; a grid is better for a full album.
+   * A scrolling row suits a handful of photographs; a grid is better for a full album. A collage suits a gallery page that is the point of the page — it gives some photographs more room than others, so the wall has a shape instead of being an even chequerboard.
    */
-  layout?: ('carousel' | 'grid') | null;
+  layout?: ('carousel' | 'grid' | 'bento') | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1394,9 +1398,9 @@ export interface MapBlock {
   label?: string | null;
   height?: ('short' | 'medium' | 'tall') | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1444,9 +1448,9 @@ export interface AccordionBlock {
    */
   allowMultipleOpen?: boolean | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1517,9 +1521,9 @@ export interface AnnouncementsBlock {
    */
   maxHeight?: ('short' | 'medium' | 'all') | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1567,9 +1571,9 @@ export interface QuickNavBlock {
       }[]
     | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1608,9 +1612,9 @@ export interface LogoStripBlock {
       }[]
     | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1650,9 +1654,9 @@ export interface TestimonialsBlock {
       }[]
     | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1696,9 +1700,9 @@ export interface StatisticsBlock {
       }[]
     | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1739,9 +1743,9 @@ export interface UnitLinksBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -1807,9 +1811,9 @@ export interface CallToActionBlock {
       }[]
     | null;
   /**
-   * Use “Smaller” when this section sits underneath another heading.
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
-  headingLevel?: ('h2' | 'h3') | null;
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
   /**
    * Type a word from the heading to show it in SIWS accent.
    */
@@ -2260,6 +2264,7 @@ export interface HeroBlockSelect<T extends boolean = true> {
   eyebrow?: T;
   title?: T;
   accentWord?: T;
+  subtitle?: T;
   intro?: T;
   image?: T;
   highlights?:

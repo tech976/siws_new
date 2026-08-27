@@ -71,7 +71,21 @@ export const linkField = ({
       type: 'relationship',
       relationTo,
       required: true,
-      maxDepth: 1,
+      /*
+       * TWO levels, and the second one is load-bearing.
+       *
+       * At 1 the target page came back populated but its `unit` stayed a bare
+       * id — and `pageHref` returns null for that on purpose, because
+       * `/contact` and `/secondary/contact` are different pages and guessing
+       * between them serves a 404. `CMSLink` then falls back to its inert
+       * span, so every "Enquire about admission" button in a unit hero looked
+       * perfect and did nothing when clicked.
+       *
+       * A field `maxDepth` caps population no matter what the query asks for,
+       * so raising `depth` at the call site could never have fixed it. Two is
+       * the whole requirement: the page, and the unit whose slug prefixes it.
+       */
+      maxDepth: 2,
       label: 'Page',
       admin: {
         condition: isInternal,

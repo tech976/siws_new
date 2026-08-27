@@ -47,7 +47,7 @@ export const Section = ({ background = 'white', children, className, id }: Secti
 interface SplitProps {
   heading?: string | null
   accentWord?: string | null
-  level?: 'h2' | 'h3' | null
+  level?: 'h1' | 'h2' | 'h3' | null
   /** A short line under the heading in the rail — context, not a summary. */
   kicker?: string | null
   children: ReactNode
@@ -84,7 +84,7 @@ interface SectionHeadingProps {
   heading?: string | null
   /** A phrase within the heading to highlight, per the SIWS house style. */
   accentWord?: string | null
-  level?: 'h2' | 'h3' | null
+  level?: 'h1' | 'h2' | 'h3' | null
   className?: string
 }
 
@@ -103,7 +103,14 @@ export const SectionHeading = ({
 }: SectionHeadingProps) => {
   if (!heading) return null
 
-  const Tag = level === 'h3' ? 'h3' : 'h2'
+  /*
+   * H1 is available so that a page's OPENING section can carry the page
+   * heading itself, inside its own band, instead of the route printing a bare
+   * title on white above it. The route already suppresses its header when the
+   * first block's heading matches the page title; without an h1 here that
+   * suppression left the page with no h1 at all.
+   */
+  const Tag = level === 'h1' ? 'h1' : level === 'h3' ? 'h3' : 'h2'
   /*
    * Centred over its own section, and capped so a long heading wraps into a
    * balanced block rather than one full-width line and one short one.

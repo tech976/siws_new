@@ -179,9 +179,11 @@ export const FeatureListBlock: Block = {
         options: [
           { label: 'One column', value: '1' },
           { label: 'Two columns', value: '2' },
+          { label: 'Two columns, kept together', value: '2-centre' },
         ],
         admin: {
-          description: 'Always a single column on phones.',
+          description:
+            'Always a single column on phones. “Kept together” narrows the two columns and centres them under the heading — for a SHORT list, where columns spread across the full width leave each one with a long empty tail and the section stops looking composed.',
           // Cards size their own grid from how many there are, so the choice
           // would do nothing — hiding it is kinder than leaving a dead control.
           condition: (_data, siblingData) => siblingData?.layout !== 'cards',

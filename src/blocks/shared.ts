@@ -84,9 +84,11 @@ export const sectionOptions = (
       options: [
         { label: 'Normal', value: 'h2' },
         { label: 'Smaller', value: 'h3' },
+        { label: 'The page heading', value: 'h1' },
       ],
       admin: {
-        description: 'Use “Smaller” when this section sits underneath another heading.',
+        description:
+          'Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.',
         condition: (_data, siblingData) => Boolean(siblingData?.heading),
       },
     },

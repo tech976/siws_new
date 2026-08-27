@@ -165,6 +165,53 @@ const IMAGES: ImageSeed[] = [
    * name already taken on disk makes Payload write `-1` and the library ends
    * up pointing somewhere nobody expects.
    */
+  /*
+   * The three the Secondary pages name. Same story as the Kindergarten set:
+   * `media/` ships them, but the `photos:import` rows never reached the
+   * repository, so `seed:secondary` failed validation on three required
+   * image fields and every page after "Contact us" — the teachers roster
+   * among them — was never written at all.
+   */
+  {
+    file: 'secondary-toppers-2026.jpeg',
+    filename: 'secondary-toppers-2026.jpg',
+    alt: 'Three SIWS High School pupils standing together in the school hall, each holding a bouquet and an award after the 2026 SSC results.',
+    caption: 'Toppers of 2026',
+    /*
+     * The three of them stand across the lower two-thirds of a 1200x1600
+     * frame, under a lot of hall ceiling. Anchoring at 60% keeps the whole
+     * group when a square or wide frame crops the picture, and it is the
+     * ceiling that goes rather than heads and feet.
+     */
+    focalY: 60,
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-craft-class.jpg',
+    filename: 'secondary-craft-class.jpg',
+    alt: 'A full Secondary classroom of pupils in house-colour shirts working with coloured paper and scissors at wooden desks.',
+    caption: 'Craft work in a Secondary classroom',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-activity-class.jpg',
+    filename: 'secondary-activity-class.jpg',
+    alt: 'Secondary pupils at their desks during an activity session, writing and cutting coloured paper.',
+    caption: 'An activity session in progress',
+    depictsChildren: true,
+  },
+  {
+    /*
+     * The one photograph in this file with no child in it: a framed award on
+     * a wall. `depictsChildren` is false, so the consent hook does not gate
+     * the page that carries it.
+     */
+    file: 'secondary-swachhta-certificate.jpg',
+    filename: 'secondary-swachhta-certificate.jpg',
+    alt: 'A framed Government of Maharashtra certificate awarded to S.I.W.S. High School, naming it amongst the 100 best schools in Maharashtra in the Swachhta Monitor 2023.',
+    caption: 'Swachhta Monitor 2023 — amongst the 100 best schools in Maharashtra',
+    depictsChildren: false,
+  },
   {
     file: 'award-andhra.jpg',
     filename: 'siws-award-andhra.jpg',

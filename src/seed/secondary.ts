@@ -4,7 +4,7 @@ loadEnv()
 
 const { getPayload } = await import('payload')
 const { default: config } = await import('@payload-config')
-const { richText } = await import('./lexical')
+const { richText, richTextLines } = await import('./lexical')
 
 /**
  * Seeds the Secondary Section (SIWS High School, Wadala) from the requirement
@@ -52,8 +52,8 @@ const SUBJECTS = [
   { title: 'Mathematics', icon: 'thinking' },
   { title: 'Science', icon: 'laboratory' },
   { title: 'Social Science', icon: 'study' },
-  { title: 'ICT', description: 'Information and Communication Technology.', icon: 'computers' },
-  { title: 'PT', description: 'Physical Training.', icon: 'sport' },
+  { title: 'ICT', icon: 'computers' },
+  { title: 'PT', icon: 'sport' },
   { title: 'Art & Craft', icon: 'activity' },
 ]
 
@@ -91,19 +91,19 @@ const FACULTY = [
   { name: 'Mr. Sunilkumar Devanand Chaube', qualifications: 'B.A., B.Ed.' },
   { name: 'Mrs. Shruti Avinash Shelke', qualifications: 'B.Sc., B.Ed.' },
   { name: 'Mrs. Nadar Mary Stella John Peter', qualifications: 'B.A., M.A., B.Ed.' },
-  { name: 'Mrs. Santhi Shankar', qualifications: 'B.Sc., B.Ed.' },
+  { name: 'Mrs. Santhi Shankar', qualifications: 'B.Sc., M.A., B.Ed.' },
   { name: 'Mr. Arun Shivaji Patil', qualifications: 'B.A., M.A., B.Ed.' },
-  { name: 'Mr. Suraj Sunder Poojari', qualifications: 'B.Sc., B.Ed.' },
-  { name: 'Mrs. Swati Kishor Garud', qualifications: 'B.Sc., B.Ed.' },
+  { name: 'Mr. Suraj Sunder Poojari', qualifications: 'B.Sc., M.A., B.Ed.' },
+  { name: 'Mrs. Swati Kishor Garud', qualifications: 'B.Sc., M.A., B.Ed.' },
   { name: 'Mr. Sanjay Harichandra Sakpal', qualifications: 'B.A., B.Ed.' },
-  { name: 'Mrs. Marquis Juliet Neville', qualifications: 'B.Sc., B.Ed.' },
+  { name: 'Mrs. Marquis Juliet Neville', qualifications: 'B.Sc., M.A., B.Ed.' },
   { name: 'Mrs. Kavita Vedprakash Rai', qualifications: 'M.A., B.Ed.' },
-  { name: 'Mrs. P. Angel Jabakani', qualifications: 'B.A., B.Ed.' },
+  { name: 'Mrs. Angel Jabakani', qualifications: 'B.A., M.A., B.Ed.' },
   { name: 'Mrs. Pooja Santosh Pandey', qualifications: 'B.A., B.Ed.' },
   { name: 'Mrs. Anithajanaki Arunachalam', designation: 'Shikshan Sevak', qualifications: 'B.A., M.A., B.Ed.' },
   { name: 'Mr. Jagannath Suresh Arya', designation: 'Shikshan Sevak', qualifications: 'B.A., M.A., B.Ed., M.Ed.' },
   { name: 'Mrs. Dhanashri Madhukar Bansode', designation: 'Shikshan Sevak', qualifications: 'B.A., M.A., B.Ed., TET' },
-  { name: 'Miss Ramalakshmi Lakshmanan', designation: 'Shikshan Sevak', qualifications: 'B.Sc., B.Ed., CTET' },
+  { name: 'Miss Ramalakshmi Lakshmanan', designation: 'Shikshan Sevak', qualifications: 'B.Sc., M.A., B.Ed., CTET' },
   { name: 'Mr. Selvin Rajkumar Joseph', qualifications: 'S.S.C., D.Ed.' },
   { name: 'Mrs. Ranjana Moses Brownson', qualifications: 'S.S.C., B.A., A.T.D., Dip. in Applied Art' },
   { name: 'Mrs. Aarti Rajesh Dubey', qualifications: 'H.S.C., B.A., D.Ed.' },
@@ -118,6 +118,39 @@ const FACULTY = [
   { name: 'Miss Supriya Shivaji Sonawane', qualifications: 'H.S.C., B.A., M.A., D.Ed.' },
   { name: 'Mr. Kandekar Sadanand Mahadev', qualifications: 'H.S.C., D.Ed., TET' },
   { name: 'Miss Jenisha Thomas', designation: 'Shikshan Sevak', qualifications: 'H.S.C., D.El.Ed., CTET' },
+
+  /*
+   * The Computer Section, supplied by SIWS on 2026-08-25.
+   *
+   * NO HONORIFIC on these four. Every other name in this list carries one,
+   * but the school sent these without, and Mrs./Miss states something about a
+   * person that cannot be guessed from a name. An inconsistent list is a
+   * smaller fault than publishing an assumption about someone.
+   *
+   * The qualifications ARE punctuated to match the rest of the list, since
+   * that is only typography: B.Com. rather than B.Com. MBA keeps its own
+   * shape, as CTET and TET do above.
+   */
+  {
+    name: 'Renu Bhatia',
+    designation: 'HOD – Computer Section',
+    qualifications: 'B.Com. (Hons.), Delhi University',
+  },
+  {
+    name: 'Thangam Subramanian',
+    designation: 'Teacher – Computer Section',
+    qualifications: 'B.Com., B.A., M.A., B.Ed.',
+  },
+  {
+    name: 'Shalini Pillai',
+    designation: 'Teacher – Computer Section',
+    qualifications: 'B.Com.',
+  },
+  {
+    name: 'Nirmala R. Nadar',
+    designation: 'Teacher – Computer Section',
+    qualifications: 'B.A., MBA, E.C.C.Ed.',
+  },
 ]
 
 /** The general rules, verbatim. */
@@ -165,6 +198,10 @@ const UNIFORM = [
     title: 'Footwear',
     description:
       'All-season black shoes with dark blue socks with light blue stripes. Chappals and sandals are not allowed.',
+  },
+  {
+    title: 'PT uniform',
+    description: 'Wear PT uniform every Wednesday.',
   },
 ]
 
@@ -242,6 +279,12 @@ const main = async () => {
       tagline: 'Maharashtra State Board | Standards V to X',
       description:
         'Standards V to X following the Maharashtra State Board curriculum, aligned with NEP 2020 — a learner-centred, competency-based approach at our Wadala campus.',
+      /*
+       * The section had no telephone number at all — the header, the footer
+       * and the contact page each render one only when the unit carries it,
+       * so all three were simply blank on this site.
+       */
+      phone: '022-24180877',
     } as never,
   })
 
@@ -338,9 +381,18 @@ const main = async () => {
     return docs[0]?.id ?? null
   }
 
-  const classroomAtWork = await photo('secondary-campus-facility-2-3.jpg')
-  const classroomActivity = await photo('secondary-extra-co-curricular-activities-11.jpg')
-  const recognition = await photo('secondary-award-recongnition-recongnition.jpg')
+  /*
+   * Renamed from the `photos:import` filenames these used to carry
+   * (`secondary-campus-facility-2-3` and friends). Those files are in
+   * `media/` but their library rows never were, so all three resolved to
+   * null, three required image fields failed validation, and the seed died
+   * before it reached the teachers roster. They are seeded under these names
+   * now, from `assets/images`, like every other photograph this site uses.
+   */
+  const classroomAtWork = await photo('secondary-craft-class.jpg')
+  const classroomActivity = await photo('secondary-activity-class.jpg')
+  const recognition = await photo('secondary-swachhta-certificate.jpg')
+  const toppers = await photo('secondary-toppers-2026.jpg')
 
   // --------------------------------------------------------------- CONTACT
   /** Seeded before `home`, which links to it — see the note in primary.ts. */
@@ -396,8 +448,18 @@ const main = async () => {
             description: 'For enquiries about Standards V to X — admissions@siws.edu.in',
           },
           {
+            /*
+             * The telephone number belongs in the page BODY, not only on the
+             * unit record.
+             *
+             * A unit's `phone` renders in the header strip and the footer and
+             * nowhere else, so on the one page a parent opens to find it —
+             * Contact — it appeared only in the furniture around the content.
+             * Kindergarten reads the same way because its seed writes the
+             * number into this card too.
+             */
             title: 'General enquiries',
-            description: 'For anything else — info@siws.edu.in',
+            description: 'For anything else — info@siws.edu.in, 022-24180877',
           },
         ],
       },
@@ -418,9 +480,20 @@ const main = async () => {
         title: 'SIWS High School, Wadala',
         accentWord: 'High School',
         eyebrow: 'Maharashtra State Board | Standards V to X',
+        /*
+         * A photograph behind the banner, which is what switches `HeroBlock`
+         * from its flat brand panel to the washed variant the portal uses —
+         * the same left-to-right brand gradient at 85/70/55%, dense enough at
+         * the left where the type sits and thinning to the right so the room
+         * still reads.
+         *
+         * Omitted when the photograph is missing, so the banner falls back to
+         * the flat panel rather than losing its gradient and its contrast.
+         */
+        ...(classroomActivity ? { image: classroomActivity } : {}),
         // Plain string: the hero's `intro` is a textarea, not rich text.
         intro:
-          'Standards V to X, taught to the Maharashtra State Board curriculum in line with NEP 2020 — on a Wadala campus the Society has run since 1934.',
+          'From Standards V to X, we follow the Maharashtra State Board curriculum, updated in line with NEP 2020. Proudly running our Wadala campus since 1934 — 90+ years of trust and excellence.',
         links: [
           {
             link: {
@@ -495,8 +568,14 @@ const main = async () => {
         layout: 'compact',
         marker: 'tick',
         background: 'tint',
-        intro: richText([
-          'Ten subjects across Standards V to X, as prescribed by the Maharashtra State Board.',
+        /*
+         * Three lines, not three paragraphs — see `richTextLines`. Centred by
+         * the compact layout, which puts `siws-centre` on the intro.
+         */
+        intro: richTextLines([
+          '10 core subjects for Standards V to X',
+          'Aligned with the Maharashtra State Board & NEP 2020',
+          'building knowledge, skills, and values for the future.',
         ]),
         items: SUBJECTS,
       },
@@ -710,9 +789,24 @@ const main = async () => {
     // No headcount here either — the roster below already shows who they are,
     // and a printed number goes stale the moment somebody joins or leaves.
     intro: 'The teachers and support staff who teach across Standards V to X.',
-    showInNav: true,
-    navLabel: 'Teachers',
-    navOrder: 30,
+    /*
+     * OFF the menu here, and `seed:nav` puts it back in its drop-down.
+     *
+     * This used to set `showInNav: true` with a `navOrder` of its own, making
+     * it a TOP-LEVEL item. The unit template already places it inside a
+     * drop-down, so whichever script ran last won — and running this seed
+     * after `seed:nav` climbed the page back out to the top row. Secondary
+     * reached ten top-level items, 1229px of menu against a 1160px container,
+     * and the buttons wrapped onto a second line.
+     *
+     * Simply omitting the field is NOT enough: `payload.update` keeps the
+     * existing `show_in_nav` while clearing `nav_parent_id`, which promotes
+     * the page instead of leaving it alone. Setting it false explicitly means
+     * the worst this seed can do is drop the entry until `seed:nav` runs,
+     * which is the documented order anyway — and a missing drop-down entry
+     * is a far smaller fault than a menu that wraps.
+     */
+    showInNav: false,
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
@@ -745,15 +839,96 @@ const main = async () => {
   await upsert({
     slug: 'achievements',
     title: 'Our results and achievements',
-    intro: '99.53% in the SSC Examination 2026, and scholarship examination qualifiers in Standards V and VIII.',
-    showInNav: true,
-    navLabel: 'Achievements',
-    navOrder: 35,
+    /*
+     * SIWS's own wording. The dash is an em dash rather than the hyphen it
+     * was sent with, which is the only change: every other dash on the site
+     * is one, and a spaced hyphen between two clauses reads as a typo.
+     */
+    /*
+     * Not rendered while the first section carries the page heading: the
+     * route prints one or the other, never both. Kept as the page's summary
+     * in the CMS, and it reappears if that section is ever renamed.
+     */
+    intro: 'Out of 215 students who appeared, 214 passed — a 99.53% success rate.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back in its drop-down.
+     *
+     * This used to set `showInNav: true` with a `navOrder` of its own, making
+     * it a TOP-LEVEL item. The unit template already places it inside a
+     * drop-down, so whichever script ran last won — and running this seed
+     * after `seed:nav` climbed the page back out to the top row. Secondary
+     * reached ten top-level items, 1229px of menu against a 1160px container,
+     * and the buttons wrapped onto a second line.
+     *
+     * Simply omitting the field is NOT enough: `payload.update` keeps the
+     * existing `show_in_nav` while clearing `nav_parent_id`, which promotes
+     * the page instead of leaving it alone. Setting it false explicitly means
+     * the worst this seed can do is drop the entry until `seed:nav` runs,
+     * which is the documented order anyway — and a missing drop-down entry
+     * is a far smaller fault than a menu that wraps.
+     */
+    showInNav: false,
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
       'SIWS High School, Wadala — 99.53% in the SSC Examination 2026, with 60 students passing with Distinction, and scholarship examination qualifiers.',
     layout: [
+      /*
+       * The three who topped the year, opening the page.
+       *
+       * Above the statistics rather than below them: the numbers are the
+       * proof, but the faces are the reason anybody reads them.
+       *
+       * Omitted entirely when the photograph is not in the library, rather
+       * than rendering an empty frame with a caption under it.
+       */
+      ...(toppers
+        ? [
+            {
+              blockType: 'mediaText',
+              image: toppers,
+              imagePosition: 'left',
+              /*
+               * 1200x1600. An upright frame, or the wide one would keep the
+               * middle of the picture and cut three faces out of it.
+               */
+              imageShape: 'portrait',
+              /*
+               * THE PAGE'S OWN HEADING, carried by this section.
+               *
+               * It used to be a bare photograph under a caption, with the page
+               * title and its opening line printed on white above the band —
+               * so the section had nothing at its top and the picture floated
+               * in the middle of a tint that belonged to nothing. Because this
+               * heading matches the page title, the route now hands its header
+               * over to this block (see `hasOwnHeading` in the route) and the
+               * title, the words and the photograph read as one band.
+               */
+              heading: 'Our results and achievements',
+              accentWord: 'achievements',
+              headingLevel: 'h1',
+              /*
+               * Tinted, not white. On white the photograph sat in a tall
+               * empty band reading as leftover space rather than a section.
+               * The tint closes it into a band of its own, and sets it off
+               * against the deep blue statistics directly beneath it.
+               */
+              background: 'sea',
+              /*
+               * The page's opening line, given room to be a paragraph. Every
+               * number in it is one the page already carries — 215, 214,
+               * 99.53% and 60 are the four statistics in the band beneath —
+               * so the prose says more without claiming more.
+               */
+              content: richText([
+                'Two hundred and fifteen students of Standard X appeared for the SSC Examination of the Maharashtra State Board in 2026. Two hundred and fourteen of them passed — a success rate of 99.53%.',
+                'Sixty of that group passed with Distinction. The full grade distribution, and the pupils who went on to qualify in the Scholarship Examination, are set out below.',
+                "Pictured are the school's toppers for the year.",
+              ]),
+              cta: [],
+            },
+          ]
+        : []),
       {
         blockType: 'statistics',
         heading: 'SSC Examination 2026',
@@ -766,12 +941,14 @@ const main = async () => {
           { value: '60', label: 'Passed with Distinction' },
         ],
       },
+
       {
         blockType: 'featureList',
         heading: 'Grade distribution',
         headingLevel: 'h2',
         marker: 'tick',
-        columns: '2',
+        // Four short items. Full width left them hanging off two half-margins.
+        columns: '2-centre',
         background: 'white',
         intro: richText([
           'The South Indians’ Welfare Society High School proudly achieved an outstanding 99.53% result in the SSC Examination 2026. This exceptional achievement reflects the hard work of our students, the dedication of our teachers, and the continuous support of our parents.',
@@ -795,7 +972,8 @@ const main = async () => {
         heading: 'Who qualified',
         headingLevel: 'h3',
         marker: 'tick',
-        columns: '2',
+        // Two items, so the spread was at its worst here.
+        columns: '2-centre',
         background: 'white',
         items: Object.entries(SCHOLARSHIP_QUALIFIERS).map(([standard, names]) => ({
           title: standard,
@@ -812,9 +990,24 @@ const main = async () => {
     slug: 'school-rules',
     title: 'School rules and uniform',
     intro: 'What we ask of pupils and parents, and what our pupils wear.',
-    showInNav: true,
-    navLabel: 'Rules & uniform',
-    navOrder: 40,
+    /*
+     * OFF the menu here, and `seed:nav` puts it back in its drop-down.
+     *
+     * This used to set `showInNav: true` with a `navOrder` of its own, making
+     * it a TOP-LEVEL item. The unit template already places it inside a
+     * drop-down, so whichever script ran last won — and running this seed
+     * after `seed:nav` climbed the page back out to the top row. Secondary
+     * reached ten top-level items, 1229px of menu against a 1160px container,
+     * and the buttons wrapped onto a second line.
+     *
+     * Simply omitting the field is NOT enough: `payload.update` keeps the
+     * existing `show_in_nav` while clearing `nav_parent_id`, which promotes
+     * the page instead of leaving it alone. Setting it false explicitly means
+     * the worst this seed can do is drop the entry until `seed:nav` runs,
+     * which is the documented order anyway — and a missing drop-down entry
+     * is a far smaller fault than a menu that wraps.
+     */
+    showInNav: false,
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:

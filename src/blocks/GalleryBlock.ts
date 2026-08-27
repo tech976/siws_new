@@ -73,10 +73,11 @@ export const GalleryBlock: Block = {
       options: [
         { label: 'A row you can scroll sideways', value: 'carousel' },
         { label: 'A grid', value: 'grid' },
+        { label: 'A collage of mixed-size tiles', value: 'bento' },
       ],
       admin: {
         description:
-          'A scrolling row suits a handful of photographs; a grid is better for a full album.',
+          'A scrolling row suits a handful of photographs; a grid is better for a full album. A collage suits a gallery page that is the point of the page — it gives some photographs more room than others, so the wall has a shape instead of being an even chequerboard.',
       },
     },
     sectionOptions(),

@@ -105,10 +105,24 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
   const linkClass = (extra: string) =>
     `font-medium text-brand transition-colors hover:text-brand-deep aria-[current=page]:underline aria-[current=page]:decoration-accent-deep aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-8 ${extra}`
 
+  /*
+   * ONE breakpoint for the whole menu/hamburger switch, and 1200px is it.
+   *
+   * The menu used to appear at `lg` (1024px) while the hamburger only hid at
+   * 1400px, so for 376px of viewport BOTH were on screen: the full horizontal
+   * menu and a toggle for the menu it duplicated. That is 56px of redundant
+   * control, and it is what pushed the enquiry button onto a second line on
+   * every laptop.
+   *
+   * 1200 rather than 1024 because that is the width the row actually needs.
+   * `.siws-container` caps at 1160px, and a seven-item menu plus the two
+   * buttons measures 1142 — so the menu fits from 1200px up and genuinely
+   * does not below it, where the hamburger takes over.
+   */
   return (
     <>
       {items.length > 0 ? (
-        <nav ref={navRef} aria-label="Main" className="hidden items-center gap-1 lg:flex">
+        <nav ref={navRef} aria-label="Main" className="hidden items-center gap-0.5 min-[1200px]:flex">
           {items.map((item) => {
             const hasChildren = (item.children?.length ?? 0) > 0
 
@@ -118,7 +132,7 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
                   key={item.href}
                   href={item.href}
                   aria-current={isCurrent(item.href) ? 'page' : undefined}
-                  className={linkClass('rounded px-2.5 py-2 whitespace-nowrap')}
+                  className={linkClass('rounded px-2 py-2 whitespace-nowrap')}
                 >
                   {item.label}
                 </Link>
@@ -167,7 +181,7 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
                         ?.focus()
                     })
                   }}
-                  className={`flex items-center gap-1 rounded px-2.5 py-2 font-medium whitespace-nowrap text-brand transition-colors hover:text-brand-deep ${
+                  className={`flex items-center gap-1 rounded px-2 py-2 font-medium whitespace-nowrap text-brand transition-colors hover:text-brand-deep ${
                     branchCurrent
                       ? 'underline decoration-accent-deep decoration-2 underline-offset-8'
                       : ''
@@ -248,7 +262,7 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
             onClick={() => setOpen((value) => !value)}
             aria-expanded={open}
             aria-controls="mobile-menu"
-            className="grid size-11 place-items-center rounded-lg border border-brand min-[1400px]:hidden"
+            className="grid size-11 place-items-center rounded-lg border border-brand min-[1200px]:hidden"
           >
             <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
             <span aria-hidden="true" className="relative block h-4 w-5">
@@ -276,7 +290,7 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
         <div
           id="mobile-menu"
           ref={panelRef}
-          className="absolute inset-x-0 top-full z-50 max-h-[75vh] overflow-y-auto border-t border-line bg-white shadow-raised min-[1400px]:hidden"
+          className="absolute inset-x-0 top-full z-50 max-h-[75vh] overflow-y-auto border-t border-line bg-white shadow-raised min-[1200px]:hidden"
         >
           <nav aria-label="Main" className="siws-container flex flex-col py-2">
             {items.map((item) => {

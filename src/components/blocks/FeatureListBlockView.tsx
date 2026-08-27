@@ -109,10 +109,9 @@ const ROW_PLAN: Record<number, number[]> = {
  * it centres a large icon above the words, and an icon standing in for a
  * photograph that exists is a wasted opportunity.
  *
- * The picture is a fixed column and the words take the rest, so three cards
- * in a row stay the same shape whatever length the titles run to. It stacks
- * to one card per row on a phone, where side-by-side would leave the text
- * about twenty characters wide.
+ * The photograph runs the full width across the top and the words sit centred
+ * beneath it. A fixed aspect ratio on the image means three cards in a row
+ * stay the same shape whatever length the titles run to.
  *
  * An item with no photograph keeps its card and simply gives the whole width
  * to the words, so a set that is only half illustrated does not come out
@@ -146,44 +145,53 @@ const FeatureShowcase = ({ block }: { block: FeatureListBlock }) => {
             <li
               key={item.id ?? index}
               /*
-                `min-h-44` is what gives the photograph room. Without it the
-                card collapses to whatever two lines of text need — about
-                100px — and a wide photograph in a box that shallow is a strip.
-                All three cards take the same floor, so a one-line title and a
-                three-line one still produce a level row.
+                A COLUMN: photograph across the top, words centred beneath.
+
+                It was a row, with the picture in a 42% side column. That works
+                for a dense list, but it caps the photograph at about 150px on a
+                three-across row — and these are wide shots of a stage and a
+                hall, which need the whole width to read. No height floor any
+                more either: the image sets the height now, and `h-full` keeps
+                the row level when one title runs to two lines and another to
+                one.
               */
-              className="group flex min-h-44 overflow-hidden rounded-3xl bg-white ring-1 ring-line/70 shadow-[0_1px_2px_rgba(36,39,111,0.04),0_8px_24px_-12px_rgba(36,39,111,0.18)] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_2px_4px_rgba(36,39,111,0.06),0_18px_40px_-16px_rgba(36,39,111,0.32)]"
+              className="group flex h-full flex-col overflow-hidden rounded-3xl bg-white ring-1 ring-line/70 shadow-[0_1px_2px_rgba(36,39,111,0.04),0_8px_24px_-12px_rgba(36,39,111,0.18)] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_2px_4px_rgba(36,39,111,0.06),0_18px_40px_-16px_rgba(36,39,111,0.32)]"
             >
               {photo ? (
                 /*
-                 * A fixed-width column, not a share of the card. A percentage
-                 * made the picture shrink as the title grew, so three cards in
-                 * a row each showed the photograph at a different size.
+                 * A RATIO, not a fixed height. Every card then crops its
+                 * photograph to the same shape, so three across form a level
+                 * row however tall the originals are.
                  *
-                 * 42% of the card and stretched to its full height. The first
-                 * pass gave it a 7rem column, which on a 373px card left the
-                 * photograph about 112px wide — and every picture SIWS has for
-                 * this section is a wide one, a stage or a hall, so a column
-                 * that narrow showed a slice through the middle and none of the
-                 * occasion. The card's own height floor below is what stops
-                 * that slice being a letterbox as well.
+                 * 3:2 rather than 4:3 because these are wide shots — a stage,
+                 * a hall, a blackboard. 4:3 is squarer than any of them and
+                 * would shave the sides off the occasion to get there.
                  */
-                <div className="relative w-[42%] shrink-0 self-stretch overflow-hidden">
+                <div className="relative aspect-[3/2] w-full overflow-hidden">
                   <Media
                     resource={photo}
-                    sizes="(min-width: 1024px) 11rem, (min-width: 640px) 14rem, 9rem"
+                    /*
+                     * 30vw against a card that measures about 26vw, rounded UP
+                     * on purpose: the width picks which stored derivative is
+                     * served, and asking for slightly more than is needed means
+                     * the browser takes the larger one and scales it down.
+                     * Under-asking is what makes a full-width card image soft.
+                     */
+                    sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
               ) : null}
 
-              <div className="flex flex-1 flex-col justify-center gap-1.5 p-5">
-                <CardTitle className="text-[1.0625rem] leading-snug font-bold text-balance text-brand">
+              <div className="flex flex-1 flex-col items-center justify-center gap-2 px-5 py-6 text-center">
+                <CardTitle className="text-[1.125rem] leading-snug font-bold text-balance text-brand">
                   {item.title}
                 </CardTitle>
                 {item.description ? (
-                  <p className="text-sm leading-snug text-ink-muted">{item.description}</p>
+                  <p className="text-sm leading-snug text-balance text-ink-muted">
+                    {item.description}
+                  </p>
                 ) : null}
               </div>
             </li>
@@ -208,6 +216,38 @@ export const FeatureListBlockView = ({ block }: { block: FeatureListBlock }) => 
 
   const numbered = block.marker === 'number'
   const twoColumns = block.columns !== '1'
+  /*
+   * A short two-column list, pulled in and centred under its heading.
+   *
+   * The grid otherwise takes the full container, which is right for the long
+   * lists this layout mostly carries — eighteen school rules fill the width
+   * and the columns end level. With four items it does not: each column runs
+   * out after a couple of lines and leaves a wide empty tail, so a centred
+   * heading sits above two clumps hanging off the left of each half. Capping
+   * the grid and centring it makes the whole section one block again.
+   */
+  const heldTogether = block.columns === '2-centre'
+  /*
+   * COLUMNS SIZED TO THEIR CONTENT, not to half the grid.
+   *
+   * Capping the grid at a fixed width and centring it was not enough. Two
+   * `1fr` tracks each came out 364px wide while "Standard V / 5 students
+   * qualified." only fills about 200 of them, so both columns carried a wide
+   * dead margin on their right and all the ink ended up sitting left of the
+   * heading it was supposed to sit under — centred by measurement, visibly
+   * off by eye, which is the only measurement that counts.
+   *
+   * `auto` tracks inside a `w-fit` grid shrink to the widest item in each
+   * column, so the grid is exactly as wide as its ink and `mx-auto` then
+   * centres what a reader can actually see. The gutter has to be set here
+   * too: with the tracks no longer padded out by empty space, the columns
+   * would otherwise close up on each other.
+   */
+  const gridClass = twoColumns
+    ? heldTogether
+      ? 'gap-x-24 gap-y-7 mx-auto w-fit md:grid-cols-[auto_auto]'
+      : 'gap-x-10 gap-y-6 md:grid-cols-2'
+    : 'gap-x-10 gap-y-6 max-w-3xl'
 
   return (
     <Section background={block.background as BlockBackground}>
@@ -232,13 +272,13 @@ export const FeatureListBlockView = ({ block }: { block: FeatureListBlock }) => 
         rather than painted on — a screen reader then announces "1 of 5".
       */}
       {numbered ? (
-        <ol className={`grid gap-x-10 gap-y-6 ${twoColumns ? 'md:grid-cols-2' : 'max-w-3xl'}`}>
+        <ol className={`grid ${gridClass}`}>
           {items.map((item, index) => (
             <Item key={item.id ?? index} item={item} index={index} numbered />
           ))}
         </ol>
       ) : (
-        <ul className={`grid gap-x-10 gap-y-6 ${twoColumns ? 'md:grid-cols-2' : 'max-w-3xl'}`}>
+        <ul className={`grid ${gridClass}`}>
           {items.map((item, index) => (
             <Item key={item.id ?? index} item={item} index={index} numbered={false} />
           ))}

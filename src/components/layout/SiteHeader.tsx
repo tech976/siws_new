@@ -116,7 +116,7 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
             call to action is readable on every section instead of only the
             short ones.
           */}
-          <div className="siws-container flex flex-wrap items-center gap-x-6 gap-y-2 py-2.5">
+          <div className="siws-container flex flex-wrap items-center gap-x-4 gap-y-2 py-2.5">
             <PrimaryNav items={navItems} quickLinks={quickLinks} cta={cta} />
           </div>
         </div>

@@ -90,7 +90,30 @@ const DynamicRoute = async ({ params }: RouteProps) => {
         // The tagline now sits in the identity band, so repeating it in the
         // strip immediately beneath would say the same thing twice.
         infoText={null}
-        cta={unit ? { label: 'Enquire about admission', href: `/${unit.slug}` } : null}
+        /*
+         * The enquiry page, not the unit home page.
+         *
+         * This pointed at `/${unit.slug}` — so on every unit site the header
+         * button read "Enquire about admission" and reloaded the page the
+         * visitor was already on. Worse on the home page itself, where it did
+         * nothing visible at all.
+         *
+         * Taken from `quickLinks`, which is already loaded for the header and
+         * only ever holds pages that exist and are published — so this cannot
+         * point at a 404, and it costs no extra query. If a unit has no
+         * contact page yet, it falls back to the old behaviour rather than
+         * rendering a dead button.
+         */
+        cta={
+          unit
+            ? {
+                label: 'Enquire about admission',
+                href:
+                  quickLinks.find((l) => l.href === `/${unit.slug}/contact`)?.href ??
+                  `/${unit.slug}`,
+              }
+            : null
+        }
       />
 
       <NewsTicker items={toTickerItems(announcements, units)} />

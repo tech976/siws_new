@@ -22,6 +22,102 @@ import { Section, SectionHeading, type BlockBackground } from './Section'
  * and a mouse-drag handler; the touch feel, the momentum and the scrolling
  * itself are all still the browser's.
  */
+/*
+ * The shape of each tile in the collage, by position.
+ *
+ * A repeating pattern rather than a size chosen per photograph: an editor
+ * uploading to a gallery page is not deciding which picture deserves a big
+ * tile, and asking them to would leave most galleries all one size anyway.
+ * Six is long enough that the rhythm is not obvious over a dozen tiles and
+ * short enough to stay even.
+ *
+ * `grid-flow-dense` then backfills any hole a tall tile leaves, so a gallery
+ * of any length finishes square instead of trailing off with a gap.
+ */
+const BENTO_SPAN = [
+  'sm:col-span-2 sm:row-span-2',
+  'sm:col-span-1 sm:row-span-1',
+  'sm:col-span-1 sm:row-span-1',
+  'sm:col-span-1 sm:row-span-2',
+  'sm:col-span-2 sm:row-span-1',
+  'sm:col-span-1 sm:row-span-1',
+]
+
+/*
+ * What the browser is told to download for each tile. A two-column tile on a
+ * desktop is genuinely twice the width of a one-column tile, and telling it
+ * otherwise is how a collage ends up either soft or four times heavier than
+ * it needs to be.
+ */
+const BENTO_SIZES = [
+  '(min-width: 1024px) 50vw, (min-width: 640px) 66vw, 100vw',
+  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
+  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
+  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
+  '(min-width: 1024px) 50vw, (min-width: 640px) 66vw, 100vw',
+  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
+]
+
+/**
+ * The collage layout: mixed-size tiles on a dense grid.
+ *
+ * For a gallery page, where the photographs ARE the page. The grid layout is
+ * an even chequerboard, which is right for an album a visitor scans and flat
+ * for a page whose whole job is to show a school off.
+ *
+ * Captions sit over the foot of each tile under a gradient rather than on a
+ * card below it. On a collage the card would be the thing with the varying
+ * height, and a wall of tiles whose white strips all end at different points
+ * reads as broken. The gradient is dark enough for white text at every tile
+ * size and only covers the bottom third, so the photograph is still the tile.
+ */
+const BentoGallery = ({
+  images,
+}: {
+  images: NonNullable<GalleryBlock['images']>
+}) => (
+  /*
+   * The row height is TALLER on a phone, not shorter.
+   *
+   * Below `sm` the spans do not apply, so every tile is one column by one
+   * row — and at 9rem that made eleven 350x144 letterboxes with the caption
+   * filling a third of each. A single-column collage is really a stack of
+   * photographs, and a photograph wants height. 13rem gives roughly 3:2, and
+   * the rows can shrink again from `sm` up, where a two-row span is available
+   * to compensate.
+   */
+  <ul className="grid auto-rows-[13rem] grid-flow-dense grid-cols-1 gap-4 sm:auto-rows-[10rem] sm:grid-cols-3 lg:auto-rows-[11rem] lg:grid-cols-4">
+    {images.map((entry, index) => {
+      const media = entry.image as MediaDoc
+      const caption = entry.caption || media.caption
+      const slot = index % BENTO_SPAN.length
+
+      return (
+        <li
+          key={entry.id ?? index}
+          className={`group relative overflow-hidden rounded-3xl bg-brand-tint ring-1 ring-line/60 shadow-[0_1px_2px_rgba(36,39,111,0.04),0_10px_28px_-14px_rgba(36,39,111,0.22)] transition-shadow duration-300 hover:shadow-[0_2px_6px_rgba(36,39,111,0.08),0_22px_46px_-18px_rgba(36,39,111,0.34)] ${BENTO_SPAN[slot]}`}
+        >
+          <Media
+            resource={media}
+            sizes={BENTO_SIZES[slot]}
+            priority={index < 2}
+            fill
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+          />
+
+          {caption ? (
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-deep/85 via-brand-deep/45 to-transparent p-4 pt-10">
+              <p className="text-[0.9375rem] leading-snug font-medium text-balance text-white">
+                {caption}
+              </p>
+            </div>
+          ) : null}
+        </li>
+      )
+    })}
+  </ul>
+)
+
 export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
   const images = (block.images ?? []).filter(
     (entry) => entry.image && typeof entry.image === 'object',
@@ -132,7 +228,9 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
         <RichText data={block.intro} className="mb-8 siws-centre mx-auto max-w-3xl" />
       ) : null}
 
-      {isGrid ? (
+      {block.layout === 'bento' ? (
+        <BentoGallery images={images} />
+      ) : isGrid ? (
         images.length > perPage ? (
           <GalleryPager items={gridCards} perPage={perPage} />
         ) : (

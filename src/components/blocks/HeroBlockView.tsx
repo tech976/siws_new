@@ -96,9 +96,18 @@ export const HeroBlockView = ({ block }: { block: HeroBlock }) => {
             {title}
           </h1>
 
+          {block.subtitle ? (
+            /* The same three-step ladder as the banner above — see there. */
+            <p
+              className={`mx-auto mt-5 max-w-3xl text-center text-xl leading-snug font-semibold text-balance sm:text-[1.625rem] ${inverted ? "text-white" : "text-brand"}`}
+            >
+              {block.subtitle}
+            </p>
+          ) : null}
+
           {block.intro ? (
             <p
-              className={`mx-auto mt-6 max-w-2xl text-balance text-lg ${inverted ? "text-white/85" : "text-ink-soft"}`}
+              className={`mx-auto mt-4 max-w-2xl text-center text-[0.9375rem] leading-relaxed font-normal text-balance sm:text-[1.0625rem] ${inverted ? "text-white/75" : "text-ink-muted"}`}
             >
               {block.intro}
             </p>
@@ -157,8 +166,30 @@ export const HeroBlockView = ({ block }: { block: HeroBlock }) => {
           {title}
         </h1>
 
+        {block.subtitle ? (
+          /*
+           * A LADDER IN THREE STEPS, and weight carries it as much as size.
+           *
+           * The subheading was 24px at normal weight against an 18px
+           * description at normal weight — close enough in both that the two
+           * read as one block of body copy and the eye had nothing to land on
+           * after the heading. Semibold is what separates them: at a glance
+           * the middle line is now plainly a statement, not the first
+           * sentence of the paragraph under it.
+           *
+           * Heading 48 / subheading 26 / description 17, at weights 700 / 600
+           * / 400. Both gaps are visible on their own, so the order survives
+           * even where one of the two happens to run to a single line.
+           */
+          <p className="mx-auto mt-5 max-w-3xl text-center text-xl leading-snug font-semibold text-balance text-white sm:text-[1.625rem]">
+            {block.subtitle}
+          </p>
+        ) : null}
+
         {block.intro ? (
-          <p className="mt-7 max-w-2xl text-lg text-balance text-white/90 sm:text-xl">
+          /* The bottom step: lighter weight, smaller, and dimmed. It supports
+             the two lines above rather than competing with them. */
+          <p className="mx-auto mt-4 max-w-2xl text-center text-[0.9375rem] leading-relaxed font-normal text-balance text-white/75 sm:text-[1.0625rem]">
             {block.intro}
           </p>
         ) : null}

@@ -904,6 +904,55 @@ const main = async () => {
       ],
     },
 
+    // -------------------------------------------------------- CAMPUS GALLERY
+    /*
+     * Every photograph the Kindergarten page already shows, gathered onto the
+     * page the menu points at.
+     *
+     * The pictures were spread across three sections — the facilities row, the
+     * programme cards and the Holistic Development band — where each one is a
+     * small illustration of the point beside it. A parent who wants to SEE the
+     * place had nowhere to go: About > Campus Gallery led to an empty
+     * placeholder. Same photographs, shown at a size worth looking at.
+     *
+     * Deliberately not a fresh set: these are what SIWS has sent. Adding more
+     * later is a line each here, or an editor dropping them into the block.
+     */
+    {
+      slug: 'gallery',
+      title: 'Campus Gallery',
+      intro:
+        'A look around the Kindergarten section — the classrooms, the play area and the children at work.',
+      showInNav: true,
+      navLabel: 'Campus Gallery',
+      navOrder: 3,
+      metaDescription:
+        'Photographs of the SIWS Kindergarten section in Wadala — classrooms, play area, activities and the children at work.',
+      layout: [
+        {
+          blockType: 'gallery',
+          heading: 'Around the Kindergarten',
+          accentWord: 'Kindergarten',
+          headingLevel: 'h2',
+          layout: 'bento',
+          background: 'white',
+          images: [
+            ...shot(img.classroomActivity, 'Spacious, well-ventilated classrooms'),
+            ...shot(img.playArea, 'Safe play and activity area'),
+            ...shot(img.classroomGroup, 'Group tables sized for young children'),
+            ...shot(img.teacherWithChildren, 'Supportive and trained school staff'),
+            ...shot(img.classroomSeated, 'Dedicated activity rooms'),
+            ...shot(img.smartBoard, 'Interactive smart boards in every classroom'),
+            ...shot(img.drawingClass, 'Quiet, focused work at every desk'),
+            ...shot(img.activityLiteracy, 'Early literacy and numeracy'),
+            ...shot(img.activityCreative, 'Creative expression'),
+            ...shot(img.activityMotor, 'Cognitive and motor development'),
+            ...shot(img.childrenTogether, 'Holistic development beyond the classroom'),
+          ],
+        },
+      ],
+    },
+
     // -------------------------------------------------------------- TEACHERS
     {
       slug: 'teachers',

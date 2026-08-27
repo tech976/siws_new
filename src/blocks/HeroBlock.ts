@@ -45,11 +45,23 @@ export const HeroBlock: Block = {
       },
     },
     {
+      name: 'subtitle',
+      type: 'textarea',
+      maxLength: 200,
+      label: 'Subheading',
+      admin: {
+        description:
+          'Optional. One line, set larger than the introduction — the promise the heading is making. Leave it out and the introduction simply follows the heading.',
+      },
+    },
+    {
       name: 'intro',
       type: 'textarea',
       maxLength: 500,
       label: 'Introduction',
-      admin: { description: 'Optional. One or two sentences below the heading.' },
+      admin: {
+        description: 'Optional. One or two sentences below the subheading.',
+      },
     },
     {
       name: 'image',

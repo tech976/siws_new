@@ -83,7 +83,7 @@ export const QuickLinks = ({ links }: { links: QuickLink[] }) => {
           not its weight — two solid pills of equal presence would leave a
           visitor no idea which one the school wants them to press.
         */
-        className="flex min-h-12 items-center gap-2 rounded-pill border border-line px-5 py-3 text-sm font-semibold text-brand transition-colors hover:border-brand hover:text-brand-deep"
+        className="flex min-h-12 items-center gap-2 rounded-pill border border-line px-4 py-3 text-sm font-semibold text-brand transition-colors hover:border-brand hover:text-brand-deep"
       >
         {/*
           The label is spelled out from `sm` up and reduced to the icon on the

@@ -456,9 +456,29 @@ const main = async () => {
     layout: [
       {
         blockType: 'hero',
-        eyebrow: 'Since 1934',
-        title: TAGLINE,
-        accentWord: 'Inspiring Excellence',
+        /*
+         * NO EYEBROW on this one.
+         *
+         * It read 'Since 1934', and the line under the heading now ends
+         * "shaping futures since 1934" — the same fact twice within three
+         * lines of each other, once as a chip and once as prose. The prose
+         * says it better, so the chip goes and the heading sits directly
+         * under the banner with nothing above it.
+         */
+        title: 'Excellence at Every Stage',
+        /*
+         * The accent falls on 'Every Stage' — the half of the heading that
+         * is actually the claim. Accenting "Excellence" would highlight the
+         * word every school uses and leave the distinguishing half plain.
+         */
+        accentWord: 'Every Stage',
+        /*
+         * Three steps, not two: a heading, the promise it is making, and the
+         * plain description of who is making it. The description was briefly
+         * dropped when the subheading arrived, which left the banner asserting
+         * something about SIWS without ever saying what SIWS is.
+         */
+        subtitle: 'From early foundations to advanced milestones, shaping futures since 1934.',
         intro:
           "South Indians' Welfare Society is one of Mumbai's most respected educational institutions, nurturing students from Kindergarten to Postgraduate education.",
         /*
