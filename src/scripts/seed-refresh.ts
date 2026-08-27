@@ -78,6 +78,20 @@ const STEPS: Step[] = [
   { script: 'seed:scholarships', does: 'the scholarship register' },
   { script: 'seed:kg', does: 'the Kindergarten site' },
   { script: 'seed:primary', does: 'the Primary site' },
+  /*
+   * RETIRES THE TWO CAMPUS PAGES, and it has to be here rather than run by hand.
+   *
+   * `seed:primary` stopped CREATING the Wadala and Matunga pages, which is not
+   * the same as removing them: a database seeded before the merge still holds
+   * both, still published, and — because a unit scope in `nav.ts` is not
+   * authoritative — still carrying `show_in_nav`, so they stay in the Primary
+   * menu. The merge would have been complete on the one machine that ran the
+   * script by hand and nowhere else.
+   *
+   * Idempotent: once the pages are gone and no record carries a campus tag, it
+   * reports that and does nothing.
+   */
+  { script: 'primary:merge', does: 'retiring the Wadala and Matunga campus pages' },
   { script: 'seed:secondary', does: 'the Secondary site' },
   { script: 'seed:units', does: 'Primary, Secondary and Junior College build-out' },
   { script: 'seed:pages', does: 'general copy for pages still blank' },

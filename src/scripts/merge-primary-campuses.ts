@@ -60,8 +60,21 @@ const main = async () => {
     const dir = path.resolve(process.cwd(), 'docs')
     fs.mkdirSync(dir, { recursive: true })
     const backup = path.join(dir, 'retired-campus-pages.json')
-    fs.writeFileSync(backup, JSON.stringify(pages, null, 2), 'utf-8')
-    payload.logger.info(`Backed up ${pages.length} page(s) to ${backup}`)
+    /*
+     * Never overwrite a backup that is already committed.
+     *
+     * This runs on every teammate's machine now, and each one still holds its
+     * own copy of the two pages. Rewriting the file would hand every one of
+     * them a spurious change to a tracked file — and, worse, the LAST person to
+     * run it would decide what the archived copy says. The first capture is the
+     * one that was reviewed, so it stands.
+     */
+    if (fs.existsSync(backup)) {
+      payload.logger.info(`Backup already exists at ${backup} — left as it is.`)
+    } else {
+      fs.writeFileSync(backup, JSON.stringify(pages, null, 2), 'utf-8')
+      payload.logger.info(`Backed up ${pages.length} page(s) to ${backup}`)
+    }
 
     for (const page of pages) {
       if (dryRun) {

@@ -52,6 +52,7 @@
     "seed:portal-hero": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/portal-hero.ts",
     "photos:consent": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/record-photo-consent.ts",
     "media:dedupe": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/dedupe-media.ts",
+    "primary:merge": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/merge-primary-campuses.ts",
     "seed:verify": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-verify.ts",
     "seed:refresh": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-refresh.ts",
     "seed:onam": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/onam.ts",
