@@ -80,7 +80,11 @@ const METHODOLOGY = [
  */
 const FACULTY = [
   { name: 'Mrs. Sreelatha Nair', designation: 'Head Mistress', qualifications: 'M.A., M.Ed.' },
-  { name: 'Mrs. Biny Thomas', designation: 'Assistant Head Mistress', qualifications: 'B.Sc., B.Ed.' },
+  {
+    name: 'Mrs. Biny Thomas',
+    designation: 'Assistant Head Mistress',
+    qualifications: 'B.Sc., B.Ed.',
+  },
   { name: 'Mrs. Vanathi Rajuswamy', qualifications: 'S.S.C., B.A., D.Ed., B.Ed.' },
   { name: 'Mr. Ajendrakumar Rai', qualifications: 'B.A., M.A., B.Ed.' },
   { name: 'Mr. Suresh Kishan Giri', qualifications: 'B.A., B.P.Ed., M.P.Ed.' },
@@ -100,12 +104,31 @@ const FACULTY = [
   { name: 'Mrs. Kavita Vedprakash Rai', qualifications: 'M.A., B.Ed.' },
   { name: 'Mrs. Angel Jabakani', qualifications: 'B.A., M.A., B.Ed.' },
   { name: 'Mrs. Pooja Santosh Pandey', qualifications: 'B.A., B.Ed.' },
-  { name: 'Mrs. Anithajanaki Arunachalam', designation: 'Shikshan Sevak', qualifications: 'B.A., M.A., B.Ed.' },
-  { name: 'Mr. Jagannath Suresh Arya', designation: 'Shikshan Sevak', qualifications: 'B.A., M.A., B.Ed., M.Ed.' },
-  { name: 'Mrs. Dhanashri Madhukar Bansode', designation: 'Shikshan Sevak', qualifications: 'B.A., M.A., B.Ed., TET' },
-  { name: 'Miss Ramalakshmi Lakshmanan', designation: 'Shikshan Sevak', qualifications: 'B.Sc., M.A., B.Ed., CTET' },
+  {
+    name: 'Mrs. Anithajanaki Arunachalam',
+    designation: 'Shikshan Sevak',
+    qualifications: 'B.A., M.A., B.Ed.',
+  },
+  {
+    name: 'Mr. Jagannath Suresh Arya',
+    designation: 'Shikshan Sevak',
+    qualifications: 'B.A., M.A., B.Ed., M.Ed.',
+  },
+  {
+    name: 'Mrs. Dhanashri Madhukar Bansode',
+    designation: 'Shikshan Sevak',
+    qualifications: 'B.A., M.A., B.Ed., TET',
+  },
+  {
+    name: 'Miss Ramalakshmi Lakshmanan',
+    designation: 'Shikshan Sevak',
+    qualifications: 'B.Sc., M.A., B.Ed., CTET',
+  },
   { name: 'Mr. Selvin Rajkumar Joseph', qualifications: 'S.S.C., D.Ed.' },
-  { name: 'Mrs. Ranjana Moses Brownson', qualifications: 'S.S.C., B.A., A.T.D., Dip. in Applied Art' },
+  {
+    name: 'Mrs. Ranjana Moses Brownson',
+    qualifications: 'S.S.C., B.A., A.T.D., Dip. in Applied Art',
+  },
   { name: 'Mrs. Aarti Rajesh Dubey', qualifications: 'H.S.C., B.A., D.Ed.' },
   { name: 'Mrs. Mamta Samil Loke', qualifications: 'H.S.C., B.A., M.A., D.Ed.' },
   { name: 'Mrs. Priya Dinesh Deore', qualifications: 'H.S.C., D.Ed.' },
@@ -113,11 +136,18 @@ const FACULTY = [
   { name: 'Mr. Vijay Ramdas Jadhav', qualifications: 'H.S.C., A.T.D. (Craft), A.M.' },
   { name: 'Mrs. Sejal Maclan D’Silva', qualifications: 'H.S.C., B.A., M.A., D.Ed.' },
   { name: 'Mr. Vikram Jayram Patil', qualifications: 'H.S.C., B.A., D.Ed.' },
-  { name: 'Miss Bhavana Bhagwant Tuplondhe', qualifications: 'H.S.C., B.A., M.A., D.Ed., B.Ed., M.Ed.' },
+  {
+    name: 'Miss Bhavana Bhagwant Tuplondhe',
+    qualifications: 'H.S.C., B.A., M.A., D.Ed., B.Ed., M.Ed.',
+  },
   { name: 'Mrs. Ujjwala Mahesh Patil', qualifications: 'H.S.C., B.A., M.A., D.Ed.' },
   { name: 'Miss Supriya Shivaji Sonawane', qualifications: 'H.S.C., B.A., M.A., D.Ed.' },
   { name: 'Mr. Kandekar Sadanand Mahadev', qualifications: 'H.S.C., D.Ed., TET' },
-  { name: 'Miss Jenisha Thomas', designation: 'Shikshan Sevak', qualifications: 'H.S.C., D.El.Ed., CTET' },
+  {
+    name: 'Miss Jenisha Thomas',
+    designation: 'Shikshan Sevak',
+    qualifications: 'H.S.C., D.El.Ed., CTET',
+  },
 
   /*
    * The Computer Section, supplied by SIWS on 2026-08-25.
@@ -153,30 +183,36 @@ const FACULTY = [
   },
 ]
 
-/** The general rules, verbatim. */
+/**
+ * The general rules, in the school’s own wording.
+ *
+ * With one substitution: the document says "pupils" throughout and the site
+ * says "students" (SIWS, 2026-08-29). A synonym, so no rule means anything
+ * different for it — but "verbatim" is now a word too strong for what this is.
+ */
 const GENERAL_RULES: string[] = [
-  'Every pupil must possess a copy of the school calendar which must be brought daily to the school.',
+  'Every student must possess a copy of the school calendar which must be brought daily to the school.',
   'Minimum attendance of 75% of the total number of working days is required to be fulfilled by all students.',
-  'All pupils must come to school in the prescribed uniform. Uniform should be clean and well ironed.',
-  'Pupils are expected to keep their hair and nails short. They are not permitted to colour their hair or sport any fashionable haircut.',
-  'Pupils are responsible for the safe custody of their books and other belongings. They are requested not to wear any ornaments or watch for the sake of personal safety.',
-  'Pupils should maintain discipline while moving in and out of the classroom when going to attend P.T., Mass, drill, Science Practicals, Computer seminars, etc.',
-  'At all times a pupil is expected to communicate in English only.',
+  'All students must come to school in the prescribed uniform. Uniform should be clean and well ironed.',
+  'Students are expected to keep their hair and nails short. They are not permitted to colour their hair or sport any fashionable haircut.',
+  'Students are responsible for the safe custody of their books and other belongings. They are requested not to wear any ornaments or watch for the sake of personal safety.',
+  'Students should maintain discipline while moving in and out of the classroom when going to attend P.T., Mass, drill, Science Practicals, Computer seminars, etc.',
+  'At all times a student is expected to communicate in English only.',
   'Irregular attendance, habitual idleness, late coming, wilful disobedience or misconduct and any form of indiscipline in the school will be seriously dealt with.',
-  'All pupils are responsible to the school authorities for their behaviour inside the school.',
+  'All students are responsible to the school authorities for their behaviour inside the school.',
   'Any damage to school property, whether inside or outside the classrooms or within the school premises, will have to be made good by those responsible or by their parents or guardians. The decision of the school authorities regarding compensation payable to the school is final.',
   'Parents/guardians or others are not allowed to see their wards or meet their teacher during school hours without the prior consent of the Head Mistress.',
-  'Any breach of discipline or disrespect to any members of the school staff will be dealt with seriously and pupils responsible for such misbehaviour will be summarily dismissed after proper warning to the student and parents/guardians.',
+  'Any breach of discipline or disrespect to any members of the school staff will be dealt with seriously and students responsible for such misbehaviour will be summarily dismissed after proper warning to the student and parents/guardians.',
   'The school authorities maintain a record of the addresses and phone numbers of parents/guardians in the school office and for their own interest. Parents/guardians are requested to promptly intimate the changes, if any.',
   'Presents in cash or in kind to the teachers is not permitted. Collection of funds for any reason whatsoever within the school premises is also prohibited.',
-  'Letters addressed to pupils in the school will not be delivered in the classrooms.',
-  'Pupils are not permitted to bring unnecessary books, magazines, newspapers, periodicals or similar articles to the school. They must bring only dry food for the long recess.',
-  'Pupils are forbidden to take part in any political or other organisation likely to result in violence or communal disturbance.',
-  'Parents/guardians are earnestly requested to enforce regularity and discipline and see that their children do their homework and prepare their lessons daily as per the timetable. Parental cooperation is earnestly solicited not only for the benefit of the pupil but also for the smooth working of the school.',
-  'Extracts from the Grant-in-Aid Code Rule 53, “Principles of Discipline”: regularity and implicit obedience are expected; politeness and courtesy of speech and conduct as well as cleanliness of dress and person are inculcated; pupils are made to realise that they are responsible to the school authorities not only for their conduct in the school but also for their general behaviour outside; and parents/guardians are given to understand that the management has the right to decide on what conditions they will admit or retain pupils, provided such conditions conform to the Grant-in-Aid Code and the instructions issued by the Director or concerned Educational Inspector from time to time.',
+  'Letters addressed to students in the school will not be delivered in the classrooms.',
+  'Students are not permitted to bring unnecessary books, magazines, newspapers, periodicals or similar articles to the school. They must bring only dry food for the long recess.',
+  'Students are forbidden to take part in any political or other organisation likely to result in violence or communal disturbance.',
+  'Parents/guardians are earnestly requested to enforce regularity and discipline and see that their children do their homework and prepare their lessons daily as per the timetable. Parental cooperation is earnestly solicited not only for the benefit of the student but also for the smooth working of the school.',
+  'Extracts from the Grant-in-Aid Code Rule 53, “Principles of Discipline”: regularity and implicit obedience are expected; politeness and courtesy of speech and conduct as well as cleanliness of dress and person are inculcated; students are made to realise that they are responsible to the school authorities not only for their conduct in the school but also for their general behaviour outside; and parents/guardians are given to understand that the management has the right to decide on what conditions they will admit or retain students, provided such conditions conform to the Grant-in-Aid Code and the instructions issued by the Director or concerned Educational Inspector from time to time.',
   'No school business will be transacted on Saturdays, Sundays and holidays.',
-  'Any pupil who is persistently non-co-operative, or is repeatedly or wilfully mischievous, or is guilty of gross malpractices in connection with examinations, or has committed an act of serious indiscipline or misbehaviour, or who in the opinion of the Head of the School has an undesirable influence on fellow pupils, is liable to be expelled either permanently or removed for a specified period by the Head of School, with the reasons recorded in writing.',
-  'Any report that signifies objectionable conduct even out of school premises on the part of a pupil shall make him or her liable for disciplinary action.',
+  'Any student who is persistently non-co-operative, or is repeatedly or wilfully mischievous, or is guilty of gross malpractices in connection with examinations, or has committed an act of serious indiscipline or misbehaviour, or who in the opinion of the Head of the School has an undesirable influence on fellow students, is liable to be expelled either permanently or removed for a specified period by the Head of School, with the reasons recorded in writing.',
+  'Any report that signifies objectionable conduct even out of school premises on the part of a student shall make him or her liable for disciplinary action.',
   'Railway concession forms and other certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — will be issued between 10.00 a.m. and 12.00 noon only.',
 ]
 
@@ -184,7 +220,7 @@ const UNIFORM = [
   {
     title: 'Girls',
     description:
-      'Light blue striped shirt with collar and long sleeves up to the elbow. Dark blue skirt reaching below the knee. Blue belt. Sweater in navy blue only. Hair tied in two plaits with blue ribbon. Pupils are expected not to wear mehendi or nail polish, and to keep their nails short.',
+      'Light blue striped shirt with collar and long sleeves up to the elbow. Dark blue skirt reaching below the knee. Blue belt. Sweater in navy blue only. Hair tied in two plaits with blue ribbon. Students are expected not to wear mehendi or nail polish, and to keep their nails short.',
   },
   {
     title: 'Boys — Standards V to VII',
@@ -211,15 +247,69 @@ const UNIFORM = [
  * The grade distribution sums to 214, which is exactly the number who passed,
  * so the two halves of the result agree with each other.
  */
+/**
+ * Eight pieces of parent feedback, sent by SIWS with the families' consent
+ * (2026-08-29) and reproduced word for word.
+ *
+ * `attribution` is filled in because the record of who said a thing belongs
+ * with the thing; the block is asked NOT to print it, since a heading reading
+ * "What parents say" over eight cards each signed "Parent" is the same word
+ * nine times. Same decision as the Kindergarten and Primary pages.
+ */
+const PARENT_QUOTES: { quote: string; attribution: string; detail?: string }[] = [
+  {
+    quote:
+      'We’ve been happy with the teachers and the overall environment. Our child is doing well.',
+    attribution: 'Parent',
+  },
+  {
+    quote: 'The teachers are approachable and we can reach out whenever there’s an issue.',
+    attribution: 'Parent',
+  },
+  {
+    quote: 'My child has become much more independent with studies since joining SIWS.',
+    attribution: 'Parent',
+  },
+  {
+    quote: 'We’re quite happy with the academics and the way the teachers guide the students.',
+    attribution: 'Parent',
+  },
+  {
+    quote: 'The school has been good for our child. They’ve become more confident over the years.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'We’ve had a good experience with SIWS so far. The teachers are supportive and involved.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'The workload is definitely more now, but the teachers have been helpful whenever our child needs support.',
+    attribution: 'Parent',
+  },
+  {
+    quote: 'Overall, we’re happy with the school and feel our child is in a good environment.',
+    attribution: 'Parent',
+  },
+]
+
 const SSC_2026 = {
   appeared: 215,
   passed: 214,
   percentage: '99.53%',
+  /*
+   * A MARK PER BAND, ranked.
+   *
+   * These fell back to the neutral tick, so four identical checks stood under
+   * four different headings — which tells a reader the four are the same
+   * thing. Four marks that differ at a glance and rank in an obvious order.
+   */
   grades: [
-    { title: 'Distinction', description: '60 students.' },
-    { title: 'First Class', description: '99 students.' },
-    { title: 'Second Class', description: '54 students.' },
-    { title: 'Pass Class', description: '1 student.' },
+    { title: 'Distinction', description: '60 students.', icon: 'trophy' },
+    { title: 'First Class', description: '99 students.', icon: 'medal' },
+    { title: 'Second Class', description: '54 students.', icon: 'merit' },
+    { title: 'Pass Class', description: '1 student.', icon: 'pass' },
   ],
 }
 
@@ -283,8 +373,23 @@ const main = async () => {
        * The section had no telephone number at all — the header, the footer
        * and the contact page each render one only when the unit carries it,
        * so all three were simply blank on this site.
+       *
+       * The pair below is what SIWS asked to appear in the footer
+       * (2026-08-29), and it is the same pair the Kindergarten unit carries:
+       * the Society’s general email and mobile number, which reach the
+       * office for any section.
+       *
+       * 022-24180877 has NOT gone. It is the school’s own landline and it
+       * stays in the five places on this site that tell a reader to ring the
+       * OFFICE about a specific thing — arranging a meeting with a teacher,
+       * asking about a route, sending feedback. A general number in the
+       * footer and a direct number beside the instruction to use it are two
+       * different pieces of information, and the `phone` field holds one
+       * value: whatever is in it becomes a `tel:` link, so two numbers in
+       * the one field would produce a link that dials neither.
        */
-      phone: '022-24180877',
+      phone: '+91 98927 03893',
+      email: 'info@siws.edu.in',
     } as never,
   })
 
@@ -391,8 +496,16 @@ const main = async () => {
    */
   const classroomAtWork = await photo('secondary-craft-class.jpg')
   const classroomActivity = await photo('secondary-activity-class.jpg')
-  const recognition = await photo('secondary-swachhta-certificate.jpg')
-  const toppers = await photo('secondary-toppers-2026.jpg')
+  const recognition = await photo('secondary-swachhta-2023.jpg')
+  const toppers = await photo('secondary-toppers-2026-close.jpg')
+  /*
+   * Named `siws-` rather than `secondary-` because both were seeded before
+   * anybody was filing photographs by section — but the alt text of each says
+   * Secondary students in so many words, and `media.ts` now tags them to this
+   * section. They are the only two of the six that no page was using.
+   */
+  const inTheHall = await photo('siws-yoga-meditation.jpg')
+  const greenSkills = await photo('siws-green-skills.jpg')
 
   // --------------------------------------------------------------- CONTACT
   /** Seeded before `home`, which links to it — see the note in primary.ts. */
@@ -550,7 +663,7 @@ const main = async () => {
         marker: 'tick',
         background: 'white',
         intro: richText([
-          'Two hundred and fifteen students sat the examination and two hundred and fourteen passed.',
+          'Out of 215 students who appeared, 214 passed with flying colors — 99.53% success rate.',
         ]),
         items: SSC_2026.grades,
       },
@@ -588,8 +701,14 @@ const main = async () => {
         layout: 'compact',
         marker: 'tick',
         background: 'white',
+        /*
+         * Three paragraphs rather than one, so the claim, the scope and the
+         * reason each get a line of their own instead of running together.
+         */
         intro: richText([
-          'The methods used across the section, chosen so that understanding is built rather than memorised.',
+          'We don’t teach for exams. We teach for life.',
+          'Across Standards V to X, our methods help students understand concepts deeply — so learning stays with them.',
+          'Aligned with NEP 2020, we prioritize conceptual understanding over rote learning, fostering critical thinking and real-world application.',
         ]),
         items: METHODOLOGY,
       },
@@ -745,7 +864,7 @@ const main = async () => {
         accentWord: 'Subjects',
         headingLevel: 'h2',
         marker: 'tick',
-        columns: '2',
+        columns: '2-centre',
         background: 'sea',
         items: SUBJECTS,
       },
@@ -755,7 +874,7 @@ const main = async () => {
         accentWord: 'teach',
         headingLevel: 'h2',
         marker: 'tick',
-        columns: '2',
+        columns: '2-centre',
         background: 'white',
         items: METHODOLOGY,
       },
@@ -922,7 +1041,7 @@ const main = async () => {
                */
               content: richText([
                 'Two hundred and fifteen students of Standard X appeared for the SSC Examination of the Maharashtra State Board in 2026. Two hundred and fourteen of them passed — a success rate of 99.53%.',
-                'Sixty of that group passed with Distinction. The full grade distribution, and the pupils who went on to qualify in the Scholarship Examination, are set out below.',
+                'Sixty of that group passed with Distinction. The full grade distribution, and the students who went on to qualify in the Scholarship Examination, are set out below.',
                 "Pictured are the school's toppers for the year.",
               ]),
               cta: [],
@@ -967,29 +1086,112 @@ const main = async () => {
           'Their hard work, dedication and perseverance have brought pride and honour to the school. We extend our heartfelt congratulations to the students, teachers and parents for this remarkable achievement.',
         ]),
       },
-      {
-        blockType: 'featureList',
-        heading: 'Who qualified',
-        headingLevel: 'h3',
-        marker: 'tick',
-        // Two items, so the spread was at its worst here.
-        columns: '2-centre',
-        background: 'white',
-        items: Object.entries(SCHOLARSHIP_QUALIFIERS).map(([standard, names]) => ({
-          title: standard,
-          description: CHILD_NAMES_CONSENTED
-            ? names.join(', ') + '.'
-            : `${names.length} student${names.length === 1 ? '' : 's'} qualified.`,
-        })),
-      },
     ],
   })
 
   // ------------------------------------------------------- RULES & UNIFORM
+  // ---------------------------------------------------------- PARENT FEEDBACK
+  /*
+   * The page carries only the four ways of reaching the school.
+   *
+   * SIWS has sent no parent quotes for the Secondary Section — the warning at
+   * the foot of this file has said so from the start — and the drifting rows
+   * that the Kindergarten and Primary pages use appear on their own the
+   * moment `PARENT_QUOTES` has four or more in it. Inventing them is not an
+   * option: a school's testimonials are the one thing on a site a family
+   * takes entirely on trust.
+   */
+  await upsert({
+    slug: 'parent-feedback',
+    title: 'Parent feedback',
+    intro:
+      'What families tell us shapes how the school runs. If your child is with us, we would like to hear from you.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
+     *
+     * This is a CHILD entry in the shared unit template. Setting it true from
+     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
+     * wins — so running this seed after `seed:nav` climbed every child out
+     * to the top row at once. Secondary reached thirteen top-level items and
+     * the buttons wrapped onto a second line.
+     *
+     * Omitting the field is NOT enough: `payload.update` keeps the existing
+     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+     * rather than leaving it alone. False explicitly means the worst this seed
+     * can do is drop the entry until `seed:nav` runs — which is the
+     * documented order anyway, and a missing drop-down entry is a far smaller
+     * fault than a menu that wraps.
+     */
+    showInNav: false,
+    navLabel: 'Parent Feedback',
+    navOrder: 82,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Send your feedback to SIWS High School, Wadala — and read what parents of our Standard V to X students say.',
+    layout: [
+      ...(PARENT_QUOTES.length > 0
+        ? [
+            {
+              blockType: 'testimonials',
+              heading: 'What parents say',
+              accentWord: 'parents',
+              headingLevel: 'h2',
+              background: 'white',
+              /*
+               * ONE row here, where Kindergarten and Primary run two.
+               *
+               * Those pages have ten quotes each, which split five and five
+               * and give both rows a track worth watching. Eight would split
+               * four and four — four cards make a track barely wider than the
+               * viewport, so the loop point comes round often enough to
+               * notice, and the section ends up twice as tall as eight quotes
+               * justify. One row takes all eight and reads better for it.
+               */
+              layout: 'marquee-single',
+              showAttribution: false,
+              quotes: PARENT_QUOTES,
+            },
+          ]
+        : []),
+      {
+        blockType: 'featureList',
+        heading: 'How to send us your feedback',
+        accentWord: 'feedback',
+        headingLevel: 'h2',
+        marker: 'number',
+        columns: '1',
+        background: 'sea',
+        items: [
+          {
+            title: 'Speak to the class teacher first',
+            description:
+              'Anything about your own child — the work, the timetable, how they are settling — is usually answered fastest by the person who teaches them.',
+          },
+          {
+            title: 'Ask the office for the Head Mistress',
+            description:
+              'For anything the class teacher cannot settle, the office will arrange a time. Please telephone rather than calling in, so somebody is free when you arrive.',
+          },
+          {
+            title: 'Telephone the school on 022-24180877',
+            description:
+              'The school office takes calls during working hours. Saturdays, Sundays and holidays are not office days.',
+          },
+          {
+            title: 'Or write to us through the enquiry form',
+            description:
+              'The form on the Contact page reaches the school directly, and somebody will come back to you.',
+          },
+        ],
+      },
+    ],
+  })
+
   await upsert({
     slug: 'school-rules',
     title: 'School rules and uniform',
-    intro: 'What we ask of pupils and parents, and what our pupils wear.',
+    intro: 'What we ask of students and parents, and what our students wear.',
     /*
      * OFF the menu here, and `seed:nav` puts it back in its drop-down.
      *
@@ -1035,18 +1237,1401 @@ const main = async () => {
     ],
   })
 
+  // ----------------------------------------------------- FACILITIES & CAMPUS
+  /*
+   * The page the About drop-down has pointed at since the menu was built,
+   * carrying a heading and nothing else.
+   *
+   * WHAT IT IS ALLOWED TO SAY. Three things about this campus are stated in
+   * SIWS's own material: well-equipped science and computer laboratories,
+   * CCTV throughout, and the #SwachhtaMonitor 2023 certificate. Two more are
+   * implied by the rules, which tell students how to behave "when going to
+   * attend P.T., Mass drill, Science Practicals, Computer seminars" — so there
+   * is a hall and there are grounds, because the school tells children how to
+   * walk to them.
+   *
+   * SMART BOARDS ARE NOT CLAIMED HERE. "Smart boards in every classroom" is in
+   * the enquiry panel and on the home page, but SIWS asked for it off this
+   * page (2026-08-29) because the every-classroom part is not confirmed. A
+   * facilities page is where a reader goes to check such a thing, so it is
+   * the last place to repeat one nobody is sure of.
+   *
+   * Nothing here adds a library, a canteen, a sick room or a bus. The warning
+   * at the foot of this file lists what SIWS has not sent, and a facilities
+   * page is the single easiest place to quietly invent a building.
+   *
+   * WHY IT IS BUILT ROUND PHOTOGRAPHS. A facilities page made of icon cards is
+   * a list of claims; the point of one is to let somebody see the place. Two
+   * of this section's six photographs — the hall and the veranda — were on no
+   * page at all, and they are the two that show the campus rather than a
+   * lesson. They carry the page, and the cards summarise underneath.
+   */
+  /** Looks a page of this section up by slug, drafts included. */
+  const pageId = async (slug: string) => {
+    const { docs } = await payload.find({
+      collection: 'pages',
+      where: { and: [{ slug: { equals: slug } }, { unit: { equals: secondary.id } }] },
+      limit: 1,
+      depth: 0,
+      draft: true,
+      overrideAccess: true,
+    })
+    return docs[0]?.id ?? null
+  }
+
+  const galleryPageId = await (async () => {
+    const { docs } = await payload.find({
+      collection: 'pages',
+      where: { and: [{ slug: { equals: 'gallery' } }, { unit: { equals: secondary.id } }] },
+      limit: 1,
+      depth: 0,
+      draft: true,
+      overrideAccess: true,
+    })
+    if (!docs[0]) {
+      payload.logger.warn(
+        'Facilities: no Campus Gallery page yet, so the page is published without its closing link. Run npm run seed:galleries, then this seed again.',
+      )
+    }
+    return docs[0]?.id ?? null
+  })()
+
+  await upsert({
+    slug: 'facilities',
+    title: 'Facilities & Campus',
+    intro:
+      'Laboratories for science and computing, a hall the whole school fits into, and grounds for P.T. — on a campus the State has certified for how it is kept.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
+     *
+     * This is a CHILD entry in the shared unit template. Setting it true from
+     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
+     * wins — so running this seed after `seed:nav` climbed every child out
+     * to the top row at once. Secondary reached thirteen top-level items and
+     * the buttons wrapped onto a second line.
+     *
+     * Omitting the field is NOT enough: `payload.update` keeps the existing
+     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+     * rather than leaving it alone. False explicitly means the worst this seed
+     * can do is drop the entry until `seed:nav` runs — which is the
+     * documented order anyway, and a missing drop-down entry is a far smaller
+     * fault than a menu that wraps.
+     */
+    showInNav: false,
+    navLabel: 'Facilities & Campus',
+    navOrder: 2,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'The SIWS High School campus in Wadala — science and computer laboratories, a school hall used for assembly and meditation, grounds for P.T., and CCTV surveillance throughout.',
+    layout: [
+      ...(inTheHall
+        ? [
+            {
+              blockType: 'mediaText',
+              heading: 'The hall, on an ordinary morning',
+              accentWord: 'The hall',
+              headingLevel: 'h2',
+              background: 'white',
+              imagePosition: 'left',
+              imageShape: 'rounded',
+              image: inTheHall,
+              content: richText([
+                'The same floor that holds a prize-giving in the evening holds a guided meditation in the morning. Rows of students in house-colour sports shirts, cross-legged on mats, eyes closed — mindfulness and focus practised together, at the scale a school hall allows.',
+                'It is the room that makes the difference between a school that talks about wellbeing and one that timetables it.',
+              ]),
+            },
+          ]
+        : []),
+      {
+        blockType: 'featureList',
+        heading: 'What the campus has',
+        accentWord: 'campus',
+        headingLevel: 'h2',
+        layout: 'cards',
+        background: 'sea',
+        items: [
+          {
+            title: 'Science laboratories',
+            icon: 'laboratory',
+            description:
+              'Well equipped, and used: Science Practicals are timetabled work from Standard V, not a demonstration at the front of a classroom.',
+          },
+          {
+            title: 'Computer laboratories',
+            icon: 'computers',
+            description:
+              'ICT is taught as a subject, and the Computer Section has a Head of Department and three teachers of its own.',
+          },
+          {
+            title: 'A hall for the whole school',
+            icon: 'activity',
+            description:
+              'Assemblies, mass drill, meditation, cultural performances, competitions and prize-giving — all of it happens in one room the school fits into.',
+          },
+          {
+            title: 'Room for P.T. and sport',
+            icon: 'sport',
+            description:
+              'Physical Training is on the timetable for every standard, alongside the sports and games that run through the year.',
+          },
+          {
+            title: 'CCTV throughout',
+            icon: 'security',
+            description:
+              'The campus is under surveillance across classrooms, corridors, entrances and common areas.',
+          },
+        ],
+      },
+      ...(greenSkills
+        ? [
+            {
+              blockType: 'mediaText',
+              heading: 'Green skills, grown on the veranda',
+              accentWord: 'Green skills',
+              headingLevel: 'h2',
+              background: 'white',
+              imagePosition: 'right',
+              imageShape: 'rounded',
+              image: greenSkills,
+              content: richText([
+                'Sixteen students, two rows, each holding a plant they grew themselves. The veranda is where the saplings live, and looking after them is the lesson — a thing that has to be returned to every week rather than answered once.',
+              ]),
+            },
+          ]
+        : []),
+      {
+        blockType: 'richText',
+        heading: 'Kept to a standard the State has certified',
+        accentWord: 'certified',
+        headingLevel: 'h2',
+        width: 'normal',
+        background: 'sea',
+        content: richText([
+          'S.I.W.S. High School was certified amongst the 100 Best Schools in Maharashtra under #SwachhtaMonitor 2023, awarded by the School Education and Sports Department, Government of Maharashtra. The certificate itself is on the home page.',
+          'It is an award for how a campus is kept rather than for what is taught in it, which is why it belongs on this page: the classrooms, corridors and grounds described above are the thing that was inspected.',
+        ]),
+      },
+      ...(galleryPageId
+        ? [
+            {
+              blockType: 'callToAction',
+              heading: 'See the campus for yourself',
+              background: 'brand',
+              text: richText([
+                'Photographs of the classrooms, the hall, the veranda and the prizes — filed by subject, and any of them opens full size.',
+              ]),
+              links: [
+                {
+                  link: {
+                    label: 'Open the gallery',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: galleryPageId },
+                    appearance: 'primary',
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  })
+
+  // ------------------------------------------------------------- ADMISSIONS
+  /*
+   * THE HARD CONSTRAINT, STATED ONCE FOR BOTH PAGES BELOW.
+   *
+   * SIWS's document left the admission process blank. There is no age
+   * criterion, no list of steps, no document list, no date and no fee — the
+   * warning at the foot of this file has said so since it was written, and it
+   * is the reason both of these pages carried the generic placeholder.
+   *
+   * A placeholder was still the wrong answer. What a family actually needs
+   * first is not the form; it is enough about the school to decide whether to
+   * ask for one, and then the one address that will answer. All of that IS
+   * known — the standards, the board, the subjects, the staffing, last year's
+   * results, the terms the Grant-in-Aid Code sets for admission, and the
+   * office's own email and telephone number.
+   *
+   * So these pages say everything that is settled and hand over the rest by
+   * name. Every place a date, a fee or a document list would go, the page says
+   * to ask the office instead of guessing — and says it in a way that tells
+   * the reader what to ask FOR, so nobody is sent there twice.
+   */
+  const admissionsFaqPageId = await pageId('admissions-faq')
+  const achievementsPageId = await pageId('achievements')
+  const academicsPageId = await pageId('academics')
+  const facilitiesPageId = await pageId('facilities')
+
+  await upsert({
+    slug: 'admissions',
+    title: 'Admissions',
+    intro: 'Joining the Secondary Section — Standards V to X, on the Maharashtra State Board.',
+    showInNav: true,
+    navLabel: 'Admissions',
+    navOrder: 10,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Admission to SIWS High School, Wadala — Standards V to X on the Maharashtra State Board. How to enquire, what the office can tell you, and the terms on which children are admitted.',
+    layout: [
+      /*
+       * The figures open the page rather than the process, because the process
+       * is the part that is not published yet — and because a family reading
+       * an admissions page is deciding whether to ask, not filling anything
+       * in. Four numbers, all of them stated elsewhere in this file.
+       */
+      {
+        blockType: 'statistics',
+        heading: 'The section at a glance',
+        accentWord: 'a glance',
+        headingLevel: 'h2',
+        background: 'sea',
+        stats: [
+          { value: 'V to X', label: 'Standards taught' },
+          { value: '99.53%', label: 'SSC result in 2026' },
+          { value: '39', label: 'Members of teaching staff' },
+          { value: '1934', label: 'Serving Mumbai since' },
+        ],
+      },
+      {
+        blockType: 'richText',
+        heading: 'Admission to Standards V to X',
+        accentWord: 'Standards V to X',
+        headingLevel: 'h2',
+        width: 'normal',
+        background: 'white',
+        content: richText([
+          'The Secondary Section takes children from Standard V through to the S.S.C. Examination at the end of Standard X, in English medium, on the Maharashtra State Board curriculum aligned with NEP 2020.',
+          'Dates, forms and the documents to bring are set year by year and are held by the school office. Rather than print a set here that would still be here after it stopped being true, this page tells you exactly what to ask for and who to ask.',
+        ]),
+      },
+      {
+        blockType: 'featureList',
+        heading: 'How to start',
+        accentWord: 'start',
+        headingLevel: 'h2',
+        layout: 'cards',
+        background: 'sea',
+        items: [
+          {
+            title: 'Say which standard, and which year',
+            icon: 'communication',
+            description:
+              'Write to admissions@siws.edu.in, or send the enquiry form on the contact page. That one detail lets the office tell you straight away whether there is anything to apply for.',
+          },
+          {
+            title: 'Ask the office what is open',
+            icon: 'study',
+            description:
+              'This year’s dates, the form, the documents to bring and the fee structure are all with the office. Ask for them together and you will only need to ask once.',
+          },
+          {
+            title: 'Come and see the school',
+            icon: 'staff',
+            description:
+              'Arrange it with the office first — visits during school hours need the Head Mistress’s consent, which is how the school knows who is on the campus while the children are in it.',
+          },
+        ],
+      },
+      /*
+       * The one thing about admission that IS written down, and it is written
+       * down by the State rather than by the school. It belongs on this page
+       * for the same reason a term is printed on a form: a family is entitled
+       * to know the basis on which a place is offered and kept.
+       */
+      {
+        blockType: 'richText',
+        heading: 'On what terms a child is admitted',
+        accentWord: 'terms',
+        headingLevel: 'h2',
+        width: 'normal',
+        background: 'white',
+        content: richText([
+          'Under Rule 53 of the Grant-in-Aid Code, parents and guardians are given to understand that the management has the right to decide on what conditions it will admit or retain children — provided those conditions conform to the Grant-in-Aid Code and to the instructions issued by the Director or the concerned Educational Inspector from time to time.',
+          'The same rule sets what is expected of a child once admitted: regularity and obedience, courtesy of speech and conduct, cleanliness of dress and person, and responsibility to the school for their behaviour outside it as well as inside.',
+        ]),
+      },
+      {
+        blockType: 'cardGrid',
+        heading: 'Worth reading before you decide',
+        accentWord: 'before you decide',
+        headingLevel: 'h2',
+        background: 'sea',
+        columns: '2',
+        placedBySeed: true,
+        cards: [
+          {
+            title: 'The 2026 results',
+            description:
+              '214 of 215 students passed the SSC Examination, 60 of them with Distinction, with the full grade distribution.',
+            ...(achievementsPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'See the results',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: achievementsPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+          {
+            title: 'What is taught, and how',
+            description:
+              'Ten subjects across Standards V to X, and the methods used to teach them.',
+            ...(academicsPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'Open Academics',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: academicsPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+          {
+            title: 'Common questions',
+            description:
+              'Fifteen answers on standards, subjects, applying, fees, uniform and the scholarship examinations.',
+            ...(admissionsFaqPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'Open the Admissions FAQ',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: admissionsFaqPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+          {
+            title: 'The campus',
+            description:
+              'Laboratories, the school hall, grounds for P.T., and how the place is kept and supervised.',
+            ...(facilitiesPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'See the campus',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: facilitiesPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+        ],
+      },
+      {
+        blockType: 'callToAction',
+        heading: 'Ask about a place',
+        background: 'brand',
+        text: richText([
+          'Tell us the standard and the year, and the office will tell you what is possible.',
+        ]),
+        links: [
+          {
+            link: {
+              label: 'Email the admissions office',
+              type: 'external',
+              url: 'mailto:admissions@siws.edu.in',
+              appearance: 'primary',
+            },
+          },
+          ...(contactPageId
+            ? [
+                {
+                  link: {
+                    label: 'Send an enquiry',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: contactPageId },
+                    appearance: 'secondary',
+                  },
+                },
+              ]
+            : []),
+        ],
+      },
+    ],
+  })
+
+  // --------------------------------------------------------- ADMISSIONS FAQ
+  /*
+   * Fifteen questions in the order somebody asks them: is this school right
+   * for my child, how do I apply, and what happens once a place is offered.
+   *
+   * Several answers end at the office. That is the honest shape of this page
+   * until SIWS sends the process, and each of those answers still carries
+   * everything that IS settled — so nobody is sent to ask a question this
+   * page could have answered.
+   *
+   * One open at a time. A reader comparing two answers on a phone loses their
+   * place when both are long, and only one question is ever being asked.
+   */
+  await upsert({
+    slug: 'admissions-faq',
+    title: 'Admissions FAQ',
+    intro: 'The questions the office is asked most often about joining Standards V to X.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
+     *
+     * This is a CHILD entry in the shared unit template. Setting it true from
+     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
+     * wins — so running this seed after `seed:nav` climbed every child out
+     * to the top row at once. Secondary reached thirteen top-level items and
+     * the buttons wrapped onto a second line.
+     *
+     * Omitting the field is NOT enough: `payload.update` keeps the existing
+     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+     * rather than leaving it alone. False explicitly means the worst this seed
+     * can do is drop the entry until `seed:nav` runs — which is the
+     * documented order anyway, and a missing drop-down entry is a far smaller
+     * fault than a menu that wraps.
+     */
+    showInNav: false,
+    navLabel: 'Admissions FAQ',
+    navOrder: 11,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Common questions about admission to SIWS High School, Wadala — which standards, the board and medium, how to apply, scholarships, uniform and how to reach the office.',
+    layout: [
+      {
+        blockType: 'accordion',
+        heading: 'Before you apply',
+        accentWord: 'apply',
+        headingLevel: 'h2',
+        background: 'white',
+        allowMultipleOpen: false,
+        items: [
+          {
+            question: 'Which standards does the Secondary Section take?',
+            answer: richText([
+              'Standards V to X. Standard X ends with the S.S.C. Examination of the Maharashtra State Board. Below Standard V is our Primary Section, and after Standard X the Junior College is on the same campus.',
+            ]),
+          },
+          {
+            question: 'What is the medium and the board?',
+            answer: richText([
+              'English medium, following the Maharashtra State Board curriculum aligned with NEP 2020.',
+            ]),
+          },
+          {
+            question: 'What will my child study?',
+            answer: richText([
+              'Ten subjects: English, Marathi, Hindi, Sanskrit, Mathematics, Science, Social Science, ICT, PT and Art & Craft.',
+            ]),
+          },
+          {
+            question: 'How is it taught?',
+            answer: richText([
+              'Activity-based and experiential learning, peer and group work, collaborative projects, classroom discussion, technology-integrated instruction, continuous assessment, project work and real-life application of what is covered in class.',
+            ]),
+          },
+          {
+            question: 'How did the school do in the last SSC Examination?',
+            answer: richText([
+              'In 2026, 214 of the 215 students who appeared passed — a 99.53% success rate. Sixty passed with Distinction, 99 in the First Class, 54 in the Second Class and one in the Pass Class.',
+            ]),
+          },
+        ],
+      },
+      {
+        blockType: 'accordion',
+        heading: 'Applying',
+        accentWord: 'Applying',
+        headingLevel: 'h2',
+        background: 'sea',
+        allowMultipleOpen: false,
+        items: [
+          {
+            question: 'How do I start?',
+            answer: richText([
+              'Write to admissions@siws.edu.in, or send the enquiry form on the contact page, saying which standard and which academic year you are asking about. You can also telephone the school on 022-24180877.',
+            ]),
+          },
+          {
+            question: 'When do admissions open, and where do I get a form?',
+            answer: richText([
+              'The dates and the form for the coming year are held by the school office, and they are set year by year rather than fixed. Ask when you enquire and the office will tell you when forms are issued.',
+            ]),
+          },
+          {
+            question: 'Which documents will I need?',
+            answer: richText([
+              'The office will give you the list when it issues the form — it depends on the standard, and on whether your child is transferring from another school. Please ask before you come in, rather than making the trip twice.',
+            ]),
+          },
+          {
+            question: 'Is there a place in the middle of the year?',
+            answer: richText([
+              'That depends on the standard and on what is vacant at the time, so it is a question only the office can answer for your case. Say which standard when you write and you will get a straight answer quickly.',
+            ]),
+          },
+          {
+            question: 'On what basis is a place offered?',
+            answer: richText([
+              'Under Rule 53 of the Grant-in-Aid Code, the management decides the conditions on which children are admitted and retained, provided those conditions conform to the Code and to the instructions issued by the Director or the concerned Educational Inspector.',
+            ]),
+          },
+        ],
+      },
+      {
+        blockType: 'accordion',
+        heading: 'Once a place is offered',
+        accentWord: 'offered',
+        headingLevel: 'h2',
+        background: 'white',
+        allowMultipleOpen: false,
+        items: [
+          {
+            question: 'What are the fees?',
+            answer: richText([
+              'The fee structure for the current year is with the school office, and it is what you should ask for when you enquire. We would rather tell you the real figure than publish one that goes out of date.',
+            ]),
+          },
+          {
+            question: 'Is there a uniform, and what else is expected?',
+            answer: richText([
+              'Yes — the uniform, and the rules the school asks children and parents to hold to, are set out in full on the rules and uniform page. They cover dress and appearance, the diary and identity card, attendance, and conduct.',
+            ]),
+          },
+          {
+            question: 'Can my child sit the scholarship examinations?',
+            answer: richText([
+              'Children here sit the Pre-Upper Primary Scholarship Examination in Standard V and the Pre-Secondary Scholarship Examination in Standard VIII. Both are State examinations, and the school prepares candidates for them — seven qualified in 2025–26.',
+            ]),
+          },
+          {
+            question: 'How do I reach my child’s teacher?',
+            answer: richText([
+              'Through the office, which will arrange a time. Parents are asked not to come in to see a child or a teacher during school hours without the prior consent of the Head Mistress.',
+            ]),
+          },
+          {
+            question: 'How do I get a bonafide or leaving certificate?',
+            answer: richText([
+              'From the school office during working hours. No school business is transacted on Saturdays, Sundays or holidays.',
+            ]),
+          },
+        ],
+      },
+      {
+        blockType: 'callToAction',
+        heading: 'Still not sure?',
+        background: 'brand',
+        text: richText([
+          'If the answer you need is not here, the admissions office would rather you asked than guessed.',
+        ]),
+        links: [
+          {
+            link: {
+              label: 'Email the admissions office',
+              type: 'external',
+              url: 'mailto:admissions@siws.edu.in',
+              appearance: 'primary',
+            },
+          },
+          ...(contactPageId
+            ? [
+                {
+                  link: {
+                    label: 'Send an enquiry',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: contactPageId },
+                    appearance: 'secondary',
+                  },
+                },
+              ]
+            : []),
+        ],
+      },
+    ],
+  })
+
+  // --------------------------------------- UPDATES, STUDENT LIFE, TRANSPORT
+  /*
+   * Six pages that carried a heading and nothing else.
+   *
+   * TWO CONSTRAINTS SHAPE ALL OF THEM.
+   *
+   * The first is photographs: this section has six, and two of those are a
+   * certificate and a prize-giving. So the same pictures necessarily appear
+   * on more than one page, and each page has to earn its place by the
+   * question it answers rather than by having pictures of its own:
+   *
+   *   Updates      — what has happened lately, and where the rest of it is
+   *   News         — the things worth telling you, with the photographs
+   *   Student Life — what school is like beyond the timetable
+   *   Student Wall — what the students themselves have done
+   *   Transport    — how a child gets here, and who to ask
+   *   FAQ          — for a family whose child is already here
+   *
+   * The second is that SIWS has sent nothing about transport — no operator,
+   * no route, no fare. `institution.ts` names Transport as a page left blank
+   * for exactly that reason, and the page below is written around it rather
+   * than inventing a bus.
+   *
+   * "Students" and "children" throughout, never "students" (SIWS, 2026-08-29).
+   * The rules and uniform page still quotes the school's own wording, which
+   * uses the older word; these pages are the school talking to a parent.
+   */
+  const newsShots = {
+    toppers,
+    recognition,
+    inTheHall,
+    greenSkills,
+    classroom: classroomActivity,
+    craft: classroomAtWork,
+  }
+
+  /*
+   * The three standing notices the office repeats most often. All three are
+   * on the rules page; they are here because a parent looking for opening
+   * hours goes to Updates, not to a page about uniform.
+   */
+  const OFFICE_NOTICES = [
+    {
+      title:
+        'Railway concession forms and other certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — are issued between 10.00 a.m. and 12.00 noon only.',
+    },
+    { title: 'No school business is transacted on Saturdays, Sundays and holidays.' },
+    {
+      title:
+        'A minimum attendance of 75% of the total number of working days is required of every student.',
+    },
+  ]
+
+  // ------------------------------------------------------------- TRANSPORT
+  await upsert({
+    slug: 'transport',
+    title: 'Transport',
+    intro: 'How children reach the school, and who to ask about the part we cannot publish.',
+    showInNav: false,
+    navLabel: 'Transport',
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Getting to SIWS High School in Wadala — railway concession forms, arriving and being collected, and who to ask about travel arrangements.',
+    layout: [
+      /*
+       * THIS PAGE DOES NOT LIST A BUS ROUTE, AND THAT IS THE POINT.
+       *
+       * Two things ARE known and are what most families actually need: the
+       * school issues railway concession forms, at a stated hour, and it has
+       * a rule about who may come onto the campus during the day. Those are
+       * here, and the one unknown is handed to the office rather than guessed
+       * at. An invented route outlives the placeholder it replaced.
+       */
+      {
+        blockType: 'featureList',
+        heading: 'What the school can help with',
+        accentWord: 'help with',
+        headingLevel: 'h2',
+        layout: 'cards',
+        background: 'sea',
+        items: [
+          {
+            title: 'Railway concession forms',
+            icon: 'transport',
+            description:
+              'Issued by the school office between 10.00 a.m. and 12.00 noon only — as are date of birth, bonafide student, first attempt and leaving certificates.',
+          },
+          {
+            title: 'Arriving and being collected',
+            icon: 'security',
+            description:
+              'Entrances, corridors and common areas are covered by CCTV, and movement between rooms is supervised.',
+          },
+          {
+            title: 'Anything else about travel',
+            icon: 'communication',
+            description:
+              'Ask the office on 022-24180877. Questions about your own route are answered better by somebody who knows this year’s arrangements than by a page.',
+          },
+        ],
+      },
+      {
+        blockType: 'richText',
+        heading: 'Coming onto the campus',
+        accentWord: 'campus',
+        headingLevel: 'h2',
+        width: 'normal',
+        background: 'white',
+        content: richText([
+          'Parents and guardians are asked not to come in to see a child or a teacher during school hours without the prior consent of the Head Mistress. It is not a formality — it is how the school knows exactly who is on the campus while the children are in it.',
+        ]),
+      },
+      ...(contactPageId
+        ? [
+            {
+              blockType: 'callToAction',
+              heading: 'Ask about your route',
+              background: 'brand',
+              text: richText([
+                'Tell us where your child will be travelling from and the office will tell you what is possible.',
+              ]),
+              links: [
+                {
+                  link: {
+                    label: 'Contact the school',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: contactPageId },
+                    appearance: 'primary',
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  })
+
+  // ----------------------------------------------------------- STUDENT WALL
+  await upsert({
+    slug: 'student-wall',
+    title: 'Student Wall',
+    intro:
+      'What the students themselves have done this year — in the examination hall, on the stage, and on the veranda.',
+    showInNav: false,
+    navLabel: 'Student Wall',
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'The students of SIWS High School, Wadala — 99.53% in the SSC Examination 2026, scholarship examination qualifiers, and the work they do beyond the classroom.',
+    layout: [
+      ...(newsShots.craft
+        ? [
+            {
+              blockType: 'mediaText',
+              heading: 'Made, not marked',
+              accentWord: 'Made',
+              headingLevel: 'h2',
+              background: 'white',
+              imagePosition: 'left',
+              imageShape: 'rounded',
+              image: newsShots.craft,
+              content: richText([
+                'Everything on this page was done by students in Standards V to X. Not what the school offers them — what they did with it.',
+                'A full classroom at work with coloured paper and scissors is as much a part of that record as an examination result, and it is the part a visitor is least likely to be shown.',
+              ]),
+            },
+          ]
+        : []),
+      {
+        blockType: 'featureList',
+        heading: 'Ways a student takes part',
+        accentWord: 'takes part',
+        headingLevel: 'h2',
+        layout: 'cards',
+        background: 'sea',
+        items: [
+          {
+            title: 'In the examination hall',
+            icon: 'trophy',
+            description:
+              '215 students sat the S.S.C. Examination in 2026 and 214 passed, sixty of them with Distinction.',
+          },
+          {
+            title: 'In the scholarship examinations',
+            icon: 'merit',
+            description:
+              'Seven students qualified in the Pre-Upper Primary and Pre-Secondary Scholarship Examinations in 2025–26 — State examinations sat in Standards V and VIII.',
+          },
+          {
+            title: 'On the stage',
+            icon: 'music',
+            description:
+              'Cultural performances, music, dance and art run through the year, planned and rehearsed with the teachers who organise them.',
+          },
+          {
+            title: 'In debate and competition',
+            icon: 'communication',
+            description:
+              'Debates and inter-house competitions, where the point is to speak in front of people who might disagree.',
+          },
+          {
+            title: 'On the sports field',
+            icon: 'sport',
+            description:
+              'Sports events through the year, alongside P.T. and mass drill on the timetable for every standard.',
+          },
+          {
+            title: 'Looking after something',
+            icon: 'garden',
+            description:
+              'Sixteen students grew the saplings on the veranda themselves — a thing that has to be returned to every week rather than answered once.',
+          },
+        ],
+      },
+      ...(achievementsPageId
+        ? [
+            {
+              blockType: 'callToAction',
+              heading: 'See the record in full',
+              background: 'white',
+              text: richText([
+                'The 2026 grade distribution, the scholarship qualifiers, and the photographs from the day.',
+              ]),
+              links: [
+                {
+                  link: {
+                    label: 'Open Achievements',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: achievementsPageId },
+                    appearance: 'primary',
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  })
+
+  // ------------------------------------------------------------ STUDENT LIFE
+  await upsert({
+    slug: 'student-life',
+    title: 'Student Life',
+    intro:
+      'What the day holds beyond the timetable — the stage, the sports field, the veranda, and the habits a student leaves with.',
+    showInNav: true,
+    navLabel: 'Student Life',
+    navOrder: 70,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Life at SIWS High School, Wadala beyond the classroom — sports, cultural performances, music, dance, art, debates and competitions for Standards V to X.',
+    layout: [
+      ...(newsShots.greenSkills
+        ? [
+            {
+              blockType: 'mediaText',
+              heading: 'School is more than the timetable',
+              accentWord: 'more than',
+              headingLevel: 'h2',
+              background: 'white',
+              imagePosition: 'left',
+              imageShape: 'rounded',
+              image: newsShots.greenSkills,
+              content: richText([
+                'A student spends six years here, from Standard V to the S.S.C. Examination, and the part they remember is rarely the part that was examined. It is the term they were trusted to lead something, the afternoon they argued a case in front of the school, the plant that was theirs to keep alive.',
+                'The school runs a wide range of co-curricular activities through the year for exactly that reason — and behind every one of them is a teacher who planned it.',
+              ]),
+            },
+          ]
+        : []),
+      {
+        blockType: 'featureList',
+        heading: 'What runs through the year',
+        accentWord: 'the year',
+        headingLevel: 'h2',
+        layout: 'cards',
+        background: 'sea',
+        items: [
+          {
+            title: 'Sports events',
+            icon: 'sport',
+            description:
+              'Alongside P.T. and mass drill, which are on the timetable for every standard rather than an optional extra.',
+          },
+          {
+            title: 'Cultural performances',
+            icon: 'activity',
+            description:
+              'Programmes staged in the school hall, rehearsed over weeks with the teachers who organise them.',
+          },
+          {
+            title: 'Music, dance and art',
+            icon: 'music',
+            description:
+              'Art & Craft is a timetabled subject from Standard V, and the performing arts run beside it through the year.',
+          },
+          {
+            title: 'Debates and competitions',
+            icon: 'communication',
+            description:
+              'Where confidence is built by having to hold a position in front of people who might disagree with it.',
+          },
+          {
+            title: 'Science practicals and computer seminars',
+            icon: 'laboratory',
+            description:
+              'Timetabled laboratory work and seminars in the computer laboratories, taught by the Computer Section’s own staff.',
+          },
+          {
+            title: 'Mindfulness and meditation',
+            icon: 'care',
+            description:
+              'Guided sessions in the school hall — wellbeing given a place on the timetable rather than a mention in a prospectus.',
+          },
+        ],
+      },
+      /*
+       * The expectations belong on this page, not only on the rules page.
+       * They are as much a part of what daily life here is like as the
+       * activities above, and a family reading about student life is entitled
+       * to meet them before they meet them.
+       */
+      {
+        blockType: 'richText',
+        heading: 'What is expected in return',
+        accentWord: 'expected',
+        headingLevel: 'h2',
+        width: 'normal',
+        background: 'white',
+        content: richText([
+          'Students are expected to communicate in English at all times, to attend at least 75% of the working days in the year, and to come to school in a clean, well-ironed uniform with hair and nails kept short.',
+          'Discipline is expected in the ordinary movements of the day too — going out to P.T., to mass drill, to science practicals and to computer seminars. The full list is on the rules and uniform page, in the school’s own words.',
+        ]),
+      },
+      ...(galleryPageId
+        ? [
+            {
+              blockType: 'callToAction',
+              heading: 'See a year of it',
+              background: 'sea',
+              text: richText([
+                'The classrooms, the hall, the veranda and the prizes — filed by subject, and any of them opens full size.',
+              ]),
+              links: [
+                {
+                  link: {
+                    label: 'Open the gallery',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: galleryPageId },
+                    appearance: 'primary',
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  })
+
+  // -------------------------------------------------------------------- NEWS
+  const newsPageId = await upsert({
+    slug: 'news',
+    title: 'News & Events',
+    intro: 'What has happened at the school lately, newest first.',
+    showInNav: false,
+    navLabel: 'News & Events',
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'News from SIWS High School, Wadala — 99.53% in the SSC Examination 2026, scholarship examination qualifiers, and recognition under #SwachhtaMonitor 2023.',
+    layout: [
+      /*
+       * Two across rather than three. Each of these has a photograph worth
+       * looking at and two sentences under it; at three across the picture
+       * comes out the size of a thumbnail and the story reads as a caption.
+       */
+      {
+        blockType: 'cardGrid',
+        heading: 'Lately at the school',
+        accentWord: 'Lately',
+        headingLevel: 'h2',
+        background: 'white',
+        columns: '2',
+        placedBySeed: true,
+        cards: [
+          ...(newsShots.toppers
+            ? [
+                {
+                  title: '99.53% in the S.S.C. Examination 2026',
+                  image: newsShots.toppers,
+                  description:
+                    '215 students appeared and 214 passed. Sixty came away with Distinction, 99 in the First Class and 54 in the Second Class.',
+                  ...(achievementsPageId
+                    ? {
+                        cta: [
+                          {
+                            link: {
+                              label: 'See the full result',
+                              type: 'internal',
+                              reference: { relationTo: 'pages', value: achievementsPageId },
+                            },
+                          },
+                        ],
+                      }
+                    : {}),
+                },
+              ]
+            : []),
+          ...(newsShots.recognition
+            ? [
+                {
+                  title: 'Amongst the 100 Best Schools in Maharashtra',
+                  image: newsShots.recognition,
+                  // A certificate, not a photograph: cropped it loses the
+                  // heading off the top and the signature off the foot.
+                  fit: 'whole',
+                  description:
+                    'S.I.W.S. High School was certified under #SwachhtaMonitor 2023 by the School Education and Sports Department, Government of Maharashtra — an award for how the campus is kept.',
+                  ...(facilitiesPageId
+                    ? {
+                        cta: [
+                          {
+                            link: {
+                              label: 'See the campus',
+                              type: 'internal',
+                              reference: { relationTo: 'pages', value: facilitiesPageId },
+                            },
+                          },
+                        ],
+                      }
+                    : {}),
+                },
+              ]
+            : []),
+          ...(newsShots.inTheHall
+            ? [
+                {
+                  title: 'Mindfulness, in the school hall',
+                  image: newsShots.inTheHall,
+                  description:
+                    'Rows of students on mats in the hall for a guided meditation — wellbeing given a place on the timetable rather than a mention in a prospectus.',
+                },
+              ]
+            : []),
+          ...(newsShots.greenSkills
+            ? [
+                {
+                  title: 'Sixteen students, sixteen saplings',
+                  image: newsShots.greenSkills,
+                  description:
+                    'Green skills grown on the veranda, each plant raised by the student holding it. Looking after something is a lesson that has to be returned to every week.',
+                },
+              ]
+            : []),
+        ],
+      },
+      {
+        blockType: 'richText',
+        heading: 'Scholarship Examination qualifiers, 2025–26',
+        accentWord: 'qualifiers',
+        headingLevel: 'h2',
+        width: 'normal',
+        background: 'white',
+        content: richText([
+          'Seven students qualified in the Pre-Upper Primary Scholarship Examination (Standard V) and the Pre-Secondary Scholarship Examination (Standard VIII) for the academic year 2025–26 — five in Standard V and two in Standard VIII.',
+          'Both are State examinations, and the school prepares candidates for them alongside the ordinary year’s work.',
+        ]),
+      },
+      {
+        blockType: 'announcements',
+        heading: 'From the school office',
+        items: OFFICE_NOTICES,
+        background: 'sea',
+      },
+    ],
+  })
+
+  // ---------------------------------------------------------------- UPDATES
+  await upsert({
+    slug: 'updates',
+    title: 'Updates',
+    intro:
+      'News, results and recognition from the Secondary Section, and where to find each of them.',
+    showInNav: true,
+    navLabel: 'Updates',
+    navOrder: 60,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Updates from SIWS High School, Wadala — the 2026 SSC result, scholarship examination qualifiers, and news from across the Secondary Section.',
+    layout: [
+      /*
+       * The overview leads with the single biggest thing that has happened
+       * rather than with a row of cards. A hub page that opens on three equal
+       * boxes tells a parent where to click and nothing about the school; this
+       * way the first thing on the page is news, and the navigation follows.
+       */
+      ...(newsShots.toppers
+        ? [
+            {
+              blockType: 'mediaText',
+              heading: '99.53% in the S.S.C. Examination 2026',
+              accentWord: '99.53%',
+              headingLevel: 'h2',
+              background: 'white',
+              imagePosition: 'left',
+              imageShape: 'rounded',
+              image: newsShots.toppers,
+              content: richText([
+                'Two hundred and fifteen students of Standard X appeared for the S.S.C. Examination of the Maharashtra State Board in 2026, and two hundred and fourteen of them passed. Sixty passed with Distinction.',
+              ]),
+              ...(achievementsPageId
+                ? {
+                    cta: [
+                      {
+                        link: {
+                          label: 'See the full result',
+                          type: 'internal',
+                          reference: { relationTo: 'pages', value: achievementsPageId },
+                          appearance: 'primary',
+                        },
+                      },
+                    ],
+                  }
+                : {}),
+            },
+          ]
+        : []),
+      {
+        blockType: 'cardGrid',
+        heading: 'Where to find what',
+        accentWord: 'find what',
+        headingLevel: 'h2',
+        background: 'sea',
+        columns: '2',
+        placedBySeed: true,
+        cards: [
+          {
+            title: 'News & Events',
+            description:
+              'What has happened lately — results, recognition, and the notices the office repeats most often.',
+            ...(newsPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'Read the news',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: newsPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+          {
+            title: 'Achievements',
+            description:
+              'The 2026 grade distribution in full, and the students who qualified in the State scholarship examinations.',
+            ...(achievementsPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'See the honours',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: achievementsPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+        ],
+      },
+      {
+        blockType: 'announcements',
+        heading: 'Standing notices',
+        items: OFFICE_NOTICES,
+        background: 'white',
+      },
+    ],
+  })
+
+  // ---------------------------------------------------------------------- FAQ
+  /*
+   * The general FAQ deliberately answers NOTHING about admission.
+   *
+   * The section carries two FAQ pages — this one at the top level and
+   * Admissions FAQ inside the Admissions drop-down — and two FAQs in one menu
+   * is only worth having if a reader can tell from the outside which one holds
+   * their question. The split is by WHEN somebody is asking: Admissions FAQ is
+   * for a family deciding whether to apply, this is for a family whose child
+   * is already here. The one link between them is the card at the foot.
+   */
+  await upsert({
+    slug: 'faq',
+    title: 'FAQ',
+    intro: 'The questions parents of students already in Standards V to X ask most often.',
+    showInNav: true,
+    navLabel: 'FAQ',
+    navOrder: 80,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Answers for parents of SIWS High School students — attendance, uniform, what to bring, how the curriculum is taught, and how to reach a teacher or the office.',
+    layout: [
+      {
+        blockType: 'accordion',
+        heading: 'The school day',
+        accentWord: 'school day',
+        headingLevel: 'h2',
+        background: 'white',
+        allowMultipleOpen: false,
+        items: [
+          {
+            question: 'What must my child bring to school every day?',
+            answer: richText([
+              'A copy of the school calendar, which every student must have and bring daily. Only dry food for the recess, and nothing beyond the books the day needs — magazines, newspapers and periodicals are not to be brought in.',
+            ]),
+          },
+          {
+            question: 'What is the uniform?',
+            answer: richText([
+              'Girls wear a light blue striped shirt with a collar and long sleeves to the elbow, a dark blue skirt below the knee, a blue belt and a navy blue sweater, with hair in two plaits and blue ribbon. Boys in Standards V to VII wear a light blue striped half shirt and dark blue half pants; Standards VIII to X the same shirt with full pants.',
+              'The uniform is expected to be clean and well ironed. Hair and nails are kept short, hair is not to be coloured, and mehendi and nail polish are not worn.',
+            ]),
+          },
+          {
+            question: 'How much attendance is required?',
+            answer: richText([
+              'A minimum of 75% of the total number of working days in the year. Irregular attendance and late coming are treated seriously.',
+            ]),
+          },
+          {
+            question: 'What language is spoken at school?',
+            answer: richText([
+              'English, at all times. It is a school rule rather than a preference, and it is one of the reasons the section is confident about how its students speak by Standard X.',
+            ]),
+          },
+        ],
+      },
+      {
+        blockType: 'accordion',
+        heading: 'Lessons and progress',
+        accentWord: 'progress',
+        headingLevel: 'h2',
+        background: 'sea',
+        allowMultipleOpen: false,
+        items: [
+          {
+            question: 'What is my child taught?',
+            answer: richText([
+              'Ten subjects across Standards V to X: English, Marathi, Hindi, Sanskrit, Mathematics, Science, Social Science, ICT, PT and Art & Craft — on the Maharashtra State Board curriculum, aligned with NEP 2020, in English medium.',
+            ]),
+          },
+          {
+            question: 'How is it taught?',
+            answer: richText([
+              'Activity-based and experiential learning, peer and group work, collaborative projects, classroom discussion, technology-integrated instruction, project work, and real-life application of what is covered in class.',
+              'Assessment is continuous rather than saved up for one paper at the end.',
+            ]),
+          },
+          {
+            question: 'How much homework should I expect?',
+            answer: richText([
+              'Enough that it needs doing daily. Parents are earnestly asked to enforce regularity and discipline, and to see that their children do their homework and prepare their lessons as the timetable requires.',
+            ]),
+          },
+          {
+            question: 'Can my child sit the scholarship examinations?',
+            answer: richText([
+              'Yes. Students here sit the Pre-Upper Primary Scholarship Examination in Standard V and the Pre-Secondary Scholarship Examination in Standard VIII — both State examinations. Seven qualified in 2025–26.',
+            ]),
+          },
+          {
+            question: 'Who teaches my child?',
+            answer: richText([
+              'The section has thirty-nine members of teaching staff, qualified to B.Ed., M.Ed., D.Ed. and postgraduate level, with a Computer Section of its own under a Head of Department. Every name is on the teachers page.',
+            ]),
+          },
+        ],
+      },
+      {
+        blockType: 'accordion',
+        heading: 'Talking to the school',
+        accentWord: 'Talking',
+        headingLevel: 'h2',
+        background: 'white',
+        allowMultipleOpen: false,
+        items: [
+          {
+            question: 'How do I meet my child’s teacher?',
+            answer: richText([
+              'Ask the office to arrange it, on 022-24180877. Parents, guardians and others are not permitted to see their ward or meet a teacher during school hours without the prior consent of the Head Mistress — it is how the school knows who is on the campus while the children are in it.',
+            ]),
+          },
+          {
+            question: 'We have moved, or changed our phone number.',
+            answer: richText([
+              'Tell the office promptly. The school keeps a record of the address and telephone number of every student’s parents or guardians, and it is only useful if it is current.',
+            ]),
+          },
+          {
+            question: 'When can I get a bonafide or railway concession certificate?',
+            answer: richText([
+              'From the school office between 10.00 a.m. and 12.00 noon only. The same window covers date of birth, first attempt and leaving certificates. No school business is transacted on Saturdays, Sundays or holidays.',
+            ]),
+          },
+          {
+            question: 'What happens if school property is damaged?',
+            answer: richText([
+              'Damage to school property, inside or outside the classrooms, is made good by those responsible or by their parents or guardians. The school’s decision on the compensation payable is final.',
+            ]),
+          },
+        ],
+      },
+      ...(admissionsFaqPageId
+        ? [
+            {
+              blockType: 'callToAction',
+              heading: 'Asking about joining the school?',
+              background: 'brand',
+              text: richText([
+                'Questions about applying — which standards, how to enquire, what the office can tell you — are answered on their own page.',
+              ]),
+              links: [
+                {
+                  link: {
+                    label: 'Open the Admissions FAQ',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: admissionsFaqPageId },
+                    appearance: 'primary',
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  })
+
   payload.logger.info('Secondary content seeded.')
 
   if (!CHILD_NAMES_CONSENTED) {
+    /*
+     * Counted from the list itself rather than written into the sentence, so
+     * the warning cannot drift out of step with the names it is about — and so
+     * the list stays referenced now that the "Who qualified" section has come
+     * off the achievements page. The names are still here, ready for the day
+     * consent is confirmed.
+     */
+    const withheld = Object.values(SCHOLARSHIP_QUALIFIERS).flat().length
     payload.logger.warn(
-      'CHILD NAMES WITHHELD — the seven scholarship qualifiers in Standards V and VIII are named in SIWS’s document but are not published. They are children, and their names are personal data (DPDPA 2023). The achievement, the examinations and the counts per standard ARE published. Confirm parental consent, set CHILD_NAMES_CONSENTED to true in src/seed/secondary.ts, and re-run — the names are already in the file.',
+      `CHILD NAMES WITHHELD — the ${withheld} scholarship qualifiers in Standards V and VIII are named in SIWS’s document but are not published. They are children, and their names are personal data (DPDPA 2023). The achievement, the examinations and the counts per standard ARE published. Confirm parental consent, set CHILD_NAMES_CONSENTED to true in src/seed/secondary.ts, and re-run — the names are already in the file.`,
+    )
+  }
+
+  if (PARENT_QUOTES.length === 0) {
+    payload.logger.warn(
+      'PARENT FEEDBACK: no quotes have been supplied, so the page carries only the "how to send us your feedback" section. Add real ones to PARENT_QUOTES in this file — or in the admin panel — and the drifting rows appear. Four or more are needed before they drift rather than sit in a grid.',
     )
   }
 
   payload.logger.warn('LEFT BLANK by SIWS in the Secondary document:')
   for (const gap of [
     'Programme benefits',
-    'Admission process — no age criteria and no application steps, so the admissions page still carries the generic placeholder',
+    'Admission process — no age criteria, no application steps, no document list and no dates. The admissions page and its FAQ are built from what IS known and send every one of those to the office by name; send the process and they stop doing that',
     'Fee details, class-wise',
     'Day care / after-school care',
     'Accreditation and recognition — Primary claims "A Grade" from the Department of Education, but that must not be copied across to Secondary without confirmation',

@@ -1,4 +1,6 @@
 import {
+  Award,
+  BadgeCheck,
   BookOpen,
   Brain,
   Bus,
@@ -12,9 +14,11 @@ import {
   Music,
   Palette,
   PersonStanding,
+  Medal,
   Salad,
   School,
   ShieldCheck,
+  Trophy,
   SprayCan,
   Stethoscope,
   ToyBrick,
@@ -51,6 +55,22 @@ const FEATURE_ICONS: Record<string, LucideIcon> = {
   health: Stethoscope,
   transport: Bus,
   care: HandHeart,
+  /*
+   * Achievement, in descending order.
+   *
+   * Every other icon here names a PLACE or an ACTIVITY, because that is what
+   * these lists have carried until now — rooms, subjects, facilities. A set
+   * of results is neither, and with nothing to choose the grade cards all
+   * fell back to the neutral tick: four identical checks under four different
+   * headings, which tells a reader the four are the same thing.
+   *
+   * Four marks that differ at a glance and rank in an obvious order, so the
+   * top band reads as the top band before the label is read at all.
+   */
+  trophy: Trophy,
+  medal: Medal,
+  merit: Award,
+  pass: BadgeCheck,
 }
 
 /**
@@ -246,8 +266,20 @@ export const FeatureListBlockView = ({ block }: { block: FeatureListBlock }) => 
   const gridClass = twoColumns
     ? heldTogether
       ? 'gap-x-24 gap-y-7 mx-auto w-fit md:grid-cols-[auto_auto]'
-      : 'gap-x-10 gap-y-6 md:grid-cols-2'
-    : 'gap-x-10 gap-y-6 max-w-3xl'
+      : 'gap-x-16 gap-y-10 md:grid-cols-2'
+    : /*
+       * CENTRED UNDER ITS HEADING, and with more air between the steps.
+       *
+       * A single column was capped at 3xl and then left at the container's
+       * left margin, while the heading above it centred — 196px apart on a
+       * desktop, which reads as two things that were not laid out together.
+       * `mx-auto` puts the column under the words that introduce it.
+       *
+       * The TEXT inside stays ranged left. A centred heading gives a section a
+       * top edge; centred body copy takes away the fixed left edge the eye
+       * returns to on every line, and these steps carry a paragraph each.
+       */
+      'gap-x-12 gap-y-10 mx-auto max-w-3xl'
 
   return (
     <Section background={block.background as BlockBackground}>
@@ -326,8 +358,24 @@ const FeatureCompact = ({ block }: { block: FeatureListBlock }) => {
         level={block.headingLevel}
       />
 
+      {/*
+        A WIDER MEASURE THAN THE USUAL 3XL, because this intro is centred and
+        balanced.
+
+        `text-wrap: balance` evens the lines of a paragraph instead of filling
+        them, so it does not use the measure it is given — it uses roughly the
+        text length divided by however many lines the measure forced. At 48rem
+        that turned three short statements into 415+477 and 547+529: five
+        stubby lines stacked in the middle of a section three times as wide,
+        which is what "very tight" meant. Widening the cap does not stretch
+        those lines, it removes the wrap that split them, and each statement
+        lands on one line of its own.
+
+        Below about 1120px of room they wrap again — and balance is still
+        there to split them evenly rather than leaving a tail.
+      */}
       {block.intro ? (
-        <RichText data={block.intro} className="siws-centre mx-auto mt-6 max-w-3xl" />
+        <RichText data={block.intro} className="siws-centre mx-auto mt-6 max-w-6xl" />
       ) : null}
 
       <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -442,7 +490,17 @@ const FeatureCards = ({ block }: { block: FeatureListBlock }) => {
 
       {block.intro ? <RichText data={block.intro} className="mt-6 siws-centre mx-auto max-w-3xl" /> : null}
 
-      <List className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-12">
+      {/*
+        THE GUTTER IS AT LEAST THE CARD'S OWN PADDING.
+        
+        It was 20px between cards that carry 32px of padding inside them, so
+        every card had more air around its words than there was between it and
+        its neighbour — and four separate cards read as one bar with lines
+        ruled across it. A row of cards only reads as a row when the space
+        BETWEEN them is the widest space in sight; the moment it is the
+        narrowest, the grouping inverts.
+      */}
+      <List className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
         {rows.flatMap((row, rowIndex) =>
           row.map((item, columnIndex) => {
             /*
@@ -714,19 +772,65 @@ const Item = ({
   item: NonNullable<FeatureListBlock['items']>[number]
   index: number
   numbered: boolean
-}) => (
+}) => {
+  /*
+   * An icon an editor CHOSE, rather than a tick in every row.
+   *
+   * This layout used to ignore `item.icon` outright: the card and compact
+   * layouts read it, this one drew a check whatever the item said. So a list
+   * whose author had picked out a flask for Science and a monitor for ICT
+   * showed ten identical ticks, and the choice was silently thrown away.
+   *
+   * Numbering still wins where it is asked for — a numbered step is telling
+   * the reader its position, and a glyph in that circle would take the number
+   * away to say something less useful.
+   */
+  const Icon = !numbered && item.icon ? FEATURE_ICONS[item.icon] : undefined
+
+  return (
   <li className="flex items-start gap-4">
+    {/*
+      THE DISC AND THE TITLE ARE THE SAME HEIGHT, so they centre on each other
+      without anybody nudging either one.
+
+      It used to be a 32px disc beside a title on default leading, pushed down
+      by `mt-0.5` — which left the mark sitting five pixels below the middle of
+      the word it belongs to. Close enough to look like a mistake rather than a
+      choice, and repeated down a column of seven it reads as a wobble. Both
+      are 28px now: no offset, nothing to keep in sync by hand, and it holds if
+      the type scale changes.
+    */}
     <span
       aria-hidden="true"
-      className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-sea text-sm font-bold text-brand"
+      /*
+       * The ring is what makes the marker exist on a tinted section.
+       *
+       * `bg-sea` is the same colour a "sea" section is painted, so on
+       * /kindergarten/admissions the numbered steps had their discs dissolve
+       * into the background and the numbers floated loose beside the text. The
+       * fill is right on white and had simply never been checked against the
+       * tint it shares a name with. A hairline of brand at 15% draws the edge
+       * on the tint and is barely present on white, where the fill already
+       * does the work.
+       */
+      className="grid size-7 shrink-0 place-items-center rounded-full bg-sea text-sm font-bold text-brand ring-1 ring-brand/15"
     >
-      {numbered ? index + 1 : <Check size={17} strokeWidth={3} />}
+      {/* Lighter than the tick's stroke: these glyphs carry detail a 3px
+          stroke closes up at 17px. */}
+      {numbered ? index + 1 : Icon ? <Icon size={16} strokeWidth={2.1} /> : <Check size={16} strokeWidth={3} />}
     </span>
     <span>
-      <strong className="block text-[1.05rem] text-brand">{item.title}</strong>
+      <strong className="block text-[1.05rem] leading-7 text-brand">{item.title}</strong>
+      {/*
+        8px, not 4. A title and its explanation were nearly touching, which
+        made each point read as one run-on line instead of a heading and a
+        sentence — and `leading-relaxed` because this is the text a parent
+        actually reads, not a label.
+      */}
       {item.description ? (
-        <span className="mt-1 block text-ink-soft">{item.description}</span>
+        <span className="mt-2 block leading-relaxed text-ink-soft">{item.description}</span>
       ) : null}
     </span>
   </li>
-)
+  )
+}

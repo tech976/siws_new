@@ -9,6 +9,8 @@ import { DividerBlockView } from './DividerBlockView'
 import { FacultyBlockView } from './FacultyBlockView'
 import { FeatureListBlockView } from './FeatureListBlockView'
 import { GalleryBlockView } from './GalleryBlockView'
+import { PhotoLibraryBlockView } from './PhotoLibraryBlockView'
+import { VideoGalleryBlockView } from './VideoGalleryBlockView'
 import { HeroBlockView } from './HeroBlockView'
 import { HeroCarouselBlockView } from './HeroCarouselBlockView'
 import { HeroEnquiryBlockView } from './HeroEnquiryBlockView'
@@ -92,6 +94,12 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
             return <FacultyBlockView key={key} block={block} unit={unit} />
           case 'gallery':
             return <GalleryBlockView key={key} block={block} />
+
+          case 'videoGallery':
+            return <VideoGalleryBlockView key={key} block={block} />
+
+          case 'photoLibrary':
+            return <PhotoLibraryBlockView key={key} block={block} />
           case 'accordion':
             return <AccordionBlockView key={key} block={block} index={index} />
           case 'testimonials':

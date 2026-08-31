@@ -13,6 +13,29 @@ export interface NavItem {
   children?: { label: string; href: string }[]
 }
 
+/**
+ * Drop-downs that do NOT get an "… overview" row linking their own page.
+ *
+ * About on the four unit sites, at SIWS's request (2026-08-29): under a menu
+ * already headed "About", a first row reading "About overview" is the same
+ * word twice, and it is the row a reader has to skip past to reach the pages
+ * they came for.
+ *
+ * Dropping it does not strand the page, which is the only reason the row
+ * exists. `/<unit>/about` is linked from the footer's "This school" column on
+ * every page of the site, and the mobile drawer renders the parent as a link
+ * beside its expander rather than as a button — so the desktop drop-down was
+ * the only place that needed the extra row, and now only for the menus that
+ * still carry it.
+ *
+ * Matched on the href rather than the label, so renaming the menu entry cannot
+ * quietly switch it back on. The one-segment portal About (`/about`) does not
+ * match, and keeps its row.
+ */
+const UNIT_ABOUT = /^\/[^/]+\/about$/
+
+const showsOverviewRow = (href: string) => !UNIT_ABOUT.test(href)
+
 interface PrimaryNavProps {
   items: NavItem[]
   /** Most-requested destinations, shown at the right of the header. */
@@ -208,15 +231,22 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
                     className="absolute left-0 top-full z-50 min-w-68 rounded-b-xl border-t-4 border-accent bg-white py-2 shadow-raised"
                   >
                     <ul>
-                      <li>
-                        <Link
-                          href={item.href}
-                          aria-current={isCurrent(item.href) ? 'page' : undefined}
-                          className="block border-b border-line px-4 py-2.5 font-semibold text-brand transition-colors hover:bg-brand-tint"
-                        >
-                          {item.label} overview
-                        </Link>
-                      </li>
+                      {/*
+                        The first row links the parent page itself, because the
+                        trigger above it is a button and the page would
+                        otherwise have no way in from this menu at all.
+                      */}
+                      {showsOverviewRow(item.href) ? (
+                        <li>
+                          <Link
+                            href={item.href}
+                            aria-current={isCurrent(item.href) ? 'page' : undefined}
+                            className="block border-b border-line px-4 py-2.5 font-semibold text-brand transition-colors hover:bg-brand-tint"
+                          >
+                            {item.label} overview
+                          </Link>
+                        </li>
+                      ) : null}
                       {item.children?.map((child) => (
                         <li key={child.href}>
                           <Link

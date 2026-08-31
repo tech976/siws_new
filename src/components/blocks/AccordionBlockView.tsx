@@ -37,7 +37,9 @@ export const AccordionBlockView = ({
         className="mb-8"
       />
 
-      <div className="mx-auto max-w-3xl divide-y divide-line border-y border-line">
+      {/* `siws-accordion` is the hook the open/close transition hangs on —
+          see the note beside it in globals.css. */}
+      <div className="siws-accordion mx-auto max-w-3xl divide-y divide-line border-y border-line">
         {items.map((item, itemIndex) => (
           <details key={item.id ?? itemIndex} name={groupName} className="group py-1">
             <summary

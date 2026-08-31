@@ -39,7 +39,14 @@ export const StatisticsBlockView = ({ block }: { block: StatisticsBlock }) => {
   if (stats.length === 0) return null
 
   return (
-    <section data-invert="true" className="relative isolate overflow-hidden bg-brand">
+    <section
+      data-invert="true"
+      // Not wrapped in `Section`, so it declares its own ground — see the note
+      // there. Without it the gap rule under a page heading cannot tell this
+      // band from a white one.
+      data-ground="brand"
+      className="relative isolate overflow-hidden bg-brand"
+    >
       {block.image ? (
         <>
           <Media

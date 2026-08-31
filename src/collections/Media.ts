@@ -316,6 +316,52 @@ export const Media: CollectionConfig = {
       index: true,
     },
     {
+      /**
+       * Whether this picture belongs in the section's photo gallery.
+       *
+       * The gallery is built from every picture tagged to a section, which is
+       * right for photographs of school life and wrong for the rest: an event
+       * poster and a video's title frame are page furniture, and a visitor
+       * browsing the gallery has not asked to see them. Untagging them instead
+       * would be worse — an untagged picture counts as institution-wide and
+       * turns up in every section's gallery and the portal's.
+       */
+      name: 'showInGallery',
+      type: 'checkbox',
+      defaultValue: true,
+      label: 'Include in the photo gallery',
+      admin: {
+        position: 'sidebar',
+        description:
+          'Turn this off for posters, notices and video thumbnails — anything that is part of a page rather than a photograph of the school.',
+      },
+    },
+    {
+      /**
+       * Gallery tiles crop. That is right for a photograph — a wall of
+       * pictures all cropped to the same shapes is what makes it read as a
+       * wall — and wrong for anything whose edges carry the meaning.
+       *
+       * The #SwachhtaMonitor certificate is the case that forced this: cropped
+       * to a bento tile it lost the word CERTIFICATE off the top and the
+       * signature off the foot, leaving a band of text in the middle of a
+       * white rectangle. A certificate is READ, not admired, and the whole of
+       * it has to be on screen or it is not the certificate any more.
+       *
+       * The same decision already exists on card grids, where it is called
+       * "Show the whole picture".
+       */
+      name: 'showWhole',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Show the whole picture, never cropped',
+      admin: {
+        position: 'sidebar',
+        description:
+          'Turn this on for a certificate, a notice or an invitation — anything with writing at its edges. It is shown whole on a plain ground instead of being cropped to fit its tile.',
+      },
+    },
+    {
       name: 'depictsChildren',
       type: 'checkbox',
       defaultValue: false,

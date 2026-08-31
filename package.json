@@ -2,7 +2,7 @@
   "name": "siws-platform",
   "version": "0.1.0",
   "private": true,
-  "description": "SIWS School Website \u2014 main portal, four unit sites and admin CMS",
+  "description": "SIWS School Website — main portal, four unit sites and admin CMS",
   "type": "module",
   "engines": {
     "node": ">=20.9.0"
@@ -44,13 +44,16 @@
     "seed:primary": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/primary.ts",
     "seed:scholarships": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/scholarships.ts",
     "seed:secondary": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/secondary.ts",
+    "seed:jc": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/junior-college.ts",
     "seed:preview": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/design-preview.ts",
     "photos:scan": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/photos.ts scan",
     "photos:import": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/photos.ts import",
     "seed:galleries": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/galleries.ts",
     "seed:portal-hero": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/portal-hero.ts",
     "photos:consent": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/record-photo-consent.ts",
-    "seed:vision-bg": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/vision-background.ts"
+    "seed:vision-bg": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/vision-background.ts",
+    "remove:primary-campus-pages": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/remove-primary-campus-pages.ts",
+    "publish:menu-parents": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/publish-menu-parents.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.86.0",

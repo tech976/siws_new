@@ -37,26 +37,27 @@ export const richTextNodes = (children: unknown[]) => ({
   root: { type: 'root', ...common, children },
 })
 
-export const richText = (paragraphs: string[]) =>
-  richTextNodes(paragraphs.map((body) => paragraph([text(body)])))
-
 /**
- * One paragraph broken across several lines.
+ * A rich-text document built from plain strings.
  *
- * Not the same as `richText(['a', 'b', 'c'])`, which builds three PARAGRAPHS
- * with a blank line's worth of margin between them. A subheading written as
- * three short lines is a single statement, and the lines have to sit close
- * enough together to be read as one — paragraph spacing pulls them apart into
- * three unrelated remarks.
+ * Each entry is one paragraph. Pass an ARRAY of strings where a paragraph is
+ * broken across several lines: a statement written as two or three short
+ * lines is a single thought, and giving each line its own paragraph pushes a
+ * blank line between the parts and turns it into two or three.
  */
-export const richTextLines = (lines: string[]) =>
-  richTextNodes([
-    paragraph(
-      lines.flatMap((body, index) =>
-        index === 0 ? [text(body)] : [{ type: 'linebreak', version: 1 }, text(body)],
+export const richText = (paragraphs: (string | string[])[]) =>
+  richTextNodes(
+    paragraphs.map((entry) =>
+      paragraph(
+        (Array.isArray(entry) ? entry : [entry]).flatMap((body, index) =>
+          index === 0 ? [text(body)] : [{ type: 'linebreak', version: 1 }, text(body)],
+        ),
       ),
     ),
-  ])
+  )
+
+/** One paragraph broken across several lines. `richText([lines])` exactly. */
+export const richTextLines = (lines: string[]) => richText([lines])
 
 export interface ListEntry {
   /** Rendered bold, e.g. the name of a scholarship fund. */

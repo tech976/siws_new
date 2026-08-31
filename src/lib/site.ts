@@ -88,7 +88,14 @@ export const getUnitBySlug = cache(async (slug: string): Promise<Unit | null> =>
  * Unit sites get their own admissions and contact pages; the portal gets the
  * institution-wide ones.
  */
-const QUICK_LINK_SLUGS = ['admissions', 'scholarships', 'annual-calendar', 'download-centre', 'careers', 'contact']
+const QUICK_LINK_SLUGS = [
+  'admissions',
+  'scholarships',
+  'annual-calendar',
+  'download-centre',
+  'careers',
+  'contact',
+]
 
 export const getQuickLinks = cache(
   async (unitId: number | string | null, unitSlug: string | null) => {
@@ -142,10 +149,25 @@ export const getNavItems = cache(
       overrideAccess: false,
       // The menu needs four fields; pulling whole documents with their block
       // trees would be an order of magnitude more work per request.
-      select: { title: true, navLabel: true, slug: true, navOrder: true, navParent: true },
+      select: {
+        title: true,
+        navLabel: true,
+        slug: true,
+        navOrder: true,
+        navParent: true,
+        navMirrorParent: true,
+      },
     })
 
-    const href = (slug: string) => (unitSlug ? `/${unitSlug}/${slug}` : `/${slug}`)
+    /*
+     * A unit's home page is served at `/{unit}`, and `/{unit}/home` is a 404 —
+     * see `UNIT_HOME_SLUG` below. Building the href from the slug alone
+     * therefore produced a menu entry pointing at nothing the moment a unit
+     * put its own front page in the menu, which Junior College does: its home
+     * page IS its about page, and the menu says so.
+     */
+    const href = (slug: string) =>
+      unitSlug ? (slug === UNIT_HOME_SLUG ? `/${unitSlug}` : `/${unitSlug}/${slug}`) : `/${slug}`
     const label = (page: (typeof docs)[number]) => page.navLabel || page.title
 
     /*
@@ -175,8 +197,23 @@ export const getNavItems = cache(
     return [...tops, ...orphans]
       .sort((a, b) => (a.navOrder ?? 100) - (b.navOrder ?? 100))
       .map((page) => {
+        /*
+         * A page appears under its own parent, and again under any page that
+         * names it as a mirror — see `navMirrorParent` on the Pages
+         * collection. The two are gathered before sorting so a mirrored entry
+         * takes its position from `navOrder` like everything else rather than
+         * always landing at the end.
+         */
+        const mirrorId = (child: (typeof docs)[number]) => {
+          const value = child.navMirrorParent
+          if (value === null || value === undefined) return null
+          return typeof value === 'object' ? String(value.id) : String(value)
+        }
+
         const children = docs
-          .filter((child) => parentId(child) === String(page.id))
+          .filter(
+            (child) => parentId(child) === String(page.id) || mirrorId(child) === String(page.id),
+          )
           .sort((a, b) => (a.navOrder ?? 100) - (b.navOrder ?? 100))
           .map((child) => ({ label: label(child), href: href(child.slug) }))
 
@@ -320,7 +357,6 @@ export const resolveRoute = cache(
   },
 )
 
-
 /**
  * The lines currently running in the news ticker.
  *
@@ -337,7 +373,8 @@ export const getAnnouncements = cache(async (unitId: number | null): Promise<Ann
   const payload = await payloadClient()
   const { docs } = await payload.find({
     collection: 'announcements',
-    where: unitId === null ? {} : { or: [{ unit: { equals: unitId } }, { unit: { exists: false } }] },
+    where:
+      unitId === null ? {} : { or: [{ unit: { equals: unitId } }, { unit: { exists: false } }] },
     sort: '-publishAt',
     limit: 12,
     depth: 1,

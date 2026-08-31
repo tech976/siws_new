@@ -7,7 +7,7 @@ const { default: config } = await import('@payload-config')
 const { richText } = await import('./lexical')
 
 /**
- * Seeds the Primary section (Wadala campus) from the information requirement
+ * Seeds the Primary section from the information requirement
  * document SIWS returned.
  *
  * Everything published here is SIWS's own wording. Where the document left a
@@ -33,7 +33,20 @@ const SUBJECTS = [
   { title: 'English' },
   { title: 'Marathi' },
   { title: 'Mathematics' },
-  { title: 'EVS', description: 'Includes Science, History, Geography and Civics.' },
+  /*
+   * The expansion is part of the LABEL, not a description underneath it.
+   *
+   * As a description it made EVS the only item in the list carrying a second
+   * line, and the two-column layout is a grid — every cell on a row is as tall
+   * as the tallest one on it. That single line opened a hole in the left
+   * column between Mathematics and Art, and left Physical Education stranded
+   * on a row of its own, which is what the section looked wrong for.
+   *
+   * Folded into the title, all seven subjects are one line each, the four rows
+   * come out even, and not a word is lost. The block's own single-column
+   * layout is the one built for items that carry a paragraph.
+   */
+  { title: 'EVS (Science, History, Geography and Civics)' },
   { title: 'Art' },
   { title: 'Work Experience' },
   { title: 'Physical Education' },
@@ -68,11 +81,15 @@ const TEACHING_PRACTICES = [
   { title: 'Storytelling, role play, music and art-integrated learning' },
   { title: 'Project-based and collaborative learning' },
   { title: 'Smart Classroom and digital learning resources' },
-  { title: 'Inquiry-based learning that encourages questioning and exploration' },
+  {
+    title: 'Inquiry-based learning that encourages questioning and exploration',
+  },
   { title: 'Real-life applications to make learning meaningful' },
   { title: 'Continuous formative assessment and constructive feedback' },
   { title: 'Individual attention and remedial support wherever required' },
-  { title: 'Value education, environmental awareness and life-skill development' },
+  {
+    title: 'Value education, environmental awareness and life-skill development',
+  },
 ]
 
 const HOLISTIC = [
@@ -85,66 +102,70 @@ const HOLISTIC = [
   { title: 'Leadership opportunities and value-based activities' },
 ]
 
+/*
+ * Six, not seven, so the two columns come out three and three.
+ *
+ * The one dropped — "seamless progression to higher classes within the SIWS
+ * Group" — was saying the same thing as the last card in `USPS` two sections
+ * below it. It is kept there, where it has room to explain itself.
+ */
 const PROGRAMME_BENEFITS = [
   { title: 'Strong academic foundation' },
   { title: 'Interactive and technology-enabled learning' },
   { title: 'Safe and secure campus with CCTV surveillance' },
-  { title: 'Development of communication, creativity and critical thinking' },
+  { title: 'Communication, creativity and critical thinking' },
   { title: 'Sports, arts and cultural exposure' },
   { title: 'Value education and life skills' },
-  { title: 'Seamless progression to higher classes within the SIWS Group of Institutions' },
 ]
 
+/*
+ * SIX CARDS, EACH ONE SENTENCE.
+ *
+ * There were ten of these, every one carrying thirty-odd words, set as a
+ * two-column tick list in which the heading was 16.8px and the sentence under
+ * it 16px — a difference of eight tenths of a millimetre. Nothing told the eye
+ * where a point started, so the section read as one 969px block of prose with
+ * ticks in it, and by the fourth item nobody is reading.
+ *
+ * Cut to six, cut to a sentence each, and given a card and an icon apiece, so
+ * a parent can take one in at a glance and stop wherever they like.
+ */
 const USPS = [
   {
-    title: 'Academic Excellence',
+    title: 'Academic excellence',
+    icon: 'study',
     description:
-      'A strong academic foundation based on the Maharashtra State Board curriculum, supported by innovative teaching methods, continuous assessment and individual attention to every child.',
+      'A strong foundation on the Maharashtra State Board curriculum, with continuous assessment and attention to every child.',
   },
   {
-    title: 'Experienced & Dedicated Faculty',
+    title: 'Experienced teachers',
+    icon: 'staff',
     description:
-      'Our qualified and experienced teachers use child-centred, activity-based and competency-driven teaching strategies to make learning meaningful and enjoyable.',
+      'Qualified teachers using child-centred, activity-based methods, so lessons are understood rather than memorised.',
   },
   {
-    title: 'Smart Classrooms',
+    title: 'Smart classrooms',
+    icon: 'computers',
     description:
-      'Technology-enabled classrooms with interactive smart panels enhance teaching and learning through multimedia content, interactive lessons and digital resources.',
+      'Interactive smart panels in the classrooms, with multimedia lessons and digital resources.',
   },
   {
-    title: 'Holistic Development',
+    title: 'Holistic development',
+    icon: 'activity',
     description:
-      'Students are encouraged to participate in sports, cultural activities, art, music, dance, competitions, leadership programmes and value-based initiatives, ensuring all-round personality development.',
+      'Sports, art, music, dance, competitions and leadership, alongside the academic timetable.',
   },
   {
-    title: 'Individual Care & Inclusive Education',
+    title: 'Individual care',
+    icon: 'care',
     description:
-      'We recognise that every child is unique. Personal attention, remedial support and encouragement help each learner achieve their fullest potential.',
+      'Every child is different. Personal attention and remedial support wherever a learner needs it.',
   },
   {
-    title: 'Values & Character Building',
+    title: 'A school to move up in',
+    icon: 'classroom',
     description:
-      'Along with academic learning, we instil values such as honesty, empathy, responsibility, respect, teamwork and environmental consciousness.',
-  },
-  {
-    title: 'Strong School–Parent Partnership',
-    description:
-      'Regular communication, parent interactions and collaborative initiatives ensure that parents remain active partners in their child’s educational journey.',
-  },
-  {
-    title: 'Seamless Academic Progression',
-    description:
-      'As part of the SIWS Group of Institutions, students benefit from a smooth transition from the Primary Section to higher classes within the institution.',
-  },
-  {
-    title: 'Co-curricular & Experiential Learning',
-    description:
-      'Field visits, celebrations, projects, language enrichment programmes and hands-on experiences make learning practical, enjoyable and relevant.',
-  },
-  {
-    title: 'Focus on Future-Ready Skills',
-    description:
-      'We nurture creativity, communication, collaboration, critical thinking, problem-solving and digital literacy, preparing students to thrive in an ever-changing world.',
+      'Part of the SIWS Group, so a child continues into the higher classes without changing school.',
   },
 ]
 
@@ -166,17 +187,14 @@ const COMPETITIONS = [
 /**
  * MATUNGA CAMPUS
  * ==============
- * From SIWS's second requirement document. The two campuses share a board, a
- * grade range and an admissions policy, so only what actually differs is
- * recorded separately: the roster, the house rules, and the way each campus
- * describes itself.
+ * The Primary Section is published as ONE school.
  *
- * The Matunga document is headed "Kindergarten to Standard X" — that is the
- * blank form's own title, sent to every section. Its content describes Grades 1
- * to 4 ("a seamless educational pathway from standard I to standard IV"), and
- * it answers "Progression pathway to Junior College / Degree College" with
- * "Not applicable". So nothing here claims a Matunga Secondary section, and the
- * progression benefit that Wadala's document does claim is left off Matunga.
+ * It used to run as two campuses with a page each, a roster each and a set of
+ * house rules each. Those pages, the card grid that led to them and the second
+ * rule list are gone. What is kept is the teaching staff: nine of these names
+ * were recorded against Matunga, and dropping a campus label is not a reason
+ * to drop nine teachers from the school's roster. They are listed with
+ * everybody else, and the campus each was tagged with is no longer shown.
  */
 const MATUNGA_FACULTY = [
   {
@@ -192,52 +210,8 @@ const MATUNGA_FACULTY = [
   { name: 'Ms. Payal Sandeep Shukla', qualifications: 'H.S.C., D.Ed.' },
   { name: 'Mrs. Mary Dolours Richard', qualifications: 'B.A., D.Ed.' },
   { name: 'Ms. Prema Keshwan Devendra', qualifications: 'B.A., D.Ed.' },
-]
-
-/** The 18 rules Matunga supplied, verbatim. */
-const MATUNGA_RULES: string[] = [
-  'Bring the school calendar every day.',
-  'Maintain at least 80% attendance.',
-  'Wear proper school uniform.',
-  'Take care of your books and belongings; don’t wear ornaments.',
-  'Maintain discipline in school and during activities.',
-  'Speak only in English in school.',
-  'Avoid late coming, absenteeism, and indiscipline.',
-  'Do not damage school property; compensation must be paid if damaged.',
-  'Parents should meet teachers only with prior permission.',
-  'Inform the school of any change in address or phone number.',
-  'Do not give cash or gifts to teachers.',
-  'Do not bring unnecessary books, magazines, or newspapers. Bring only dry snacks.',
-  'Do not participate in political or communal activities.',
-  'Parents should ensure regularity, homework, and discipline.',
-  'Be regular, obedient and polite.',
-  'No school office work on Saturdays, Sundays, or holidays.',
-  'Certificates are issued only during the specified office hours.',
-  'Follow the Library Rules.',
-]
-
-/**
- * Matunga's subject list, as written. It differs from Wadala's only in wording
- * — "Environmental Studies Part 1 and 2" where Wadala wrote "EVS", and
- * "Physical Training" where Wadala wrote "Physical Education" — so the two are
- * kept distinct rather than silently harmonised.
- */
-const MATUNGA_SUBJECTS = [
-  { title: 'English' },
-  { title: 'Mathematics' },
-  { title: 'Marathi' },
-  { title: 'Environmental Studies', description: 'Part 1 and Part 2.' },
-  { title: 'Art' },
-  { title: 'Work Experience' },
-  { title: 'Physical Training' },
-]
-
-const MATUNGA_BENEFITS = [
-  { title: 'Strong academic foundation' },
-  { title: 'Value-based education' },
-  { title: 'Co-curricular activities' },
-  { title: 'Sports' },
-  { title: 'Holistic development' },
+  // No qualifications given on the list she appears on, so none are shown.
+  { name: 'Ms. Vaishali Baghat' },
 ]
 
 /** Head teacher first; the rest in the order SIWS listed them. */
@@ -259,28 +233,99 @@ const FACULTY = [
   { name: 'Gurjit Kaur Matta', qualifications: 'B.A., D.Ed.' },
   { name: 'Shruti Sampat Gaware', qualifications: 'B.A., D.Ed.' },
   { name: 'Deepika Naidu', qualifications: 'H.S.C., D.Ed.' },
+  // Listed with a subject rather than a qualification.
+  { name: 'Deepika Boricha', designation: 'Arts Teacher' },
 ]
 
-/** The 19 general rules, verbatim. */
+/**
+ * Ten pieces of parent feedback, sent by SIWS with the families' consent
+ * (2026-08-29) and reproduced word for word.
+ *
+ * `attribution` is filled in because the record of who said a thing belongs
+ * with the thing; the block is asked NOT to print it, since a heading reading
+ * "What parents say" over ten cards each signed "Parent" is the same word
+ * eleven times. Same decision as the Kindergarten section's page.
+ */
+const PRIMARY_PARENT_QUOTES: { quote: string; attribution: string }[] = [
+  {
+    quote:
+      'We’ve seen a noticeable change in our child’s confidence since joining SIWS. They’re much more comfortable speaking up and asking questions.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'What we like about SIWS is that the teachers are approachable. If there’s something we’re concerned about, we can actually talk to them.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'Our child has become more responsible with schoolwork and doesn’t need as much reminding as before. That’s been a big change for us.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'The academics are taken seriously, but there isn’t constant pressure on the children. We’ve found that balance quite good.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'We were initially worried about how our child would adjust, but they settled in faster than we expected and now look forward to school.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'The teachers seem to know the children well, not just academically but also in terms of their individual strengths and areas they need help with.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'We’ve been happy with the way concepts are explained. Our child is encouraged to understand the topic instead of just learning answers.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'There are definitely busy periods with schoolwork, but overall we feel our child is learning at a comfortable pace.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'One thing we’ve noticed is that our child has become more willing to try things independently instead of always waiting for us to help.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'For us, the biggest positive has been the overall environment. Our child feels comfortable at school, and that gives us peace of mind.',
+    attribution: 'Parent',
+  },
+]
+
+/**
+ * The 19 general rules, in SIWS's own wording.
+ *
+ * With one substitution: the school's document says "pupils" throughout and
+ * the site says "students" or "children" (SIWS, 2026-08-29). It is a synonym
+ * and no rule means anything different for it, but the note above used to say
+ * "verbatim" and that is now a word too strong for what this is.
+ */
 const GENERAL_RULES: string[] = [
-  'Every pupil must possess a copy of the school calendar which must be brought daily to the school.',
-  'Pupils suffering from contagious diseases or declared infectious diseases by the health authorities, and which require segregation in the class, will not be permitted to attend school without the pupil being certified as fit by the doctor.',
-  'All pupils must come to school in the prescribed uniform. They should always be neat and tidy.',
-  'Pupils are responsible for the safe custody of their books and other belongings. They are requested not to wear any ornaments or watch for the sake of personal safety.',
-  'Irregular attendance, habitual idleness, late coming, wilful disobedience or conduct and any form of indiscipline in the school will be seriously dealt with. All pupils are responsible to the school authorities for their behaviour inside the school.',
+  'Every student must possess a copy of the school calendar which must be brought daily to the school.',
+  'Students suffering from contagious diseases or declared infectious diseases by the health authorities, and which require segregation in the class, will not be permitted to attend school without the student being certified as fit by the doctor.',
+  'All students must come to school in the prescribed uniform. They should always be neat and tidy.',
+  'Students are responsible for the safe custody of their books and other belongings. They are requested not to wear any ornaments or watch for the sake of personal safety.',
+  'Irregular attendance, habitual idleness, late coming, wilful disobedience or conduct and any form of indiscipline in the school will be seriously dealt with. All students are responsible to the school authorities for their behaviour inside the school.',
   'All students must possess the school identity card which they must carry daily to school. Similarly, they must bring to school their School Diary without fail.',
   'Any damage to school property, whether inside or outside the classrooms or within the school premises, will have to be made good by those responsible for it or by their parents or guardians. The decision of the school authorities regarding compensation payable to the school is final.',
   'Parents/guardians or others are not allowed to see their wards or meet their teacher during school hours without the prior consent of the Head Teacher.',
-  'Any breach of discipline or disrespect to any member of the school staff will be dealt with seriously and pupils responsible for such misbehaviour will be summarily dismissed after proper warning to the student and parents/guardians.',
+  'Any breach of discipline or disrespect to any member of the school staff will be dealt with seriously and students responsible for such misbehaviour will be summarily dismissed after proper warning to the student and parents/guardians.',
   'The school authorities maintain a record of the address and phone numbers of parents/guardians in the school office. Parents/guardians are requested to promptly intimate the school authorities of any changes.',
   'Presents in cash or in kind to the teachers are not permitted. Collection of funds for any reason whatsoever within the school premises is also prohibited.',
-  'Letters addressed to pupils in the school will not be delivered in the classrooms.',
-  'Pupils are not permitted to bring unnecessary books, magazines, newspapers, periodicals or similar articles to the school. They must bring only dry food for the long recess.',
-  'Pupils are forbidden to take part in any political or other organisation likely to result in violence or communal disturbance.',
-  'Parents/guardians are earnestly requested to enforce regularity and discipline and see that their children do their homework and prepare their lessons daily as per the timetable. Parental co-operation is earnestly solicited not only for the benefit of the pupil but also for the smooth working of the school.',
-  'The school observes the “Principles of Discipline” set out in Rule 53 of the Grant-In-Aid Code: regularity and implicit obedience; politeness and courtesy of speech and conduct together with cleanliness of dress and person; and pupils’ responsibility to the school for their conduct both inside and outside it.',
+  'Letters addressed to students in the school will not be delivered in the classrooms.',
+  'Students are not permitted to bring unnecessary books, magazines, newspapers, periodicals or similar articles to the school. They must bring only dry food for the long recess.',
+  'Students are forbidden to take part in any political or other organisation likely to result in violence or communal disturbance.',
+  'Parents/guardians are earnestly requested to enforce regularity and discipline and see that their children do their homework and prepare their lessons daily as per the timetable. Parental co-operation is earnestly solicited not only for the benefit of the student but also for the smooth working of the school.',
+  'The school observes the “Principles of Discipline” set out in Rule 53 of the Grant-In-Aid Code: regularity and implicit obedience; politeness and courtesy of speech and conduct together with cleanliness of dress and person; and students’ responsibility to the school for their conduct both inside and outside it.',
   'No school business will be transacted on Saturdays, Sundays and holidays.',
-  'Any pupil who is persistently non-co-operative, repeatedly or wilfully mischievous, guilty of gross malpractice in connection with examinations, or has committed an act of serious indiscipline or misbehaviour, or who in the opinion of the Head of the School has an undesirable influence on fellow pupils, is liable to be expelled permanently or removed for a specific period, with the reasons recorded in writing.',
+  'Any student who is persistently non-co-operative, repeatedly or wilfully mischievous, guilty of gross malpractice in connection with examinations, or has committed an act of serious indiscipline or misbehaviour, or who in the opinion of the Head of the School has an undesirable influence on fellow students, is liable to be expelled permanently or removed for a specific period, with the reasons recorded in writing.',
   'Railway concession forms and other certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — will be issued between 1.00 p.m. and 2.30 p.m. only.',
 ]
 
@@ -306,7 +351,9 @@ const main = async () => {
    */
   const { docs: scholarshipPages } = await payload.find({
     collection: 'pages',
-    where: { and: [{ slug: { equals: 'scholarships' } }, { unit: { exists: false } }] },
+    where: {
+      and: [{ slug: { equals: 'scholarships' } }, { unit: { exists: false } }],
+    },
     limit: 1,
     depth: 0,
     overrideAccess: true,
@@ -325,13 +372,12 @@ const main = async () => {
     id: primary.id,
     overrideAccess: true,
     data: {
-      // Not "…, Wadala" any more: the unit now covers both campuses, and the
       // main portal prints this name in its school list.
       name: 'SIWS Primary School',
       shortName: 'Primary School',
-      tagline: 'Maharashtra State Board | Grades 1 to 4 | Wadala & Matunga',
+      tagline: 'Maharashtra State Board | Grades 1 to 4',
       description:
-        'Grades 1 to 4 following the Maharashtra State Board curriculum, aligned with NEP 2020, at our Wadala and Matunga campuses — nurturing confident, responsible and joyful learners.',
+        'Grades 1 to 4 following the Maharashtra State Board curriculum, aligned with NEP 2020 — nurturing confident, responsible and joyful learners.',
     } as never,
   })
 
@@ -350,7 +396,9 @@ const main = async () => {
    */
   const { docs: untagged } = await payload.find({
     collection: 'faculty',
-    where: { and: [{ unit: { equals: primary.id } }, { campus: { exists: false } }] },
+    where: {
+      and: [{ unit: { equals: primary.id } }, { campus: { exists: false } }],
+    },
     limit: 200,
     depth: 0,
     overrideAccess: true,
@@ -376,7 +424,11 @@ const main = async () => {
    * list.
    */
   const roster = [
-    ...FACULTY.map((teacher, index) => ({ ...teacher, campus: 'wadala', order: index + 1 })),
+    ...FACULTY.map((teacher, index) => ({
+      ...teacher,
+      campus: 'wadala',
+      order: index + 1,
+    })),
     ...MATUNGA_FACULTY.map((teacher, index) => ({
       ...teacher,
       campus: 'matunga',
@@ -419,7 +471,11 @@ const main = async () => {
       })
       facultyUpdated += 1
     } else {
-      await payload.create({ collection: 'faculty', data: data as never, overrideAccess: true })
+      await payload.create({
+        collection: 'faculty',
+        data: data as never,
+        overrideAccess: true,
+      })
       facultyCreated += 1
     }
   }
@@ -430,7 +486,9 @@ const main = async () => {
   const upsert = async (page: Record<string, unknown> & { slug: string; title: string }) => {
     const existing = await payload.find({
       collection: 'pages',
-      where: { and: [{ slug: { equals: page.slug } }, { unit: { equals: primary.id } }] },
+      where: {
+        and: [{ slug: { equals: page.slug } }, { unit: { equals: primary.id } }],
+      },
       limit: 1,
       depth: 0,
       overrideAccess: true,
@@ -458,328 +516,296 @@ const main = async () => {
     return doc.id
   }
 
-  // --------------------------------------------------------- CAMPUS PAGES
+  // ---------------------------------------------------------------- EVENTS
   /**
-   * Seeded before the home page, because the campus cards there link to these
-   * by relationship and the IDs have to exist first.
+   * Looks a page or a photograph up by name, and says so if it is not there.
+   *
+   * Everything below is optional: an event card with no banner, or a banner
+   * with nowhere to go, is left out rather than published half-built.
    */
-  const wadalaPageId = await upsert({
-    slug: 'wadala',
-    title: 'Wadala campus',
-    intro:
-      'The Primary Section at Wadala — Grades 1 to 4, on the same campus as the K.G. Section and the Secondary School.',
-    showInNav: true,
-    navLabel: 'Wadala',
-    navOrder: 11,
+  const photo = async (filename: string) => {
+    const { docs } = await payload.find({
+      collection: 'media',
+      where: { filename: { equals: filename } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    if (!docs[0]) payload.logger.warn(`Photograph missing from the library: ${filename}`)
+    return docs[0]?.id ?? null
+  }
+
+  const pageId = async (slug: string) => {
+    const { docs } = await payload.find({
+      collection: 'pages',
+      where: {
+        and: [{ slug: { equals: slug } }, { unit: { equals: primary.id } }],
+      },
+      limit: 1,
+      depth: 0,
+      draft: true,
+      overrideAccess: true,
+    })
+    return docs[0]?.id ?? null
+  }
+
+  /*
+   * The banner is the invitation SIWS designed for the day. Until that file is
+   * in the library the card falls back to a photograph FROM the event, so the
+   * page is never published with an empty frame — but the two are different
+   * things and the fallback is reported, not passed off as the banner.
+   */
+  const classroom = await photo('primary-classroom.jpg')
+
+  const videoStills = {
+    independence: await photo('video-2026-independence-day.jpg'),
+    raksha: await photo('video-2026-raksha-bandhan.jpg'),
+    onam: await photo('video-2026-onam.jpg'),
+  }
+
+  const onamBanner = await photo('onam-2026-banner.jpg')
+  const onamFallback = await photo('onam-2026-assembly.jpg')
+  const onamImage = onamBanner ?? onamFallback
+  if (!onamBanner && onamFallback) {
+    payload.logger.warn(
+      'Onam: the designed invitation banner (onam-2026-banner.jpg) is not in the library, so the event card is showing a photograph from the day instead. Drop the banner into photos-inbox/ and re-import to replace it.',
+    )
+  }
+
+  /*
+   * The gallery is seeded by `seed:galleries`, which runs after this. On a
+   * database where it has not run yet the page does not exist, so the card is
+   * published without its link rather than with a broken one.
+   */
+  const galleryPageId = await pageId('gallery')
+  if (!galleryPageId) {
+    payload.logger.warn(
+      'Onam: no Campus Gallery page yet, so the event card has no link. Run npm run seed:galleries, then this seed again.',
+    )
+  }
+
+  await upsert({
+    slug: 'events',
+    title: 'Events',
+    intro: 'Celebrations, competitions and gatherings through the school year.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
+     *
+     * This is a CHILD entry in the shared unit template. Setting it true from
+     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
+     * wins — so running this seed after `seed:nav` climbed every child out
+     * to the top row at once. Secondary reached thirteen top-level items and
+     * the buttons wrapped onto a second line.
+     *
+     * Omitting the field is NOT enough: `payload.update` keeps the existing
+     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+     * rather than leaving it alone. False explicitly means the worst this seed
+     * can do is drop the entry until `seed:nav` runs — which is the
+     * documented order anyway, and a missing drop-down entry is a far smaller
+     * fault than a menu that wraps.
+     */
+    showInNav: false,
+    navLabel: 'Events',
+    navOrder: 62,
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'SIWS Primary School, Wadala — Grades 1 to 4 on the Maharashtra State Board curriculum, with smart classrooms, experienced teachers and a CCTV-monitored campus.',
+      'Events at SIWS Primary School — celebrations, competitions and gatherings through the school year.',
     layout: [
       {
-        blockType: 'hero',
-        title: 'SIWS Primary School, Wadala',
-        accentWord: 'Wadala',
-        eyebrow: 'Maharashtra State Board | Grades 1 to 4',
-        intro:
-          'A caring, inclusive and stimulating school where the focus extends beyond academic excellence to developing confident, responsible and compassionate individuals.',
-      },
-      {
-        blockType: 'statistics',
-        heading: 'A legacy parents trust',
-        background: 'sea',
-        stats: [
-          { value: '1934', label: 'Serving Mumbai since' },
-          { value: '90+', label: 'Years of educational service' },
-          { value: 'A Grade', label: 'Department of Education' },
-          { value: '20+', label: 'Years average teaching experience' },
+        blockType: 'cardGrid',
+        heading: 'What we have been celebrating',
+        accentWord: 'celebrating',
+        headingLevel: 'h2',
+        background: 'white',
+        columns: '2',
+        cards: [
+          ...(onamImage
+            ? [
+                {
+                  title: 'Onam',
+                  ...(onamImage ? { image: onamImage } : {}),
+                  // An invitation, not a photograph: the crop would take the
+                  // crest off the top and the date, venue and time off the foot.
+                  fit: 'whole',
+                  description:
+                    'The school marked Onam under the Ek Bharat Shreshtha Bharat initiative, with a pookalam laid in the hall, the lamp lit together, and staff and children in Kerala dress.',
+                  ...(galleryPageId
+                    ? {
+                        cta: [
+                          {
+                            link: {
+                              label: 'See the photographs',
+                              type: 'internal',
+                              reference: {
+                                relationTo: 'pages',
+                                value: galleryPageId,
+                              },
+                            },
+                          },
+                        ],
+                      }
+                    : {}),
+                },
+              ]
+            : []),
         ],
       },
+
+      /*
+       * The films of each day, on a tint so they read as their own band rather
+       * than more of the card above. Only the ones whose still made it into
+       * the library are listed: a video card with no picture on it is a grey
+       * rectangle that tells a visitor nothing.
+       *
+       * The links are stored as Drive sharing URLs and reduced to the file id
+       * on save — see VideoGalleryBlock for why the id is all that is kept.
+       */
       {
-        blockType: 'richText',
-        heading: 'On one campus, from K.G. to Standard X',
-        accentWord: 'K.G. to Standard X',
+        blockType: 'videoGallery',
+        heading: 'Watch the celebrations',
+        accentWord: 'Watch',
         headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'The Wadala campus is the full SIWS school — a K.G. Section, Primary School and Secondary School on one site, so a child can move from Kindergarten to Standard X without ever changing schools.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Subjects',
-        accentWord: 'Subjects',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
         background: 'sea',
-        items: SUBJECTS,
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Grade by grade',
-        accentWord: 'Grade by grade',
-        headingLevel: 'h2',
-        marker: 'number',
-        columns: '1',
-        background: 'white',
-        intro: richText([
-          'Our Primary Section follows the Maharashtra State Board curriculum (SCERT Maharashtra / Balbharati), aligned with the National Education Policy 2020 and its competency-based approach (PARAKH).',
-        ]),
-        items: GRADE_CURRICULUM,
-      },
-      {
-        blockType: 'featureList',
-        heading: 'How we teach',
-        accentWord: 'teach',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'sea',
-        intro: richText([
-          'Every child learns differently. Our classrooms are interactive, inclusive and learner-centred, with teachers acting as facilitators who encourage children to think, explore and discover.',
-        ]),
-        items: TEACHING_PRACTICES,
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Beyond academics',
-        accentWord: 'Beyond academics',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'white',
-        items: HOLISTIC,
-      },
-      {
-        blockType: 'featureList',
-        heading: 'What the Wadala programme offers',
-        accentWord: 'Wadala programme',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'sea',
-        items: PROGRAMME_BENEFITS,
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Why parents choose SIWS Wadala',
-        accentWord: 'SIWS Wadala',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'white',
-        items: USPS,
-      },
-      {
-        blockType: 'faculty',
-        heading: 'Teachers at Wadala',
-        accentWord: 'Wadala',
-        headingLevel: 'h2',
-        campus: 'wadala',
-        showQualifications: true,
-        background: 'sea',
-        intro: richText([
-          'Our teachers are well trained, with over 20 years of teaching experience.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Competitions and prizes',
-        accentWord: 'Competitions',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'white',
-        items: COMPETITIONS,
-      },
-      {
-        blockType: 'richText',
-        heading: 'Safe, secure and disciplined',
-        accentWord: 'Safe',
-        headingLevel: 'h2',
-        width: 'narrow',
-        background: 'sea',
-        content: richText([
-          'The entire campus — classrooms, corridors, entrances and common areas — is monitored by CCTV. Well-defined safety protocols, disciplined practices and vigilant supervision give parents confidence that their children are learning in a safe, caring and protected atmosphere.',
-        ]),
+        videos: [
+          ...(videoStills.independence
+            ? [
+                {
+                  title: 'Independence Day',
+                  description:
+                    'Our 80th Independence Day, marked on stage by the children of the Primary Section.',
+                  driveUrl:
+                    'https://drive.google.com/file/d/1QYoEj_g24oqyoOhZKSLKy5IwQm9G9Ttm/view',
+                  poster: videoStills.independence,
+                },
+              ]
+            : []),
+          ...(videoStills.raksha
+            ? [
+                {
+                  title: 'Raksha Bandhan',
+                  description:
+                    'The children tied rakhis to the men and women who look after the neighbourhood.',
+                  driveUrl:
+                    'https://drive.google.com/file/d/10OIkijSppmfAqhcFOtm6pvHcPlSrCK_m/view',
+                  poster: videoStills.raksha,
+                },
+              ]
+            : []),
+          ...(videoStills.onam
+            ? [
+                {
+                  title: 'Onam',
+                  description:
+                    'The pookalam laid, the lamp lit, and the whole school gathered round it.',
+                  driveUrl:
+                    'https://drive.google.com/file/d/1JiWFG7-LV5lxTGhawLu_lpMForAXAOMu/view',
+                  poster: videoStills.onam,
+                },
+              ]
+            : []),
+        ],
       },
     ],
   })
 
-  const matungaPageId = await upsert({
-    slug: 'matunga',
-    title: 'Matunga campus',
-    intro:
-      'The Primary Section at Matunga — Grades 1 to 4, opened within two years of the school’s founding.',
-    showInNav: true,
-    navLabel: 'Matunga',
-    navOrder: 12,
+  // ---------------------------------------------------------- ACHIEVEMENTS
+  /*
+   * The prizes, as a wall of photographs.
+   *
+   * Each picture is included only if it is in the library, so the page is
+   * built from whatever has actually arrived rather than leaving holes where
+   * the rest will go. A caption is written per picture here rather than reused
+   * from the library's alt text: the alt text describes the photograph for
+   * somebody who cannot see it, and a caption says what the prize was.
+   */
+  const achievementShots = [
+    {
+      file: 'natya-tarang-2026-first-prize.jpg',
+      caption:
+        'First prize in Category A at Natya Tarang 2026, the inter-school and college group dance competition.',
+    },
+    {
+      file: 'natya-tarang-2026-performance.jpg',
+      caption: 'On stage at Natya Tarang 2026.',
+    },
+    {
+      file: 'ignited-mind-lab-2026.jpg',
+      caption: 'Certificates of achievement from the Ignited Mind Lab programme.',
+    },
+    {
+      file: 'natya-tarang-2026-company.jpg',
+      caption: 'The full company in costume at Natya Tarang 2026.',
+    },
+    {
+      file: 'natya-tarang-2026-trophy.jpg',
+      caption: 'The Category A trophy, Pre-Primary to Standard IV.',
+    },
+  ]
+
+  const achievementImages = (
+    await Promise.all(
+      achievementShots.map(async (shot) => {
+        const id = await photo(shot.file)
+        return id ? { image: id, caption: shot.caption } : null
+      }),
+    )
+  ).filter((entry) => entry !== null)
+
+  if (achievementImages.length < achievementShots.length) {
+    payload.logger.warn(
+      `Achievements: ${achievementShots.length - achievementImages.length} of ${achievementShots.length} photographs are not in the library yet. Put them in photos-inbox/ under the names above, run npm run photos:import, then this seed again.`,
+    )
+  }
+
+  await upsert({
+    slug: 'achievements',
+    title: 'Achievements',
+    intro: 'Recognition earned by our students in the arts, in competition and in the classroom.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
+     *
+     * This is a CHILD entry in the shared unit template. Setting it true from
+     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
+     * wins — so running this seed after `seed:nav` climbed every child out
+     * to the top row at once. Secondary reached thirteen top-level items and
+     * the buttons wrapped onto a second line.
+     *
+     * Omitting the field is NOT enough: `payload.update` keeps the existing
+     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+     * rather than leaving it alone. False explicitly means the worst this seed
+     * can do is drop the entry until `seed:nav` runs — which is the
+     * documented order anyway, and a missing drop-down entry is a far smaller
+     * fault than a menu that wraps.
+     */
+    showInNav: false,
+    navLabel: 'Achievements',
+    navOrder: 63,
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'SIWS Primary School, Matunga — Grades 1 to 4 on the Maharashtra State Board curriculum, with a nine-strong teaching team and a safe, disciplined campus.',
+      'Prizes and recognition won by students of SIWS Primary School, including first place in Category A at Natya Tarang 2026.',
     layout: [
-      {
-        blockType: 'hero',
-        title: 'SIWS Primary School, Matunga',
-        accentWord: 'Matunga',
-        eyebrow: 'Maharashtra State Board | Standards I to IV',
-        intro:
-          'A journey of learning, growing and achieving — building tomorrow’s achievers through personalised learning, innovative teaching, strong values and a nurturing environment from the very first step.',
-      },
-      {
-        blockType: 'statistics',
-        heading: 'A legacy parents trust',
-        background: 'sea',
-        stats: [
-          { value: '1934', label: 'SIWS founded' },
-          { value: '1936', label: 'Matunga Primary opened' },
-          { value: 'A Grade', label: 'Department of Education' },
-          { value: 'State Board', label: 'Maharashtra' },
-        ],
-      },
-      {
-        blockType: 'richText',
-        heading: 'SIWS Primary School, Matunga',
-        accentWord: 'Matunga',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'A journey of learning, growing and achieving. The school provides a seamless educational pathway from Standard I to Standard IV, with a strong focus on knowledge, values, creativity and confidence.',
-          'Building tomorrow’s achievers through personalised learning, innovative teaching, strong values, and a nurturing environment from the very first step.',
-        ]),
-      },
-      {
-        blockType: 'richText',
-        heading: 'How Matunga began',
-        accentWord: 'Matunga',
-        headingLevel: 'h2',
-        width: 'narrow',
-        background: 'sea',
-        content: richText([
-          'SIWS School made a humble beginning in the year 1934 with just 4 students at Shivaji Park. Within the next two years the Primary Section was opened at Matunga, and in order to cope with the heavy demand for admission the Wadala School was opened.',
-          'Years of dedication, learning and success have shaped our journey of nurturing confident and compassionate young minds.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Subjects taught at Matunga',
-        accentWord: 'Subjects',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'white',
-        items: MATUNGA_SUBJECTS,
-      },
-      {
-        blockType: 'featureList',
-        heading: 'What the Matunga programme offers',
-        accentWord: 'Matunga programme',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'tint',
-        items: MATUNGA_BENEFITS,
-      },
-      {
-        blockType: 'richText',
-        heading: 'Our curriculum',
-        headingLevel: 'h2',
-        width: 'narrow',
-        background: 'white',
-        content: richText([
-          'Our primary curriculum nurtures curiosity through activity-based, experiential learning that strengthens literacy, numeracy, creativity, critical thinking and life skills in a joyful classroom environment.',
-          'Where learning extends beyond books — empowering young minds through creativity, expression, exploration and meaningful experiences every day, through festival and event celebrations.',
-        ]),
-      },
-      {
-        blockType: 'faculty',
-        heading: 'Teachers at Matunga',
-        accentWord: 'Matunga',
-        headingLevel: 'h2',
-        campus: 'matunga',
-        showQualifications: true,
-        background: 'sea',
-        intro: richText([
-          'With knowledge and passion, our teachers create a classroom where every child feels encouraged to explore and succeed.',
-        ]),
-      },
-      {
-        blockType: 'richText',
-        heading: 'Admission to Matunga',
-        accentWord: 'Admission',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'Our admission process is simple, transparent and parent-friendly. Eligible students can apply by submitting the required documents, completing the admission formalities and interacting with the school as per the prescribed guidelines.',
-          'Every pupil seeking admission for the first time must produce their Birth Certificate, Aadhaar card and Ration card issued by a competent authority.',
-        ]),
-      },
-      {
-        blockType: 'richText',
-        heading: 'The academic year',
-        headingLevel: 'h2',
-        width: 'narrow',
-        background: 'sea',
-        content: richText([
-          'An enriching year-round learning experience, with a balanced schedule that encourages academic excellence and holistic growth.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'School rules — Matunga',
-        accentWord: 'Matunga',
-        headingLevel: 'h2',
-        marker: 'number',
-        columns: '1',
-        background: 'white',
-        items: MATUNGA_RULES.map((title) => ({ title })),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'What sets Matunga apart',
-        accentWord: 'Matunga',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2',
-        background: 'sea',
-        items: [
-          {
-            title: 'A Grade recognition',
-            description:
-              'Granted A Grade status by the Department of Education following improvements in infrastructure, teaching and other parameters. Recognised by the Maharashtra State Board.',
-          },
-          {
-            title: 'Experienced faculty',
-            description:
-              'With knowledge and passion, our teachers create a classroom where every child feels encouraged to explore and succeed.',
-          },
-          {
-            title: 'Modern facilities',
-            description: 'Smart classrooms and well-equipped labs.',
-          },
-          {
-            title: 'Personalised learning',
-            description:
-              'Building tomorrow’s achievers through personalised learning, innovative teaching and strong values.',
-          },
-        ],
-      },
-      {
-        blockType: 'richText',
-        heading: 'A safe and disciplined campus',
-        accentWord: 'safe',
-        headingLevel: 'h2',
-        width: 'narrow',
-        background: 'white',
-        content: richText([
-          'A secure and caring environment where children learn with confidence, respect, responsibility and positive values.',
-        ]),
-      },
+      ...(achievementImages.length > 0
+        ? [
+            {
+              blockType: 'gallery',
+              heading: 'Natya Tarang 2026 and other honours',
+              accentWord: 'Natya Tarang 2026',
+              headingLevel: 'h2',
+              background: 'white',
+              /*
+               * A collage rather than an even grid. These are five pictures of
+               * two occasions, not an album to be paged through, and the
+               * mixed sizes let the prize-giving carry more of the wall than
+               * the close-ups beside it.
+               */
+              layout: 'bento',
+              perPage: '0',
+              images: achievementImages,
+            },
+          ]
+        : []),
     ],
   })
 
@@ -793,22 +819,23 @@ const main = async () => {
   const contactPageId = await upsert({
     slug: 'contact',
     title: 'Contact us',
-    intro: 'Ask us about admission to Grades 1 to 4 at Wadala or Matunga.',
+    intro: 'Ask us about admission to Grades 1 to 4.',
     showInNav: true,
     navLabel: 'Contact',
     navOrder: 50,
     _status: 'published',
     reviewStatus: 'approved',
-    metaDescription:
-      'Contact SIWS Primary School — enquire about admission to Grades 1 to 4 at our Wadala and Matunga campuses.',
+    metaDescription: 'Contact SIWS Primary School — enquire about admission to Grades 1 to 4.',
     layout: [
       {
         blockType: 'heroEnquiry',
         title: 'Enquire about admission',
-        subtitle: 'Maharashtra State Board | Grades 1 to 4 | Wadala & Matunga',
+        subtitle: 'Maharashtra State Board | Grades 1 to 4',
         benefitsIntro: 'At SIWS, your child benefits from:',
         benefits: [
-          { text: 'A strong academic foundation on the Maharashtra State Board curriculum' },
+          {
+            text: 'A strong academic foundation on the Maharashtra State Board curriculum',
+          },
           { text: 'Interactive, technology-enabled smart classrooms' },
           { text: 'A safe and secure campus with CCTV surveillance' },
           { text: 'Teachers with 20+ years of classroom experience' },
@@ -823,7 +850,8 @@ const main = async () => {
           classOptions: CLASS_OPTIONS.map((label) => ({ label })),
           // Both campuses, so the parent chooses and the enquiry reaches the
           // right head teacher.
-          campusOptions: [{ campus: 'wadala' }, { campus: 'matunga' }],
+          // No campus picker: there is one Primary Section to enquire about.
+          campusOptions: [],
           trustPoints: [
             { text: 'Over 90 years of educational service since 1934' },
             { text: 'A Grade school' },
@@ -860,7 +888,7 @@ const main = async () => {
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'SIWS Primary School — Grades 1 to 4 on the Maharashtra State Board curriculum at two campuses, Wadala and Matunga. Smart classrooms, experienced teachers and safe, CCTV-monitored campuses.',
+      'SIWS Primary School — Grades 1 to 4 on the Maharashtra State Board curriculum. Smart classrooms, experienced teachers and a safe, CCTV-monitored campus.',
     layout: [
       /**
        * The enquiry form moved to the contact page. This hero carries the same
@@ -872,10 +900,18 @@ const main = async () => {
         blockType: 'hero',
         title: 'SIWS Primary School',
         accentWord: 'Primary',
-        eyebrow: 'Maharashtra State Board | Grades 1 to 4 | Wadala & Matunga',
+        eyebrow: 'Maharashtra State Board | Grades 1 to 4',
+        /*
+         * A photograph behind the banner, which switches it from the flat
+         * brand panel to the washed variant every other section now uses —
+         * the brand gradient dense at the left where the type sits, thinning
+         * to the right so the room still reads. Omitted if the picture is not
+         * in the library, so the banner keeps its contrast either way.
+         */
+        ...(classroom ? { image: classroom } : {}),
         // Plain string: the hero's `intro` is a textarea, not rich text.
         intro:
-          'A caring, inclusive and stimulating school for Grades 1 to 4 — with smart classrooms, teachers of 20+ years’ experience, and safe, CCTV-monitored campuses at Wadala and Matunga.',
+          'A caring, inclusive and stimulating school for Grades 1 to 4 — with smart classrooms, teachers of 20+ years’ experience, and a safe, CCTV-monitored campus.',
         links: [
           {
             link: {
@@ -884,53 +920,6 @@ const main = async () => {
               reference: { relationTo: 'pages', value: contactPageId },
               appearance: 'primary',
             },
-          },
-        ],
-      },
-      {
-        blockType: 'cardGrid',
-        heading: 'Our two campuses',
-        accentWord: 'two campuses',
-        headingLevel: 'h2',
-        background: 'white',
-        intro: richText([
-          'The Primary Section runs at Wadala and at Matunga. Both follow the same board and the same curriculum for Grades 1 to 4, and each has its own head teacher and teaching team.',
-        ]),
-        columns: '2',
-        cards: [
-          {
-            /**
-             * No teacher count. A raw headcount invites a parent to read one
-             * campus as better resourced than the other, when the two have
-             * different intakes — and it would go stale the moment somebody
-             * joins or leaves. The rosters themselves are on the teachers page.
-             */
-            title: 'Wadala campus',
-            description:
-              'Part of the full SIWS campus at Wadala, alongside the K.G. Section and the Secondary School.',
-            cta: [
-              {
-                link: {
-                  label: 'About the Wadala campus',
-                  type: 'internal',
-                  reference: { relationTo: 'pages', value: wadalaPageId },
-                },
-              },
-            ],
-          },
-          {
-            title: 'Matunga campus',
-            description:
-              'The Primary Section opened at Matunga within two years of the school’s founding in 1934.',
-            cta: [
-              {
-                link: {
-                  label: 'About the Matunga campus',
-                  type: 'internal',
-                  reference: { relationTo: 'pages', value: matungaPageId },
-                },
-              },
-            ],
           },
         ],
       },
@@ -972,8 +961,10 @@ const main = async () => {
         heading: 'Why parents choose SIWS Primary',
         accentWord: 'SIWS Primary',
         headingLevel: 'h2',
+        // Cards, not ticks: six points with a sentence each need separating
+        // from one another more than they need a mark in front of them.
+        layout: 'cards',
         marker: 'tick',
-        columns: '2',
         background: 'tint',
         items: USPS,
       },
@@ -1039,7 +1030,7 @@ const main = async () => {
         heading: 'Subjects taught',
         headingLevel: 'h2',
         marker: 'tick',
-        columns: '2',
+        columns: '2-centre',
         background: 'sea',
         items: SUBJECTS,
       },
@@ -1087,7 +1078,7 @@ const main = async () => {
         heading: 'Competitions held through the year',
         headingLevel: 'h2',
         marker: 'tick',
-        columns: '2',
+        columns: '2-centre',
         background: 'white',
         items: COMPETITIONS,
       },
@@ -1112,41 +1103,48 @@ const main = async () => {
     title: 'Our teachers',
     intro:
       'Our qualified and experienced teachers use child-centred, activity-based and competency-driven teaching strategies.',
-    showInNav: true,
+    /*
+     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
+     *
+     * This is a CHILD entry in the shared unit template. Setting it true from
+     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
+     * wins — so running this seed after `seed:nav` climbed every child out
+     * to the top row at once. Secondary reached thirteen top-level items and
+     * the buttons wrapped onto a second line.
+     *
+     * Omitting the field is NOT enough: `payload.update` keeps the existing
+     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+     * rather than leaving it alone. False explicitly means the worst this seed
+     * can do is drop the entry until `seed:nav` runs — which is the
+     * documented order anyway, and a missing drop-down entry is a far smaller
+     * fault than a menu that wraps.
+     */
+    showInNav: false,
     navLabel: 'Teachers',
     navOrder: 30,
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'Meet the teaching teams at SIWS Primary School — experienced, qualified staff at both the Wadala and Matunga campuses.',
+      'Meet the teaching team at SIWS Primary School — experienced, qualified staff.',
     layout: [
-      /**
-       * Two blocks, one per campus, rather than a single list of 22 names. A
-       * parent reading this page has already chosen a location; an unlabelled
-       * merged roster would leave them unable to tell who teaches their child.
+      /*
+       * One roster. It was two blocks filtered by campus, on the reasoning
+       * that a parent had already chosen a location and an unlabelled merged
+       * list would leave them unable to tell who teaches their child. With one
+       * campus there is nothing left to tell apart, and `campus` defaults to
+       * every campus — so this lists all of them.
        */
       {
         blockType: 'faculty',
-        heading: 'Teachers at Wadala',
-        accentWord: 'Wadala',
+        heading: 'Our teaching team',
+        accentWord: 'teaching team',
         headingLevel: 'h2',
-        campus: 'wadala',
+        // Two head teachers, each with her own staff listed beneath her.
+        layout: 'teams',
         showQualifications: true,
         background: 'white',
         intro: richText([
           'Our teachers are well trained, with over 20 years of teaching experience.',
-        ]),
-      },
-      {
-        blockType: 'faculty',
-        heading: 'Teachers at Matunga',
-        accentWord: 'Matunga',
-        headingLevel: 'h2',
-        campus: 'matunga',
-        showQualifications: true,
-        background: 'sea',
-        intro: richText([
-          'With knowledge and passion, our teachers create a classroom where every child feels encouraged to explore and succeed.',
         ]),
       },
     ],
@@ -1164,16 +1162,38 @@ const main = async () => {
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'How admission to SIWS Primary School, Wadala works for Grades 1 to 4, under Education Department norms.',
+      'How admission to SIWS Primary School works for Grades 1 to 4, under Education Department norms.',
     layout: [
+      /*
+       * The page opened straight onto the three admission routes, and the
+       * first of them began "from our Pre-Primary Section" — so the first
+       * thing a reader met was a sentence about a different section of the
+       * school, and the page read as though it were the Pre-Primary's own.
+       *
+       * This paragraph goes first and says which grades this is, before any
+       * route is described. The Pre-Primary is then clearly what a child
+       * arrives FROM rather than what the page is about.
+       */
+      {
+        blockType: 'richText',
+        heading: 'Admission to Grades 1 to 4',
+        accentWord: 'Grades 1 to 4',
+        headingLevel: 'h2',
+        width: 'normal',
+        background: 'white',
+        content: richText([
+          'This page is about joining the Primary Section — Grades 1 to 4. Admission is conducted in accordance with the guidelines and norms prescribed by the Education Department, Government of Maharashtra, and every place is offered against a vacancy in the grade applied for.',
+          'Most of Grade 1 comes up from our own Pre-Primary Section. Whatever seats are left after that are open to new applicants, and Grades 2, 3 and 4 are open only where a child has left and a seat is free.',
+        ]),
+      },
       {
         blockType: 'featureList',
-        heading: 'How admission works',
-        accentWord: 'admission',
+        heading: 'Who can apply, and for which grade',
+        accentWord: 'which grade',
         headingLevel: 'h2',
         marker: 'number',
         columns: '1',
-        background: 'white',
+        background: 'sea',
         items: [
           {
             title: 'Grade 1 — from our Pre-Primary Section',
@@ -1189,6 +1209,40 @@ const main = async () => {
             title: 'Grades 2, 3 and 4',
             description:
               'Admissions to these grades are considered only against vacant seats, subject to the school’s admission policy and the applicable rules and regulations of the Education Department.',
+          },
+        ],
+      },
+      {
+        blockType: 'featureList',
+        heading: 'Applying, step by step',
+        accentWord: 'step by step',
+        headingLevel: 'h2',
+        layout: 'cards',
+        background: 'white',
+        items: [
+          {
+            title: 'Tell us which grade',
+            icon: 'communication',
+            description:
+              'Write to admissions@siws.edu.in, or send the enquiry form on the contact page, saying which grade and which academic year you are asking about.',
+          },
+          {
+            title: 'Collect the admission form',
+            icon: 'study',
+            description:
+              'The prescribed admission form is issued by the school office. The office will tell you which documents to bring with it.',
+          },
+          {
+            title: 'Submit it with the formalities completed',
+            icon: 'staff',
+            description:
+              'The form is returned to the office with the required formalities completed, as laid down in the Education Department’s norms.',
+          },
+          {
+            title: 'A place is offered against a vacancy',
+            icon: 'pass',
+            description:
+              'Grade 1 places are offered once the Pre-Primary promotions are complete. Grades 2 to 4 are offered only where a seat is actually vacant.',
           },
         ],
       },
@@ -1209,8 +1263,8 @@ const main = async () => {
          * a Primary page claiming a Standard X award would mislead a parent.
          */
         blockType: 'featureList',
-        heading: 'Funds awarded to Primary pupils',
-        accentWord: 'Primary pupils',
+        heading: 'Funds awarded to Primary students',
+        accentWord: 'Primary students',
         headingLevel: 'h3',
         marker: 'tick',
         columns: '1',
@@ -1225,7 +1279,8 @@ const main = async () => {
             description: 'For the rank holder of Standard IV.',
           },
           {
-            title: 'Mrs. B. Sarasa Mani – Head Teacher, Wadala Primary Section Endowment Scholarship Fund',
+            title:
+              'Mrs. B. Sarasa Mani – Head Teacher, Wadala Primary Section Endowment Scholarship Fund',
             description:
               'Awarded to the student who secures the highest marks in Mathematics in Standard IV (one from each of the three divisions).',
           },
@@ -1235,11 +1290,11 @@ const main = async () => {
           },
           {
             title: 'Mrs. Lakshmi Ammal Commemoration Scholarship Fund',
-            description: 'To be awarded to the pupil who stands first in each standard.',
+            description: 'To be awarded to the student who stands first in each standard.',
           },
           {
             title: 'Smt. Thirumalai Narasimha Iyengar Commemoration Scholarship Fund',
-            description: 'To be awarded to the pupil who stands first in each standard.',
+            description: 'To be awarded to the student who stands first in each standard.',
           },
           {
             title: 'Smt. T. Janaki Ammal Scholarship Fund',
@@ -1247,7 +1302,8 @@ const main = async () => {
           },
           {
             title: 'Shri. S. Ramanathan Endowment Scholarship Fund',
-            description: 'To a financially weak deserving student in the Primary or Secondary Section.',
+            description:
+              'To a financially weak deserving student in the Primary or Secondary Section.',
           },
           {
             title: 'Shri. V.A. Venugopal Endowment Scholarship Fund',
@@ -1277,7 +1333,10 @@ const main = async () => {
                   link: {
                     label: 'View the full scholarship register',
                     type: 'internal',
-                    reference: { relationTo: 'pages', value: scholarshipsPageId },
+                    reference: {
+                      relationTo: 'pages',
+                      value: scholarshipsPageId,
+                    },
                     appearance: 'secondary',
                   },
                 },
@@ -1304,30 +1363,237 @@ const main = async () => {
     ],
   })
 
+  // --------------------------------------------------------- ADMISSIONS FAQ
+  /*
+   * The questions the office actually gets, in the order somebody asks them:
+   * whether the school is right for the child, then how to apply, then what
+   * happens once a place is offered.
+   *
+   * Several answers end by pointing at the office. That is deliberate. Fees,
+   * term dates, the document list and the timetable are not in this project
+   * yet, and an FAQ that guessed at them would be worse than one that says
+   * who knows. Each of those answers still says everything that IS settled —
+   * so nobody is sent to the office to be told something this page could
+   * have told them.
+   *
+   * `allowMultipleOpen: false` on all three: a reader comparing two answers
+   * on a phone loses their place when both are long, and only one question is
+   * ever actually being asked.
+   */
+  await upsert({
+    slug: 'admissions-faq',
+    title: 'Admissions FAQ',
+    intro: 'The questions the office is asked most often about joining Grades 1 to 4.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
+     *
+     * This is a CHILD entry in the shared unit template. Setting it true from
+     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
+     * wins — so running this seed after `seed:nav` climbed every child out
+     * to the top row at once. Secondary reached thirteen top-level items and
+     * the buttons wrapped onto a second line.
+     *
+     * Omitting the field is NOT enough: `payload.update` keeps the existing
+     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+     * rather than leaving it alone. False explicitly means the worst this seed
+     * can do is drop the entry until `seed:nav` runs — which is the
+     * documented order anyway, and a missing drop-down entry is a far smaller
+     * fault than a menu that wraps.
+     */
+    showInNav: false,
+    navLabel: 'Admissions FAQ',
+    navOrder: 11,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Common questions about admission to SIWS Primary School — which grades have places, how to apply, what happens after the Pre-Primary Section, scholarships and school rules.',
+    layout: [
+      {
+        blockType: 'accordion',
+        heading: 'Before you apply',
+        accentWord: 'apply',
+        headingLevel: 'h2',
+        background: 'white',
+        allowMultipleOpen: false,
+        items: [
+          {
+            question: 'Which grades does the Primary Section take?',
+            answer: richText([
+              'Grades 1 to 4, on the Maharashtra State Board curriculum. Children below Grade 1 are in our Pre-Primary Section, and Grade 5 onwards is the Secondary School — both on the same campus.',
+            ]),
+          },
+          {
+            question: 'Are there places in every grade?',
+            answer: richText([
+              'No. Grade 1 is the one grade that fills as a matter of course, because most of it comes up from our own Pre-Primary Section. New applicants are considered for whatever is left after that.',
+              'Grades 2, 3 and 4 are open only against a vacant seat — that is, only when a child has left. Some years there are several, some years there are none.',
+            ]),
+          },
+          {
+            question: 'My child is in the SIWS Pre-Primary Section. Is Grade 1 automatic?',
+            answer: richText([
+              'Children from our Pre-Primary Section are promoted to Grade 1 on submission of the prescribed admission form and completion of the required formalities, under the Education Department’s norms. It is not an application competing with others, but the form still has to be filled in and handed back on time.',
+            ]),
+          },
+          {
+            question: 'What rules do you follow in deciding admissions?',
+            answer: richText([
+              'Admissions to the Primary Section are conducted in accordance with the guidelines and norms prescribed by the Education Department, Government of Maharashtra, and the school’s own admission policy.',
+            ]),
+          },
+          {
+            question: 'Which medium and board is the teaching in?',
+            answer: richText([
+              'English medium, following the Maharashtra State Board curriculum aligned with NEP 2020. English, Marathi, Mathematics, EVS, Art, Work Experience and Physical Education are all taught from Grade 1.',
+            ]),
+          },
+        ],
+      },
+      {
+        blockType: 'accordion',
+        heading: 'Applying',
+        accentWord: 'Applying',
+        headingLevel: 'h2',
+        background: 'sea',
+        allowMultipleOpen: false,
+        items: [
+          {
+            question: 'How do I start?',
+            answer: richText([
+              'Write to admissions@siws.edu.in, or send the enquiry form on our contact page, saying which grade and which academic year you are asking about. That one detail is what lets the office tell you straight away whether there is anything to apply for.',
+            ]),
+          },
+          {
+            question: 'Where do I get the admission form?',
+            answer: richText([
+              'The prescribed admission form is issued by the school office. Ask for it when you enquire, and the office will tell you when forms for that year are available.',
+            ]),
+          },
+          {
+            question: 'Which documents do I need to bring?',
+            answer: richText([
+              'The office will give you the list when it issues the form — it depends on the grade and on whether your child is transferring from another school. Please ask before you come in, rather than making the trip twice.',
+            ]),
+          },
+          {
+            question: 'When do admissions open?',
+            answer: richText([
+              'The dates follow the Education Department’s calendar for the year and are not fixed by the school, so they move. Contact the office and ask to be told when forms for the coming year are issued.',
+            ]),
+          },
+          {
+            question: 'My child is transferring from another school mid-year. Is that possible?',
+            answer: richText([
+              'Only against a vacant seat in the grade concerned, and subject to the school’s admission policy and the Education Department’s rules. Ask the office about the specific grade — the answer changes through the year.',
+            ]),
+          },
+        ],
+      },
+      {
+        blockType: 'accordion',
+        heading: 'Once a place is offered',
+        accentWord: 'offered',
+        headingLevel: 'h2',
+        background: 'white',
+        allowMultipleOpen: false,
+        items: [
+          {
+            question: 'What are the fees?',
+            answer: richText([
+              'The fee structure for the current year is with the school office, and it is what you should ask for when you enquire. We would rather tell you the real figure than publish one that goes out of date.',
+            ]),
+          },
+          {
+            question: 'Is there any financial help?',
+            answer: richText([
+              'SIWS administers 151 scholarship and endowment funds, given by well-wishers over more than nine decades and awarded from the Kindergarten Section through to the S.S.C. Examination. Three of them name the Wadala Primary Section specifically. They are listed on the admissions page.',
+            ]),
+          },
+          {
+            question: 'Is there a uniform?',
+            answer: richText([
+              'Yes. What students wear, and the general rules parents are asked to follow, are set out on the school rules and uniform page.',
+            ]),
+          },
+          {
+            question: 'Can I visit before deciding?',
+            answer: richText([
+              'Please arrange it with the office first. Parents and guardians are asked not to come in to see a child or a teacher during school hours without the prior consent of the Head Teacher — it is how the school knows who is on the campus.',
+            ]),
+          },
+          {
+            question: 'Where do I get a bonafide or railway concession certificate?',
+            answer: richText([
+              'From the school office, between 1.00 p.m. and 2.30 p.m. only. The same window covers date of birth, first attempt and leaving certificates.',
+            ]),
+          },
+        ],
+      },
+      {
+        blockType: 'callToAction',
+        heading: 'Still not sure?',
+        background: 'brand',
+        text: richText([
+          'If the answer you need is not here, the admissions team would rather you asked than guessed.',
+        ]),
+        links: [
+          {
+            link: {
+              label: 'Email the admissions team',
+              type: 'external',
+              url: 'mailto:admissions@siws.edu.in',
+              appearance: 'primary',
+            },
+          },
+          ...(contactPageId
+            ? [
+                {
+                  link: {
+                    label: 'Send an enquiry',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: contactPageId },
+                    appearance: 'secondary',
+                  },
+                },
+              ]
+            : []),
+        ],
+      },
+    ],
+  })
+
   // ------------------------------------------------------- RULES & UNIFORM
   await upsert({
     slug: 'school-rules',
     title: 'School rules and uniform',
-    intro: 'What we ask of pupils and parents, and what our pupils wear.',
-    showInNav: true,
+    intro: 'What we ask of students and parents, and what our students wear.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
+     *
+     * This is a CHILD entry in the shared unit template. Setting it true from
+     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
+     * wins — so running this seed after `seed:nav` climbed every child out
+     * to the top row at once. Secondary reached thirteen top-level items and
+     * the buttons wrapped onto a second line.
+     *
+     * Omitting the field is NOT enough: `payload.update` keeps the existing
+     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+     * rather than leaving it alone. False explicitly means the worst this seed
+     * can do is drop the entry until `seed:nav` runs — which is the
+     * documented order anyway, and a missing drop-down entry is a far smaller
+     * fault than a menu that wraps.
+     */
+    showInNav: false,
     navLabel: 'Rules & uniform',
     navOrder: 40,
     _status: 'published',
     reviewStatus: 'approved',
-    metaDescription:
-      'General rules, discipline and uniform guidelines for SIWS Primary School — Wadala and Matunga campuses.',
+    metaDescription: 'General rules, discipline and uniform guidelines for SIWS Primary School.',
     layout: [
       {
-        /**
-         * The uniform specification below is the one Wadala supplied. Matunga's
-         * document says only "wear proper school uniform" and gives no detail,
-         * so this is labelled as Wadala's rather than presented as the Primary
-         * Section's — a family at Matunga must not buy a uniform on the
-         * strength of a page that never checked.
-         */
         blockType: 'featureList',
-        heading: 'Uniform — Wadala campus',
-        accentWord: 'Wadala campus',
+        heading: 'Uniform',
+        accentWord: 'Uniform',
         headingLevel: 'h2',
         marker: 'tick',
         columns: '1',
@@ -1361,43 +1627,1189 @@ const main = async () => {
       },
       {
         blockType: 'featureList',
-        heading: 'General rules — Wadala campus',
-        accentWord: 'Wadala campus',
+        heading: 'General rules',
+        accentWord: 'rules',
         headingLevel: 'h2',
         marker: 'number',
         columns: '1',
         background: 'sea',
         items: GENERAL_RULES.map((title) => ({ title })),
       },
+    ],
+  })
+
+  // ------------------------------------------- UPDATES, NEWS & STUDENT LIFE
+  /*
+   * Five pages that carried a heading and nothing else.
+   *
+   * There is one hard constraint running through all of them: this section's
+   * whole photographed record is eleven pictures of two occasions — Natya
+   * Tarang 2026 and the Ignited Mind Lab certificates — plus Onam, three film
+   * stills and one classroom. So the same photographs necessarily appear on
+   * more than one of these pages, and each page has to earn its place by the
+   * question it answers rather than by having pictures of its own:
+   *
+   *   Updates      — what has happened lately, and where the rest of it is
+   *   News         — the things worth telling you, newest first
+   *   Student Life — what school is like beyond the timetable
+   *   Student Wall — what the children themselves took part in
+   *   Transport    — how a child gets here, and who to ask
+   *
+   * Nothing here invents a bus route, a fare or a term date. `institution.ts`
+   * says exactly why, and Transport below is the page that warning was written
+   * about.
+   */
+  const newsShots = {
+    firstPrize: await photo('natya-tarang-2026-first-prize.jpg'),
+    performance: await photo('natya-tarang-2026-performance.jpg'),
+    company: await photo('natya-tarang-2026-company.jpg'),
+    ignitedMind: await photo('ignited-mind-lab-2026.jpg'),
+    pookalam: await photo('onam-2026-pookalam.jpg'),
+  }
+
+  const eventsPageId = await pageId('events')
+  const achievementsPageId = await pageId('achievements')
+
+  /*
+   * The two notices the office repeats most often. Both are already stated on
+   * the rules page; they are here because a parent looking for opening hours
+   * goes to Updates, not to a page about uniform.
+   */
+  const OFFICE_NOTICES = [
+    {
+      title:
+        'Railway concession forms and other certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
+    },
+    { title: 'No school business is transacted on Saturdays, Sundays and holidays.' },
+  ]
+
+  // ------------------------------------------------------------- TRANSPORT
+  await upsert({
+    slug: 'transport',
+    title: 'Transport',
+    intro: 'How children reach the school, and who to ask about the part we cannot publish.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
+     *
+     * This is a CHILD entry in the shared unit template. Setting it true from
+     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
+     * wins — so running this seed after `seed:nav` climbed every child out
+     * to the top row at once. Secondary reached thirteen top-level items and
+     * the buttons wrapped onto a second line.
+     *
+     * Omitting the field is NOT enough: `payload.update` keeps the existing
+     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+     * rather than leaving it alone. False explicitly means the worst this seed
+     * can do is drop the entry until `seed:nav` runs — which is the
+     * documented order anyway, and a missing drop-down entry is a far smaller
+     * fault than a menu that wraps.
+     */
+    showInNav: false,
+    navLabel: 'Transport',
+    navOrder: 72,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Getting to SIWS Primary School in Wadala — railway concession forms, arrival and collection, and who to ask about travel arrangements.',
+    layout: [
+      /*
+       * THIS PAGE DOES NOT LIST A BUS ROUTE, AND THAT IS THE POINT.
+       *
+       * SIWS has supplied nothing about school transport — no operator, no
+       * route, no fare — and `institution.ts` already names Transport as one
+       * of the pages left as a placeholder for exactly that reason: an
+       * invented bus route outlives the placeholder it replaced and is read
+       * as fact.
+       *
+       * A placeholder was still the wrong answer, because two things ARE
+       * known and are what most families actually need: the school issues
+       * railway concession forms, and it has a rule about who may come onto
+       * the campus during the day. Those are here, said plainly, and the one
+       * unknown is handed to the office instead of being guessed at.
+       */
       {
-        /**
-         * Matunga's rules are kept as their own list rather than merged with
-         * Wadala's. They are not a shortened version of the same document —
-         * Matunga sets an 80% attendance requirement and an English-only rule
-         * that Wadala's list does not contain, and Wadala's covers infectious
-         * illness, identity cards and railway concession hours that Matunga's
-         * does not. Merging them would attach each campus's rules to families
-         * who are not bound by them.
-         */
         blockType: 'featureList',
-        heading: 'General rules — Matunga campus',
-        accentWord: 'Matunga campus',
+        heading: 'What the school can help with',
+        accentWord: 'help with',
         headingLevel: 'h2',
-        marker: 'number',
-        columns: '1',
+        layout: 'cards',
+        background: 'sea',
+        items: [
+          {
+            title: 'Railway concession forms',
+            icon: 'transport',
+            description:
+              'Issued by the school office between 1.00 p.m. and 2.30 p.m. only — as are date of birth, bonafide student, first attempt and leaving certificates.',
+          },
+          {
+            title: 'Arriving and being collected',
+            icon: 'security',
+            description:
+              'Entrances, corridors and common areas are covered by CCTV, and movement between rooms is supervised.',
+          },
+          {
+            title: 'Anything else about travel',
+            icon: 'communication',
+            description:
+              'Ask the office. Questions about your particular route are answered better by somebody who knows this year’s arrangements than by a page.',
+          },
+        ],
+      },
+      {
+        blockType: 'richText',
+        heading: 'Coming onto the campus',
+        accentWord: 'campus',
+        headingLevel: 'h2',
+        width: 'normal',
         background: 'white',
-        items: MATUNGA_RULES.map((title) => ({ title })),
+        content: richText([
+          'Parents and guardians are asked not to come in to see a child or a teacher during school hours without the prior consent of the Head Teacher. It is not a formality — it is how the school knows exactly who is on the campus while the children are in it.',
+        ]),
+      },
+      ...(contactPageId
+        ? [
+            {
+              blockType: 'callToAction',
+              heading: 'Ask about your route',
+              background: 'brand',
+              text: richText([
+                'Tell us where your child will be travelling from and the office will tell you what is possible.',
+              ]),
+              links: [
+                {
+                  link: {
+                    label: 'Contact the school',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: contactPageId },
+                    appearance: 'primary',
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  })
+
+  // ----------------------------------------------------------- STUDENT WALL
+  await upsert({
+    slug: 'student-wall',
+    title: 'Student Wall',
+    intro:
+      'The children’s own year — what they entered, what they performed, what they brought back.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
+     *
+     * This is a CHILD entry in the shared unit template. Setting it true from
+     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
+     * wins — so running this seed after `seed:nav` climbed every child out
+     * to the top row at once. Secondary reached thirteen top-level items and
+     * the buttons wrapped onto a second line.
+     *
+     * Omitting the field is NOT enough: `payload.update` keeps the existing
+     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+     * rather than leaving it alone. False explicitly means the worst this seed
+     * can do is drop the entry until `seed:nav` runs — which is the
+     * documented order anyway, and a missing drop-down entry is a far smaller
+     * fault than a menu that wraps.
+     */
+    showInNav: false,
+    navLabel: 'Student Wall',
+    navOrder: 71,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'The students of SIWS Primary School on stage and in competition — Natya Tarang 2026, the Ignited Mind Lab programme, and the twelve competitions held through the year.',
+    layout: [
+      {
+        blockType: 'richText',
+        heading: 'The children’s own year',
+        accentWord: 'own year',
+        headingLevel: 'h2',
+        width: 'normal',
+        background: 'white',
+        content: richText([
+          'Everything on this page was done by children in Grades 1 to 4 — on a stage, at a competition table, or in front of a school assembly. It is deliberately not a list of what the school offers them. It is what they did with it.',
+        ]),
+      },
+      {
+        blockType: 'featureList',
+        heading: 'Ways a child takes part',
+        accentWord: 'takes part',
+        headingLevel: 'h2',
+        layout: 'cards',
+        background: 'sea',
+        items: [
+          {
+            title: 'On stage',
+            icon: 'music',
+            description:
+              'Our dancers took first place in Category A at Natya Tarang 2026, the inter-school and college group dance competition — a trophy and a cheque for twenty thousand rupees.',
+          },
+          {
+            title: 'In competition',
+            icon: 'trophy',
+            description:
+              'Twelve competitions run through the year, from recitation and elocution to rangoli, clay work and best out of waste.',
+          },
+          {
+            title: 'In the programme',
+            icon: 'thinking',
+            description:
+              'Eleven children came back from the Ignited Mind Lab programme with certificates of achievement and medals.',
+          },
+          {
+            title: 'In the neighbourhood',
+            icon: 'care',
+            description:
+              'At Raksha Bandhan the children tied rakhis to the men and women who look after the streets around the school.',
+          },
+        ],
+      },
+      {
+        blockType: 'featureList',
+        heading: 'The competitions a child can enter',
+        accentWord: 'competitions',
+        headingLevel: 'h2',
+        marker: 'tick',
+        columns: '2-centre',
+        background: 'white',
+        items: COMPETITIONS,
+      },
+      ...(achievementsPageId
+        ? [
+            {
+              blockType: 'callToAction',
+              heading: 'See what they brought back',
+              background: 'sea',
+              text: richText([
+                'The trophy, the cheque, the certificates and the company in costume — photographed on the day.',
+              ]),
+              links: [
+                {
+                  link: {
+                    label: 'Open Achievements',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: achievementsPageId },
+                    appearance: 'primary',
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  })
+
+  // ------------------------------------------------------------ STUDENT LIFE
+  await upsert({
+    slug: 'student-life',
+    title: 'Student Life',
+    intro:
+      'What the day holds beyond the timetable — the stage, the sports ground, the festivals and the habits a child leaves with.',
+    showInNav: true,
+    navLabel: 'Student Life',
+    navOrder: 70,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Life at SIWS Primary School beyond the classroom — arts and dance, sport, cultural celebrations, environmental work and leadership for children in Grades 1 to 4.',
+    layout: [
+      ...(newsShots.performance
+        ? [
+            {
+              blockType: 'mediaText',
+              heading: 'School is more than the timetable',
+              accentWord: 'more than',
+              headingLevel: 'h2',
+              background: 'white',
+              imagePosition: 'left',
+              imageShape: 'rounded',
+              image: newsShots.performance,
+              content: richText([
+                'A child in Grades 1 to 4 spends four years here, and the part they remember is rarely the part that was examined. It is the morning they stood on a stage in costume, the afternoon their rangoli was the one photographed, the term they were trusted to lead something.',
+                'The section is built to give every child several of those, whatever they turn out to be good at — which is why the list below is as wide as it is.',
+              ]),
+            },
+          ]
+        : []),
+      {
+        blockType: 'featureList',
+        /*
+         * Six of the seven strands in `HOLISTIC`. The one left out — the
+         * Mathematics and EVS enrichment programmes — is academic work and is
+         * already set out on the Academics page under the curriculum it
+         * belongs to. Six also splits three and three, which is the reason
+         * `PROGRAMME_BENEFITS` above is six rather than seven.
+         */
+        heading: 'What a year holds',
+        accentWord: 'a year',
+        headingLevel: 'h2',
+        layout: 'cards',
+        background: 'sea',
+        items: [
+          {
+            title: 'Literary and language activities',
+            icon: 'library',
+            description:
+              'Recitation, elocution, story telling and handwriting — in English and in Marathi.',
+          },
+          {
+            title: 'Art, craft, music and dance',
+            icon: 'music',
+            description:
+              'Drawing and painting, clay work, rangoli, best out of waste, and the group dance that took Natya Tarang 2026.',
+          },
+          {
+            title: 'Sports and physical education',
+            icon: 'sport',
+            description: 'Sports and games through the year, taught as a subject in its own right.',
+          },
+          {
+            title: 'Cultural celebrations and festivals',
+            icon: 'activity',
+            description:
+              'Onam under Ek Bharat Shreshtha Bharat, Independence Day, Raksha Bandhan — marked together, on stage, by the children.',
+          },
+          {
+            title: 'Environmental awareness',
+            icon: 'garden',
+            description:
+              'Best out of waste and environment-themed work, so that looking after things is practised rather than announced.',
+          },
+          {
+            title: 'Leadership and values',
+            icon: 'care',
+            description:
+              'Value education, life skills, and chances to be responsible for something in front of the rest of the school.',
+          },
+        ],
+      },
+      ...(galleryPageId
+        ? [
+            {
+              blockType: 'callToAction',
+              heading: 'See a year of it',
+              background: 'sea',
+              text: richText([
+                'The classrooms, the costumes and the prizes, photographed as they happened.',
+              ]),
+              links: [
+                {
+                  link: {
+                    label: 'Open the gallery',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: galleryPageId },
+                    appearance: 'primary',
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  })
+
+  // -------------------------------------------------------------------- NEWS
+  const newsPageId = await upsert({
+    slug: 'news',
+    title: 'News',
+    intro: 'What has happened in the Primary Section lately, newest first.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
+     *
+     * This is a CHILD entry in the shared unit template. Setting it true from
+     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
+     * wins — so running this seed after `seed:nav` climbed every child out
+     * to the top row at once. Secondary reached thirteen top-level items and
+     * the buttons wrapped onto a second line.
+     *
+     * Omitting the field is NOT enough: `payload.update` keeps the existing
+     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+     * rather than leaving it alone. False explicitly means the worst this seed
+     * can do is drop the entry until `seed:nav` runs — which is the
+     * documented order anyway, and a missing drop-down entry is a far smaller
+     * fault than a menu that wraps.
+     */
+    showInNav: false,
+    navLabel: 'News',
+    navOrder: 61,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'News from SIWS Primary School — first place at Natya Tarang 2026, certificates from the Ignited Mind Lab programme, and the celebrations of the school year.',
+    layout: [
+      /*
+       * Two across rather than three. Each of these has a photograph worth
+       * looking at and two sentences under it; at three across the picture
+       * comes out the size of a thumbnail and the story reads as a caption.
+       */
+      {
+        blockType: 'cardGrid',
+        heading: 'Lately at the Primary Section',
+        accentWord: 'Lately',
+        headingLevel: 'h2',
+        background: 'white',
+        columns: '2',
+        placedBySeed: true,
+        cards: [
+          ...(newsShots.firstPrize
+            ? [
+                {
+                  title: 'First place at Natya Tarang 2026',
+                  image: newsShots.firstPrize,
+                  description:
+                    'Our dancers took first place in Category A — Pre-Primary to Standard IV — at the inter-school and college group dance competition, coming back with the trophy and a cheque for twenty thousand rupees.',
+                  ...(achievementsPageId
+                    ? {
+                        cta: [
+                          {
+                            link: {
+                              label: 'See the photographs',
+                              type: 'internal',
+                              reference: { relationTo: 'pages', value: achievementsPageId },
+                            },
+                          },
+                        ],
+                      }
+                    : {}),
+                },
+              ]
+            : []),
+          ...(newsShots.ignitedMind
+            ? [
+                {
+                  title: 'Certificates from the Ignited Mind Lab',
+                  image: newsShots.ignitedMind,
+                  description:
+                    'Eleven children came back from the Ignited Mind Lab programme with certificates of achievement and medals round their necks.',
+                  ...(achievementsPageId
+                    ? {
+                        cta: [
+                          {
+                            link: {
+                              label: 'See the photographs',
+                              type: 'internal',
+                              reference: { relationTo: 'pages', value: achievementsPageId },
+                            },
+                          },
+                        ],
+                      }
+                    : {}),
+                },
+              ]
+            : []),
+          ...(newsShots.pookalam
+            ? [
+                {
+                  title: 'Onam, under Ek Bharat Shreshtha Bharat',
+                  image: newsShots.pookalam,
+                  description:
+                    'A pookalam laid in the hall, the lamp lit together, and staff and children in Kerala dress. There is a film of the morning on the Events page.',
+                  ...(eventsPageId
+                    ? {
+                        cta: [
+                          {
+                            link: {
+                              label: 'Watch the day',
+                              type: 'internal',
+                              reference: { relationTo: 'pages', value: eventsPageId },
+                            },
+                          },
+                        ],
+                      }
+                    : {}),
+                },
+              ]
+            : []),
+          ...(videoStills.independence
+            ? [
+                {
+                  title: 'The 80th Independence Day, on stage',
+                  image: videoStills.independence,
+                  description:
+                    'Our 80th Independence Day was marked on stage by the children of the Primary Section, and filmed. At Raksha Bandhan they tied rakhis to the men and women who look after the neighbourhood.',
+                  ...(eventsPageId
+                    ? {
+                        cta: [
+                          {
+                            link: {
+                              label: 'Watch both films',
+                              type: 'internal',
+                              reference: { relationTo: 'pages', value: eventsPageId },
+                            },
+                          },
+                        ],
+                      }
+                    : {}),
+                },
+              ]
+            : []),
+        ],
+      },
+      {
+        blockType: 'announcements',
+        heading: 'From the school office',
+        items: OFFICE_NOTICES,
+        background: 'sea',
       },
     ],
   })
 
-  payload.logger.info('Primary content seeded — Wadala and Matunga campuses.')
+  // ---------------------------------------------------------------- UPDATES
+  await upsert({
+    slug: 'updates',
+    title: 'Updates',
+    intro: 'News, events and honours from the Primary Section, and where to find each of them.',
+    showInNav: true,
+    navLabel: 'Updates',
+    navOrder: 60,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Updates from SIWS Primary School — the latest news, the celebrations of the school year, and the prizes our students have won.',
+    layout: [
+      /*
+       * The overview leads with the single biggest thing that has happened
+       * rather than with a row of cards. A hub page that opens on three equal
+       * boxes tells a parent where to click and nothing about the school; this
+       * way the first thing on the page is news, and the navigation follows it.
+       */
+      ...(newsShots.firstPrize
+        ? [
+            {
+              blockType: 'mediaText',
+              heading: 'First place at Natya Tarang 2026',
+              accentWord: 'First place',
+              headingLevel: 'h2',
+              background: 'white',
+              imagePosition: 'left',
+              imageShape: 'rounded',
+              image: newsShots.firstPrize,
+              content: richText([
+                'Our dancers took first place in Category A — Pre-Primary to Standard IV — at Natya Tarang 2026, the inter-school and college group dance competition. They came back with the trophy and a cheque for twenty thousand rupees.',
+              ]),
+              ...(achievementsPageId
+                ? {
+                    cta: [
+                      {
+                        link: {
+                          label: 'See the photographs',
+                          type: 'internal',
+                          reference: { relationTo: 'pages', value: achievementsPageId },
+                          appearance: 'primary',
+                        },
+                      },
+                    ],
+                  }
+                : {}),
+            },
+          ]
+        : []),
+      {
+        blockType: 'cardGrid',
+        heading: 'Where to find what',
+        accentWord: 'find what',
+        headingLevel: 'h2',
+        background: 'sea',
+        columns: '3',
+        placedBySeed: true,
+        cards: [
+          {
+            title: 'News',
+            description:
+              'What has happened lately — prizes, programmes and the notices the office repeats most often.',
+            ...(newsPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'Read the news',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: newsPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+          {
+            title: 'Events',
+            description:
+              'The celebrations of the school year, with films of Independence Day, Raksha Bandhan and Onam.',
+            ...(eventsPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'See the events',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: eventsPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+          {
+            title: 'Achievements',
+            description:
+              'Recognition earned by our students in the arts, in competition and in the classroom.',
+            ...(achievementsPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'See the honours',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: achievementsPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+        ],
+      },
+      {
+        blockType: 'announcements',
+        heading: 'Standing notices',
+        items: OFFICE_NOTICES,
+        background: 'white',
+      },
+    ],
+  })
+
+  // ---------------------------------------------------------- FAQ & FEEDBACK
+  /*
+   * The general FAQ deliberately answers NOTHING about admission.
+   *
+   * Primary carries two FAQ pages — this one at the top level and Admissions
+   * FAQ inside the Admissions drop-down — and two FAQs in one menu is only
+   * worth having if a reader can tell from the outside which one holds their
+   * question. So the split is by WHEN somebody is asking: Admissions FAQ is
+   * for a family deciding whether to apply, and this is for a family whose
+   * child is already here. Every answer below comes from the nineteen general
+   * rules, the curriculum, or the staffing — all of it set out earlier in this
+   * file — and the one link between the two pages is the note at the foot.
+   */
+  const admissionsFaqPageId = await pageId('admissions-faq')
+
+  await upsert({
+    slug: 'faq',
+    title: 'FAQ',
+    intro: 'The questions parents of children already in Grades 1 to 4 ask most often.',
+    showInNav: true,
+    navLabel: 'FAQ',
+    navOrder: 80,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Answers for parents of SIWS Primary School students — what a child brings each day, uniform, illness, how the curriculum is taught, and how to reach a teacher.',
+    layout: [
+      {
+        blockType: 'accordion',
+        heading: 'The school day',
+        accentWord: 'school day',
+        headingLevel: 'h2',
+        background: 'white',
+        allowMultipleOpen: false,
+        items: [
+          {
+            question: 'What must my child bring to school every day?',
+            answer: richText([
+              'Three things, without fail: the school calendar, the school identity card and the school diary. Every student must have their own copy of the calendar and bring it daily.',
+              'For the long recess, only dry food. Students are asked not to bring books, magazines, newspapers or periodicals that are not needed for the day’s lessons.',
+            ]),
+          },
+          {
+            question: 'Is there a uniform, and are there rules about it?',
+            answer: richText([
+              'Yes. All students come to school in the prescribed uniform and are expected to be neat and tidy. What the uniform consists of is set out on the rules and uniform page.',
+              'Children are asked not to wear ornaments or a watch. That is a safety rule rather than a dress rule — students are responsible for the safe custody of their own books and belongings.',
+            ]),
+          },
+          {
+            question: 'Is the campus supervised?',
+            answer: richText([
+              'The entire campus — classrooms, corridors, entrances and common areas — is monitored by CCTV, and movement between rooms is supervised. Safety is the reason the school also asks visitors to come in only with the Head Teacher’s consent.',
+            ]),
+          },
+        ],
+      },
+      {
+        blockType: 'accordion',
+        heading: 'Lessons and progress',
+        accentWord: 'progress',
+        headingLevel: 'h2',
+        background: 'sea',
+        allowMultipleOpen: false,
+        items: [
+          {
+            question: 'What is my child taught?',
+            answer: richText([
+              'English, Marathi, Mathematics, EVS — which takes in Science, History, Geography and Civics — Art, Work Experience and Physical Education. The curriculum is the Maharashtra State Board’s, aligned with NEP 2020, in English medium.',
+            ]),
+          },
+          {
+            question: 'How is it taught?',
+            answer: richText([
+              'Through child-centred, activity-based and competency-driven methods, so a lesson is understood rather than memorised. Every classroom has an interactive smart panel, and multimedia lessons are used alongside the board and the exercise book.',
+              'There is continuous formative assessment with constructive feedback, and individual attention and remedial support wherever a child needs it.',
+            ]),
+          },
+          {
+            question: 'How much homework should I expect?',
+            answer: richText([
+              'Enough that it needs doing daily. Parents are earnestly asked to see that their children do their homework and prepare their lessons each day as per the timetable — the school is explicit that this matters both for the child and for the smooth running of the class.',
+            ]),
+          },
+          {
+            question: 'What can my child take part in besides lessons?',
+            answer: richText([
+              'Twelve competitions run through the year — recitation, fancy dress, elocution, drawing and painting, story telling, group singing, handwriting, work experience, clay work, rangoli, best out of waste, and sports and games.',
+              'Alongside those are literary and language activities, art, craft, music and dance, sport, cultural celebrations, environmental work and leadership opportunities. The Student Life pages set all of it out.',
+            ]),
+          },
+          {
+            question: 'Who teaches my child?',
+            answer: richText([
+              'The section has twenty-two teachers under two head teachers — Mrs. Geeta Raja, I/C Head Teacher, and Mrs. Sreedevi Prasanna Bagayatkar, Head Teacher — qualified in B.A., B.Com., M.A., B.Ed. and D.Ed., with an art teacher among them. Many have taught here for more than twenty years. Every name is on the teachers page.',
+            ]),
+          },
+        ],
+      },
+      {
+        blockType: 'accordion',
+        heading: 'Talking to the school',
+        accentWord: 'Talking',
+        headingLevel: 'h2',
+        background: 'white',
+        allowMultipleOpen: false,
+        items: [
+          {
+            question: 'How do I meet my child’s teacher?',
+            answer: richText([
+              'Ask the office to arrange it. Parents, guardians and others are not permitted to see their ward or meet a teacher during school hours without the prior consent of the Head Teacher — it is how the school knows who is on the campus while the children are in it.',
+            ]),
+          },
+          {
+            question: 'We have moved, or changed our phone number.',
+            answer: richText([
+              'Tell the office promptly. The school keeps a record of the address and telephone number of every student’s parents or guardians, and it is only useful if it is current.',
+            ]),
+          },
+          {
+            question: 'When can I get a bonafide or railway concession certificate?',
+            answer: richText([
+              'From the school office between 1.00 p.m. and 2.30 p.m. only. The same window covers date of birth, first attempt and leaving certificates. No school business is transacted on Saturdays, Sundays or holidays.',
+            ]),
+          },
+          {
+            question: 'May we give a gift to a teacher, or collect funds at school?',
+            answer: richText([
+              'No. Presents in cash or in kind to teachers are not permitted, and collecting funds for any reason within the school premises is prohibited.',
+            ]),
+          },
+          {
+            question: 'Is there financial help available?',
+            answer: richText([
+              'SIWS administers 151 scholarship and endowment funds, given by well-wishers over more than nine decades and awarded from the Kindergarten Section through to the S.S.C. Examination. Three of them name the Wadala Primary Section specifically; they are listed on the admissions page.',
+            ]),
+          },
+        ],
+      },
+      /*
+       * The one place the two FAQs meet. A parent who arrives here with an
+       * admission question should be sent on in one click rather than reading
+       * fifteen answers that are not theirs.
+       */
+      ...(admissionsFaqPageId
+        ? [
+            {
+              blockType: 'callToAction',
+              heading: 'Asking about joining the school?',
+              background: 'brand',
+              text: richText([
+                'Questions about applying — which grades have places, how to get a form, what to bring — are answered on their own page.',
+              ]),
+              links: [
+                {
+                  link: {
+                    label: 'Open the Admissions FAQ',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: admissionsFaqPageId },
+                    appearance: 'primary',
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  })
+
+  // ---------------------------------------------------------- PARENT FEEDBACK
+  await upsert({
+    slug: 'parent-feedback',
+    title: 'Parent feedback',
+    intro:
+      'What families tell us shapes how the section runs. If your child is with us, we would like to hear from you.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
+     *
+     * This is a CHILD entry in the shared unit template. Setting it true from
+     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
+     * wins — so running this seed after `seed:nav` climbed every child out
+     * to the top row at once. Secondary reached thirteen top-level items and
+     * the buttons wrapped onto a second line.
+     *
+     * Omitting the field is NOT enough: `payload.update` keeps the existing
+     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+     * rather than leaving it alone. False explicitly means the worst this seed
+     * can do is drop the entry until `seed:nav` runs — which is the
+     * documented order anyway, and a missing drop-down entry is a far smaller
+     * fault than a menu that wraps.
+     */
+    showInNav: false,
+    navLabel: 'Parent Feedback',
+    navOrder: 82,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'What parents of SIWS Primary School students say about Grades 1 to 4 in Wadala — and how to send the section your own feedback.',
+    layout: [
+      {
+        blockType: 'testimonials',
+        heading: 'What parents say',
+        accentWord: 'parents',
+        headingLevel: 'h2',
+        background: 'white',
+        // Two rows drifting past one another, the top travelling right and the
+        // bottom left, edges faded, paused on hover and on focus. Under four
+        // quotes it falls back to a grid, and with motion reduced it becomes a
+        // wrapped grid rather than a pair of scrollbars.
+        layout: 'marquee',
+        showAttribution: false,
+        quotes: PRIMARY_PARENT_QUOTES,
+      },
+      {
+        blockType: 'featureList',
+        heading: 'How to send us your feedback',
+        accentWord: 'feedback',
+        headingLevel: 'h2',
+        marker: 'number',
+        columns: '1',
+        background: 'sea',
+        items: [
+          {
+            title: 'Speak to the class teacher first',
+            description:
+              'Anything about your own child — how they are getting on, what they are finding hard, how the homework is going — is answered fastest by the person who teaches them. Ask the office to arrange a time.',
+          },
+          {
+            title: 'Write in the school diary',
+            description:
+              'The diary comes to school with your child every day and goes home again. It is the simplest line between the classroom and the kitchen table.',
+          },
+          {
+            title: 'Write to the school office',
+            description:
+              'For anything the class teacher cannot settle, info@siws.edu.in reaches the office, and the office will arrange a time with the Head Teacher.',
+          },
+          ...(contactPageId
+            ? [
+                {
+                  title: 'Or send it through the enquiry form',
+                  description:
+                    'The form on the contact page reaches the school directly, and somebody will come back to you.',
+                },
+              ]
+            : []),
+        ],
+      },
+    ],
+  })
+
+  // ------------------------------------------------------ ABOUT & FACILITIES
+  /*
+   * The two pages the menu has pointed at since it was built, and which have
+   * carried a bare heading and nothing else ever since.
+   *
+   * They are seeded LAST, after every other page, because both link onward and
+   * `pageId` reads what is already in the database — putting them here means
+   * the ids for Academics, Teachers and the gallery are real by the time the
+   * cards are built, instead of null on a first run.
+   *
+   * Neither page says anything about fees, timings or the buildings. SIWS has
+   * not supplied any of it, and the warning at the foot of this file still
+   * lists all three as outstanding.
+   */
+  const facilitiesPageId = await upsert({
+    slug: 'facilities',
+    title: 'Facilities & Campus',
+    intro:
+      'A campus in Wadala under CCTV throughout, with an interactive panel in the classrooms and room for everything that happens outside them.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
+     *
+     * This is a CHILD entry in the shared unit template. Setting it true from
+     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
+     * wins — so running this seed after `seed:nav` climbed every child out
+     * to the top row at once. Secondary reached thirteen top-level items and
+     * the buttons wrapped onto a second line.
+     *
+     * Omitting the field is NOT enough: `payload.update` keeps the existing
+     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+     * rather than leaving it alone. False explicitly means the worst this seed
+     * can do is drop the entry until `seed:nav` runs — which is the
+     * documented order anyway, and a missing drop-down entry is a far smaller
+     * fault than a menu that wraps.
+     */
+    showInNav: false,
+    navLabel: 'Facilities & Campus',
+    navOrder: 2,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'The SIWS Primary School campus in Wadala — smart classrooms with digital learning resources, CCTV surveillance throughout, and space for sport and the arts.',
+    layout: [
+      ...(classroom
+        ? [
+            {
+              blockType: 'mediaText',
+              heading: 'Inside a Primary classroom',
+              accentWord: 'classroom',
+              headingLevel: 'h2',
+              background: 'white',
+              imagePosition: 'left',
+              imageShape: 'rounded',
+              image: classroom,
+              content: richText([
+                'Every classroom has an interactive smart panel at the front of it. Multimedia lessons and digital learning resources are used alongside the board and the exercise book rather than instead of them — a diagram can be shown moving, and then drawn.',
+                'Children sit in pairs at desks facing the front, and the teacher moves between them. It is an ordinary classroom, run by somebody who has usually been running one here for a very long time.',
+              ]),
+            },
+          ]
+        : []),
+      {
+        blockType: 'featureList',
+        heading: 'Around the campus',
+        accentWord: 'campus',
+        headingLevel: 'h2',
+        layout: 'cards',
+        background: 'sea',
+        items: [
+          {
+            title: 'Smart classrooms',
+            icon: 'computers',
+            description:
+              'Interactive, technology-enabled classrooms with multimedia lessons and digital learning resources.',
+          },
+          {
+            title: 'A campus under CCTV',
+            icon: 'security',
+            description:
+              'Classrooms, corridors, entrances and common areas are all covered by the surveillance system.',
+          },
+          {
+            title: 'Room for sport and the arts',
+            icon: 'sport',
+            description:
+              'Space for the sports, drawing, clay work, rangoli and group singing the section competes in through the year.',
+          },
+          {
+            title: 'Teachers who stay',
+            icon: 'staff',
+            description:
+              'Twenty-two teachers, many of them more than twenty years in this section — the most important thing on any campus.',
+          },
+        ],
+      },
+      {
+        blockType: 'richText',
+        heading: 'How the campus is kept safe',
+        accentWord: 'safe',
+        headingLevel: 'h2',
+        width: 'normal',
+        background: 'white',
+        content: richText([
+          'The safety and well-being of every child is our highest priority. The entire school campus — including classrooms, corridors, entrances and common areas — is monitored through a comprehensive CCTV surveillance system to ensure a secure learning environment.',
+          'Parents and guardians are asked not to meet a child or their teacher during school hours without the prior consent of the Head Teacher. It is a rule about knowing exactly who is on the campus, and it is the reason the arrangement works.',
+        ]),
+      },
+      {
+        blockType: 'richText',
+        heading: 'At the school office',
+        accentWord: 'office',
+        headingLevel: 'h2',
+        width: 'normal',
+        background: 'sea',
+        content: richText([
+          'Railway concession forms and other certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
+        ]),
+      },
+      ...(galleryPageId
+        ? [
+            {
+              blockType: 'callToAction',
+              heading: 'See the section for yourself',
+              background: 'white',
+              text: richText([
+                'Photographs of the classrooms, the competitions, and the prizes the children have brought back.',
+              ]),
+              links: [
+                {
+                  link: {
+                    label: 'Open the gallery',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: galleryPageId },
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  })
+
+  const academicsPageId = await pageId('academics')
+  const teachersPageId = await pageId('teachers')
+
+  /* A card is only built if the page it points at is really there. */
+  const onwardCard = (
+    title: string,
+    description: string,
+    label: string,
+    target: number | string | null,
+  ) => ({
+    title,
+    description,
+    ...(target
+      ? {
+          cta: [
+            {
+              link: {
+                label,
+                type: 'internal',
+                reference: { relationTo: 'pages', value: target },
+              },
+            },
+          ],
+        }
+      : {}),
+  })
+
+  await upsert({
+    slug: 'about',
+    title: 'About',
+    intro:
+      'Grades 1 to 4 on the Maharashtra State Board curriculum, taught by twenty-two teachers on a campus SIWS has run since 1934.',
+    showInNav: true,
+    navLabel: 'About',
+    navOrder: 1,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'About SIWS Primary School — Grades 1 to 4 on the Maharashtra State Board curriculum, aligned with NEP 2020, taught by twenty-two teachers under two head teachers.',
+    layout: [
+      {
+        blockType: 'statistics',
+        heading: 'The section at a glance',
+        accentWord: 'a glance',
+        headingLevel: 'h2',
+        background: 'sea',
+        stats: [
+          { value: '1 to 4', label: 'Grades taught' },
+          { value: '22', label: 'Teachers in the section' },
+          { value: '1934', label: 'Serving Mumbai since' },
+          { value: 'SSC', label: 'Maharashtra State Board' },
+        ],
+      },
+      {
+        blockType: 'richText',
+        heading: 'What the Primary years are for',
+        accentWord: 'Primary years',
+        headingLevel: 'h2',
+        width: 'normal',
+        background: 'white',
+        content: richText([
+          'The Primary Section takes a child from Grade 1 to Grade 4 — the four years in which reading stops being the thing being learnt and becomes the thing everything else is learnt with. The curriculum is the Maharashtra State Board’s, aligned with NEP 2020, and it is taught through activity and discussion rather than through dictation and copying.',
+          'The section sits inside the SIWS Group of Institutions. A child who joins in Grade 1 can carry on into the Secondary School and then the Junior College without changing school in between — the same campus, and often teachers who already know the family.',
+        ]),
+      },
+      {
+        blockType: 'featureList',
+        heading: 'What is taught',
+        accentWord: 'taught',
+        headingLevel: 'h2',
+        marker: 'tick',
+        columns: '2-centre',
+        background: 'white',
+        items: SUBJECTS,
+      },
+      {
+        blockType: 'featureList',
+        heading: 'How the section is staffed',
+        accentWord: 'staffed',
+        headingLevel: 'h2',
+        marker: 'number',
+        columns: '1',
+        background: 'sea',
+        items: [
+          {
+            title: 'Two head teachers',
+            description:
+              'Mrs. Geeta Raja is I/C Head Teacher and Mrs. Sreedevi Prasanna Bagayatkar is Head Teacher. Each leads her own teaching team.',
+          },
+          {
+            title: 'Twenty assistant teachers',
+            description:
+              'Qualified in B.A., B.Com., M.A., B.Ed. and D.Ed., with an art teacher among them. Many have taught in this section for more than twenty years.',
+          },
+          {
+            title: 'Taught, not lectured',
+            description:
+              'Child-centred, activity-based and competency-driven methods, so that a lesson is understood rather than memorised.',
+          },
+        ],
+      },
+      {
+        blockType: 'cardGrid',
+        heading: 'Where to go next',
+        accentWord: 'next',
+        headingLevel: 'h2',
+        background: 'white',
+        columns: '3',
+        placedBySeed: true,
+        cards: [
+          onwardCard(
+            'Academics',
+            'The subjects, what each grade covers, and how the school year is organised.',
+            'See what is taught',
+            academicsPageId,
+          ),
+          onwardCard(
+            'Teachers',
+            'Every teacher in the section, listed under the head teacher they work with.',
+            'Meet the teachers',
+            teachersPageId,
+          ),
+          onwardCard(
+            'Facilities & Campus',
+            'The classrooms, the safety arrangements, and what the campus offers.',
+            'See the campus',
+            facilitiesPageId,
+          ),
+        ],
+      },
+    ],
+  })
+
+  payload.logger.info('Primary content seeded.')
 
   payload.logger.warn(
-    'STILL TO COME from SIWS (both campuses): fee details; campus, classroom and facility photographs; teacher photographs; parent testimonials; alumni achievements; press mentions; awards and certifications; social media handles; and the legal documents (privacy policy, terms, fee/refund policy, RTI disclosures). No page invents any of these.',
-  )
-  payload.logger.warn(
-    'MATUNGA SPECIFICALLY: no uniform specification, no admission age criteria and no campus contact details were supplied. The uniform section is labelled as Wadala’s only, and no Matunga uniform is stated.',
+    'STILL TO COME from SIWS: fee details; campus, classroom and facility photographs; teacher photographs; parent testimonials; alumni achievements; press mentions; awards and certifications; social media handles; and the legal documents (privacy policy, terms, fee/refund policy, RTI disclosures). No page invents any of these.',
   )
 }
 

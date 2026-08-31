@@ -69,7 +69,19 @@ export const EnquiryForm = ({
 
   const inputClass = (name: string) =>
     [
-      'w-full rounded-xl border-2 bg-white px-4 py-3 text-[0.95rem] text-ink',
+      /*
+       * ROUNDER, ROOMIER, AND SET AT 16px.
+       *
+       * 12px corners on a 46px box read as a rectangle with the edges filed
+       * off — "blocky" was the right word for it. 16px on a 52px box reads as
+       * a considered shape.
+       *
+       * The type size is not cosmetic: iOS Safari zooms the whole page in when
+       * a focused input is under 16px, so a parent tapping "Your first name"
+       * on a phone was being thrown into a zoomed viewport they then had to
+       * pinch back out of. `text-base` is exactly the threshold.
+       */
+      'w-full rounded-2xl border-2 bg-white px-5 py-3.5 text-base text-ink',
       'placeholder:text-ink-muted focus:outline-none focus:ring-3 focus:ring-brand/20',
       // `border-field`, not `border-line`: an input's boundary is a meaningful
       // UI component and WCAG 2.1 SC 1.4.11 wants it at 3:1. The decorative
@@ -78,7 +90,7 @@ export const EnquiryForm = ({
     ].join(' ')
 
   return (
-    <form action={formAction} noValidate className="grid gap-3.5">
+    <form action={formAction} noValidate className="grid gap-5">
       <input type="hidden" name="unitId" value={String(unitId)} />
       <input type="hidden" name="formToken" value={formToken} />
 
@@ -112,13 +124,13 @@ export const EnquiryForm = ({
       {state.status === 'error' && state.message ? (
         <p
           role="alert"
-          className="rounded-xl bg-[#ffe8ea] px-4 py-3 text-sm font-medium text-[#b02330]"
+          className="rounded-2xl bg-[#ffe8ea] px-5 py-3.5 text-[0.95rem] font-medium text-[#b02330]"
         >
           {state.message}
         </p>
       ) : null}
 
-      <div className="grid gap-3.5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
         <Field
           name="parentFirstName"
           label="Your first name"
@@ -139,7 +151,7 @@ export const EnquiryForm = ({
         />
       </div>
 
-      <div className="grid gap-3.5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
         <Field
           name="childName"
           label="Child’s name"
@@ -161,7 +173,7 @@ export const EnquiryForm = ({
         />
       </div>
 
-      <div className="grid gap-3.5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
         <Field
           name="phone"
           label="Phone number"
@@ -236,7 +248,7 @@ export const EnquiryForm = ({
         behind a link, so the parent reads it before they consent rather than
         after.
       */}
-      <details className="rounded-xl bg-sea-soft px-4 py-3 text-sm">
+      <details className="rounded-2xl bg-sea-soft px-5 py-3.5 text-[0.9rem]">
         <summary className="cursor-pointer font-semibold text-brand">
           How we will use your details
         </summary>
@@ -326,7 +338,7 @@ const Field = ({
   className,
 }: FieldProps) => (
   <div>
-    <label htmlFor={name} className="mb-1.5 block text-sm font-semibold text-brand">
+    <label htmlFor={name} className="mb-2 block text-[0.9rem] font-semibold text-brand">
       {label} {required ? <Required /> : null}
     </label>
     <input

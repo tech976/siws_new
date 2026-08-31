@@ -1,6 +1,5 @@
 import Link from 'next/link'
 
-import { Media } from '@/components/Media'
 import { RichText } from '@/components/RichText'
 import type { UnitLinksBlock, Unit } from '@/payload-types'
 import { accentHex } from '@/theme/tokens'
@@ -8,19 +7,53 @@ import { accentHex } from '@/theme/tokens'
 import { Section, SectionHeading, type BlockBackground } from './Section'
 
 /**
- * Renders a card per active unit.
+ * A pastel of the school's own accent, mixed with white.
  *
- * The units are passed in by the route rather than fetched here, so the whole
- * page still costs one query for them however many times the block appears.
+ * Computed rather than picked, so the four cards are guaranteed to be the same
+ * WEIGHT of tint as each other — four hand-chosen pastels never are, and the
+ * odd one out reads as a mistake. It also means a fifth school added later
+ * gets its card colour from the accent it already has, with nobody choosing
+ * anything.
  *
- * The cards are ordered by `unit.order`, which is age order — Kindergarten
- * through to Junior College. That sequence is the actual information here: a
- * parent arrives knowing their child's age, not the name of a school, so the
- * row is read as a progression and each card states the stage it covers.
+ * Done here and not with `color-mix` in CSS because the value is inline: a
+ * computed hex is one string in the style attribute and works everywhere,
+ * where `color-mix` would leave the card white on any browser that lacks it.
+ */
+const pastel = (hex: string, strength: number): string => {
+  const clean = hex.replace('#', '')
+  const full = clean.length === 3 ? clean.split('').map((c) => c + c).join('') : clean
+  const value = Number.parseInt(full, 16)
+  if (!Number.isFinite(value)) return '#ffffff'
+
+  const mix = (channel: number) => Math.round(channel + (255 - channel) * (1 - strength))
+  const r = mix((value >> 16) & 255)
+  const g = mix((value >> 8) & 255)
+  const b = mix(value & 255)
+  return '#' + [r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * The four schools as one journey, Kindergarten through to Junior College.
  *
- * Each card carries its own school's accent colour as a rule along the top.
- * The colour is already held on the unit and already used on that unit's site,
- * so it links the card to the place it leads rather than decorating it.
+ * WHY THIS IS NOT A ROW OF CARDS ANY MORE
+ * ---------------------------------------
+ * It was four identical bordered cards, each with a photograph, a tagline and
+ * a thirty-word description set justified — about a hundred and twenty words
+ * of near-identical prose across a single row. Every card said "Maharashtra
+ * State Board" and every card ended "Visit site", so nothing on the row told a
+ * parent which school was theirs except the name at the top, and the name was
+ * the smallest confident thing on the card.
+ *
+ * The information here is a SEQUENCE — a parent arrives knowing their child's
+ * age, not the name of a school — so the section is now built as one. A rule
+ * runs through all four stages with a marker on it at each, numbered 01 to 04,
+ * and the type does the work the card boxes were doing: the school's name is
+ * the largest thing in its column, the grade range sits under it, and one line
+ * says what the stage is for. The rest is tags.
+ *
+ * There are no boxes and no shadows. Four rectangles side by side read as four
+ * of the same thing; four columns hanging off one line read as four steps of
+ * one thing, which is what they are.
  */
 export const UnitLinksBlockView = ({
   block,
@@ -31,11 +64,19 @@ export const UnitLinksBlockView = ({
 }) => {
   if (units.length === 0) return null
 
+  /*
+   * The portal's own short copy, looked up per school. `unit` on a stage is a
+   * relationship with `maxDepth: 0`, so it arrives as an id rather than a
+   * populated document.
+   */
+  const stageFor = (unit: Unit) =>
+    (block.stages ?? []).find((stage) => {
+      const id = typeof stage.unit === 'object' && stage.unit !== null ? stage.unit.id : stage.unit
+      return String(id) === String(unit.id)
+    })
+
   return (
     <Section background={block.background as BlockBackground}>
-      {/* `siws-centre` and not `text-center` alone: `.siws-prose` justifies by
-          default, which leaves a one-line intro ranged left inside its centred
-          box and optically off from the heading above it. */}
       <div className="siws-centre mx-auto max-w-2xl text-center">
         <SectionHeading
           heading={block.heading}
@@ -46,41 +87,105 @@ export const UnitLinksBlockView = ({
         {block.intro ? <RichText data={block.intro} /> : null}
       </div>
 
-      <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {units.map((unit) => (
-          <li
-            key={unit.id}
-            className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-card transition-transform focus-within:-translate-y-1 hover:-translate-y-1"
-          >
-            {/* The school's own colour, as a rule rather than a fill. */}
-            <span
-              aria-hidden="true"
-              className="h-1.5 w-full shrink-0"
-              style={{ backgroundColor: accentHex(unit.accent) }}
-            />
+      {/*
+        `<ol>`, not `<ul>`. The order is the information — this is the sequence
+        a child moves through — and a screen reader saying "list item 2 of 4"
+        is telling somebody the same thing the rule and the numbers tell a
+        sighted reader.
+      */}
+      {/*
+        The rule lives OUTSIDE the list.
+        
+        It was a `<span>` among the `<li>`s, which is not valid inside an
+        `<ol>` and, worse, counted: the list held five children, so assistive
+        technology announced four schools as "5 items" and the browser's own
+        numbering ran one ahead of the numerals on the page. A wrapper costs a
+        div and keeps the list to the four things that are actually in it.
+      */}
+      <div className="relative mt-14 lg:mt-16">
+        {/*
+          THE RULE THE MARKERS SIT ON.
 
-            {unit.heroImage ? (
+          Horizontal from `lg`, where the four stages are one row. Below that
+          they stack, and a horizontal line through a stacked list would mean
+          nothing — so it turns and runs down the left instead, which is the
+          same journey read the only way a narrow screen can read it.
+
+          It is inset by half a marker at each end so the line begins and ends
+          at the first and last stage rather than running off into the margin.
+        */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute left-[5px] top-2 bottom-2 w-px bg-line lg:left-0 lg:right-0 lg:top-[5px] lg:bottom-auto lg:h-px lg:w-auto"
+        />
+
+        <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-7">
+        {units.map((unit, index) => {
+          const stage = stageFor(unit)
+          const colour = accentHex(unit.accent)
+          const tags = (stage?.tags ?? []).map((tag) => tag.label).filter(Boolean)
+
+          return (
+            <li
+              key={unit.id}
               /*
-               * The ratio is held by this wrapper with the photograph filling
-               * it. An `aspect-*` class on the image itself does nothing —
-               * `next/image` writes real width and height attributes and the
-               * base `img { height: auto }` rule then overrides the ratio, so
-               * a portrait upload made one card twice the height of the rest.
+               * WHITE, WITH THE SCHOOL'S COLOUR AS THE BORDER.
+               *
+               * These were filled with a tint of each accent. It worked for
+               * the blue and the ink, and not for the two orange schools —
+               * Kindergarten and Secondary both came out a pale yellow that
+               * read as a highlighter rather than as a card.
+               *
+               * All four are white rather than only those two. A tint is a
+               * weight as much as a colour: two filled cards beside two empty
+               * ones reads as two of them being more important, which is not
+               * true of any school here. The colour has not gone — it is in
+               * the border, the marker, and the arrow — it has simply moved
+               * off the largest surface, which is where a pale yellow was
+               * always going to be hardest to make work.
+               *
+               * `h-full` so four cards of different text lengths finish level.
                */
-              <div className="relative aspect-[4/3] w-full overflow-hidden">
-                <Media
-                  resource={unit.heroImage}
-                  sizes="(min-width: 1024px) 23vw, (min-width: 640px) 45vw, 100vw"
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              </div>
-            ) : null}
+              className="group relative flex h-full flex-col rounded-3xl bg-white p-7 pt-9 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 lg:p-8 lg:pt-10"
+              style={{
+                boxShadow: `inset 0 0 0 1.5px ${pastel(colour, 0.38)}`,
+              }}
+            >
+              {/*
+                The marker, sitting ON the rule. Its ring is the page's own
+                background rather than a colour, so the rule appears to pass
+                behind the marker instead of touching it.
+              */}
+              {/*
+                The marker sits ON the card's top edge, centred over it, so the
+                rule behind still reads as one line running through all four.
+                Its ring is the page's own white, which is what makes the rule
+                appear to pass behind the marker rather than touch it.
+              */}
+              <span
+                aria-hidden="true"
+                className="absolute -top-[5px] left-8 size-[11px] rounded-full ring-4 ring-white lg:left-9"
+                style={{ backgroundColor: colour }}
+              />
 
-            <div className="flex flex-1 flex-col p-6">
-              <h3 className="card-title">
-                {/* The overlay makes the whole card clickable while keeping the
-                    accessible name to just the school. */}
+              {/*
+                The number is decoration carrying no information a reader needs
+                — the ordered list already states the position — so it is
+                hidden from assistive technology rather than read out as "zero
+                one" before every school name.
+              */}
+              <span
+                aria-hidden="true"
+                className="mb-3 block text-[2rem] leading-none font-bold tabular-nums text-brand/15 lg:mb-4 lg:text-[2.75rem]"
+              >
+                {String(index + 1).padStart(2, '0')}
+              </span>
+
+              <h3 className="text-[1.4rem] leading-tight font-bold tracking-tight text-brand lg:text-[1.55rem]">
+                {/*
+                  The overlay makes the whole stage clickable while keeping the
+                  accessible name to just the school.
+                */}
                 <Link
                   href={`/${unit.slug}`}
                   className="after:absolute after:inset-0 after:content-['']"
@@ -89,32 +194,66 @@ export const UnitLinksBlockView = ({
                 </Link>
               </h3>
 
-              {unit.tagline ? (
-                <p className="mt-2 text-base font-semibold text-brand">{unit.tagline}</p>
-              ) : null}
-
-              {unit.description ? (
-                <p className="siws-justify mt-3 text-base leading-relaxed text-ink-muted">{unit.description}</p>
+              {stage?.gradeRange ? (
+                <p className="mt-1.5 text-[0.9375rem] font-semibold text-ink-muted">
+                  {stage.gradeRange}
+                </p>
               ) : null}
 
               {/*
-                `mt-auto` pins this to the bottom of every card whatever the
-                length of the description above it, so the row of cards ends on
-                one line instead of four ragged ones.
+                One line for the portal, the school's own tagline if nobody has
+                written one yet.
               */}
+              {stage?.blurb || unit.tagline ? (
+                <p className="mt-4 text-[1.02rem] leading-relaxed text-ink-soft">
+                  {stage?.blurb ?? unit.tagline}
+                </p>
+              ) : null}
+
+              {/*
+                PILLS, NOT A MIDDOT-SEPARATED RUN.
+
+                The separators were their own flex children, so when the row
+                wrapped it broke BEFORE one and the next line began with a
+                stray "·  Value-based education". A tag is a self-contained
+                thing; giving each its own chip means a wrap can only ever
+                happen between two whole tags.
+              */}
+              {tags.length > 0 ? (
+                <ul className="mt-5 flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <li
+                      key={tag}
+                      /*
+                        The chips carried `bg-white/70`, which was visible
+                        against a tinted card and invisible on a white one.
+                        They take the school's own colour at a tenth instead,
+                        so they still read as set into the card.
+                      */
+                      className="rounded-pill px-3 py-1.5 text-[0.78rem] font-semibold text-ink-soft"
+                      style={{ backgroundColor: pastel(colour, 0.12) }}
+                    >
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+
               <span
                 aria-hidden="true"
-                className="mt-auto pt-5 text-sm font-semibold text-brand"
+                className="mt-auto inline-flex items-center gap-1.5 pt-7 text-[0.9375rem] font-semibold"
+                style={{ color: colour }}
               >
                 Visit site
-                <span className="ml-1 inline-block transition-transform group-hover:translate-x-1">
+                <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
                   →
                 </span>
               </span>
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          )
+        })}
+        </ol>
+      </div>
     </Section>
   )
 }

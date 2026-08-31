@@ -49,6 +49,34 @@ const BENTO_SPAN = [
  * otherwise is how a collage ends up either soft or four times heavier than
  * it needs to be.
  */
+/*
+ * A FIVE-PICTURE WALL TILES EXACTLY; the repeating pattern above does not.
+ *
+ * Those six spans cover 4+1+1+2+2 = ten cells over their first five entries,
+ * and ten does not divide into a four-column grid: the collage came out two
+ * cells short of square with a hole in the bottom corner, which reads as a
+ * picture that failed to load rather than as a considered shape.
+ *
+ * One big tile and four small ones is 4+1+1+1+1 = eight, which is two full
+ * rows of four. Five is a common enough set — a prize-giving and the pictures
+ * around it — to be worth its own arrangement.
+ */
+const BENTO_SPAN_FIVE = [
+  'sm:col-span-2 sm:row-span-2',
+  'sm:col-span-1 sm:row-span-1',
+  'sm:col-span-1 sm:row-span-1',
+  'sm:col-span-1 sm:row-span-1',
+  'sm:col-span-1 sm:row-span-1',
+]
+
+const BENTO_SIZES_FIVE = [
+  '(min-width: 1024px) 50vw, (min-width: 640px) 66vw, 100vw',
+  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
+  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
+  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
+  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
+]
+
 const BENTO_SIZES = [
   '(min-width: 1024px) 50vw, (min-width: 640px) 66vw, 100vw',
   '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
@@ -90,16 +118,19 @@ const BentoGallery = ({
     {images.map((entry, index) => {
       const media = entry.image as MediaDoc
       const caption = entry.caption || media.caption
-      const slot = index % BENTO_SPAN.length
+      const exact = images.length === 5
+      const spans = exact ? BENTO_SPAN_FIVE : BENTO_SPAN
+      const sizes = exact ? BENTO_SIZES_FIVE : BENTO_SIZES
+      const slot = index % spans.length
 
       return (
         <li
           key={entry.id ?? index}
-          className={`group relative overflow-hidden rounded-3xl bg-brand-tint ring-1 ring-line/60 shadow-[0_1px_2px_rgba(36,39,111,0.04),0_10px_28px_-14px_rgba(36,39,111,0.22)] transition-shadow duration-300 hover:shadow-[0_2px_6px_rgba(36,39,111,0.08),0_22px_46px_-18px_rgba(36,39,111,0.34)] ${BENTO_SPAN[slot]}`}
+          className={`group relative overflow-hidden rounded-3xl bg-brand-tint ring-1 ring-line/60 shadow-[0_1px_2px_rgba(36,39,111,0.04),0_10px_28px_-14px_rgba(36,39,111,0.22)] transition-shadow duration-300 hover:shadow-[0_2px_6px_rgba(36,39,111,0.08),0_22px_46px_-18px_rgba(36,39,111,0.34)] ${spans[slot]}`}
         >
           <Media
             resource={media}
-            sizes={BENTO_SIZES[slot]}
+            sizes={sizes[slot]}
             priority={index < 2}
             fill
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
@@ -217,11 +248,19 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
 
   return (
     <Section background={block.background as BlockBackground}>
+      {/*
+        `mb-4` is the gap down to an INTRO, which then carries its own `mb-8`
+        on to the photographs. A gallery with no intro was left with that 16px
+        as the entire distance from its heading to the first tile, so the two
+        touched — the third block on this site to be caught by the same wiring.
+        Without an intro the heading takes the 40px the intro would have
+        passed on.
+      */}
       <SectionHeading
         heading={block.heading}
         accentWord={block.accentWord}
         level={block.headingLevel}
-        className="mb-4"
+        className={block.intro ? 'mb-4' : 'mb-10'}
       />
 
       {block.intro ? (

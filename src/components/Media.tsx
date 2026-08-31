@@ -89,33 +89,45 @@ export const Media = ({
 
   const src = toImageSrc(resource.url)
 
-  if (fill) {
-    /**
-     * Honour the focal point Payload already stores on every upload.
-     *
-     * A filled image is cropped to its container, and the browser's default is
-     * the centre of the file — which is only the centre of the *subject* by
-     * luck. Wide group photographs in a tall card lose most of their width, and
-     * whoever was standing off to one side goes with it.
-     *
-     * Payload writes 50/50 on every upload rather than leaving the pair null,
-     * so "dead centre" is what an untouched photograph looks like and there is
-     * no flag that separates it from a deliberate choice. It is therefore read
-     * as untouched, which lets a block that knows it is a shallow letterbox
-     * supply a better starting guess than the middle of the file. Moving the
-     * marker anywhere off-centre hands control back to the editor, who is
-     * looking at the actual photograph.
-     *
-     * The cost is that an editor who deliberately chooses the exact centre of
-     * a band gets the band's guess instead. That is worth it: the alternative
-     * left every shallow band centre-cropped, which is what cut a row of
-     * children off at the chin on the home page.
-     */
-    const focalX = typeof resource.focalX === 'number' ? resource.focalX : 50
-    const focalY = typeof resource.focalY === 'number' ? resource.focalY : 50
-    const placed = focalX !== 50 || focalY !== 50
-    const position = placed ? `${focalX}% ${focalY}%` : (objectPosition ?? '50% 50%')
+  /**
+   * Honour the focal point Payload already stores on every upload.
+   *
+   * A filled image is cropped to its container, and the browser's default is
+   * the centre of the file — which is only the centre of the *subject* by
+   * luck. Wide group photographs in a tall card lose most of their width, and
+   * whoever was standing off to one side goes with it.
+   *
+   * Payload writes 50/50 on every upload rather than leaving the pair null,
+   * so "dead centre" is what an untouched photograph looks like and there is
+   * no flag that separates it from a deliberate choice. It is therefore read
+   * as untouched, which lets a block that knows it is a shallow letterbox
+   * supply a better starting guess than the middle of the file. Moving the
+   * marker anywhere off-centre hands control back to the editor, who is
+   * looking at the actual photograph.
+   *
+   * The cost is that an editor who deliberately chooses the exact centre of
+   * a band gets the band's guess instead. That is worth it: the alternative
+   * left every shallow band centre-cropped, which is what cut a row of
+   * children off at the chin on the home page.
+   *
+   * COMPUTED FOR BOTH BRANCHES, not just the filled one.
+   *
+   * It used to sit inside `if (fill)`, on the assumption that `fill` was the
+   * only way an image got cropped. It is not: a caller can crop just as hard
+   * with `object-cover` and a fixed ratio on an ordinary `<Image>`, which is
+   * exactly what every card grid does — so a card centre-cropped whatever
+   * focal point had been set, and the 2026 toppers lost their heads on the
+   * news page while the same photograph was framed correctly two pages away.
+   *
+   * Setting `object-position` on an image that is NOT cropped costs nothing:
+   * the property only has an effect once `object-fit` is doing something.
+   */
+  const focalX = typeof resource.focalX === 'number' ? resource.focalX : 50
+  const focalY = typeof resource.focalY === 'number' ? resource.focalY : 50
+  const placed = focalX !== 50 || focalY !== 50
+  const position = placed ? `${focalX}% ${focalY}%` : (objectPosition ?? '50% 50%')
 
+  if (fill) {
     return (
       <Image
         src={src}
@@ -143,6 +155,7 @@ export const Media = ({
       sizes={sizes}
       className={className}
       priority={priority}
+      style={{ objectPosition: position }}
       // Everything below the fold defers; the caller opts a hero image in.
       loading={priority ? 'eager' : 'lazy'}
     />

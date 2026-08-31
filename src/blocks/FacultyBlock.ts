@@ -43,6 +43,20 @@ export const FacultyBlock: Block = {
       },
     },
     {
+      name: 'layout',
+      type: 'select',
+      defaultValue: 'grid',
+      label: 'Layout',
+      options: [
+        { label: 'One grid of everybody', value: 'grid' },
+        { label: 'Grouped under each head teacher', value: 'teams' },
+      ],
+      admin: {
+        description:
+          'Grouping puts each head teacher at the top of her own column with her teachers beneath, side by side. It reads the groups off the roster itself and ignores the campus setting above.',
+      },
+    },
+    {
       name: 'showQualifications',
       type: 'checkbox',
       defaultValue: true,

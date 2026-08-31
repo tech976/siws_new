@@ -35,6 +35,17 @@ export const Section = ({ background = 'white', children, className, id }: Secti
       // `data-invert` lets the stylesheet flip heading and body colours in one
       // place rather than every block re-deciding what "on brand" means.
       data-invert={inverted ? 'true' : undefined}
+      /*
+       * The ground this section is painted on, so the stylesheet can tell a
+       * white section from a coloured one without knowing the class names.
+       *
+       * Used for the gap under a page heading: a white first section should
+       * sit close, because it shares the header's own ground and the two read
+       * as one flow — but a coloured one draws a hard edge across the page,
+       * and an edge butting straight up against the standfirst reads as a
+       * banner that has landed on top of it.
+       */
+      data-ground={variant}
       className={[BACKGROUND_CLASS[variant] ?? BACKGROUND_CLASS.white, 'py-14 sm:py-20', className]
         .filter(Boolean)
         .join(' ')}

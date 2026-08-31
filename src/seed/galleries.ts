@@ -40,6 +40,8 @@ interface MediaDoc {
   campus?: string | null
   category?: string | null
   unit?: number | null
+  filename?: string | null
+  showInGallery?: boolean | null
   depictsChildren?: boolean | null
   parentalConsent?: { obtained?: boolean | null } | null
   withdrawn?: { isWithdrawn?: boolean | null } | null
@@ -65,14 +67,89 @@ const main = async () => {
 
   const all = docs as unknown as MediaDoc[]
 
-  /** Publishable: not withdrawn, and consented if a student is recognisable. */
+  /**
+   * Publishable: not withdrawn, consented if a student is recognisable, and
+   * not marked as page furniture. `showInGallery` is undefined on everything
+   * uploaded before the field existed, which has to read as YES — the default
+   * is to include, and a missing value must not quietly empty the galleries.
+   */
   const publishable = all.filter((item) => {
     if (item.withdrawn?.isWithdrawn) return false
     if (item.depictsChildren && !item.parentalConsent?.obtained) return false
+    if (item.showInGallery === false) return false
     return true
   })
 
-  const heldBack = all.length - publishable.length
+  /*
+   * Counted apart, because they are not the same problem. One is paperwork
+   * that somebody has to complete; the other is a deliberate setting, and
+   * reporting the two together made three video thumbnails look like three
+   * consent failures.
+   */
+  const heldBack = all.filter(
+    (item) =>
+      item.showInGallery !== false &&
+      (item.withdrawn?.isWithdrawn || (item.depictsChildren && !item.parentalConsent?.obtained)),
+  ).length
+  const setAside = all.filter((item) => item.showInGallery === false).length
+
+  /**
+   * Categories a section's gallery does not show, by unit slug.
+   *
+   * Not a way of hiding photographs — every one of these is published, and each
+   * is somewhere better. Primary's Onam pictures are the whole of its Events
+   * page, banner and films included, and repeating the same five here left the
+   * gallery reading as an overflow of that page rather than as a wall of its
+   * own. They are still in the portal's own gallery under Celebrations.
+   *
+   * A category named here that the unit does not have is simply ignored.
+   */
+  const OMIT_CATEGORY: Record<string, string[]> = {
+    primary: ['Onam'],
+  }
+
+  /**
+   * Individual photographs a section's wall does not show, keyed by unit slug.
+   *
+   * `OMIT_CATEGORY` above takes out a whole subject; this takes out one
+   * picture. The #SwachhtaMonitor certificate is the case it was added for:
+   * it is a document rather than a photograph of the school, and a gallery is
+   * for seeing the place. It is still published — at full size, and read
+   * rather than cropped — in "Recognised by the State" on the Secondary home
+   * page, and it is still on the portal's own wall under Prizes and honours.
+   */
+  const OMIT_FILE: Record<string, string[]> = {
+    secondary: ['secondary-swachhta-2023.jpg'],
+  }
+
+  /**
+   * Sections whose wall is the FILTERED library rather than a stack of
+   * titled bands, keyed by unit slug.
+   *
+   * The two presentations answer different questions. A stack of bands says
+   * "here is the classroom work, and here is the prize-giving" — it reads
+   * top to bottom and is right for a section with one long run of pictures.
+   * The library puts the same categories on a row of tabs above one wall, so
+   * a visitor picks a subject and the wall rearranges under it, and any tile
+   * opens full size with the arrow keys stepping through what is on screen.
+   *
+   * Opt-in rather than automatic, because it is a real change of behaviour
+   * for a page somebody has already looked at. Adding a slug here is the
+   * whole of what it takes.
+   */
+  const PHOTO_LIBRARY = new Set(['secondary', 'junior-college'])
+
+  /**
+   * One photograph per section that earns the 2x2 tile.
+   *
+   * A wall of evenly sized tiles has no focus, and the bento pattern alone
+   * cannot know which picture is the one worth stopping on. Named here by
+   * filename so the choice survives a re-import.
+   */
+  const FEATURED: Record<string, string> = {
+    'secondary-toppers-2026-close.jpg': 'secondary',
+    'jc-independence-day-2026.jpg': 'junior-college',
+  }
 
   const gallery = (item: MediaDoc) => ({
     image: item.id,
@@ -87,9 +164,67 @@ const main = async () => {
     slug: string,
     title: string,
     intro: string,
-    images: MediaDoc[],
+    supplied: MediaDoc[],
+    /** Unit slug, so the wall can honour `OMIT_CATEGORY`. Null for the portal. */
+    unitSlug: string | null = null,
   ) => {
+    /*
+     * Done here rather than inside the layout, so that the count in the meta
+     * description and the count in the log both mean the number of pictures a
+     * visitor will actually find on the page.
+     */
+    const omitted = new Set(unitSlug ? (OMIT_CATEGORY[unitSlug] ?? []) : [])
+    const omittedFiles = new Set(unitSlug ? (OMIT_FILE[unitSlug] ?? []) : [])
+    const images = supplied.filter(
+      (item) =>
+        !omitted.has((item.category ?? '').trim()) && !omittedFiles.has(String(item.filename)),
+    )
+
     if (images.length === 0) {
+      /*
+       * Returning here used to leave whatever the page last held, which was
+       * fine while every section had something and wrong the moment one did
+       * not: Junior College kept showing the single borrowed photograph that
+       * the change above just took away from it — one Secondary craft class,
+       * published as life at the Junior College.
+       *
+       * An empty gallery is unpublished rather than emptied or deleted. The
+       * document stays in the admin panel with whatever is on it, so nothing
+       * an editor did by hand is lost, and the public address stops serving a
+       * page that has nothing to show. It republishes itself the moment a
+       * photograph is tagged to the section and this is re-run.
+       *
+       * Taking it out of the MENU is a separate job and cannot be done from
+       * here: `seed:nav` runs last and switches `showInNav` back on for every
+       * page its template names. That exception is recorded in `UNIT_OMIT` in
+       * `seed/nav.ts`, beside the others.
+       */
+      const stale = await payload.find({
+        collection: 'pages',
+        where: {
+          and: [
+            { slug: { equals: slug } },
+            unitId === null ? { unit: { exists: false } } : { unit: { equals: unitId } },
+          ],
+        },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      })
+
+      if (stale.docs[0] && stale.docs[0]._status === 'published') {
+        await payload.update({
+          collection: 'pages',
+          id: stale.docs[0].id,
+          data: { _status: 'draft', showInNav: false } as never,
+          overrideAccess: true,
+        })
+        payload.logger.warn(
+          `${title}: no photographs are tagged to this section, so the page has been unpublished rather than left showing another section's. Tag some in the media library and re-run this to publish it again.`,
+        )
+        return
+      }
+
       payload.logger.info(`Skipped ${title} — no publishable photographs yet.`)
       return
     }
@@ -98,9 +233,25 @@ const main = async () => {
       slug,
       title,
       intro,
-      showInNav: true,
+      /*
+       * OFF the menu here, and `seed:nav` puts it back inside About.
+       *
+       * A unit gallery is a CHILD entry in the shared menu template. Setting
+       * this true made it a TOP-LEVEL item, and whichever script ran last
+       * won — so running this seed after `seed:nav` climbed Gallery out of
+       * the About drop-down and into the top row, which is what pushed the
+       * Secondary menu onto a second line.
+       *
+       * Omitting the field is NOT enough: `payload.update` keeps the existing
+       * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
+       * rather than leaving it alone. The same convention is followed by every
+       * child page in the section seeds.
+       *
+       * The PORTAL gallery below keeps `showInNav: true`, because there it is
+       * a top-level entry in its own right.
+       */
+      showInNav: false,
       navLabel: 'Gallery',
-      navOrder: 45,
       _status: 'published',
       reviewStatus: 'approved',
       metaDescription: `${intro} ${images.length} photographs.`,
@@ -123,30 +274,142 @@ const main = async () => {
          * they did before.
          */
         const campuses = new Set(images.map((item) => (item.campus ?? '').trim()).filter(Boolean))
-        const label: Record<string, string> = { wadala: 'Wadala', matunga: 'Matunga' }
+        const label: Record<string, string> = {
+          wadala: 'Wadala',
+          matunga: 'Matunga',
+        }
 
         const groups = new Map<string, MediaDoc[]>()
         for (const item of images) {
           const cat = (item.category ?? '').trim() || 'Other photographs'
           const camp = (item.campus ?? '').trim()
-          const key =
-            campuses.size > 1 && camp ? `${label[camp] ?? camp} campus — ${cat}` : cat
+          const key = campuses.size > 1 && camp ? `${label[camp] ?? camp} campus — ${cat}` : cat
           const bucket = groups.get(key)
           if (bucket) bucket.push(item)
           else groups.set(key, [item])
         }
 
+        /*
+         * A CATEGORY OF ONE IS NOT A CATEGORY.
+         *
+         * Grouping by occasion is right when there is an occasion's worth of
+         * photographs. Primary had a "Classrooms" heading over a single tile
+         * and an "Other photographs" heading over one more — two full sections,
+         * each a lone picture under its own title, on a page that is meant to
+         * read as a wall. Anything with fewer than two is folded into the
+         * catch-all at the end instead, which is where a stray photograph
+         * belonged in the first place.
+         */
+        const MIN_GROUP = 2
+        const strays: MediaDoc[] = [...(groups.get('Other photographs') ?? [])]
+
         const named = [...groups.entries()]
           .filter(([key]) => key !== 'Other photographs')
+          .filter(([, group]) => {
+            if (group.length >= MIN_GROUP) return true
+            strays.push(...group)
+            return false
+          })
           .sort(([a], [b]) => a.localeCompare(b))
-        const rest = groups.get('Other photographs')
-        const ordered = rest ? [...named, ['Other photographs', rest] as const] : named
+
+        /*
+         * ONE GROUP IS NOT A SET OF GROUPS.
+         *
+         * Splitting by occasion earns its keep when there are several
+         * occasions. Primary came down to "Achievements" over five tiles and
+         * "More photographs" over one — two headings, a colour change and a
+         * band of padding, to divide six pictures. That is furniture around a
+         * wall small enough to take in at a glance.
+         *
+         * So below two named groups the whole thing is emitted as a single
+         * untitled wall. The page's own title and intro are already above it,
+         * and `hasOwnHeading` leaves them alone because no block heading
+         * matches. Add a second occasion's worth of photographs and the
+         * sections come back on their own.
+         */
+        if (named.length < 2) {
+          const wall = [...named.flatMap(([, group]) => group), ...strays]
+          if (wall.length === 0) return []
+          return [
+            {
+              blockType: 'gallery',
+              headingLevel: 'h2',
+              layout: 'bento',
+              background: 'white',
+              intro: richText([intro]),
+              images: wall.map(gallery),
+            },
+          ]
+        }
+
+        const ordered =
+          strays.length > 0 ? [...named, ['More photographs', strays] as const] : named
+
+        /*
+         * A CATEGORY OF ONE IS FINE ON A TABBED WALL.
+         *
+         * `MIN_GROUP` folds a lone photograph into "More photographs",
+         * because a heading and a band of padding over a single tile reads as
+         * a section that failed. A tab is not a section: "Recognition" beside
+         * "In the classroom" is a filter, and a filter that matches one
+         * picture is behaving correctly.
+         *
+         * So the library takes the raw categories. Without this, taking the
+         * certificate off the wall above would have left the 2026 toppers
+         * alone under "Recognition", folded them into "More photographs", and
+         * put a tab on the page holding one photograph and a vague name.
+         */
+        if (unitSlug && PHOTO_LIBRARY.has(unitSlug)) {
+          /*
+           * SMALLEST FIRST, so the counts on the tabs climb left to right.
+           *
+           * Alphabetical put "Recognition 1" at the end after two twos, and a
+           * row of numbers in no order reads as though it is in some order the
+           * reader has failed to spot. Ascending gives the row a direction:
+           * the narrowest filter is nearest the "Everything" tab it was just
+           * widened from, and the counts themselves become the ordering rather
+           * than an accident of the alphabet.
+           *
+           * Ties fall back to the label, so two categories of the same size
+           * keep a stable, predictable order between re-runs.
+           */
+          const tabs = [...groups.entries()].sort(
+            ([labelA, a], [labelB, b]) => a.length - b.length || labelA.localeCompare(labelB),
+          )
+          return [
+            {
+              blockType: 'photoLibrary',
+              headingLevel: 'h2',
+              background: 'white',
+              allLabel: 'Everything',
+              intro: richText([intro]),
+              groups: tabs.map(([label, group]) => ({
+                label,
+                images: group.map((item) => ({
+                  ...gallery(item),
+                  feature: FEATURED[String(item.filename)] === unitSlug,
+                })),
+              })),
+            },
+          ]
+        }
 
         return ordered.map(([heading, group], index) => ({
           blockType: 'gallery',
           heading,
           headingLevel: 'h2',
-          layout: 'grid',
+          /*
+           * A COLLAGE, not an even grid.
+           *
+           * This is the gallery page — the photographs are the point of it,
+           * not an illustration beside something else — and that is exactly
+           * the case the bento layout exists for. An even chequerboard of
+           * identical tiles is right for an album a visitor pages through and
+           * flat for a wall meant to show a school off. The mixed sizes give
+           * the wall a shape, and `grid-flow-dense` backfills so it still
+           * finishes square.
+           */
+          layout: 'bento',
           // Alternating so the groups read as separate sections.
           background: index % 2 === 0 ? 'white' : 'sea',
           ...(index === 0 ? { intro: richText([intro]) } : {}),
@@ -177,22 +440,203 @@ const main = async () => {
       })
       payload.logger.info(`Updated ${title} — ${images.length} photograph(s).`)
     } else {
-      await payload.create({ collection: 'pages', data: page as never, overrideAccess: true })
+      await payload.create({
+        collection: 'pages',
+        data: page as never,
+        overrideAccess: true,
+      })
       payload.logger.info(`Created ${title} — ${images.length} photograph(s).`)
     }
   }
 
-  // Institution-wide: only photographs not tied to one section.
-  const shared = publishable.filter((item) => !item.unit)
-  await upsert(
-    null,
-    'gallery',
-    'Gallery',
-    'Photographs from across the SIWS Group of Institutions.',
-    shared,
-  )
+  /*
+   * THE PORTAL'S GALLERY IS CURATED BY HAND, and it is the only one that is.
+   *
+   * A section's gallery shows that section's photographs, which is a question
+   * the `unit` field answers. The portal's cannot work that way for two
+   * reasons. The first is that it should show the best of all four schools,
+   * not the one picture that happens to be tagged to none of them. The second
+   * is that the `unit` field is not trustworthy for this: `media.ts` files
+   * every photograph it seeds under Kindergarten, so `secondary-toppers` and
+   * `siws-natya-tarang` are both recorded as Kindergarten pictures. Grouping
+   * this page by section would put the SSC toppers under Kindergarten.
+   *
+   * So the walls below are filed by what the photograph SHOWS, which is a
+   * judgement somebody has to make and which is therefore written down here in
+   * full rather than guessed from a field. Two pictures are deliberately left
+   * out — `secondary-toppers-2026` and `secondary-swachhta-certificate` are
+   * the uncropped originals of two that follow, and a gallery should not show
+   * the same moment twice.
+   */
+  const LIBRARY: { label: string; files: string[]; feature?: string }[] = [
+    {
+      label: 'Prizes and honours',
+      feature: 'natya-tarang-2026-first-prize.jpg',
+      files: [
+        'natya-tarang-2026-first-prize.jpg',
+        'natya-tarang-2026-trophy.jpg',
+        'natya-tarang-2026-company.jpg',
+        'natya-tarang-2026-performance.jpg',
+        'ignited-mind-lab-2026.jpg',
+        'secondary-toppers-2026-close.jpg',
+        'secondary-swachhta-2023.jpg',
+        'siws-award-andhra.jpg',
+      ],
+    },
+    {
+      label: 'Celebrations',
+      feature: 'onam-2026-assembly.jpg',
+      files: [
+        'onam-2026-assembly.jpg',
+        'onam-2026-pookalam.jpg',
+        'onam-2026-lighting-the-lamp.jpg',
+        'onam-2026-teachers.jpg',
+        'onam-2026-display-board.jpg',
+        'siws-natya-tarang.jpg',
+        'siws-dance-competition.jpg',
+        'siws-fancy-dress-environment.jpg',
+      ],
+    },
+    {
+      label: 'In the classroom',
+      feature: 'primary-classroom.jpg',
+      files: [
+        'primary-classroom.jpg',
+        'kg-activity-table.jpg',
+        'kg-smart-board.jpg',
+        'kg-classroom-activity.jpg',
+        'kg-classroom-group.jpg',
+        'kg-classroom-seated.jpg',
+        'kg-activity-literacy.jpg',
+        'kg-drawing-class.jpg',
+        'secondary-craft-class.jpg',
+        'secondary-activity-class.jpg',
+        'portal-vision-background.jpg',
+      ],
+    },
+    {
+      label: 'Around the school',
+      feature: 'kg-play-area.jpg',
+      files: [
+        'kg-play-area.jpg',
+        'kg-children-together.jpg',
+        'kg-teacher-with-children.jpg',
+        // 'kg-canteen-meal.jpg' and 'kg-handwashing.jpg' are off this wall at
+        // SIWS's request. They are still in the media library and still on the
+        // Kindergarten section's own gallery — taking them off that one too is
+        // a matter of unticking "Include in the photo gallery" on each.
+        'kg-activity-creative.jpg',
+        'kg-activity-motor.jpg',
+        'siws-green-skills.jpg',
+        'siws-yoga-meditation.jpg',
+      ],
+    },
+  ]
 
-  // Per section: its own photographs, plus the shared ones.
+  const byFilename = new Map(publishable.map((item) => [item.filename, item]))
+  const missing: string[] = []
+
+  const groups = LIBRARY.map((group) => ({
+    label: group.label,
+    images: group.files
+      .map((file) => {
+        const item = byFilename.get(file)
+        if (!item) {
+          missing.push(file)
+          return null
+        }
+        return {
+          image: item.id,
+          caption: item.caption || undefined,
+          feature: file === group.feature,
+        }
+      })
+      .filter((entry) => entry !== null),
+  })).filter((group) => group.images.length > 0)
+
+  const total = groups.reduce((sum, group) => sum + group.images.length, 0)
+
+  const existingLibrary = await payload.find({
+    collection: 'pages',
+    where: {
+      and: [{ slug: { equals: 'gallery' } }, { unit: { exists: false } }],
+    },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  })
+
+  const libraryPage = {
+    slug: 'gallery',
+    title: 'Gallery',
+    intro: 'Photographs from across the SIWS Group of Institutions.',
+    showInNav: true,
+    navLabel: 'Gallery',
+    navOrder: 45,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription: `Photographs from across the SIWS Group of Institutions — ${total} pictures of classrooms, celebrations, prizes and school life.`,
+    layout: [
+      {
+        blockType: 'photoLibrary',
+        heading: 'Life at SIWS',
+        accentWord: 'SIWS',
+        headingLevel: 'h2',
+        background: 'white',
+        allLabel: 'Everything',
+        intro: richText([
+          'Four schools on one campus, photographed as they are. Choose a subject to narrow the wall, or open any picture to see it whole.',
+        ]),
+        groups,
+      },
+    ],
+  }
+
+  if (existingLibrary.docs[0]) {
+    await payload.update({
+      collection: 'pages',
+      id: existingLibrary.docs[0].id,
+      data: libraryPage as never,
+      overrideAccess: true,
+    })
+    payload.logger.info(
+      `Updated the SIWS gallery — ${total} photographs in ${groups.length} categories.`,
+    )
+  } else {
+    await payload.create({
+      collection: 'pages',
+      data: libraryPage as never,
+      overrideAccess: true,
+    })
+    payload.logger.info(
+      `Created the SIWS gallery — ${total} photographs in ${groups.length} categories.`,
+    )
+  }
+
+  if (missing.length > 0) {
+    payload.logger.warn(
+      `The SIWS gallery lists ${missing.length} photograph(s) that are not in the library, or are not publishable: ${missing.join(', ')}. They are skipped; the wall is built from the rest.`,
+    )
+  }
+
+  /*
+   * A SECTION'S WALL IS ITS OWN PHOTOGRAPHS, AND NOTHING ELSE.
+   *
+   * It used to append `shared` — everything with no `unit` — to all four,
+   * on the reasonable-sounding theory that an untagged picture belongs to
+   * the institution and therefore to everybody. In practice exactly one
+   * photograph is untagged, `portal-vision-background.jpg`, which
+   * `vision-background.ts` generates as the backdrop for the portal's
+   * vision panel and which happens to show a Secondary craft class.
+   *
+   * So every section was carrying one picture of another section: it sat
+   * under "More photographs" on Primary and Kindergarten, and on Junior
+   * College — which has no photographs of its own yet — it WAS the gallery,
+   * a single Secondary classroom presented as life at the Junior College.
+   *
+   * It is still on the portal's own wall, which is curated by filename in
+   * `LIBRARY` above and is the one place it belongs.
+   */
   for (const unit of units) {
     const own = publishable.filter((item) => item.unit === unit.id)
     await upsert(
@@ -200,87 +644,29 @@ const main = async () => {
       'gallery',
       'Gallery',
       `Photographs from ${unit.name}.`,
-      [...own, ...shared],
+      own,
+      unit.slug as string,
     )
   }
 
-  /**
-   * A gallery on each campus page too.
-   *
-   * Wadala and Matunga are separate schools to a parent, and a visitor on the
-   * Matunga page should see Matunga's photographs there rather than be sent to
-   * a combined gallery to find them.
-   *
-   * This APPENDS to the page rather than owning it: existing gallery blocks are
-   * stripped and rebuilt, everything else in the layout is left alone. So
-   * `seed:primary` can rewrite the campus content and this can refresh the
-   * photographs, without either clobbering the other. Run order is content
-   * first, galleries second.
+  /*
+   * There used to be a second pass here, building a gallery on each Primary
+   * campus page from the photographs tagged to that campus. Those pages —
+   * /primary/wadala and /primary/matunga — no longer exist, so the pass found
+   * nothing and did nothing. Removed rather than left as a no-op pointing at
+   * deleted pages. The photographs themselves are untouched and still appear
+   * in the unit's own gallery above.
    */
-  const CAMPUS_PAGES: { slug: string; campus: string; label: string }[] = [
-    { slug: 'wadala', campus: 'wadala', label: 'Wadala' },
-    { slug: 'matunga', campus: 'matunga', label: 'Matunga' },
-  ]
-
-  for (const unit of units) {
-    for (const entry of CAMPUS_PAGES) {
-      const shots = publishable.filter(
-        (item) => item.unit === unit.id && (item.campus ?? '') === entry.campus,
-      )
-      if (shots.length === 0) continue
-
-      const { docs: pages } = await payload.find({
-        collection: 'pages',
-        where: { and: [{ slug: { equals: entry.slug } }, { unit: { equals: unit.id } }] },
-        limit: 1,
-        depth: 0,
-        overrideAccess: true,
-      })
-      const page = pages[0]
-      if (!page) continue
-
-      const kept = (page.layout ?? []).filter(
-        (block: { blockType?: string }) => block.blockType !== 'gallery',
-      )
-
-      const byCategory = new Map<string, MediaDoc[]>()
-      for (const item of shots) {
-        const key = (item.category ?? '').trim() || 'Photographs'
-        const bucket = byCategory.get(key)
-        if (bucket) bucket.push(item)
-        else byCategory.set(key, [item])
-      }
-
-      const galleryBlocks = [...byCategory.entries()]
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([heading, group], index) => ({
-          blockType: 'gallery',
-          heading,
-          headingLevel: 'h2',
-          layout: 'grid',
-          perPage: '12',
-          background: index % 2 === 0 ? 'white' : 'sea',
-          ...(index === 0
-            ? { intro: richText([`Photographs from our ${entry.label} campus.`]) }
-            : {}),
-          images: group.map(gallery),
-        }))
-
-      await payload.update({
-        collection: 'pages',
-        id: page.id,
-        data: { layout: [...kept, ...galleryBlocks] } as never,
-        overrideAccess: true,
-      })
-      payload.logger.info(
-        `${entry.label} campus page — ${shots.length} photograph(s) in ${galleryBlocks.length} group(s).`,
-      )
-    }
-  }
 
   if (heldBack > 0) {
     payload.logger.warn(
       `${heldBack} photograph(s) were left out: either a student is recognisable and no permission record exists, or the image has been withdrawn. They stay in the media library. Complete the permission record and re-run this to include them.`,
+    )
+  }
+
+  if (setAside > 0) {
+    payload.logger.info(
+      `${setAside} picture(s) are marked as page furniture rather than gallery photographs — posters, notices and video thumbnails — and were skipped on purpose.`,
     )
   }
 

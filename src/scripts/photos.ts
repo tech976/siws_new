@@ -103,6 +103,7 @@ const COLUMNS = [
   'section',
   'campus',
   'category',
+  'in_gallery',
   'alt',
   'caption',
   'credit',
@@ -336,6 +337,7 @@ const scan = async () => {
   console.log('                     (leave blank to share the photo across all sections)')
   console.log('  campus             wadala | matunga (Primary only; blank otherwise)')
   console.log('  category           the group it appears under, e.g. Festivals, Sports')
+  console.log('  in_gallery         no to keep it out of the photo gallery (posters, thumbnails)')
   console.log('  alt         REQ    what is in the picture, for someone who cannot see it')
   console.log('  caption            optional line shown under the photo')
   console.log('  credit             photographer, if one should be named')
@@ -455,6 +457,9 @@ const importPhotos = async () => {
     const data: Record<string, unknown> = {
       alt: record.alt,
       category: record.category || undefined,
+      // Blank means yes: the column was added later and every existing
+      // manifest leaves it empty.
+      showInGallery: !/^(no|false|n)$/i.test(record.in_gallery.trim()),
       campus: record.campus || undefined,
       caption: record.caption || undefined,
       credit: record.credit || undefined,

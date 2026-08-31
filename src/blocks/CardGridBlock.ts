@@ -55,6 +55,21 @@ export const CardGridBlock: Block = {
           admin: { description: 'Optional illustration or icon.' },
         },
         {
+          name: 'fit',
+          type: 'select',
+          defaultValue: 'crop',
+          label: 'How to show the picture',
+          options: [
+            { label: 'Fill the frame (crops top and bottom)', value: 'crop' },
+            { label: 'Show the whole picture', value: 'whole' },
+          ],
+          admin: {
+            description:
+              'Cards crop to a matching shape so a row of them lines up. Choose “Show the whole picture” for a poster or a notice, where the cropped-off edges are the part that tells you what it is.',
+            condition: (_data, siblingData) => Boolean(siblingData?.image),
+          },
+        },
+        {
           name: 'description',
           type: 'textarea',
           maxLength: 320,

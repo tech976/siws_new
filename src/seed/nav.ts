@@ -75,7 +75,7 @@ const PORTAL: Entry[] = [
     slug: 'about',
     label: 'About SIWS',
     /*
-     * Two entries, plus the "About SIWS overview" link the drop-down adds to
+     * Three entries, plus the "About SIWS overview" link the drop-down adds to
      * its own parent.
      *
      * Leadership and Facilities & Campus came off at SIWS's request: both are
@@ -84,10 +84,17 @@ const PORTAL: Entry[] = [
      * nothing. Both pages stay published at their own addresses, so anything
      * already linking to one still works — putting either back is a line here
      * and a re-run of this script.
+     *
+     * The Gallery is the exception to that reasoning, and the reason it is
+     * here: it is not a placeholder. It is thirty-six photographs of all four
+     * schools, and until this line existed the portal's authoritative template
+     * took it back OUT of the menu on every run — the page was published and
+     * reachable only by typing the address.
      */
     children: [
       { slug: 'history', label: 'Our History' },
       { slug: 'vision-mission', label: 'Vision & Mission' },
+      { slug: 'gallery', label: 'Gallery' },
     ],
   },
   // Top level and no drop-down: the scholarships page is written and is the
@@ -173,9 +180,123 @@ const UNIT_OMIT: Record<string, string[]> = {
   // Kindergarten also drops Rules & Uniform (2026-08-25), leaving Academics as
   // its overview and Our Teachers. Primary and Secondary keep it: only the
   // Kindergarten section asked for it off.
-  kindergarten: ['annual-calendar', 'school-rules'],
+  /*
+   * FAQ comes off because Admissions FAQ answers the same questions and is
+   * where a parent goes looking for them — two FAQs in one menu is a choice
+   * the visitor has to make before they can read either.
+   *
+   * Student Wall comes off because it is still the placeholder page; Student
+   * Life keeps Transport and gains the Campus Gallery below.
+   */
+  kindergarten: ['annual-calendar', 'school-rules', 'faq', 'student-wall'],
   primary: ['annual-calendar'],
   secondary: ['annual-calendar'],
+  /*
+   * Junior College drops four more, at SIWS's request (2026-08-29).
+   *
+   * Our Teachers, because the roster has not been supplied — a teachers page
+   * with no teachers on it is worse than no entry. Annual Calendar and Rules &
+   * Uniform, because neither has been written and the section does not want
+   * them promised. All three were TOP-LEVEL items rather than tucked inside
+   * Academics: that page is still a draft, and the menu promotes a child whose
+   * parent is missing rather than hiding it, so three placeholders were
+   * standing in the top row and wrapping it onto a second line.
+   *
+   * Academics itself is not listed here. It is a draft, so it never reaches
+   * the menu; if somebody writes it, it should appear.
+   */
+  'junior-college': ['teachers', 'annual-calendar', 'school-rules', 'achievements'],
+}
+
+/**
+ * Items ONE unit has and the others do not, and labels one unit overrides.
+ *
+ * The mirror of `UNIT_OMIT`. Until now every section carried the same menu
+ * minus whatever it had dropped, so there was a way to take an item away and
+ * no way to give one. Primary has split its Updates drop-down into News and
+ * Events; the other three still run a single "News & Events" page, and
+ * creating an empty Events page for each of them would put three placeholder
+ * pages in three menus nobody asked to change.
+ */
+const UNIT_EXTRA: Record<
+  string,
+  {
+    /** The drop-down to add to, or null for a top-level entry of its own. */
+    parent: string | null
+    /** Place it after this slug; omitted, it goes last (or first at the top level). */
+    after?: string
+    item: Entry
+  }[]
+> = {
+  primary: [{ parent: 'updates', after: 'news', item: { slug: 'events', label: 'Events' } }],
+  /*
+   * JUNIOR COLLEGE'S FRONT PAGE IS ITS ABOUT PAGE.
+   *
+   * The section has no written About page — the one in the database is still a
+   * draft placeholder — but it does not need one: everything an About page
+   * would carry is already on the front page, which opens with "About South
+   * Indians' Welfare Society", the legacy figures and how admission works.
+   *
+   * So the menu names it rather than duplicating it. `slug: 'home'` resolves
+   * to `/junior-college` rather than `/junior-college/home`, which is a 404 —
+   * see the href builder in `lib/site.ts`.
+   */
+  'junior-college': [{ parent: null, item: { slug: 'home', label: 'About' } }],
+}
+
+/**
+ * Pages that appear in a SECOND drop-down as well as their own.
+ *
+ * `{ slug, under }` — the page keeps its place in the tree above and is
+ * repeated beneath `under`. This writes `navMirrorParent`; the menu builder
+ * in `site.ts` reads it. See the note on the field for why it exists at all
+ * and why it should stay rare.
+ */
+const UNIT_MIRROR: Record<string, { slug: string; under: string }[]> = {
+  // The Campus Gallery is a record of the place (About) and it is what school
+  // life looks like (Student Life). SIWS asked for it in both.
+  kindergarten: [{ slug: 'gallery', under: 'student-life' }],
+}
+
+/**
+ * Pages a section wants GONE, not merely hidden — by unit slug.
+ *
+ * `UNIT_OMIT` above takes an entry out of the drop-down and deliberately
+ * leaves the page published: it is still reachable at its own address and
+ * still in the quick-links panel, because "not in the menu" and "not part of
+ * the site" are different decisions.
+ *
+ * This list is the second decision. Every page named here is unpublished, so
+ * its address 404s and it drops out of quick links — but the document itself
+ * is untouched in the admin panel, so nothing anybody wrote is lost and
+ * publishing it again is one click. Removing the name from this list and
+ * re-running puts it back.
+ *
+ * ONLY for pages that are still the "content to come" placeholder. A page with
+ * words on it should not be in here; take it out of the menu instead.
+ */
+const UNIT_UNPUBLISH: Record<string, string[]> = {
+  /*
+   * Junior College, at SIWS's request (2026-08-29). The teachers roster has
+   * not been supplied, and neither the annual calendar nor the rules have been
+   * written — so all three were serving a page that said only that content was
+   * coming, and the quick-links panel was still offering the calendar.
+   */
+  'junior-college': ['teachers', 'annual-calendar', 'school-rules', 'achievements'],
+}
+
+const UNIT_RELABEL: Record<string, Record<string, string>> = {
+  // With Events beside it, "News & Events" would name both of them.
+  primary: { news: 'News' },
+  /*
+   * The front page reads "About" in the menu, not its own title.
+   *
+   * A label lives on the PAGE rather than in the template above — see the
+   * note beside the relabel loop — so an entry added by `UNIT_EXTRA` needs a
+   * line here as well, or the menu falls back to the page title and the first
+   * item reads "SIWS Junior College, Wadala".
+   */
+  'junior-college': { home: 'About' },
 }
 
 /*
@@ -189,7 +310,6 @@ const UNIT_OMIT: Record<string, string[]> = {
  */
 const note = (_label: string, _srs?: string) =>
   'We are preparing this page. Please check back soon.'
-
 
 const run = async () => {
   const payload = await getPayload({ config })
@@ -218,17 +338,54 @@ const run = async () => {
      * slugs named in `omit` are removed.
      */
     authoritative = false,
+    extra: { parent: string | null; after?: string; item: Entry }[] = [],
+    relabel: Record<string, string> = {},
+    mirror: { slug: string; under: string }[] = [],
   ) => {
     const where = unitId === null ? { unit: { exists: false } } : { unit: { equals: unitId } }
 
     // Filtered at both levels, so an omitted slug can be a whole drop-down or a
     // single item inside one.
     const drop = new Set(omit)
-    const tree = template
+    const tree: Entry[] = template
       .filter((top) => !drop.has(top.slug))
       .map((top) =>
         top.children ? { ...top, children: top.children.filter((c) => !drop.has(c.slug)) } : top,
       )
+      /*
+       * Additions and renames go on AFTER the omissions, so a unit can drop an
+       * item its neighbours keep and add one they do not in the same pass.
+       */
+      .map((top) => {
+        const additions = extra.filter((e) => e.parent === top.slug)
+        if (additions.length === 0) return top
+        const children = [...(top.children ?? [])]
+        for (const add of additions) {
+          const at = add.after ? children.findIndex((c) => c.slug === add.after) : -1
+          if (at >= 0) children.splice(at + 1, 0, add.item)
+          else children.push(add.item)
+        }
+        return { ...top, children }
+      })
+      .map((top) => {
+        const rename = (e: Entry): Entry =>
+          relabel[e.slug] ? { ...e, label: relabel[e.slug]! } : e
+        const renamed = rename(top)
+        return renamed.children ? { ...renamed, children: renamed.children.map(rename) } : renamed
+      })
+
+    /*
+     * Top-level additions, after the drop-downs have been assembled so that
+     * `after` can name any entry the tree ended up with. With no `after` the
+     * entry goes FIRST — a section adding a top-level item is almost always
+     * adding the thing it wants read first, which is what Junior College is
+     * doing with About.
+     */
+    for (const add of extra.filter((e) => e.parent === null)) {
+      const at = add.after ? tree.findIndex((t) => t.slug === add.after) : -1
+      if (at >= 0) tree.splice(at + 1, 0, add.item)
+      else tree.unshift(add.item)
+    }
 
     const { docs: existing } = await payload.find({
       collection: 'pages',
@@ -239,6 +396,26 @@ const run = async () => {
       overrideAccess: true,
     })
     const idBySlug = new Map(existing.map((page) => [page.slug, page.id]))
+
+    /*
+     * A relabel has to be written to the PAGE, not just held in the template.
+     *
+     * The placement below moves pages — it sets show_in_nav, nav_order and
+     * nav_parent_id and nothing else — so the words a visitor reads in the
+     * menu are the page's own navLabel. A label changed only in the template
+     * here would rename nothing, and did: Primary kept reading "News & Events"
+     * beside its new Events entry.
+     */
+    for (const [slug, label] of Object.entries(relabel)) {
+      const id = idBySlug.get(slug)
+      if (!id) continue
+      await payload.update({
+        collection: 'pages',
+        id,
+        data: { navLabel: label } as never,
+        overrideAccess: true,
+      })
+    }
 
     /** Creates the page as an unpublished draft if it is not there yet. */
     const ensure = async (entry: Entry) => {
@@ -274,6 +451,38 @@ const run = async () => {
         await setNav(childId, order, topId)
         placed += 1
       }
+    }
+
+    /*
+     * The second placements, written straight to the column for the same
+     * reason `setNav` is: `payload.update` would merge, and a page whose
+     * mirror is being CLEARED needs the column set to null, which a merge
+     * cannot express.
+     *
+     * Cleared for every page in this scope first, then set for the few that
+     * want it — otherwise a mirror removed from the config above would stay in
+     * the menu for ever, which is the same trap `clearNav` exists to avoid.
+     */
+    await pool.query(
+      'UPDATE pages SET nav_mirror_parent_id = NULL WHERE ' +
+        (unitId === null ? 'unit_id IS NULL' : 'unit_id = $1'),
+      unitId === null ? [] : [unitId],
+    )
+
+    for (const entry of mirror) {
+      const childId = idBySlug.get(entry.slug)
+      const parentId = idBySlug.get(entry.under)
+      if (childId === undefined || parentId === undefined) {
+        payload.logger.warn(
+          `${scopeName}: cannot repeat "${entry.slug}" under "${entry.under}" — one of them is not in this menu.`,
+        )
+        continue
+      }
+      await pool.query('UPDATE pages SET nav_mirror_parent_id = $1 WHERE id = $2', [
+        parentId,
+        childId,
+      ])
+      payload.logger.info(`${scopeName}: "${entry.slug}" also appears under "${entry.under}".`)
     }
 
     /*
@@ -367,7 +576,41 @@ const run = async () => {
     pool.query('UPDATE pages SET show_in_nav = FALSE WHERE id = $1', [id])
 
   await applyScope('(portal)', null, PORTAL, [], true)
-  for (const unit of units) await applyScope(unit.slug, unit.id, UNIT, UNIT_OMIT[unit.slug] ?? [])
+  for (const unit of units) {
+    await applyScope(
+      unit.slug,
+      unit.id,
+      UNIT,
+      UNIT_OMIT[unit.slug] ?? [],
+      false,
+      UNIT_EXTRA[unit.slug] ?? [],
+      UNIT_RELABEL[unit.slug] ?? {},
+      UNIT_MIRROR[unit.slug] ?? [],
+    )
+
+    for (const slug of UNIT_UNPUBLISH[unit.slug] ?? []) {
+      const { docs } = await payload.find({
+        collection: 'pages',
+        where: { and: [{ slug: { equals: slug } }, { unit: { equals: unit.id } }] },
+        limit: 1,
+        depth: 0,
+        draft: true,
+        overrideAccess: true,
+      })
+      const page = docs[0]
+      if (!page || page._status !== 'published') continue
+
+      await payload.update({
+        collection: 'pages',
+        id: page.id,
+        data: { _status: 'draft', showInNav: false } as never,
+        overrideAccess: true,
+      })
+      payload.logger.info(
+        `Unpublished ${unit.slug}/${slug} — the section has asked for it off the site until there is something to put on it.`,
+      )
+    }
+  }
 
   payload.logger.info(`Menu built — ${placed} items placed, ${created} placeholder pages created.`)
   payload.logger.warn(

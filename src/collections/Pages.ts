@@ -276,6 +276,32 @@ export const Pages: CollectionConfig = {
        * budget. The limit is enforced by the shape of the data rather than
        * left to editorial discipline.
        */
+      /**
+       * A SECOND place in the menu for a page that genuinely belongs in two.
+       *
+       * `navParent` is one relationship, so a page sits in one drop-down. That
+       * is right almost always — the same destination in two menus usually
+       * means the menu has not been thought about. The Kindergarten's Campus
+       * Gallery is the exception it was added for: it is a record of the place,
+       * which is About, and it is what school life looks like, which is Student
+       * Life, and a parent looking for it will look in whichever of those they
+       * happen to think of first.
+       *
+       * The page still has ONE home — `navParent` — and this only adds a
+       * second way in. Nothing else about the page changes.
+       */
+      name: 'navMirrorParent',
+      type: 'relationship',
+      relationTo: 'pages',
+      label: 'Also show under',
+      admin: {
+        position: 'sidebar',
+        description:
+          'Optional, and rarely wanted. Repeats this page in a second drop-down as well as its own. Use only where a page truly belongs in both.',
+        condition: (data) => Boolean(data?.showInNav),
+      },
+    },
+    {
       name: 'navParent',
       type: 'relationship',
       relationTo: 'pages',

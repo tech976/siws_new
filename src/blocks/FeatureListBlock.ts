@@ -36,6 +36,10 @@ export const FEATURE_ICON_OPTIONS = [
   { label: 'Health and first aid', value: 'health' },
   { label: 'School bus', value: 'transport' },
   { label: 'Care and wellbeing', value: 'care' },
+  { label: 'Trophy — a top result', value: 'trophy' },
+  { label: 'Medal — a strong result', value: 'medal' },
+  { label: 'Rosette — merit', value: 'merit' },
+  { label: 'Badge — a pass', value: 'pass' },
 ]
 
 /**

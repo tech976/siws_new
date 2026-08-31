@@ -54,6 +54,7 @@ export const MediaTextBlock: Block = {
             { label: 'Square', value: 'square' },
             { label: 'Circle', value: 'circle' },
             { label: 'Upright (never cropped)', value: 'portrait' },
+            { label: 'Document — shown whole, no tint', value: 'document' },
           ],
           admin: { width: '50%' },
         },

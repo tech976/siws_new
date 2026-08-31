@@ -9,6 +9,8 @@ import { DividerBlock } from './DividerBlock'
 import { FacultyBlock } from './FacultyBlock'
 import { FeatureListBlock } from './FeatureListBlock'
 import { GalleryBlock } from './GalleryBlock'
+import { PhotoLibraryBlock } from './PhotoLibraryBlock'
+import { VideoGalleryBlock } from './VideoGalleryBlock'
 import { HeroBlock } from './HeroBlock'
 import { HeroCarouselBlock } from './HeroCarouselBlock'
 import { HeroEnquiryBlock } from './HeroEnquiryBlock'
@@ -43,6 +45,8 @@ export const contentBlocks: Block[] = [
   FeatureListBlock,
   FacultyBlock,
   GalleryBlock,
+  VideoGalleryBlock,
+  PhotoLibraryBlock,
   DividerBlock,
   MapBlock,
   AccordionBlock,
@@ -69,6 +73,8 @@ export {
   ProgramCardsBlock,
   FeatureListBlock,
   GalleryBlock,
+  VideoGalleryBlock,
+  PhotoLibraryBlock,
   HeroBlock,
   HeroEnquiryBlock,
   MapBlock,

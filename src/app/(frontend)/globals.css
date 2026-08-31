@@ -291,6 +291,24 @@
   .siws-prose.siws-centre > * {
     text-align: center;
     hyphens: manual;
+    /*
+     * BALANCED LINES, not merely un-orphaned ones.
+     *
+     * The base rule gives every paragraph `text-wrap: pretty`, which pulls a
+     * lone last word back onto the line above and is the right default for
+     * ranged-left body copy. Centred text needs more than that: `pretty`
+     * still fills each line to the measure and drops whatever is left onto
+     * the last one, so a three-line introduction came out full, full, and
+     * then "stays with them." floating alone under the middle of it. Ragged
+     * lengths are invisible when every line starts at the same left edge and
+     * unmissable when they are centred on each other.
+     *
+     * `balance` asks the browser to even the lines out instead, so a short
+     * centred paragraph breaks where it reads rather than where it runs out
+     * of room. Browsers cap it at a handful of lines, which is exactly the
+     * length this is for — a longer passage simply keeps `pretty`.
+     */
+    text-wrap: balance;
   }
 
   /*
@@ -675,5 +693,200 @@
 
   .siws-carousel > div > ul[aria-hidden='true'] {
     display: none;
+  }
+}
+
+/*
+  THE FIRST SECTION SITS CLOSER TO THE PAGE HEADING THAN TO ANYTHING ELSE.
+
+  A page whose title and standfirst are printed by the route, rather than by a
+  banner block, ends up with the header's own spacing AND the first section's
+  full 80px of top padding stacked on top of each other. That put 88px between
+  "Recognition earned by our pupils…" and the heading of the section it
+  introduces — further apart than the heading is from its own photographs,
+  which reads as two unrelated pages sharing a scroll.
+
+  Only the FIRST section, and only after a header: `header + section` cannot
+  match anywhere else, because the route prints at most one and always before
+  the blocks. Every other section keeps the standard rhythm.
+
+  Deliberately unlayered. Tailwind's `sm:py-20` lives in its utilities layer,
+  and an unlayered rule beats a layered one whatever the specificity — the
+  same mechanism `.siws-prose` already relies on at the top of this file.
+*/
+main > header + section {
+  padding-top: 1.5rem;
+}
+
+@media (width >= 40rem) {
+  main > header + section {
+    padding-top: 2rem;
+  }
+}
+
+/*
+  UNLESS THAT FIRST SECTION IS COLOURED, in which case it needs the gap back.
+
+  Closing the space works because a white section shares the header's own
+  ground: there is no edge, so the standfirst and the first heading read as one
+  column of type. A coloured section draws a hard horizontal edge instead, and
+  with the padding closed that edge landed about 19px under the standfirst —
+  near enough to read as a banner dropped on top of the heading rather than as
+  the next thing on the page.
+
+  So the coloured case gets white space ABOVE the edge instead of padding
+  inside it: the band keeps its own generous interior, and the page heading
+  keeps room to be a page heading. `data-ground` is set by `Section`, and by
+  the key-figures band, which paints its own.
+*/
+main > header + section[data-ground]:not([data-ground='white']) {
+  padding-top: 0;
+  margin-top: 1.75rem;
+}
+
+@media (width >= 40rem) {
+  main > header + section[data-ground]:not([data-ground='white']) {
+    margin-top: 2.5rem;
+  }
+}
+
+/*
+  TWO ROWS OF QUOTES DRIFTING PAST EACH OTHER.
+
+  CSS, not JavaScript. The row is a flex track holding the quotes twice over,
+  translated from 0 to -50% — at which point the second copy sits exactly where
+  the first began, so the loop has no seam and nothing has to be measured at
+  runtime. The second row runs the same animation backwards, which is what
+  makes the pair read as movement rather than as a conveyor.
+
+  It pauses on hover and on focus-within: a visitor who has reached for a quote
+  with the pointer, or tabbed into one, has said they want to read it.
+
+  WCAG 2.1 SC 2.2.2 asks for a way to stop motion that starts automatically,
+  and SC 2.3.3 for it not to start at all where the visitor has asked their
+  system for less. Reduced motion therefore stops it dead AND hands the row
+  back its own scrollbar, so the quotes past the fold are still reachable —
+  animation removed without the content going with it. The duplicate copy is
+  hidden there too, since nothing is looping any more.
+*/
+.siws-marquee {
+  overflow: hidden;
+  /* Fades the two ends so quotes enter and leave rather than being clipped. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6rem, #000 calc(100% - 6rem), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 6rem, #000 calc(100% - 6rem), transparent);
+}
+
+.siws-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: siws-marquee 70s linear infinite;
+}
+
+.siws-marquee-track[data-direction='right'] {
+  animation-direction: reverse;
+}
+
+.siws-marquee:hover .siws-marquee-track,
+.siws-marquee:focus-within .siws-marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes siws-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /*
+   * IT BECOMES A GRID, NOT A SCROLLER.
+   *
+   * The first version of this stopped the animation and handed each row its
+   * own `overflow-x: auto`, on the reasoning that the quotes past the fold had
+   * to stay reachable somehow. They did — behind two grey scrollbars stacked
+   * down the section, which is a worse thing to look at than the problem it
+   * solved, and which nobody with animations switched off had asked for.
+   *
+   * A wall of quotes has no reason to be a row when it is not moving. Every
+   * card is on the page at once, wrapped, with nothing to drag: no motion, no
+   * scrollbars, and nothing hidden.
+   */
+  .siws-marquee {
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .siws-marquee-track {
+    display: block;
+    width: auto;
+    animation: none;
+  }
+
+  /* The duplicate copy exists only to make the loop seamless. */
+  .siws-marquee-track > ul[aria-hidden='true'] {
+    display: none;
+  }
+
+  .siws-marquee-track > ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    padding-right: 0;
+  }
+
+  /*
+   * The card is a fixed width on the moving track, which is what keeps the
+   * loop measurable. In the grid it takes its column instead. More specific
+   * than the width utility on the element, and unlayered, so it wins.
+   */
+  .siws-marquee-track > ul > li {
+    width: auto;
+  }
+}
+
+/*
+  THE ANSWER SLIDES OPEN INSTEAD OF APPEARING.
+
+  `<details>` has always snapped: the browser shows and hides its content, and
+  there is nothing in between to transition. The usual workaround is to throw
+  the element away and rebuild the whole disclosure in JavaScript — which means
+  reimplementing the keyboard handling, the ARIA and the mutual exclusivity
+  that `<details name>` gives for nothing, and losing all of it for anybody
+  whose JavaScript has not arrived.
+
+  `::details-content` is that gap, addressable at last. `interpolate-size`
+  lets `block-size` animate to `auto`, which is what makes the panel open to
+  however tall its answer happens to be rather than to a guessed height, and
+  `content-visibility` is transitioned with `allow-discrete` so the content
+  stays rendered for the length of the close instead of vanishing on frame one.
+
+  Behind `@supports`, so a browser without it keeps exactly the behaviour it
+  has today. Nothing is worse anywhere, and it is better where it can be.
+*/
+@supports (interpolate-size: allow-keywords) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+
+  .siws-accordion details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      content-visibility 320ms allow-discrete;
+  }
+
+  .siws-accordion details[open]::details-content {
+    block-size: auto;
+  }
+}
+
+/* SC 2.3.3 — no sliding for anyone who has asked their system for less. */
+@media (prefers-reduced-motion: reduce) {
+  .siws-accordion details::details-content {
+    transition: none;
   }
 }

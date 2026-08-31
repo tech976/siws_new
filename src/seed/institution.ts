@@ -283,6 +283,60 @@ const main = async () => {
     })),
   })
 
+  /*
+   * The portal's own line for each school, keyed by slug.
+   *
+   * Each unit already carries a tagline and a thirty-word description, both
+   * written for that school's own site. Four descriptions side by side is a
+   * hundred and twenty words of near-identical prose, and every one of them
+   * says "Maharashtra State Board" — so on this page the boards are tags and
+   * the sentence says what the stage is FOR instead.
+   */
+  const STAGE_COPY: Record<string, { gradeRange: string; blurb: string; tags: string[] }> = {
+    kindergarten: {
+      gradeRange: 'Jr. KG – Sr. KG',
+      blurb: 'A nurturing start to school life.',
+      tags: ['Safe learning', 'Value-based education'],
+    },
+    primary: {
+      gradeRange: 'Grades 1–4',
+      blurb: 'Building confident, curious learners.',
+      tags: ['Maharashtra State Board', 'NEP 2020'],
+    },
+    secondary: {
+      gradeRange: 'Standards V–X',
+      blurb: 'Learning with purpose and capability.',
+      tags: ['Maharashtra State Board', 'NEP 2020'],
+    },
+    'junior-college': {
+      gradeRange: 'Standards XI–XII',
+      blurb: 'Choosing the right path with confidence.',
+      tags: ['Streams', 'Career guidance'],
+    },
+  }
+
+  const { docs: allUnits } = await payload.find({
+    collection: 'units',
+    limit: 20,
+    depth: 0,
+    overrideAccess: true,
+  })
+
+  const stages = (allUnits as { id: number; slug: string }[])
+    .filter((unit) => STAGE_COPY[unit.slug])
+    .map((unit) => ({
+      unit: unit.id,
+      gradeRange: STAGE_COPY[unit.slug]!.gradeRange,
+      blurb: STAGE_COPY[unit.slug]!.blurb,
+      tags: STAGE_COPY[unit.slug]!.tags.map((label) => ({ label })),
+    }))
+
+  if (stages.length < Object.keys(STAGE_COPY).length) {
+    payload.logger.warn(
+      `Our Schools: short copy is written for ${Object.keys(STAGE_COPY).length} schools but only ${stages.length} were found. Any school without an entry falls back to its own tagline.`,
+    )
+  }
+
   const schoolsSection = (intro: string) => ({
     blockType: 'unitLinks',
     heading: 'Our Schools',
@@ -290,6 +344,7 @@ const main = async () => {
     headingLevel: 'h2',
     background: 'white',
     intro: richText([intro]),
+    stages,
   })
 
   // -------------------------------------------------------------------- ABOUT

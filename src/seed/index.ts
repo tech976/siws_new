@@ -35,7 +35,13 @@ const UNITS: UnitSeed[] = [
     slug: 'kindergarten',
     name: 'SIWS Kindergarten',
     shortName: 'Kindergarten',
-    tagline: 'SSC Board | Safe | Value-Based Education',
+    /*
+     * The section’s own range, not a board it does not sit. The S.S.C. is
+     * the Standard X examination, eleven years away from a Kindergarten
+     * child, and this line is printed under the school name in the header of
+     * every page of the site.
+     */
+    tagline: 'Jr. KG and Sr. KG | Safe | Value-Based Education',
     description:
       'A safe, nurturing and child-friendly start to school life, with a structured early-learning approach for Jr. KG and Sr. KG.',
     accent: 'accent',

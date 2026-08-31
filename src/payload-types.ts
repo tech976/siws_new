@@ -240,6 +240,14 @@ export interface Media {
    */
   category?: string | null;
   /**
+   * Turn this off for posters, notices and video thumbnails — anything that is part of a page rather than a photograph of the school.
+   */
+  showInGallery?: boolean | null;
+  /**
+   * Turn this on for a certificate, a notice or an invitation — anything with writing at its edges. It is shown whole on a plain ground instead of being cropped to fit its tile.
+   */
+  showWhole?: boolean | null;
+  /**
    * Tick this if a student can be identified. A parental permission record is then required before this picture can go on the website.
    */
   depictsChildren?: boolean | null;
@@ -568,6 +576,8 @@ export interface Page {
         | FeatureListBlock
         | FacultyBlock
         | GalleryBlock
+        | VideoGalleryBlock
+        | PhotoLibraryBlock
         | DividerBlock
         | MapBlock
         | AccordionBlock
@@ -617,6 +627,10 @@ export interface Page {
    * Lower numbers appear first in the menu.
    */
   navOrder?: number | null;
+  /**
+   * Optional, and rarely wanted. Repeats this page in a second drop-down as well as its own. Use only where a page truly belongs in both.
+   */
+  navMirrorParent?: (number | null) | Page;
   /**
    * Optional. Puts this page in the drop-down beneath another menu item. Leave blank to make it a top-level item.
    */
@@ -866,7 +880,7 @@ export interface MediaTextBlock {
    * On phones the image always appears above the text, whichever side is chosen.
    */
   imagePosition?: ('left' | 'right' | 'above' | 'figure') | null;
-  imageShape?: ('rounded' | 'square' | 'circle' | 'portrait') | null;
+  imageShape?: ('rounded' | 'square' | 'circle' | 'portrait' | 'document') | null;
   /**
    * Optional. Add one button beneath the text.
    */
@@ -952,6 +966,10 @@ export interface CardGridBlock {
          * Optional illustration or icon.
          */
         image?: (number | null) | Media;
+        /**
+         * Cards crop to a matching shape so a row of them lines up. Choose “Show the whole picture” for a poster or a notice, where the cropped-off edges are the part that tells you what it is.
+         */
+        fit?: ('crop' | 'whole') | null;
         /**
          * Keep cards to a similar length — uneven text makes the grid look ragged.
          */
@@ -1197,6 +1215,10 @@ export interface FeatureListBlock {
               | 'health'
               | 'transport'
               | 'care'
+              | 'trophy'
+              | 'medal'
+              | 'merit'
+              | 'pass'
             )
           | null;
         /**
@@ -1277,6 +1299,10 @@ export interface FacultyBlock {
    * Choose a campus to list only its teachers. Most schools can leave this on “Every campus”.
    */
   campus?: ('all' | 'wadala' | 'matunga') | null;
+  /**
+   * Grouping puts each head teacher at the top of her own column with her teachers beneath, side by side. It reads the groups off the roster itself and ignores the campus setting above.
+   */
+  layout?: ('grid' | 'teams') | null;
   showQualifications?: boolean | null;
   /**
    * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
@@ -1354,6 +1380,122 @@ export interface GalleryBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'gallery';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VideoGalleryBlock".
+ */
+export interface VideoGalleryBlock {
+  /**
+   * Optional.
+   */
+  heading?: string | null;
+  videos?:
+    | {
+        title: string;
+        /**
+         * Paste the sharing link, e.g. https://drive.google.com/file/d/FILE_ID/view. The file must be shared so that anyone with the link can view it, or visitors will see a sign-in page.
+         */
+        driveUrl: string;
+        /**
+         * The picture shown before anyone presses play. A frame from the video itself works best.
+         */
+        poster: number | Media;
+        /**
+         * Optional. One or two lines under the title.
+         */
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
+  /**
+   * Type a word from the heading to show it in SIWS accent.
+   */
+  accentWord?: string | null;
+  /**
+   * Text colour adjusts automatically so it stays readable.
+   */
+  background?: ('white' | 'sea' | 'tint' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'videoGallery';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PhotoLibraryBlock".
+ */
+export interface PhotoLibraryBlock {
+  /**
+   * Optional.
+   */
+  heading?: string | null;
+  /**
+   * A line or two under the title, above the filter tabs.
+   */
+  intro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * The first tab, which clears the filter.
+   */
+  allLabel?: string | null;
+  /**
+   * Each one becomes a filter tab. A category with no photographs in it is not shown.
+   */
+  groups?:
+    | {
+        /**
+         * What the tab says, e.g. “In the classroom”.
+         */
+        label: string;
+        images?:
+          | {
+              image: number | Media;
+              /**
+               * Optional. Leave blank to use the caption already saved with the picture.
+               */
+              caption?: string | null;
+              /**
+               * A marquee photograph — a prize-giving, an annual day — takes a double-width, double-height tile. Use it sparingly: if everything is a feature, nothing is.
+               */
+              feature?: boolean | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
+  /**
+   * Type a word from the heading to show it in SIWS accent.
+   */
+  accentWord?: string | null;
+  /**
+   * Text colour adjusts automatically so it stays readable.
+   */
+  background?: ('white' | 'sea' | 'tint' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'photoLibrary';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1636,6 +1778,14 @@ export interface TestimonialsBlock {
    * Optional.
    */
   heading?: string | null;
+  /**
+   * The drifting rows need at least four quotes to read as movement rather than as a glitch; below that they are shown as a grid whatever this says.
+   */
+  layout?: ('grid' | 'marquee' | 'marquee-single') | null;
+  /**
+   * Turn off where every quote comes from the same kind of person and the heading already says so. Who said it is still recorded either way.
+   */
+  showAttribution?: boolean | null;
   quotes?:
     | {
         /**
@@ -1725,7 +1875,7 @@ export interface UnitLinksBlock {
    */
   heading?: string | null;
   /**
-   * Optional line above the cards.
+   * Optional line above the stages.
    */
   intro?: {
     root: {
@@ -1742,6 +1892,35 @@ export interface UnitLinksBlock {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Short copy for each school, for this page only. Anything left out falls back to what the school itself says.
+   */
+  stages?:
+    | {
+        /**
+         * Which school this line belongs to.
+         */
+        unit: number | Unit;
+        /**
+         * e.g. “Jr. KG – Sr. KG”, “Grades 1–4”.
+         */
+        gradeRange?: string | null;
+        /**
+         * ONE line. If it needs a second, it belongs on the school’s own site rather than here.
+         */
+        blurb?: string | null;
+        /**
+         * Two or three words each. Three is the most that reads.
+         */
+        tags?:
+          | {
+              label: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
    */
@@ -2222,6 +2401,8 @@ export interface PagesSelect<T extends boolean = true> {
         featureList?: T | FeatureListBlockSelect<T>;
         faculty?: T | FacultyBlockSelect<T>;
         gallery?: T | GalleryBlockSelect<T>;
+        videoGallery?: T | VideoGalleryBlockSelect<T>;
+        photoLibrary?: T | PhotoLibraryBlockSelect<T>;
         divider?: T | DividerBlockSelect<T>;
         map?: T | MapBlockSelect<T>;
         accordion?: T | AccordionBlockSelect<T>;
@@ -2243,6 +2424,7 @@ export interface PagesSelect<T extends boolean = true> {
   showInNav?: T;
   navLabel?: T;
   navOrder?: T;
+  navMirrorParent?: T;
   navParent?: T;
   reviewStatus?: T;
   reviewNote?: T;
@@ -2386,6 +2568,7 @@ export interface CardGridBlockSelect<T extends boolean = true> {
     | {
         title?: T;
         image?: T;
+        fit?: T;
         description?: T;
         cta?:
           | T
@@ -2505,6 +2688,7 @@ export interface FacultyBlockSelect<T extends boolean = true> {
   heading?: T;
   intro?: T;
   campus?: T;
+  layout?: T;
   showQualifications?: T;
   headingLevel?: T;
   accentWord?: T;
@@ -2528,6 +2712,55 @@ export interface GalleryBlockSelect<T extends boolean = true> {
       };
   perPage?: T;
   layout?: T;
+  headingLevel?: T;
+  accentWord?: T;
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VideoGalleryBlock_select".
+ */
+export interface VideoGalleryBlockSelect<T extends boolean = true> {
+  heading?: T;
+  videos?:
+    | T
+    | {
+        title?: T;
+        driveUrl?: T;
+        poster?: T;
+        description?: T;
+        id?: T;
+      };
+  headingLevel?: T;
+  accentWord?: T;
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PhotoLibraryBlock_select".
+ */
+export interface PhotoLibraryBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  allLabel?: T;
+  groups?:
+    | T
+    | {
+        label?: T;
+        images?:
+          | T
+          | {
+              image?: T;
+              caption?: T;
+              feature?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   headingLevel?: T;
   accentWord?: T;
   background?: T;
@@ -2668,6 +2901,8 @@ export interface LogoStripBlockSelect<T extends boolean = true> {
  */
 export interface TestimonialsBlockSelect<T extends boolean = true> {
   heading?: T;
+  layout?: T;
+  showAttribution?: T;
   quotes?:
     | T
     | {
@@ -2710,6 +2945,20 @@ export interface StatisticsBlockSelect<T extends boolean = true> {
 export interface UnitLinksBlockSelect<T extends boolean = true> {
   heading?: T;
   intro?: T;
+  stages?:
+    | T
+    | {
+        unit?: T;
+        gradeRange?: T;
+        blurb?: T;
+        tags?:
+          | T
+          | {
+              label?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   headingLevel?: T;
   accentWord?: T;
   background?: T;
@@ -2828,6 +3077,8 @@ export interface MediaSelect<T extends boolean = true> {
   unit?: T;
   campus?: T;
   category?: T;
+  showInGallery?: T;
+  showWhole?: T;
   depictsChildren?: T;
   parentalConsent?:
     | T

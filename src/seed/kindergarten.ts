@@ -91,6 +91,74 @@ const PLAY_BASED = [
   },
 ]
 
+/**
+ * Parent feedback for the Kindergarten section.
+ *
+ * SUPPLIED BY SIWS, WITH THE PARENTS' CONSENT, AND PUBLISHED WITHOUT NAMES.
+ *
+ * Attributed to "Parent" rather than to anybody in particular, at the school's
+ * instruction. That is the right way round for this: a parent's full name is
+ * their personal data (DPDPA 2023), and none of it is needed for the quote to
+ * mean something. What made the three testimonials this section deleted a
+ * problem was never that they had no name on them — it was that nobody had
+ * said them. These were said.
+ *
+ * The eleventh, with a name on it, is the one SIWS published on the home page
+ * and asked to keep attributed. It stays where it is.
+ */
+const KG_PARENT_QUOTES: { quote: string; attribution: string; detail?: string }[] = [
+  {
+    quote:
+      'SIWS provides a warm and welcoming environment where children feel comfortable, confident, and excited to learn every day.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'We love the balance between learning and play. Our child has become much more independent and enthusiastic about school.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'The teachers are caring and attentive, making sure every child gets the encouragement and support they need.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'SIWS has created a wonderful foundation for our child’s early years, with activities that make learning enjoyable and meaningful.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'What stands out to us is how much the school focuses on the overall development of the child, not just academics.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'Our child looks forward to going to school every morning. The friendly teachers and engaging classroom environment have made a big difference.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'We appreciate the safe, positive atmosphere at SIWS. It gives children the confidence to explore, ask questions, and express themselves.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'The kindergarten experience has been full of fun, creativity, and new experiences. We have seen our child grow in confidence since joining.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'The teachers make learning feel natural and enjoyable. Our child has developed a genuine curiosity and excitement about discovering new things.',
+    attribution: 'Parent',
+  },
+  {
+    quote:
+      'SIWS feels like a place where children are understood and encouraged to be themselves while building strong foundations for the years ahead.',
+    attribution: 'Parent',
+  },
+]
+
 const ACTIVITIES = [
   { title: 'Drawing and colouring' },
   { title: 'Finger, thumb and palm painting' },
@@ -159,6 +227,7 @@ const main = async () => {
   // Photographs uploaded by `npm run seed:media`.
   const img = {
     classroomActivity: await mediaByFilename(payload, 'kg-classroom-activity.jpg'),
+    activityTable: await mediaByFilename(payload, 'kg-activity-table.jpg'),
     classroomGroup: await mediaByFilename(payload, 'kg-classroom-group.jpg'),
     classroomSeated: await mediaByFilename(payload, 'kg-classroom-seated.jpg'),
     playArea: await mediaByFilename(payload, 'kg-play-area.jpg'),
@@ -323,10 +392,26 @@ const main = async () => {
       {
         blockType: 'heroEnquiry',
         title: 'Book a Free Campus Tour',
-        subtitle: 'SSC Board | Safe | Value-Based Education',
+        /*
+         * THE SECTION’S OWN RANGE, not a board it does not sit.
+         *
+         * This read "SSC Board | Safe | Value-Based Education". The S.S.C. is
+         * the Standard X examination — a Kindergarten child is eleven years
+         * away from it, and naming it here told a parent nothing about the two
+         * years they were actually enquiring about. Every other section states
+         * the range it teaches in this line: Primary says Grades 1 to 4 and
+         * Secondary says Standards V to X.
+         *
+         * The curriculum claim has not been dropped, only moved to where it is
+         * true: the trust points below still say "SSC / State Board
+         * curriculum", which is what the SIWS Group follows onward from
+         * Grade 1 and is the reason a family choosing a kindergarten here is
+         * choosing a school for the next twelve years.
+         */
+        subtitle: 'Jr. KG and Sr. KG | Safe | Value-Based Education',
         benefitsIntro: 'At SIWS, your child benefits from:',
         benefits: [
-          { text: 'Strong academic foundations (SSC Board)' },
+          { text: 'Strong academic foundations for the SSC / State Board years ahead' },
           { text: 'Structured early learning approach' },
           { text: 'Focus on discipline, values and confidence' },
           { text: 'Safe, nurturing and child-friendly campus' },
@@ -368,22 +453,42 @@ const main = async () => {
     ],
   })
 
+  /**
+   * A stand-in for a page relation whose id is not known yet.
+   *
+   * Resolved after every page has been seeded — see the second pass at the
+   * foot of this file. Written as a function rather than a bare object so a
+   * misspelt path is visible at the call site.
+   */
+  const LINK_TO = (path: string) => ({ __linkTo: path })
+
   const pages: SeedPage[] = [
     // ---------------------------------------------------------------- HOME
     {
       slug: 'home',
       title: 'SIWS Kindergarten, Wadala',
       metaDescription:
-        'Wadala’s most trusted kindergarten since 1934. SSC Board, safe and value-based early education for Jr. KG and Sr. KG. Admissions open for 2026–27.',
+        'Wadala’s most trusted kindergarten since 1934. Safe, value-based early education for Jr. KG and Sr. KG. Admissions open for 2026–27.',
       layout: [
         {
           blockType: 'hero',
           title: 'Wadala’s Most Trusted Kindergarten Since 1934',
           accentWord: 'Most Trusted',
-          eyebrow: 'SSC Board | Safe | Value-Based Education',
+          eyebrow: 'Jr. KG and Sr. KG | Safe | Value-Based Education',
+          /*
+           * A photograph behind the banner, which switches it from the flat
+           * brand panel to the washed variant Secondary and the portal use —
+           * the brand gradient runs dense at the left where the type sits and
+           * thins to the right so the room still reads.
+           *
+           * Omitted if the picture is not in the library, so the banner falls
+           * back to the flat panel rather than losing its gradient and the
+           * contrast that goes with it.
+           */
+          ...(img.activityTable ? { image: img.activityTable } : {}),
           // Plain string: the hero's `intro` is a textarea, not rich text.
           intro:
-            'Strong academic foundations on the SSC Board, a structured early-learning approach, and a safe, nurturing and child-friendly campus — with a focus on discipline, values and confidence.',
+            'Strong academic foundations for the SSC / State Board years ahead, a structured early-learning approach, and a safe, nurturing and child-friendly campus — with a focus on discipline, values and confidence.',
           links: [
             {
               link: {
@@ -816,7 +921,7 @@ const main = async () => {
           accentWord: 'Subjects',
           headingLevel: 'h2',
           marker: 'tick',
-          columns: '2',
+          columns: '2-centre',
           background: 'white',
           items: [
             { title: 'English' },
@@ -889,7 +994,7 @@ const main = async () => {
           accentWord: 'Activities',
           headingLevel: 'h2',
           marker: 'tick',
-          columns: '2',
+          columns: '2-centre',
           background: 'tint',
           items: ACTIVITIES,
         },
@@ -900,6 +1005,678 @@ const main = async () => {
           width: 'narrow',
           background: 'white',
           content: richText(['The academic year runs in two terms.']),
+        },
+      ],
+    },
+
+    // ------------------------------------------------------ PARENT FEEDBACK
+    /*
+     * Contact › Parent Feedback, which was the menu's own placeholder.
+     *
+     * The page is built for the drifting-rows layout — two rows of quotes
+     * passing each other in opposite directions, which is what `marquee` on
+     * the testimonials block does. It needs FOUR quotes before it drifts;
+     * below that it falls back to a grid, because two cards sliding past
+     * mostly empty track reads as a fault rather than as motion.
+     *
+     * SIWS HAS SUPPLIED ONE. It is here, and it is real. The rest of the list
+     * is empty on purpose: this section already deleted three invented
+     * "Parent" testimonials once — see the note on the home page's block — and
+     * writing sixteen more would be inventing what parents said about a real
+     * school, to other parents choosing one. Add real ones to PARENT_QUOTES
+     * below, or in the admin panel, and the rows start moving on their own.
+     */
+    {
+      slug: 'parent-feedback',
+      title: 'Parent feedback',
+      intro:
+        'What families tell us shapes how the section runs. If your child is with us, we would like to hear from you.',
+      showInNav: true,
+      navLabel: 'Parent Feedback',
+      navOrder: 82,
+      metaDescription:
+        'Send your feedback to the SIWS Kindergarten section, Wadala — and read what parents of our Jr. KG and Sr. KG children say.',
+      layout: [
+        ...(KG_PARENT_QUOTES.length > 0
+          ? [
+              {
+                blockType: 'testimonials',
+                heading: 'What parents say',
+                accentWord: 'parents',
+                headingLevel: 'h2',
+                background: 'white',
+                // Two rows drifting past each other, edges faded, paused on
+                // hover and on focus. Falls back to a grid under four quotes.
+                layout: 'marquee',
+                // "What parents say" above ten cards each signed "Parent" is
+                // the same word eleven times. Who said it is still recorded.
+                showAttribution: false,
+                quotes: KG_PARENT_QUOTES,
+              },
+            ]
+          : []),
+        {
+          blockType: 'featureList',
+          heading: 'How to send us your feedback',
+          accentWord: 'feedback',
+          headingLevel: 'h2',
+          marker: 'number',
+          columns: '1',
+          background: 'sea',
+          items: [
+            {
+              title: 'Speak to the class teacher first',
+              description:
+                'Anything about your own child — how they are settling, what they are finding hard, how the day is going — is answered fastest by the person who teaches them.',
+            },
+            {
+              title: 'Write in the school diary',
+              description:
+                'The diary goes home with your child every day and is the simplest line between the classroom and the kitchen table.',
+            },
+            {
+              title: 'Telephone the office on +91 98927 03893',
+              description:
+                'For anything the class teacher cannot settle, the office will arrange a time with the Head of Section.',
+            },
+            {
+              title: 'Or write to us through the enquiry form',
+              description:
+                'The form on the Contact page reaches the school directly, and somebody will come back to you.',
+            },
+          ],
+        },
+      ],
+    },
+
+    // -------------------------------------------------------- STUDENT LIFE
+    /*
+     * Student Life, which was a bare hero and nothing else.
+     *
+     * The section's day is short — two hours for Jr. KG, three for Sr. KG —
+     * so "student life" here is not clubs and societies. It is the shape of
+     * the day itself, and what happens inside it. That is what this page
+     * describes, and every part of it is already stated somewhere on this
+     * site: the timings from the admissions page, the activities from the
+     * academics page, the rooms from Facilities & Campus.
+     *
+     * The Student Wall came out of the menu — it is still the placeholder —
+     * so the two things this section really has to show a parent are the
+     * photographs and how a child gets here. Both are linked below.
+     */
+    {
+      slug: 'student-life',
+      title: 'Student Life',
+      intro:
+        'What a Kindergarten day actually looks like — a short day, built around play, with time to settle into it.',
+      showInNav: true,
+      navLabel: 'Student Life',
+      navOrder: 50,
+      metaDescription:
+        'A day in the SIWS Kindergarten section, Wadala — timings, activities, the play area and how children travel to school.',
+      layout: [
+        {
+          blockType: 'featureList',
+          heading: 'The shape of the day',
+          accentWord: 'the day',
+          headingLevel: 'h2',
+          marker: 'number',
+          columns: '1',
+          background: 'white',
+          items: [
+            {
+              title: 'A short day, on purpose',
+              description:
+                'Jr. KG runs from 11.00 a.m. to 1.00 p.m., Sr. KG from 2.00 p.m. to 5.00 p.m. Long enough to settle into a routine, short enough that a four-year-old is still enjoying it at the end.',
+            },
+            {
+              title: 'Learning at a table, together',
+              description:
+                'Children work in small groups at child-height tables rather than in rows, so a teacher is never more than a step away and children learn as much from each other as from the board.',
+            },
+            {
+              title: 'Time to move',
+              description:
+                'Dance, movement and sports in the play area break up the day. At this age sitting still is a skill being learned, not one to be assumed.',
+            },
+            {
+              title: 'Something made, most days',
+              description:
+                'Drawing, colouring and finger, thumb and palm painting — work that goes home and gets put on a fridge.',
+            },
+          ],
+        },
+        {
+          blockType: 'featureList',
+          heading: 'What the children do',
+          accentWord: 'children',
+          headingLevel: 'h2',
+          layout: 'compact',
+          marker: 'tick',
+          background: 'sea',
+          intro: richText([
+            'The activities that run through the Kindergarten year, alongside the academic work.',
+          ]),
+          items: [
+            { title: 'Festival celebrations', icon: 'activity' },
+            { title: 'Fancy dress', icon: 'activity' },
+            { title: 'Dance and movement', icon: 'music' },
+            { title: 'Sports', icon: 'sport' },
+            { title: 'Drawing and colouring', icon: 'activity' },
+            { title: 'Finger, thumb and palm painting', icon: 'activity' },
+          ],
+        },
+        {
+          blockType: 'cardGrid',
+          heading: 'More on school life',
+          accentWord: 'school life',
+          headingLevel: 'h2',
+          columns: '2',
+          background: 'white',
+          cards: [
+            {
+              title: 'Campus Gallery',
+              description:
+                'The classrooms, the play area and the children at work — photographed as they are.',
+              cta: [
+                {
+                  link: {
+                    label: 'See the photographs',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/gallery'),
+                  },
+                },
+              ],
+            },
+            {
+              title: 'Transport',
+              description: 'How children travel to and from the Wadala campus.',
+              cta: [
+                {
+                  link: {
+                    label: 'Transport details',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/transport'),
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+
+    // ------------------------------------------------------- ACHIEVEMENTS
+    /*
+     * What a Kindergarten "achievement" actually is.
+     *
+     * The other sections have prizes and results to show. This one does not,
+     * and should not pretend otherwise: at four and five, the achievement is
+     * the child holding a pencil properly, or joining in without being asked.
+     *
+     * So the page leads with the four things the section is actually working
+     * towards, each described in terms of what SIWS already says it teaches —
+     * the phonics and number work from the Academics page, the painting and
+     * dance from the activities list, the group tables from the facilities.
+     * Nothing here claims an outcome the school has not claimed.
+     */
+    {
+      slug: 'achievements',
+      title: 'Achievements',
+      intro:
+        'At this age the milestones matter more than the medals. These are the four things the Kindergarten years are building.',
+      showInNav: true,
+      navLabel: 'Achievements',
+      navOrder: 42,
+      metaDescription:
+        'What children work towards in the SIWS Kindergarten years — early literacy, number sense, motor skills and social confidence.',
+      layout: [
+        {
+          blockType: 'featureList',
+          heading: 'Milestones we build towards',
+          accentWord: 'Milestones',
+          headingLevel: 'h2',
+          // Cards: four pillars each carrying a short paragraph, which a tick
+          // list would run together into one block of prose.
+          layout: 'cards',
+          background: 'white',
+          items: [
+            {
+              title: 'Foundational literacy',
+              icon: 'library',
+              description:
+                'The alphabet and phonics in Jr. KG, then blending sounds into words and reading simple sentences by the end of Sr. KG.',
+            },
+            {
+              title: 'Early number sense',
+              icon: 'thinking',
+              description:
+                'Counting, number recognition and the first ideas of more and less, worked through objects and pictures before they are written down.',
+            },
+            {
+              title: 'Motor skills',
+              icon: 'activity',
+              description:
+                'Drawing, colouring and finger, thumb and palm painting for the small muscles; dance, movement and sports for the large ones.',
+            },
+            {
+              title: 'Social and emotional growth',
+              icon: 'care',
+              description:
+                'Sharing a table, taking a turn, joining a group and standing up in a fancy dress or a festival — the parts of school that are not on a worksheet.',
+            },
+          ],
+        },
+        {
+          blockType: 'featureList',
+          heading: 'How progress is shared',
+          accentWord: 'shared',
+          headingLevel: 'h2',
+          marker: 'number',
+          columns: '1',
+          background: 'sea',
+          items: [
+            {
+              title: 'Continuous observation, not examinations',
+              description:
+                'There are no examinations in the Kindergarten years. Teachers watch how a child is getting on day to day, which at this age tells them far more.',
+            },
+            {
+              title: 'Through the class teacher',
+              description:
+                'Anything about your own child — how they are settling, what they are finding hard — is answered fastest by the person who teaches them.',
+            },
+            {
+              title: 'In the school diary',
+              description:
+                'The diary goes home with your child and is the everyday line between the classroom and the kitchen table.',
+            },
+          ],
+        },
+        {
+          blockType: 'callToAction',
+          heading: 'Prizes and competitions',
+          accentWord: 'Prizes',
+          headingLevel: 'h2',
+          background: 'white',
+          body: richText([
+            'Kindergarten children take part in interschool competitions alongside the older sections. Photographs of those the section has won are on the SIWS gallery.',
+          ]),
+          links: [
+            {
+              link: {
+                label: 'See the SIWS gallery',
+                type: 'internal',
+                reference: LINK_TO('/gallery'),
+                appearance: 'primary',
+              },
+            },
+          ],
+        },
+      ],
+    },
+
+    // ------------------------------------------------- UPDATES, NEWS, PRIZES
+    /*
+     * Three pages the school will fill itself once the site is running.
+     *
+     * They were bare placeholders, and the honest problem with an empty
+     * "News & Events" is that there is no news yet — writing some would be
+     * inventing school events, which is not a thing to do on a school's own
+     * website. So each page carries EVERGREEN content instead: what the
+     * section marks every year, what it teaches, and where to hear from it.
+     * All of it is true on any date, none of it goes stale, and every item
+     * comes from somewhere SIWS has already told us about.
+     *
+     * When real news arrives it goes above these, and they still read.
+     */
+    {
+      slug: 'updates',
+      title: 'Updates',
+      intro:
+        'News, achievements and the documents you may need — the parts of the Kindergarten section that change through the year.',
+      showInNav: true,
+      navLabel: 'Updates',
+      navOrder: 40,
+      metaDescription:
+        'News, events, achievements and downloads from the SIWS Kindergarten section in Wadala.',
+      layout: [
+        {
+          blockType: 'cardGrid',
+          heading: 'Where to look',
+          accentWord: 'look',
+          headingLevel: 'h2',
+          columns: '3',
+          background: 'white',
+          cards: [
+            {
+              title: 'News & Events',
+              description:
+                'What the section marks through the year, and anything coming up.',
+              cta: [{ link: { label: 'See news and events', type: 'internal', reference: LINK_TO('/kindergarten/news') } }],
+            },
+            {
+              title: 'Achievements',
+              description:
+                'What the children are working towards, and what they have won.',
+              cta: [{ link: { label: 'See achievements', type: 'internal', reference: LINK_TO('/kindergarten/achievements') } }],
+            },
+            {
+              title: 'Download Centre',
+              description: 'Forms, circulars and the documents parents are asked for.',
+              cta: [{ link: { label: 'Go to downloads', type: 'internal', reference: LINK_TO('/kindergarten/download-centre') } }],
+            },
+          ],
+        },
+        {
+          blockType: 'callToAction',
+          heading: 'Hearing from us',
+          accentWord: 'us',
+          headingLevel: 'h2',
+          background: 'sea',
+          body: richText([
+            'Day-to-day messages reach parents through the class teacher and the school diary. For anything else, the office is on +91 98927 03893.',
+          ]),
+          links: [
+            {
+              link: {
+                label: 'Contact the school',
+                type: 'internal',
+                reference: LINK_TO('/kindergarten/contact'),
+                appearance: 'primary',
+              },
+            },
+          ],
+        },
+      ],
+    },
+
+    {
+      slug: 'news',
+      title: 'News & Events',
+      intro:
+        'The Kindergarten year has a shape to it. These are the things that come round every year — dated notices appear here as they are announced.',
+      showInNav: true,
+      navLabel: 'News & Events',
+      navOrder: 41,
+      metaDescription:
+        'Events and celebrations through the year at the SIWS Kindergarten section, Wadala.',
+      layout: [
+        {
+          blockType: 'featureList',
+          heading: 'What we mark through the year',
+          accentWord: 'through the year',
+          headingLevel: 'h2',
+          layout: 'compact',
+          marker: 'tick',
+          background: 'white',
+          intro: richText([
+            'Every one of these is part of the Kindergarten calendar. Dates are given to parents through the school diary.',
+          ]),
+          items: [
+            { title: 'Festival celebrations', icon: 'activity' },
+            { title: 'Fancy dress', icon: 'activity' },
+            { title: 'Dance and movement', icon: 'music' },
+            { title: 'Sports', icon: 'sport' },
+            { title: 'Drawing and colouring', icon: 'activity' },
+            { title: 'Finger, thumb and palm painting', icon: 'activity' },
+          ],
+        },
+        {
+          blockType: 'callToAction',
+          heading: 'Seeing it for yourself',
+          accentWord: 'yourself',
+          headingLevel: 'h2',
+          background: 'sea',
+          body: richText([
+            'Photographs from the celebrations, the classrooms and the play area are gathered on the Campus Gallery.',
+          ]),
+          links: [
+            {
+              link: {
+                label: 'Open the Campus Gallery',
+                type: 'internal',
+                reference: LINK_TO('/kindergarten/gallery'),
+                appearance: 'primary',
+              },
+            },
+          ],
+        },
+      ],
+    },
+
+    // ----------------------------------------------------- ADMISSIONS FAQ
+    /*
+     * Admissions > Admissions FAQ, which was the menu's own placeholder.
+     *
+     * EVERY ANSWER HERE IS ALREADY SOMEWHERE ELSE ON THIS SITE. The timings
+     * come from the admissions page, the fee and its caveat from the fee
+     * block, the attendance figure from the timings list, the documents and
+     * the no-entrance-test answer from the accordion on the admissions page
+     * itself. Nothing has been invented to fill the page out: an FAQ that
+     * answers a question the school has not actually answered is worse than
+     * one that says "ask the office", because a parent acts on it.
+     *
+     * Where SIWS has not given a figure — the age cut-off, which is set per
+     * year — the answer says so and points at the people who know.
+     */
+    {
+      slug: 'admissions-faq',
+      title: 'Admissions FAQ',
+      intro:
+        'The questions the office is asked most often about joining the Kindergarten section.',
+      showInNav: true,
+      navLabel: 'Admissions FAQ',
+      navOrder: 2,
+      metaDescription:
+        'Answers to common questions about Kindergarten admission at SIWS Wadala — when to apply, age criteria, documents, timings, fees and attendance.',
+      layout: [
+        {
+          blockType: 'accordion',
+          heading: 'Before you apply',
+          accentWord: 'apply',
+          headingLevel: 'h2',
+          background: 'white',
+          allowMultipleOpen: false,
+          items: [
+            {
+              question: 'When do admissions open?',
+              answer: richText([
+                'Admissions for the next academic year begin in November. It is worth contacting the school before then, so we can tell you when forms are available.',
+              ]),
+            },
+            {
+              question: 'How old does my child need to be?',
+              answer: richText([
+                'Age criteria are set for each academic year in line with State Board rules, so the cut-off date moves. Please ask the admissions team for the dates that apply to your child rather than working from last year’s.',
+              ]),
+            },
+            {
+              question: 'Is there an entrance test?',
+              answer: richText([
+                'No. There is no entrance test at kindergarten level. Admission is based on age eligibility and seat availability.',
+              ]),
+            },
+            {
+              question: 'Can I apply online?',
+              answer: richText([
+                'No. Admission forms are collected and submitted in person at the school office. You can send an enquiry through this website at any time and the admissions team will contact you and guide you through what is needed.',
+              ]),
+            },
+            {
+              question: 'Which documents will I need?',
+              answer: richText([
+                'Usually your child’s birth certificate, recent photographs, proof of address and, where applicable, a transfer certificate. The admissions team will confirm the full list for your child.',
+              ]),
+            },
+            {
+              question: 'Can we see the school before we apply?',
+              answer: richText([
+                'Yes. Please telephone the office on +91 98927 03893 to arrange a time. Coming to see the classrooms and the play area, and meeting the teachers, tells you more than any page here can.',
+              ]),
+            },
+          ],
+        },
+        {
+          blockType: 'accordion',
+          heading: 'Once your child has a place',
+          accentWord: 'place',
+          headingLevel: 'h2',
+          background: 'sea',
+          allowMultipleOpen: false,
+          items: [
+            {
+              question: 'What are the school timings?',
+              answer: richText([
+                'Jr. KG runs from 11.00 a.m. to 1.00 p.m. Sr. KG runs from 2.00 p.m. to 5.00 p.m.',
+              ]),
+            },
+            {
+              question: 'What are the fees?',
+              answer: richText([
+                'The fee for Jr. KG and Sr. KG is ₹65,000. Please confirm the current figure, what it covers and how it is paid with the school office before you apply.',
+              ]),
+            },
+            {
+              question: 'Is there a minimum attendance requirement?',
+              answer: richText([
+                'Yes — we ask for a minimum of 75% attendance across the year. Regularity matters more at this age than at any later stage, because so much of the early years is routine.',
+              ]),
+            },
+            {
+              question: 'Is food provided?',
+              answer: richText([
+                'There is a pure vegetarian canteen on the campus, with food prepared on site.',
+              ]),
+            },
+            {
+              question: 'Which board does the Kindergarten follow?',
+              answer: richText([
+                'SIWS follows the SSC curriculum of the Maharashtra State Board, and the Kindergarten years prepare children for it.',
+              ]),
+            },
+          ],
+        },
+      ],
+    },
+
+    // ------------------------------------------------------ FACILITIES PAGE
+    /*
+     * About > Facilities & Campus, which was the menu's own placeholder — a
+     * hero and "we are preparing this page" — while the school had fourteen
+     * photographs of the place sitting in the library.
+     *
+     * The home page names the facilities as icon cards, which is right there:
+     * it is a summary, and it has to stay readable for somebody who cannot
+     * load the pictures. This page is the other half of that — the same
+     * facilities with the photograph of each, at a size worth looking at.
+     *
+     * TWO ARE NAMED HERE WITHOUT A PICTURE, deliberately. The canteen tray and
+     * the washroom tap were taken off the home page at SIWS's request on
+     * 2026-08-25, and the media seed flags both as not looking like the
+     * school's own photography. They are real facilities, so they are listed;
+     * they simply are not illustrated until SIWS sends a photograph of its own.
+     */
+    {
+      slug: 'facilities',
+      title: 'Facilities & Campus',
+      intro:
+        'A child-friendly campus in Wadala — the rooms, the play area and the people who look after them.',
+      showInNav: true,
+      navLabel: 'Facilities & Campus',
+      navOrder: 2,
+      metaDescription:
+        'The SIWS Kindergarten campus in Wadala — classrooms, smart boards, the play area, activity rooms and trained staff.',
+      layout: [
+        {
+          blockType: 'featureList',
+          heading: 'The rooms and the grounds',
+          accentWord: 'rooms',
+          headingLevel: 'h2',
+          // A photograph across the top of each card, words beneath. The
+          // facilities a parent walks round are recognised before they are
+          // read, which an icon cannot do.
+          layout: 'showcase',
+          background: 'white',
+          items: [
+            {
+              title: 'Spacious, well-ventilated classrooms',
+              description: 'Bright, airy rooms with group seating and room to move.',
+              ...(img.classroomActivity ? { photo: img.classroomActivity } : { icon: 'classroom' }),
+            },
+            {
+              title: 'Interactive smart boards',
+              description: 'A smart board in every classroom, used from the earliest years.',
+              ...(img.smartBoard ? { photo: img.smartBoard } : { icon: 'computers' }),
+            },
+            {
+              title: 'Safe play and activity area',
+              description: 'A supervised space for games and structured play.',
+              ...(img.playArea ? { photo: img.playArea } : { icon: 'play' }),
+            },
+            {
+              title: 'Dedicated activity rooms',
+              description: 'Separate spaces for art, music and hands-on work.',
+              ...(img.classroomSeated ? { photo: img.classroomSeated } : { icon: 'activity' }),
+            },
+            {
+              title: 'Group tables sized for young children',
+              description: 'Child-height furniture, arranged for small groups.',
+              ...(img.classroomGroup ? { photo: img.classroomGroup } : { icon: 'classroom' }),
+            },
+            {
+              title: 'Supportive and trained staff',
+              description: 'Attentive staff experienced with early years children.',
+              ...(img.teacherWithChildren ? { photo: img.teacherWithChildren } : { icon: 'staff' }),
+            },
+          ],
+        },
+        {
+          /*
+           * The two the school has no photograph of yet, kept as a plain list
+           * so the page still says the campus has them.
+           */
+          blockType: 'featureList',
+          heading: 'Also on the campus',
+          accentWord: 'campus',
+          headingLevel: 'h2',
+          marker: 'tick',
+          columns: '2-centre',
+          background: 'sea',
+          items: [
+            {
+              title: 'Pure vegetarian canteen',
+              description: 'Hygienic, purely vegetarian food prepared on campus.',
+              icon: 'canteen',
+            },
+            {
+              title: 'Clean and hygienic washrooms',
+              description: 'Child-height fittings, cleaned and checked through the day.',
+              icon: 'hygiene',
+            },
+            {
+              title: 'Secure, child-friendly campus',
+              description: 'Monitored entry and child-safe infrastructure throughout.',
+              icon: 'security',
+            },
+          ],
+        },
+        {
+          blockType: 'gallery',
+          heading: 'A day in the Kindergarten',
+          accentWord: 'Kindergarten',
+          headingLevel: 'h2',
+          layout: 'bento',
+          perPage: '0',
+          background: 'white',
+          images: [
+            ...shot(img.activityLiteracy, 'Worksheets and number work in the early years'),
+            ...shot(img.drawingClass, 'Quiet, focused work at every desk'),
+            ...shot(img.activityCreative, 'Finger painting and activity-based learning'),
+            ...shot(img.activityMotor, 'Hands-on work the whole class makes together'),
+            ...shot(img.childrenTogether, 'Friendships that start in the earliest years'),
+            ...shot(img.activityTable, 'A Kindergarten class at the activity table'),
+          ],
         },
       ],
     },
@@ -931,8 +1708,8 @@ const main = async () => {
       layout: [
         {
           blockType: 'gallery',
-          heading: 'Around the Kindergarten',
-          accentWord: 'Kindergarten',
+          heading: 'The Kindergarten Experience',
+          accentWord: 'Experience',
           headingLevel: 'h2',
           layout: 'bento',
           background: 'white',
@@ -996,7 +1773,7 @@ const main = async () => {
           accentWord: 'Who',
           headingLevel: 'h2',
           marker: 'tick',
-          columns: '2',
+          columns: '2-centre',
           background: 'white',
           items: [
             { title: 'Jr. KG', description: 'Your child should be 4 years or above.' },
@@ -1045,7 +1822,7 @@ const main = async () => {
           accentWord: 'Timings',
           headingLevel: 'h2',
           marker: 'tick',
-          columns: '2',
+          columns: '2-centre',
           background: 'white',
           items: [
             { title: 'Jr. KG', description: '11.00 a.m. to 1.00 p.m.' },
@@ -1157,10 +1934,148 @@ const main = async () => {
   let created = contact.created ? 1 : 0
   let updated = contact.created ? 0 : 1
 
+  const idBySlug = new Map<string, number>([['contact', contact.id as number]])
+
+  /*
+   * The first pass goes in WITHOUT the cross-links.
+   *
+   * `link.ts` requires a real page relation on an internal link, so a
+   * placeholder cannot be written and then patched — validation rejects the
+   * page outright and nothing gets seeded at all. Any button carrying a marker
+   * is therefore dropped for this pass and put back by the next one, a moment
+   * later, pointing at a page that now exists.
+   */
+  const stripMarkers = (value: unknown): unknown => {
+    if (Array.isArray(value)) {
+      return value
+        .filter((entry) => !JSON.stringify(entry ?? null).includes('__linkTo'))
+        .map(stripMarkers)
+    }
+    if (value && typeof value === 'object') {
+      return Object.fromEntries(
+        Object.entries(value as Record<string, unknown>).map(([key, item]) => [key, stripMarkers(item)]),
+      )
+    }
+    return value
+  }
+
   for (const page of pages) {
-    const result = await upsertPage(page)
+    const result = await upsertPage({ ...page, layout: stripMarkers(page.layout) as SeedPage['layout'] })
+    idBySlug.set(page.slug, result.id as number)
     if (result.created) created += 1
     else updated += 1
+  }
+
+  /*
+   * SECOND PASS: point the cross-links at the pages they name.
+   *
+   * A link on this site is a RELATION to a page, not a URL — `link.ts` rejects
+   * a relative address outright, which is the right call: a typed path goes
+   * stale silently the moment a slug changes, where a broken relation shows up
+   * the moment anybody looks. The catch is that these pages link to each
+   * other, and none of their ids exist until the loop above has run.
+   *
+   * So the layouts go in carrying `LINK_TO('/kindergarten/news')` markers and
+   * are rewritten here, once every id is known. A marker whose page cannot be
+   * found is reported rather than published as a dead button.
+   */
+  /*
+   * Some of the pages linked to are not created here.
+   *
+   * The Download Centre is one of `seed:nav`'s placeholders, and the SIWS
+   * gallery belongs to the portal rather than to any section — both are real,
+   * published pages that this seed simply does not own. Looking the whole
+   * Kindergarten set up from the database, plus the portal's gallery, means a
+   * link resolves if the page exists at all, whoever made it.
+   */
+  const { docs: existingPages } = await payload.find({
+    collection: 'pages',
+    where: { unit: { equals: kg.id } },
+    limit: 200,
+    depth: 0,
+    overrideAccess: true,
+  })
+  for (const doc of existingPages as { id: number; slug: string }[]) {
+    if (!idBySlug.has(doc.slug)) idBySlug.set(doc.slug, doc.id)
+  }
+
+  const { docs: portalGallery } = await payload.find({
+    collection: 'pages',
+    where: { and: [{ slug: { equals: 'gallery' } }, { unit: { exists: false } }] },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  })
+  // The portal's gallery, filed under a key the marker path resolves to.
+  if (portalGallery[0]) idBySlug.set('__portal-gallery', portalGallery[0].id as number)
+
+  const unresolved: string[] = []
+
+  const resolveLinks = (value: unknown): unknown => {
+    if (Array.isArray(value)) {
+      /*
+       * A marker that cannot be resolved takes its whole entry with it. A
+       * `reference` of null fails validation exactly as the marker did, so
+       * the choice is between dropping the button and failing the seed.
+       */
+      return value
+        .filter((entry) => {
+          const raw = JSON.stringify(entry ?? null)
+          if (!raw.includes('__linkTo')) return true
+          const marker = raw.match(/"__linkTo":"([^"]+)"/)?.[1] ?? ''
+          const parts = marker.split('/').filter(Boolean)
+          const slug = parts.length === 1 && parts[0] === 'gallery' ? '__portal-gallery' : (parts.pop() ?? '')
+          if (idBySlug.has(slug)) return true
+          unresolved.push(marker)
+          return false
+        })
+        .map(resolveLinks)
+    }
+    if (value && typeof value === 'object') {
+      const marker = (value as { __linkTo?: string }).__linkTo
+      if (typeof marker === 'string') {
+        // The last segment is the slug: '/kindergarten/news' -> 'news',
+        // '/gallery' -> 'gallery'. No regex, nothing to escape.
+        /*
+         * '/gallery' with no section in front of it is the PORTAL's gallery —
+         * the Kindergarten's own is '/kindergarten/gallery'. Without this the
+         * two collapse to the same slug and the Achievements page's link to
+         * the whole-group wall would quietly point at the section's own.
+         */
+        const parts = marker.split('/').filter(Boolean)
+        const slug = parts.length === 1 && parts[0] === 'gallery' ? '__portal-gallery' : (parts.pop() ?? '')
+        const id = idBySlug.get(slug)
+        if (id === undefined) {
+          unresolved.push(marker)
+          return null
+        }
+        return { relationTo: 'pages', value: id }
+      }
+      return Object.fromEntries(
+        Object.entries(value as Record<string, unknown>).map(([key, item]) => [key, resolveLinks(item)]),
+      )
+    }
+    return value
+  }
+
+  for (const page of pages) {
+    const raw = JSON.stringify(page.layout ?? [])
+    if (!raw.includes('__linkTo')) continue
+    const id = idBySlug.get(page.slug)
+    if (id === undefined) continue
+    await payload.update({
+      collection: 'pages',
+      id,
+      data: { layout: resolveLinks(page.layout) } as never,
+      overrideAccess: true,
+    })
+    payload.logger.info(`Resolved cross-links on: ${page.title}`)
+  }
+
+  if (unresolved.length > 0) {
+    payload.logger.warn(
+      `These links point at pages this seed does not create, so they were dropped rather than published as dead buttons: ${[...new Set(unresolved)].join(', ')}.`,
+    )
   }
 
   payload.logger.info(`Kindergarten seed complete — ${created} created, ${updated} updated.`)

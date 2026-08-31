@@ -102,7 +102,23 @@ export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
   const columns: { heading: string; links: { label: string; href: string }[] }[] = [
     {
       heading: unit ? 'This school' : 'Explore',
-      links: quickLinks.map((item) => ({ label: item.label, href: item.href })),
+      /*
+       * Contact is dropped from this column on a unit footer, because the
+       * footer already has a Contact us block a few centimetres to the right
+       * carrying the address, the telephone number and the email. A link
+       * saying "Contact" beside the contact details is a second route to
+       * something already on the screen, and it makes the shorter list of
+       * pages look longer than it is.
+       *
+       * Only on a unit footer. The portal has no unit to draw an address,
+       * a telephone number or an email from, so its Contact us block is not
+       * rendered at all — there this link is the only way through, and it
+       * stays. The two rules are the same rule from either end: the address
+       * and the link to it never both appear.
+       */
+      links: quickLinks
+        .filter((item) => !(unit && item.href.endsWith('/contact')))
+        .map((item) => ({ label: item.label, href: item.href })),
     },
     {
       heading: 'Our sections',
@@ -175,7 +191,9 @@ export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
         <div className="grid gap-9 sm:grid-cols-2 lg:grid-cols-4">
           {columns.map((column) => (
             <nav key={column.heading} aria-label={column.heading}>
-              <h2 className="text-lg font-bold text-white [font-family:var(--font-body)]">{column.heading}</h2>
+              <h2 className="text-lg font-bold text-white [font-family:var(--font-body)]">
+                {column.heading}
+              </h2>
               <ul className="mt-4 space-y-2.5 text-[0.95rem]">
                 {column.links.map((link) => (
                   <li key={link.href}>
@@ -191,46 +209,71 @@ export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
             </nav>
           ))}
 
+          {/*
+            THE COLUMN ONLY EXISTS IF THERE IS SOMETHING IN IT.
+
+            "Contact us" is drawn entirely from the unit — its address, email
+            and telephone number — so on the portal, which has no unit, the
+            heading stood over an empty box. Three of the four columns carried
+            content and the fourth was a word.
+
+            It was also a duplicate there: the portal's own Explore column
+            keeps its Contact link precisely because this block has nothing to
+            show, so the footer offered a heading with no detail beside a link
+            that went to the details. Rendering nothing leaves Explore as the
+            single route, which is what it already was in practice.
+
+            On a unit footer this block carries real detail, and there Contact
+            is dropped from the column on the left instead — see the note on
+            `columns` above. The two rules are the same rule from either end:
+            the address and the link to it never both appear.
+          */}
+          {unit ? (
+            <div>
+              <h2 className="text-lg font-bold text-white [font-family:var(--font-body)]">
+                Contact us
+              </h2>
+              <address className="mt-4 space-y-3 text-[0.95rem] not-italic text-white/90">
+                {addressLines.length > 0 ? (
+                  <p>
+                    {addressLines.map((line) => (
+                      <span key={line} className="block">
+                        {line}
+                      </span>
+                    ))}
+                  </p>
+                ) : null}
+
+                {unit?.email ? (
+                  <p>
+                    <a
+                      href={`mailto:${unit.email}`}
+                      className="underline-offset-4 hover:text-white hover:underline"
+                    >
+                      {unit.email}
+                    </a>
+                  </p>
+                ) : null}
+
+                {unit?.phone ? (
+                  <p>
+                    {/* Stripping spaces keeps the tel: target dialable. */}
+                    <a
+                      href={`tel:${unit.phone.replace(/[^\d+]/g, '')}`}
+                      className="underline-offset-4 hover:text-white hover:underline"
+                    >
+                      {unit.phone}
+                    </a>
+                  </p>
+                ) : null}
+              </address>
+            </div>
+          ) : null}
+
           <div>
-            <h2 className="text-lg font-bold text-white [font-family:var(--font-body)]">Contact us</h2>
-            <address className="mt-4 space-y-3 text-[0.95rem] not-italic text-white/90">
-              {addressLines.length > 0 ? (
-                <p>
-                  {addressLines.map((line) => (
-                    <span key={line} className="block">
-                      {line}
-                    </span>
-                  ))}
-                </p>
-              ) : null}
-
-              {unit?.email ? (
-                <p>
-                  <a
-                    href={`mailto:${unit.email}`}
-                    className="underline-offset-4 hover:text-white hover:underline"
-                  >
-                    {unit.email}
-                  </a>
-                </p>
-              ) : null}
-
-              {unit?.phone ? (
-                <p>
-                  {/* Stripping spaces keeps the tel: target dialable. */}
-                  <a
-                    href={`tel:${unit.phone.replace(/[^\d+]/g, '')}`}
-                    className="underline-offset-4 hover:text-white hover:underline"
-                  >
-                    {unit.phone}
-                  </a>
-                </p>
-              ) : null}
-            </address>
-          </div>
-
-          <div>
-            <h2 className="text-lg font-bold text-white [font-family:var(--font-body)]">About SIWS</h2>
+            <h2 className="text-lg font-bold text-white [font-family:var(--font-body)]">
+              About SIWS
+            </h2>
             <p className="mt-4 text-[0.95rem] leading-relaxed text-white/90">
               South Indians&rsquo; Welfare Society is a trusted educational institution in Wadala
               since 1934, committed to value-based, disciplined and structured learning.

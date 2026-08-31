@@ -61,13 +61,37 @@ export const HeroEnquiryBlockView = ({
         </>
       ) : null}
 
-      <div className="siws-container grid gap-10 py-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14 lg:py-20">
+      {/*
+        `items-start`: the pitch begins level with the form beside it.
+
+        This was `items-center`, to stop a short pitch leaving a quarter of the
+        band empty beneath it — 375px of brand blue under the Junior College
+        badge. Junior College no longer carries this block at all, and the
+        three sections that do have four benefits each, so the columns are
+        within a card's height of one another and there is no hole to avoid.
+        The reason to change it is that centring was costing more than it
+        saved: the form has always carried `self-start`, so it began at the top
+        while the pitch floated in the middle of the row, and two columns that
+        start at different heights read as one of them having come loose.
+
+        If a section ever enters a much shorter pitch, the fix is to give that
+        column something at its foot — a badge, a line of contact detail — not
+        to push the whole thing back into the middle.
+      */}
+      <div className="siws-container grid items-start gap-10 py-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14 lg:py-20">
         {/* --- Left: the pitch ------------------------------------------- */}
         <div className="text-white">
-          <h1
-            className="text-3xl leading-tight text-accent sm:text-4xl lg:text-[2.9rem]"
-            style={{ fontFamily: 'var(--font-display)' }}
-          >
+          {/*
+            WHITE, IN THE BODY FACE — not orange Anton.
+            
+            Anton is a poster face: at 46px, in full accent orange, across a
+            whole school name, it shouted and left the line beneath it with
+            nothing to be. The rest of the site already stepped its headings
+            off Anton for the same reason. White carries the title, and the
+            accent is spent on the one line below it, so the two read in order
+            instead of competing.
+          */}
+          <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-[2.9rem] lg:leading-[1.1]">
             {block.title}
           </h1>
 
@@ -118,16 +142,26 @@ export const HeroEnquiryBlockView = ({
         </div>
 
         {/* --- Right: the enquiry card ----------------------------------- */}
-        <div className="siws-card self-start">
+        {/*
+          More padding than the shared card gives, and a deeper corner.
+          `.siws-card` is sized for a card in a grid of three; this one is a
+          panel a parent fills in, and 28px of padding around a seven-field
+          form had the inputs almost touching its edge.
+        */}
+        <div className="siws-card self-start rounded-3xl p-7 sm:p-9">
           <h2 className="card-title text-brand">
             {block.form?.title ?? 'Book a Free Campus Tour'}
           </h2>
 
+          {/*
+            Plain type. This line sat in `--font-chalk`, whose stack falls
+            through to Comic Sans on any machine without the webfont — on the
+            one form where a parent hands over a child's name and telephone
+            number. A form asking for personal details has to look like it
+            means it.
+          */}
           {block.form?.subtitle ? (
-            <p
-              className="mt-1 mb-5 text-brand"
-              style={{ fontFamily: 'var(--font-chalk)' }}
-            >
+            <p className="mt-1.5 mb-5 text-[0.95rem] leading-relaxed text-ink-soft">
               {block.form.subtitle}
             </p>
           ) : null}

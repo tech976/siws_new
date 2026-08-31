@@ -236,7 +236,7 @@ const main = async () => {
         {
           question: 'Competitions and interschool events',
           answer: richText([
-            'Kindergarten pupils won four prizes at Our Lady’s Garden, Auxilium Convent, and one prize each at Andhra Education Society and Natya Tarang.',
+            'Kindergarten students won four prizes at Our Lady’s Garden, Auxilium Convent, and one prize each at Andhra Education Society and Natya Tarang.',
           ]),
         },
       ],
@@ -251,7 +251,7 @@ const main = async () => {
       background: 'sea',
       cards: [
         { title: 'Admissions', description: 'How to apply, age criteria and key dates.' },
-        { title: 'School rules', description: 'What we ask of pupils and parents.' },
+        { title: 'School rules', description: 'What we ask of students and parents.' },
         { title: 'Scholarships', description: '151 endowed funds across the institution.' },
         { title: 'Contact us', description: 'Speak to the admissions team.' },
       ],

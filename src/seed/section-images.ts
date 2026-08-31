@@ -20,7 +20,7 @@ const { default: config } = await import('@payload-config')
  * SIWS put it there, not because anything inspected the image.
  *
  * A page only ever receives photographs belonging to ITS OWN unit, so no
- * school shows another's pupils.
+ * school shows another's students.
  *
  * Run with:  npm run seed:section-images
  */

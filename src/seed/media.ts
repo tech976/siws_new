@@ -59,6 +59,35 @@ interface ImageSeed {
   /** Noted where the image does not look like SIWS's own photography. */
   needsLicenceCheck?: boolean
   /**
+   * Which section the photograph belongs to, by unit slug.
+   *
+   * Everything used to be filed under Kindergarten, because this script was
+   * written when Kindergarten was the only section with photographs and it
+   * has hard-coded `unit: kg.id` ever since. The consequence was invisible
+   * from here and obvious on the site: `seed:galleries` builds each
+   * section's wall from the photographs tagged to it, so the Secondary
+   * gallery came out holding one shared picture, while Kindergarten's showed
+   * SSC toppers and a Secondary craft class.
+   *
+   * Kindergarten stays the default, so every row that does not say otherwise
+   * behaves exactly as it did.
+   */
+  unit?: 'kindergarten' | 'primary' | 'secondary' | 'junior-college'
+  /**
+   * The heading this photograph files under on its section's gallery wall.
+   * Two or more sharing a category get a section of their own; a lone one is
+   * folded into the rest — see `seed/galleries.ts`.
+   */
+  category?: string
+  /**
+   * Set false for a picture that should stay in the library but off the
+   * walls — an uncropped original whose crop is also published, a poster, a
+   * video thumbnail.
+   */
+  showInGallery?: boolean
+  /** Never cropped — a certificate, a notice, an invitation. */
+  showWhole?: boolean
+  /**
    * Where the subject sits vertically, as a percentage from the top.
    *
    * Payload stores 50/50 on every upload, and a shallow band cropping to the
@@ -124,6 +153,19 @@ const IMAGES: ImageSeed[] = [
   {
     file: '1.jpg',
     filename: 'kg-canteen-meal.jpg',
+    /*
+     * OFF THE GALLERY WALL (SIWS, 2026-08-29).
+     *
+     * This is one of the two pictures in the library carrying
+     * `needsLicenceCheck` — neither looks like SIWS’s own photography, and
+     * both show a child who is not one of ours. A gallery is the school
+     * showing you the school, so a stock photograph is the one thing on that
+     * wall that should not be there.
+     *
+     * Kept in the library rather than deleted: it is still the illustration
+     * on a facilities card, where it is doing a different job.
+     */
+    showInGallery: false,
     alt: 'A young child at a dining table eating a school meal from a sectioned metal tray.',
     caption: 'Pure vegetarian canteen',
     depictsChildren: true,
@@ -132,7 +174,20 @@ const IMAGES: ImageSeed[] = [
   {
     file: '6.jpeg',
     filename: 'kg-handwashing.jpg',
-    alt: 'A school pupil washing their hands at an outdoor tap.',
+    /*
+     * OFF THE GALLERY WALL (SIWS, 2026-08-29).
+     *
+     * This is one of the two pictures in the library carrying
+     * `needsLicenceCheck` — neither looks like SIWS’s own photography, and
+     * both show a child who is not one of ours. A gallery is the school
+     * showing you the school, so a stock photograph is the one thing on that
+     * wall that should not be there.
+     *
+     * Kept in the library rather than deleted: it is still the illustration
+     * on a facilities card, where it is doing a different job.
+     */
+    showInGallery: false,
+    alt: 'A school student washing their hands at an outdoor tap.',
     caption: 'Clean and hygienic washrooms',
     depictsChildren: true,
     needsLicenceCheck: true,
@@ -145,7 +200,7 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'fancy-dress-environment.jpg',
     filename: 'siws-fancy-dress-environment.jpg',
-    alt: 'Two young pupils in a fancy-dress competition, one wearing a painted globe costume and the other holding a model of the Earth.',
+    alt: 'Two young students in a fancy-dress competition, one wearing a painted globe costume and the other holding a model of the Earth.',
     caption: 'Showcasing creativity and environmental awareness',
     depictsChildren: true,
   },
@@ -175,7 +230,10 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'secondary-toppers-2026.jpeg',
     filename: 'secondary-toppers-2026.jpg',
-    alt: 'Three SIWS High School pupils standing together in the school hall, each holding a bouquet and an award after the 2026 SSC results.',
+    unit: 'secondary',
+    category: 'Recognition',
+    showInGallery: false,
+    alt: 'Three SIWS High School students standing together in the school hall, each holding a bouquet and an award after the 2026 SSC results.',
     caption: 'Toppers of 2026',
     /*
      * The three of them stand across the lower two-thirds of a 1200x1600
@@ -186,17 +244,79 @@ const IMAGES: ImageSeed[] = [
     focalY: 60,
     depictsChildren: true,
   },
+  /*
+   * The same photograph, cropped to the three of them.
+   *
+   * The original is a 1200x1600 frame of the sports hall with the toppers
+   * standing in the middle of it — ceiling, noticeboards and a lot of floor.
+   * Placing it well is not a focal-point problem: `object-cover` can choose
+   * WHICH part of a picture a frame shows, but it cannot make the subject any
+   * larger within it. So the subject is cropped in the file: a 960x960 square
+   * taken from (60, 512), which is the group with a little air above the
+   * heads and below the feet.
+   *
+   * Kept as a second file rather than written over the first. The seed never
+   * rewrites the binary of a picture already in the library — see the update
+   * path below for the damage that did — and the uncropped original is worth
+   * having anyway.
+   */
+  {
+    file: 'secondary-toppers-2026-close.jpg',
+    filename: 'secondary-toppers-2026-close.jpg',
+    unit: 'secondary',
+    category: 'Recognition',
+    /*
+     * ANCHORED NEAR THE TOP, because the faces are.
+     *
+     * A 960x960 square, and the three of them stand in the upper two-thirds
+     * of it with an empty sports-hall floor below. The gallery feature tile
+     * is about 570x372, so a cover crop keeps only 65% of the height — and
+     * centred, that band ran from 17% to 82% and took the tops of all three
+     * heads off while carefully preserving the floor.
+     *
+     * At 10% the band starts just above the hair and the floor is what goes,
+     * which is the right way round. `Media` reads this off the upload, so it
+     * holds wherever the picture is cropped, not just on the gallery wall.
+     */
+    focalY: 10,
+    alt: 'Three SIWS High School students standing together in the school hall, each holding a bouquet and an award after the 2026 SSC results.',
+    caption: 'Toppers of 2026',
+    depictsChildren: true,
+  },
+  /*
+   * The #SwachhtaMonitor 2023 certificate, straightened and unframed.
+   *
+   * SIWS sent it as a photograph of the framed original lying on its side,
+   * so it is rotated a quarter turn anticlockwise and cropped to the paper —
+   * the wooden frame around it was most of the picture and none of the
+   * information. Replaces the earlier photograph of the same certificate.
+   */
+  {
+    file: 'secondary-swachhta-2023.jpg',
+    filename: 'secondary-swachhta-2023.jpg',
+    showWhole: true,
+    unit: 'secondary',
+    category: 'Recognition',
+    alt: 'A Government of Maharashtra certificate naming S.I.W.S. High School amongst the 100 Best Schools in Maharashtra under #SwachhtaMonitor 2023, signed by the Department of School Education and Sports.',
+    caption: 'Amongst the 100 Best Schools in Maharashtra — #SwachhtaMonitor 2023',
+    // A framed certificate on a wall. There is nobody in it.
+    depictsChildren: false,
+  },
   {
     file: 'secondary-craft-class.jpg',
     filename: 'secondary-craft-class.jpg',
-    alt: 'A full Secondary classroom of pupils in house-colour shirts working with coloured paper and scissors at wooden desks.',
+    unit: 'secondary',
+    category: 'In the classroom',
+    alt: 'A full Secondary classroom of students in house-colour shirts working with coloured paper and scissors at wooden desks.',
     caption: 'Craft work in a Secondary classroom',
     depictsChildren: true,
   },
   {
     file: 'secondary-activity-class.jpg',
     filename: 'secondary-activity-class.jpg',
-    alt: 'Secondary pupils at their desks during an activity session, writing and cutting coloured paper.',
+    unit: 'secondary',
+    category: 'In the classroom',
+    alt: 'Secondary students at their desks during an activity session, writing and cutting coloured paper.',
     caption: 'An activity session in progress',
     depictsChildren: true,
   },
@@ -208,6 +328,10 @@ const IMAGES: ImageSeed[] = [
      */
     file: 'secondary-swachhta-certificate.jpg',
     filename: 'secondary-swachhta-certificate.jpg',
+    showWhole: true,
+    unit: 'secondary',
+    category: 'Recognition',
+    showInGallery: false,
     alt: 'A framed Government of Maharashtra certificate awarded to S.I.W.S. High School, naming it amongst the 100 best schools in Maharashtra in the Swachhta Monitor 2023.',
     caption: 'Swachhta Monitor 2023 — amongst the 100 best schools in Maharashtra',
     depictsChildren: false,
@@ -215,7 +339,7 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'award-andhra.jpg',
     filename: 'siws-award-andhra.jpg',
-    alt: 'A kindergarten pupil in costume being handed a certificate on stage by a teacher, with three staff members alongside and a sunflower backdrop behind.',
+    alt: 'A kindergarten student in costume being handed a certificate on stage by a teacher, with three staff members alongside and a sunflower backdrop behind.',
     caption: 'Receiving a prize at an interschool competition',
     depictsChildren: true,
   },
@@ -243,58 +367,189 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'smart-board.jpg',
     filename: 'kg-smart-board.jpg',
-    alt: 'A young pupil in school uniform reaching up to draw on an interactive smart board with a stylus.',
+    alt: 'A young student in school uniform reaching up to draw on an interactive smart board with a stylus.',
     caption: 'Interactive smart boards in every classroom',
     depictsChildren: true,
   },
   {
     file: 'drawing-class.jpg',
     filename: 'kg-drawing-class.jpg',
-    alt: 'Pupils at wooden desks in a classroom, each colouring a drawing with crayons.',
+    alt: 'Students at wooden desks in a classroom, each colouring a drawing with crayons.',
     caption: 'Quiet, focused work at every desk',
     depictsChildren: true,
   },
   {
     file: 'green-skills.jpg',
     filename: 'siws-green-skills.jpg',
-    alt: 'Sixteen Secondary School pupils in two rows on a school veranda, each holding a potted plant or sapling they have grown.',
+    unit: 'secondary',
+    category: 'Beyond the classroom',
+    alt: 'Sixteen Secondary School students in two rows on a school veranda, each holding a potted plant or sapling they have grown.',
     caption: 'Nurturing nature and building green skills together.',
     depictsChildren: true,
   },
   {
     file: 'natya-tarang.jpg',
     filename: 'siws-natya-tarang.jpg',
-    alt: 'A stage full of young SIWS pupils in bright regional costume, arms raised mid-performance, at the Natya Tarang inter-school dance competition.',
+    alt: 'A stage full of young SIWS students in bright regional costume, arms raised mid-performance, at the Natya Tarang inter-school dance competition.',
     caption: 'Natya Tarang — our inter-school dance and music competition',
     depictsChildren: true,
   },
   {
     file: 'yoga-meditation.jpeg',
     filename: 'siws-yoga-meditation.jpg',
-    alt: 'Rows of secondary pupils in house-colour sports shirts seated cross-legged on mats in the school hall, eyes closed, during a guided meditation session.',
+    unit: 'secondary',
+    category: 'Beyond the classroom',
+    alt: 'Rows of Secondary students in house-colour sports shirts seated cross-legged on mats in the school hall, eyes closed, during a guided meditation session.',
     caption: 'Practicing mindfulness and focus together.',
     depictsChildren: true,
+  },
+  /*
+   * JUNIOR COLLEGE, three occasions from 2026.
+   *
+   * The section's first photographs of its own — until these arrived every
+   * Junior College page was text and its gallery was unpublished for having
+   * nothing to show.
+   *
+   * All three show identifiable students, so all three need a permission
+   * record before the pages carrying them will publish (FR-PRV-11).
+   */
+  {
+    file: 'jc-independence-day-2026.jpeg',
+    filename: 'jc-independence-day-2026.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'Students in ceremonial white uniform and maroon berets kneeling and standing in rows on the college ground beneath an unfurled national flag, with staff and families behind them.',
+    caption: 'Independence Day on the college ground, 15 August 2026',
+    /*
+     * CROPPED, and then anchored.
+     *
+     * The camera caught a thumb over the top-left corner of the original. A
+     * corner cannot be cropped out by taking a little off two sides — a
+     * rectangle has to lose a whole band — so the top 250 rows went, which
+     * also took the empty sky and the roof and tightened the frame onto the
+     * people. The hoisted flag on the pole went with it; the large tricolour
+     * draped on the wall behind the group did not, and it is the one that
+     * reads at any size.
+     *
+     * 1600x950 now. The group sits across the middle with bare pitch below,
+     * so the crop is still anchored high enough to keep the faces.
+     */
+    focalY: 38,
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-orientation-2026.jpeg',
+    filename: 'jc-orientation-2026.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'The college hall filled with seated students listening to a speaker addressing them with a microphone, with staff standing along the sides.',
+    caption: 'The orientation programme for new students, 15 July 2026',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-yoga-meditation-2026.jpeg',
+    filename: 'jc-yoga-meditation-2026.jpg',
+    unit: 'junior-college',
+    category: 'Wellbeing',
+    alt: 'Junior College students seated cross-legged in rows on the open ground with their eyes closed and hands resting on their knees, during a guided meditation.',
+    caption: 'Yoga and meditation on the college ground',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-independence-day-2025.jpeg',
+    filename: 'jc-independence-day-2025.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'Students in white kurtas with tricolour sashes standing in formation in the college hall during a patriotic performance, one of them holding up a picture of an Indian Navy fleet.',
+    caption: 'A patriotic performance in the hall, Independence Day 2025',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-pongal-celebration.jpeg',
+    filename: 'jc-pongal-celebration.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    /*
+     * A 1600x739 panorama — the widest picture in the library by some way.
+     * It is a room-length line of people, so any crop tighter than about
+     * 2:1 loses somebody off one end. Best used at full width.
+     */
+    alt: 'Staff of the college standing in a long line across the hall in bright silk sarees, beneath Tamil banners and bunting, with sugarcane framing a Pongal Thiruvizha backdrop.',
+    caption: 'Pongal Thiruvizha in the college hall',
+    // Staff, not students.
+    depictsChildren: false,
+  },
+  {
+    file: 'jc-evs-field-visit.jpeg',
+    filename: 'jc-evs-field-visit.jpg',
+    unit: 'junior-college',
+    category: 'Learning',
+    alt: 'A group of college students and their teachers standing among trees on a woodland trail, one photographing a sapling closely while the others look on.',
+    caption: 'An environmental studies field visit',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-library.jpeg',
+    filename: 'jc-library.jpg',
+    unit: 'junior-college',
+    category: 'Learning',
+    alt: 'The college library on an ordinary afternoon — students reading and working at long tables by a row of windows, with book stacks, computers and a globe on the counter.',
+    caption: 'The college library',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-physics-laboratory.jpeg',
+    filename: 'jc-physics-laboratory.jpg',
+    unit: 'junior-college',
+    category: 'Learning',
+    alt: 'A member of the physics department at a laboratory bench setting up a measuring cylinder and apparatus, with a resistance box and a case of instruments laid out beside him.',
+    caption: 'Setting up an experiment in the physics laboratory',
+    depictsChildren: false,
+  },
+  {
+    file: 'jc-physics-charts.jpeg',
+    filename: 'jc-physics-charts.jpg',
+    unit: 'junior-college',
+    category: 'Learning',
+    alt: 'A hand-made physics chart on units and physical quantities, with coloured panels on errors, dimensions and measurement around a table of formulae and SI units.',
+    caption: 'Units and physical quantities — a chart made by students',
+    // Written work, no one in the frame.
+    depictsChildren: false,
+    // Read rather than admired: never cropped.
+    showWhole: true,
   },
 ]
 
 /** `kg-play-area-2.jpg` -> `kg-play-area.jpg`; anything else is left alone. */
-const baseName = (filename: string) => filename.replace(/-d+(.[^.]+)$/, "$1")
+const baseName = (filename: string) => filename.replace(/-d+(.[^.]+)$/, '$1')
 
 /** `kg-play-area.jpg` -> `kg-play-area`, for a prefix query. */
-const stemOf = (filename: string) => filename.replace(/.[^.]+$/, "")
+const stemOf = (filename: string) => filename.replace(/.[^.]+$/, '')
 
 const main = async () => {
   const payload = await getPayload({ config })
 
   const { docs: units } = await payload.find({
     collection: 'units',
-    where: { slug: { equals: 'kindergarten' } },
-    limit: 1,
+    limit: 20,
     depth: 0,
     overrideAccess: true,
   })
-  const kg = units[0]
+  const unitId = new Map(units.map((u) => [String(u.slug), u.id]))
+  const kg = unitId.get('kindergarten')
   if (!kg) throw new Error('Kindergarten unit not found. Run `npm run seed` first.')
+
+  /*
+   * A row naming a section that is not in the database is a typo, and filing
+   * its photograph under Kindergarten instead would hide the mistake on a
+   * wall where somebody would eventually have to find it by eye.
+   */
+  const unitFor = (image: ImageSeed) => {
+    if (!image.unit) return kg
+    const id = unitId.get(image.unit)
+    if (!id) throw new Error(`${image.filename}: no unit with the slug "${image.unit}"`)
+    return id
+  }
 
   const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'siws-media-'))
   let created = 0
@@ -335,14 +590,15 @@ const main = async () => {
         depth: 0,
         overrideAccess: true,
       })
-      const existingDoc = found.docs.find(
-        (d) => baseName(String(d.filename)) === image.filename,
-      )
+      const existingDoc = found.docs.find((d) => baseName(String(d.filename)) === image.filename)
 
       const data = {
         alt: image.alt,
         caption: image.caption,
-        unit: kg.id,
+        unit: unitFor(image),
+        ...(image.category === undefined ? {} : { category: image.category }),
+        ...(image.showInGallery === undefined ? {} : { showInGallery: image.showInGallery }),
+        ...(image.showWhole === undefined ? {} : { showWhole: image.showWhole }),
         depictsChildren: image.depictsChildren,
         ...(image.focalY === undefined ? {} : { focalX: 50, focalY: image.focalY }),
       }
