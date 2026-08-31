@@ -13,6 +13,7 @@ import { PhotoLibraryBlockView } from './PhotoLibraryBlockView'
 import { VideoGalleryBlockView } from './VideoGalleryBlockView'
 import { HeroBlockView } from './HeroBlockView'
 import { HeroCarouselBlockView } from './HeroCarouselBlockView'
+import { HeroMarqueeBlockView } from './HeroMarqueeBlockView'
 import { HeroEnquiryBlockView } from './HeroEnquiryBlockView'
 import { LogoStripBlockView } from './LogoStripBlockView'
 import { MapBlockView } from './MapBlockView'
@@ -66,6 +67,8 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
             return <HeroBlockView key={key} block={block} />
           case 'heroCarousel':
             return <HeroCarouselBlockView key={key} block={block} />
+          case 'heroMarquee':
+            return <HeroMarqueeBlockView key={key} block={block} />
           case 'unitLinks':
             return <UnitLinksBlockView key={key} block={block} units={units} />
           case 'richText':

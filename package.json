@@ -49,6 +49,7 @@
     "photos:scan": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/photos.ts scan",
     "photos:import": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/photos.ts import",
     "seed:galleries": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/galleries.ts",
+    "seed:portal-marquee": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/portal-hero-marquee.ts",
     "seed:portal-hero": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/portal-hero.ts",
     "photos:consent": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/record-photo-consent.ts",
     "seed:vision-bg": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/vision-background.ts",

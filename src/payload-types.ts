@@ -568,6 +568,7 @@ export interface Page {
     | (
         | HeroBlock
         | HeroCarouselBlock
+        | HeroMarqueeBlock
         | RichTextBlock
         | MediaTextBlock
         | CardGridBlock
@@ -802,6 +803,94 @@ export interface HeroCarouselBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'heroCarousel';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroMarqueeBlock".
+ */
+export interface HeroMarqueeBlock {
+  /**
+   * Optional. A short line above the heading, shown as a chip.
+   */
+  eyebrow?: string | null;
+  /**
+   * The page heading. Rendered as the h1.
+   */
+  title: string;
+  /**
+   * Optional. A word or phrase from the heading to pick out in the accent colour. Must appear in the heading exactly.
+   */
+  accentWord?: string | null;
+  /**
+   * Optional. One sentence under the heading.
+   */
+  subtitle?: string | null;
+  /**
+   * Optional. A short paragraph under the subtitle.
+   */
+  intro?: string | null;
+  /**
+   * Optional. A few headline figures shown under the words.
+   */
+  highlights?:
+    | {
+        value: string;
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  links?:
+    | {
+        link: {
+          /**
+           * The words people will see and click. Say where it goes — “Download the admission form”, not “Click here”.
+           */
+          label: string;
+          type: 'internal' | 'external';
+          /**
+           * Links to other websites always open in a new tab.
+           */
+          newTab?: boolean | null;
+          /**
+           * If that page is later removed, this link hides itself instead of breaking.
+           */
+          reference?: {
+            relationTo: 'pages';
+            value: number | Page;
+          } | null;
+          url?: string | null;
+          /**
+           * How the link is styled.
+           */
+          appearance?: ('primary' | 'secondary' | 'plain') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The photographs that drift past. They are split evenly across the rows below, in this order, and each row shows its share twice so the loop has no seam. Aim for at least six per row — fewer than that and the same picture is on screen twice at once.
+   */
+  images?:
+    | {
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Two is the usual choice: rows moving against each other read as drift, where a single row reads as a conveyor. Use one only when the band has to be shallow.
+   */
+  rows?: ('1' | '2' | '3') | null;
+  /**
+   * Slower is almost always better behind a heading: the movement should be noticed at the edge of the eye, not followed.
+   */
+  speed?: ('calm' | 'steady' | 'brisk') | null;
+  /**
+   * Text colour adjusts automatically so it stays readable.
+   */
+  background?: ('white' | 'sea' | 'tint' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'heroMarquee';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2393,6 +2482,7 @@ export interface PagesSelect<T extends boolean = true> {
     | {
         hero?: T | HeroBlockSelect<T>;
         heroCarousel?: T | HeroCarouselBlockSelect<T>;
+        heroMarquee?: T | HeroMarqueeBlockSelect<T>;
         richText?: T | RichTextBlockSelect<T>;
         mediaText?: T | MediaTextBlockSelect<T>;
         cardGrid?: T | CardGridBlockSelect<T>;
@@ -2505,6 +2595,50 @@ export interface HeroCarouselBlockSelect<T extends boolean = true> {
   height?: T;
   headingLevel?: T;
   accentWord?: T;
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroMarqueeBlock_select".
+ */
+export interface HeroMarqueeBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  accentWord?: T;
+  subtitle?: T;
+  intro?: T;
+  highlights?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        id?: T;
+      };
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  images?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  rows?: T;
+  speed?: T;
   background?: T;
   id?: T;
   blockName?: T;

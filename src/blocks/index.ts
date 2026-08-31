@@ -13,6 +13,7 @@ import { PhotoLibraryBlock } from './PhotoLibraryBlock'
 import { VideoGalleryBlock } from './VideoGalleryBlock'
 import { HeroBlock } from './HeroBlock'
 import { HeroCarouselBlock } from './HeroCarouselBlock'
+import { HeroMarqueeBlock } from './HeroMarqueeBlock'
 import { HeroEnquiryBlock } from './HeroEnquiryBlock'
 import { LogoStripBlock } from './LogoStripBlock'
 import { MapBlock } from './MapBlock'
@@ -37,6 +38,7 @@ import { TestimonialsBlock } from './TestimonialsBlock'
 export const contentBlocks: Block[] = [
   HeroBlock,
   HeroCarouselBlock,
+  HeroMarqueeBlock,
   RichTextBlock,
   MediaTextBlock,
   CardGridBlock,
