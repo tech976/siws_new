@@ -868,7 +868,7 @@ export interface HeroMarqueeBlock {
       }[]
     | null;
   /**
-   * The photographs that drift past. They are split evenly across the rows below, in this order, and each row shows its share twice so the loop has no seam. Aim for at least six per row — fewer than that and the same picture is on screen twice at once.
+   * The photographs that slide behind the words, in this order. Each fills the whole banner, so use landscape pictures — an upright one is cropped to a band through its middle. Eight to twelve is right: enough that the banner does not repeat while somebody is reading it, few enough that they are not all downloaded for nothing.
    */
   images?:
     | {
@@ -877,11 +877,7 @@ export interface HeroMarqueeBlock {
       }[]
     | null;
   /**
-   * Two is the usual choice: rows moving against each other read as drift, where a single row reads as a conveyor. Use one only when the band has to be shallow.
-   */
-  rows?: ('1' | '2' | '3') | null;
-  /**
-   * Slower is almost always better behind a heading: the movement should be noticed at the edge of the eye, not followed.
+   * Slower is almost always better behind a heading: a visitor should never catch a picture changing while they are reading.
    */
   speed?: ('calm' | 'steady' | 'brisk') | null;
   /**
@@ -2637,7 +2633,6 @@ export interface HeroMarqueeBlockSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
-  rows?: T;
   speed?: T;
   background?: T;
   id?: T;

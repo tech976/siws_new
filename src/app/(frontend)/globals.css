@@ -845,23 +845,6 @@ main > header + section[data-ground]:not([data-ground='white']) {
     padding-right: 0;
   }
 
-  /*
-    PHOTOGRAPHS WRAP; THEY DO NOT GO INTO THE CARD GRID.
-
-    The rule above is written for testimonial cards, which want equal columns
-    and are happy to stretch. A hero tile is a fixed height with its width
-    derived from the photograph's own proportions, and dropping it into a
-    1fr column would stretch it and break the ratio the tile exists to keep.
-
-    Wrapped and centred instead: every photograph on the page at once, at its
-    true shape, with nothing moving and nothing to drag.
-  */
-  .siws-marquee--photos .siws-marquee-track > ul {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding-right: 0;
-  }
 
   /*
    * The card is a fixed width on the moving track, which is what keeps the
@@ -914,5 +897,66 @@ main > header + section[data-ground]:not([data-ground='white']) {
 @media (prefers-reduced-motion: reduce) {
   .siws-accordion details::details-content {
     transition: none;
+  }
+}
+
+/*
+  THE HERO BACKDROP THAT SLIDES.
+
+  One flex track holding every photograph twice, translated 0 to -50% — the
+  same trick the testimonial walls use, at the scale of a whole banner. At the
+  halfway point the second copy sits exactly where the first began, so there
+  is no seam and nothing has to be measured at runtime.
+
+  Slide WIDTHS are set inline as a percentage of the track, not here: they
+  depend on how many photographs the block was given.
+
+  `will-change` is deliberate and narrow. It promotes the track to its own
+  compositor layer so the browser moves pixels it has already painted instead
+  of repainting a blurred, scaled, full-bleed photograph every frame — which
+  is the difference between this being free and being the most expensive thing
+  on the page. It is on one element, not on each slide.
+*/
+.siws-hero-slides {
+  overflow: hidden;
+}
+
+.siws-hero-slides-track {
+  display: flex;
+  height: 100%;
+  will-change: transform;
+  animation: siws-hero-slide 240s linear infinite;
+}
+
+@keyframes siws-hero-slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/*
+  Paused when a visitor reaches the banner with the pointer or tabs into it —
+  WCAG 2.1 SC 2.2.2 wants a way to stop motion that starts on its own, and the
+  banner holds the page's only h1 and its first button.
+*/
+section:hover > .siws-hero-slides .siws-hero-slides-track,
+section:focus-within > .siws-hero-slides .siws-hero-slides-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /*
+    IT STOPS ON THE FIRST PHOTOGRAPH (SC 2.3.3).
+
+    Not merely paused: the track is pinned to its start, so the banner is the
+    still photographic hero it would otherwise have been. Nothing is lost —
+    every photograph here is also in the Gallery.
+  */
+  .siws-hero-slides-track {
+    animation: none !important;
+    transform: none !important;
   }
 }

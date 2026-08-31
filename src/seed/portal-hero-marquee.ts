@@ -6,7 +6,7 @@ const { getPayload } = await import('payload')
 const { default: config } = await import('@payload-config')
 
 /**
- * Replaces the portal's opening banner with the drifting photograph wall.
+ * Gives the portal's opening banner a background that slides.
  *
  * WHERE THE PHOTOGRAPHS COME FROM
  * -------------------------------
@@ -24,10 +24,17 @@ const { default: config } = await import('@payload-config')
  *
  * INTERLEAVED BY SECTION. The library comes back grouped — sixteen Kindergarten
  * photographs, then eleven Primary, and so on — and feeding that order straight
- * in would give a banner that is all one school for its first thirty seconds.
- * The photographs are dealt round-robin across the sections instead, so a row
- * shows a different school every few tiles. That is the argument the portal
- * banner exists to make.
+ * in would give a banner that is all one school for its first two minutes. The
+ * photographs are dealt round-robin across the sections instead, so consecutive
+ * slides come from different schools. That is the argument the portal banner
+ * exists to make.
+ *
+ * AND CAPPED. Each of these fills the whole banner, so they are the largest
+ * images the site serves. Every one is a full-bleed download the visitor may
+ * never scroll far enough to see, and at nine seconds each the twelfth is two
+ * minutes in — past the point anybody is still looking at a home page. Twelve
+ * is enough that the banner never repeats within a visit and few enough that
+ * it is not a megabyte of photographs nobody sees.
  *
  * The words are carried over from the `hero` block it replaces, unchanged.
  *
@@ -70,6 +77,16 @@ const main = async () => {
      * anybody expects to bite.
      */
     if (typeof item.width !== 'number' || typeof item.height !== 'number') return false
+    /*
+     * LANDSCAPE ONLY.
+     *
+     * Each photograph fills the whole banner, and a banner is wide. An
+     * upright picture stretched across it is cropped to a horizontal band
+     * through its middle, which for a portrait of three students is a band
+     * across their chests. Four of the library are upright; they are all over
+     * the site elsewhere, at shapes that suit them.
+     */
+    if (item.width < item.height) return false
     return true
   })
 
@@ -89,6 +106,13 @@ const main = async () => {
     else bySection.set(key, [item])
   }
 
+  /*
+   * Twelve, taken off the front of the interleaved list — so the cap keeps the
+   * round-robin spread rather than truncating to whichever school happened to
+   * sort first.
+   */
+  const MAX_SLIDES = 12
+
   const buckets = [...bySection.values()]
   const interleaved: typeof publishable = []
   for (let round = 0; interleaved.length < publishable.length; round += 1) {
@@ -97,6 +121,8 @@ const main = async () => {
       if (item) interleaved.push(item)
     }
   }
+
+  const chosen = interleaved.slice(0, MAX_SLIDES)
 
   /* ------------------------------------------------------------ the banner */
 
@@ -127,10 +153,14 @@ const main = async () => {
      * this page; putting them on brand blue would give the eye two things
      * competing to be the loudest object above the fold.
      */
-    background: 'white',
-    rows: '2',
+    /*
+     * The banner paints its own brand gradient over the photographs, so the
+     * section ground underneath is never seen. Recorded as brand so the value
+     * is not misleading to anyone reading it in the admin panel.
+     */
+    background: 'brand',
     speed: 'calm',
-    images: interleaved.map((item) => ({ image: item.id })),
+    images: chosen.map((item) => ({ image: item.id })),
   }
 
   const layout = (home.layout ?? []).map((block: { blockType?: string }) =>
@@ -144,9 +174,9 @@ const main = async () => {
     overrideAccess: true,
   })
 
-  const perRow = Math.ceil(interleaved.length / 2)
   payload.logger.info(
-    `Portal banner rebuilt — ${interleaved.length} photographs across ${bySection.size} sections, ${perRow} per row.`,
+    `Portal banner rebuilt — ${chosen.length} photographs across ${bySection.size} sections, ` +
+      `one pass every ${(chosen.length * 9) / 60 < 1 ? `${chosen.length * 9}s` : `${((chosen.length * 9) / 60).toFixed(1)} minutes`}.`,
   )
 
   const setAside = media.length - publishable.length

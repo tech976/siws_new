@@ -16,13 +16,14 @@ import { BLOCK_GROUPS, blockAdmin, sectionOptions } from './shared'
  * — it is what a quarter of SIWS looks like on one morning.
  *
  * So this banner shows the institution the only way it is honestly showable:
- * lots of it, moving. The words stay still and carry the argument; the
- * photographs run underneath them and carry the evidence.
+ * several of it, in turn. The treatment is the still hero's exactly — the
+ * photograph fills the banner, blurred, under the brand gradient — and the
+ * only difference is that the photograph changes.
  *
- * The rows use the same `.siws-marquee` machinery as the testimonial wall —
- * a duplicated track translated 0 → -50%, so the loop has no seam and nothing
- * is measured at runtime. See `globals.css`, which also holds the
- * reduced-motion fallback and the pause-on-hover rule this block relies on.
+ * The slide is a duplicated track translated 0 → -50%, the same trick the
+ * testimonial walls use, so the loop has no seam and nothing is measured at
+ * runtime. See `.siws-hero-slides` in `globals.css`, which also holds the
+ * pause-on-hover and reduced-motion rules this block relies on.
  */
 export const HeroMarqueeBlock: Block = {
   slug: 'heroMarquee',
@@ -96,7 +97,7 @@ export const HeroMarqueeBlock: Block = {
       admin: {
         initCollapsed: true,
         description:
-          'The photographs that drift past. They are split evenly across the rows below, in this order, and each row shows its share twice so the loop has no seam. Aim for at least six per row — fewer than that and the same picture is on screen twice at once.',
+          'The photographs that slide behind the words, in this order. Each fills the whole banner, so use landscape pictures — an upright one is cropped to a band through its middle. Eight to twelve is right: enough that the banner does not repeat while somebody is reading it, few enough that they are not all downloaded for nothing.',
       },
       fields: [
         {
@@ -108,33 +109,18 @@ export const HeroMarqueeBlock: Block = {
       ],
     },
     {
-      name: 'rows',
-      type: 'select',
-      defaultValue: '2',
-      label: 'How many rows',
-      options: [
-        { label: 'One row', value: '1' },
-        { label: 'Two rows, drifting opposite ways', value: '2' },
-        { label: 'Three rows', value: '3' },
-      ],
-      admin: {
-        description:
-          'Two is the usual choice: rows moving against each other read as drift, where a single row reads as a conveyor. Use one only when the band has to be shallow.',
-      },
-    },
-    {
       name: 'speed',
       type: 'select',
       defaultValue: 'calm',
       label: 'How fast it drifts',
       options: [
-        { label: 'Calm — a photograph crosses in about a minute and a half', value: 'calm' },
+        { label: 'Calm — each photograph holds for about nine seconds', value: 'calm' },
         { label: 'Steady', value: 'steady' },
         { label: 'Brisk', value: 'brisk' },
       ],
       admin: {
         description:
-          'Slower is almost always better behind a heading: the movement should be noticed at the edge of the eye, not followed.',
+          'Slower is almost always better behind a heading: a visitor should never catch a picture changing while they are reading.',
       },
     },
     sectionOptions([], 'white', { headingControls: false }),

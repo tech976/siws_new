@@ -2,61 +2,54 @@ import { CMSLink } from '@/components/CMSLink'
 import { Media } from '@/components/Media'
 import type { HeroMarqueeBlock, Media as MediaDoc } from '@/payload-types'
 
-import { type BlockBackground } from './Section'
-
-const BACKGROUND_CLASS: Record<BlockBackground, string> = {
-  white: 'bg-white',
-  sea: 'bg-sea',
-  tint: 'bg-brand-tint',
-  brand: 'bg-brand',
-}
-
 /**
- * How long one full pass takes, per row.
+ * How long the backdrop takes to move through the whole set, per photograph.
  *
- * Each row is a little slower than the one above it. Identical durations make
- * two rows read as one mechanism sliding in two pieces; a few seconds of
- * difference is enough for them to read as independent, and it is the cheapest
- * way to stop a marquee looking like a conveyor belt.
- *
- * These are long. A photograph should cross the screen at the speed of
- * something noticed at the edge of the eye, not something being watched — and
- * a hero that hurries is a hero that competes with its own heading.
+ * The track runs from 0 to -50%, which is exactly one pass of the original
+ * list, so the total is this multiplied by the number of photographs. Nine
+ * seconds each is slow enough that a visitor reading the heading never catches
+ * a picture changing under it.
  */
-const DURATIONS: Record<string, string[]> = {
-  calm: ['92s', '104s', '86s'],
-  steady: ['64s', '73s', '60s'],
-  brisk: ['44s', '51s', '41s'],
+const SECONDS_PER_PHOTO: Record<string, number> = {
+  calm: 9,
+  steady: 7,
+  brisk: 5,
 }
 
 /**
- * A banner whose picture is a drifting wall of photographs.
+ * A page-opening banner whose background photograph slides.
  *
- * WHY THE PHOTOGRAPHS ARE HIDDEN FROM SCREEN READERS
- * --------------------------------------------------
- * The whole moving region carries `aria-hidden`. That is deliberate, and it is
- * the opposite of the decision the testimonial wall makes with the same
- * machinery.
+ * WHAT IT IS
+ * ----------
+ * The photographic hero, with more than one photograph. The treatment is
+ * identical — the picture fills the banner, is blurred, is scaled past its own
+ * frame, and carries the brand gradient over it — and the only difference is
+ * that the pictures move.
  *
- * A quote is content: it exists only in that row, so hiding it would delete
- * it. These photographs are not — every one of them is in the Gallery, filed
- * by subject, with the same alt text and a lightbox to open it in. Announcing
- * forty alt texts here would put a recital of the entire photo library between
- * a screen-reader user and the first sentence of the page, to tell them
- * something the Gallery link tells them in four words.
+ * The blur does the work a heavy scrim used to do: it removes the fine detail
+ * that makes type hard to read, so the tint over it can stay light. An earlier
+ * hero darkened its picture to 95% brand to guarantee contrast and the whole
+ * banner went muddy. `scale-110` is not decoration either — a CSS blur samples
+ * past the element's edge and leaves a feathered border, and scaling beyond
+ * the frame pushes that artefact out of sight.
  *
- * So the band is marked decorative and a single line names what it is and
- * where the photographs live. WCAG 2.1 SC 1.1.1: an image whose information is
- * available elsewhere in text is decorative here.
+ * HOW THE SLIDE WORKS
+ * -------------------
+ * One flex track holding every photograph twice, each slide exactly the width
+ * of the banner. The track is animated from 0 to -50%, at which point the
+ * second copy sits precisely where the first began — so the loop has no seam
+ * and nothing is measured at runtime.
  *
- * MOTION, PAUSING AND REDUCED MOTION are all inherited from `.siws-marquee` in
- * globals.css — one CSS transform per row, no JavaScript, no measurement at
- * runtime, paused on hover and on focus-within, and replaced by a static
- * wrapped grid when the visitor has asked for less motion (SC 2.2.2, SC 2.3.3).
+ * The widths are percentages OF THE TRACK rather than viewport units. `w-screen`
+ * would have been simpler and wrong: `100vw` counts the scrollbar and the
+ * banner does not, so every slide would sit a few pixels further out of
+ * register than the last.
+ *
+ * It is one GPU-composited transform on one element — no JavaScript, no layout
+ * work per frame. It pauses on hover and on focus, and reduced motion stops it
+ * on the first photograph. Both rules live in `globals.css`.
  */
 export const HeroMarqueeBlockView = ({ block }: { block: HeroMarqueeBlock }) => {
-  const variant = (block.background ?? 'white') as BlockBackground
-  const inverted = variant === 'brand'
   const links = block.links ?? []
   const highlights = (block.highlights ?? []).filter((entry) => entry.value?.trim())
 
@@ -74,80 +67,93 @@ export const HeroMarqueeBlockView = ({ block }: { block: HeroMarqueeBlock }) => 
     )
 
   /*
-   * Only populated uploads survive. A row built from a deleted or
-   * unreadable image would be a run of empty boxes sliding past, which is
-   * worse than a shorter row.
+   * Only populated uploads survive — a deleted or unreadable image would slide
+   * a blank panel through the banner, which reads as the page having broken.
    */
   const photos = (block.images ?? [])
     .map((entry) => entry.image)
     .filter((image): image is MediaDoc => typeof image === 'object' && image !== null)
 
-  const rowCount = Math.min(Number(block.rows ?? '2') || 2, 3)
-  const durations = DURATIONS[block.speed ?? 'calm'] ?? DURATIONS.calm!
-
   /*
-   * Dealt round-robin rather than sliced into blocks.
-   *
-   * Slicing would put the first third of the library in row one and the last
-   * third in row three — and because the library is ordered by section, that
-   * means a row of nothing but Kindergarten above a row of nothing but Junior
-   * College. Dealing puts a different school in every few tiles of every row,
-   * which is the whole argument this banner is making.
+   * With one photograph there is nothing to slide, so the banner falls back to
+   * the still version of itself rather than animating a single panel.
    */
-  const rows: MediaDoc[][] = Array.from({ length: rowCount }, () => [])
-  photos.forEach((photo, i) => rows[i % rowCount]!.push(photo))
+  const sliding = photos.length > 1
+  const slides = sliding ? [...photos, ...photos] : photos
 
-  const populated = rows.filter((row) => row.length > 0)
+  const seconds = SECONDS_PER_PHOTO[block.speed ?? 'calm'] ?? SECONDS_PER_PHOTO.calm!
+  const duration = `${seconds * Math.max(photos.length, 1)}s`
 
   return (
-    <section
-      data-invert={inverted ? 'true' : undefined}
-      data-ground={variant}
-      className={`relative isolate overflow-hidden ${BACKGROUND_CLASS[variant] ?? BACKGROUND_CLASS.white}`}
-    >
-      {/* ---------------------------------------------------------- the words */}
-      <div className="siws-container pt-16 pb-12 text-center sm:pt-24 sm:pb-16">
-        {block.eyebrow ? (
-          <p
-            className={`inline-flex w-fit items-center rounded-pill px-4 py-1.5 text-xs font-semibold tracking-[0.14em] uppercase ${
-              inverted
-                ? 'border border-white/40 bg-white/10 text-white backdrop-blur-sm'
-                : 'bg-brand-tint text-brand'
-            }`}
+    <section data-invert="true" data-ground="brand" className="relative isolate overflow-hidden">
+      {/* ------------------------------------------------ the sliding backdrop */}
+      {photos.length > 0 ? (
+        <div aria-hidden="true" className="siws-hero-slides absolute inset-0 -z-20">
+          <div
+            className="siws-hero-slides-track"
+            style={{
+              width: `${slides.length * 100}%`,
+              ...(sliding ? { animationDuration: duration } : { animation: 'none' }),
+            }}
           >
+            {slides.map((photo, i) => (
+              <div
+                key={`${photo.id}-${i}`}
+                className="relative h-full shrink-0"
+                style={{ width: `${100 / slides.length}%` }}
+              >
+                <Media
+                  resource={photo}
+                  sizes="100vw"
+                  /*
+                   * Only the first is eager. It is the largest thing above the
+                   * fold and so the LCP candidate; the rest are minutes away
+                   * and have no business competing for bandwidth on first
+                   * paint.
+                   */
+                  priority={i === 0}
+                  fill
+                  className="scale-110 object-cover object-[center_35%] blur-[3px]"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {/*
+        The same gradient the still hero uses, over whichever photograph is
+        passing. It is what makes white type legible on all of them without
+        anybody having to check each picture individually.
+      */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 bg-gradient-to-r from-brand/85 via-brand/70 to-brand/55"
+      />
+
+      {/* ----------------------------------------------------------- the words */}
+      <div className="siws-container flex min-h-[32rem] flex-col items-center justify-center py-16 text-center sm:min-h-[36rem] sm:py-20">
+        {block.eyebrow ? (
+          <p className="inline-flex w-fit items-center rounded-pill border border-white/40 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm">
             {block.eyebrow}
           </p>
         ) : null}
 
-        {/* The global h1 scale; the tight leading is this banner's own, so a
-            two-line title stays one block rather than drifting apart. */}
-        <h1
-          className={`mt-7 leading-[1.06] tracking-tight text-balance ${inverted ? 'text-white' : ''}`}
-        >
-          {title}
-        </h1>
+        <h1 className="mt-7 leading-[1.06] tracking-tight text-balance">{title}</h1>
 
         {/*
-          The same three-step ladder the photographic hero uses — 700 / 600 /
-          400 in weight, and a visible drop in size at each step, so the order
-          survives even where one of the three runs to a single line.
+          The three-step ladder the still hero established: 48 / 26 / 17 in
+          size at 700 / 600 / 400 in weight. Both gaps are visible on their own,
+          so the order survives where one of the three runs to a single line.
         */}
         {block.subtitle ? (
-          <p
-            className={`mx-auto mt-5 max-w-3xl text-xl leading-snug font-semibold text-balance sm:text-[1.625rem] ${
-              inverted ? 'text-white' : 'text-brand'
-            }`}
-          >
+          <p className="mx-auto mt-5 max-w-3xl text-xl leading-snug font-semibold text-balance text-white sm:text-[1.625rem]">
             {block.subtitle}
           </p>
         ) : null}
 
         {block.intro ? (
-          <p
-            className={`mx-auto mt-4 max-w-2xl text-[0.9375rem] leading-relaxed font-normal text-balance sm:text-[1.0625rem] ${
-              inverted ? 'text-white/75' : 'text-ink-soft'
-            }`}
-          >
+          <p className="mx-auto mt-4 max-w-2xl text-[0.9375rem] leading-relaxed font-normal text-balance text-white/75 sm:text-[1.0625rem]">
             {block.intro}
           </p>
         ) : null}
@@ -161,124 +167,20 @@ export const HeroMarqueeBlockView = ({ block }: { block: HeroMarqueeBlock }) => 
         ) : null}
 
         {highlights.length > 0 ? (
-          <dl
-            className={`mx-auto mt-12 grid w-full max-w-4xl grid-cols-1 gap-y-8 border-t pt-9 sm:grid-cols-3 sm:gap-x-10 ${
-              inverted ? 'border-white/25' : 'border-line'
-            }`}
-          >
+          <dl className="mt-14 grid w-full max-w-4xl grid-cols-1 gap-y-8 border-t border-white/25 pt-9 sm:grid-cols-3 sm:gap-x-10">
             {highlights.map((entry, i) => (
-              <div
-                key={entry.id ?? i}
-                className={`sm:border-l sm:first:border-l-0 ${inverted ? 'border-white/25' : 'border-line'}`}
-              >
-                <dt
-                  className={`text-3xl leading-none whitespace-nowrap sm:text-4xl ${
-                    inverted ? 'text-white' : 'text-brand'
-                  }`}
-                >
+              <div key={entry.id ?? i} className="border-white/25 sm:border-l sm:first:border-l-0">
+                <dt className="text-3xl leading-none whitespace-nowrap text-white sm:text-4xl">
                   {entry.value}
                 </dt>
                 {entry.label ? (
-                  <dd className={`mt-1.5 text-sm ${inverted ? 'text-white/75' : 'text-ink-muted'}`}>
-                    {entry.label}
-                  </dd>
+                  <dd className="mt-1.5 text-sm text-white/75">{entry.label}</dd>
                 ) : null}
               </div>
             ))}
           </dl>
         ) : null}
       </div>
-
-      {/* --------------------------------------------------- the drifting wall */}
-      {populated.length > 0 ? (
-        <>
-          <span className="sr-only">
-            Photographs from across the four SIWS schools drift past here. Every one of them is in
-            the Gallery, filed by subject.
-          </span>
-
-          <div aria-hidden="true" className="pb-16 sm:pb-20">
-            <div className="grid gap-4 sm:gap-5">
-              {populated.map((row, rowIndex) => (
-                <div key={rowIndex} className="siws-marquee siws-marquee--photos">
-                  <div
-                    className="siws-marquee-track"
-                    /*
-                     * Rows alternate direction, so the second reads as moving
-                     * against the first rather than trailing it.
-                     */
-                    data-direction={rowIndex % 2 === 1 ? 'right' : undefined}
-                    style={{
-                      ['--siws-marquee-duration' as string]: durations[rowIndex % durations.length],
-                    }}
-                  >
-                    {/*
-                      The row twice over. The second copy carries `aria-hidden`
-                      inside an already-hidden region purely so the reduced-
-                      motion rule in globals.css — which hides the duplicate —
-                      still finds it.
-                    */}
-                    {[false, true].map((isCopy) => (
-                      <ul
-                        key={String(isCopy)}
-                        className="flex gap-4 pr-4 sm:gap-5 sm:pr-5"
-                        aria-hidden={isCopy ? 'true' : undefined}
-                      >
-                        {row.map((photo, i) => {
-                          /*
-                           * NO LAYOUT SHIFT, AND NO SQUASHED PHOTOGRAPHS.
-                           *
-                           * The tile's HEIGHT is fixed by the breakpoint and
-                           * its WIDTH comes from the picture's own stored
-                           * dimensions via `aspect-ratio`. The browser
-                           * therefore knows the full size of every tile before
-                           * a single byte of image arrives — nothing reflows on
-                           * load — and each photograph keeps its true
-                           * proportions instead of being forced into a
-                           * uniform box.
-                           *
-                           * 3:2 is the fallback for a record written before
-                           * Payload stored dimensions.
-                           */
-                          const ratio =
-                            typeof photo.width === 'number' &&
-                            typeof photo.height === 'number' &&
-                            photo.width > 0 &&
-                            photo.height > 0
-                              ? `${photo.width} / ${photo.height}`
-                              : '3 / 2'
-
-                          return (
-                            <li
-                              key={`${photo.id}-${i}-${String(isCopy)}`}
-                              className="relative h-36 shrink-0 overflow-hidden rounded-2xl bg-brand-tint ring-1 ring-line/50 sm:h-44 lg:h-52"
-                              style={{ aspectRatio: ratio }}
-                            >
-                              <Media
-                                resource={photo}
-                                fill
-                                /*
-                                 * The tiles are a fixed height, so their width
-                                 * is a few hundred pixels whatever the
-                                 * viewport — a viewport-relative `sizes` would
-                                 * make the browser fetch a full-width
-                                 * derivative for a 300px tile.
-                                 */
-                                sizes="(min-width: 1024px) 320px, (min-width: 640px) 260px, 200px"
-                                className="object-cover"
-                              />
-                            </li>
-                          )
-                        })}
-                      </ul>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
-      ) : null}
     </section>
   )
 }
