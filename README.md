@@ -26,20 +26,63 @@ password rather than storing one — use the same value as in `DATABASE_URI`:
 psql -U postgres -h 127.0.0.1 -p 5433 -f scripts/setup-database.sql
 ```
 
-Then seed and run:
+Then load the site and run it:
 
 ```bash
-npm run seed             # the four units — run this first
-npm run seed:media       # photographs into the media library
-npm run seed:institution # main portal pages
-npm run seed:scholarships
-npm run seed:kg
-npm run seed:primary
-npm run seed:secondary
-npm run seed:units       # placeholder pages for units still awaiting content
-
-npm run dev              # http://localhost:3001
+gunzip -c db/siws-content.sql.gz | psql "$DATABASE_URI"   # the whole website
+npm run dev                                               # http://localhost:3001
 ```
+
+That one restore is what makes a fresh clone look like everybody else's. Read
+the next section before reaching for the seed scripts instead.
+
+## Why the database is committed, and the seeds are not the way in
+
+**The pages are not in the repository.** The code renders a page; the page
+itself — 102 of them, plus 51 media records, the four unit sites and the whole
+menu tree — is rows in PostgreSQL. Clone this repo, run `npm run dev` against
+an empty database, and you get a working application with no website in it.
+
+`db/siws-content.sql.gz` is that database, dumped. It carries the schema and
+the content together, which also means a fresh clone needs no migrations: the
+tables arrive already built.
+
+It deliberately does **not** carry `users`, `enquiries`, `audit_logs` or
+saved admin preferences — the table structures come across, the rows do not.
+Nobody's password hash and no parent's enquiry belongs in a git repository.
+Create your own administrator on first run:
+
+```bash
+npm run dev     # then open http://localhost:3001/admin and register
+```
+
+**The photographs travel with the code.** `/media` is committed — the
+web-sized derivatives the site actually renders — so the restored database
+finds every image it references. `/assets/images` holds the sources the media
+seed uploads from. Neither needs a separate step.
+
+**The seed scripts still exist and still work**, but they are how the content
+was *built*, not how it is *distributed*. They ran in a long historical order,
+several of them reshaping what earlier ones had written, and a few are one-off
+transformations that are not meaningful to re-run out of sequence. Use them to
+change content — `npm run seed:primary` after editing `src/seed/primary.ts` —
+and re-dump afterwards. Do not use them to build a site from nothing.
+
+One rule if you do run them: **`npm run seed:nav` runs last, always.** The page
+seeds write their own nav flags, so whichever script runs last wins, and a page
+seed running after the nav seed pulls child pages out of their drop-downs and
+into the top row of the menu.
+
+### After you change content
+
+```bash
+npm run seed:primary        # or whichever seed you edited
+npm run seed:nav            # always last
+npm run db:dump             # refresh db/siws-content.sql.gz
+git add db/siws-content.sql.gz && git commit
+```
+
+Without that last step your teammates keep the old layout.
 
 The admin panel is at `/admin`.
 
