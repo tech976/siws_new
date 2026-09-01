@@ -1,20 +1,7 @@
 import { CMSLink } from '@/components/CMSLink'
-import { Media } from '@/components/Media'
 import type { HeroMarqueeBlock, Media as MediaDoc } from '@/payload-types'
 
-/**
- * How long the backdrop takes to move through the whole set, per photograph.
- *
- * The track runs from 0 to -50%, which is exactly one pass of the original
- * list, so the total is this multiplied by the number of photographs. Nine
- * seconds each is slow enough that a visitor reading the heading never catches
- * a picture changing under it.
- */
-const SECONDS_PER_PHOTO: Record<string, number> = {
-  calm: 9,
-  steady: 7,
-  brisk: 5,
-}
+import { HeroCarousel } from './HeroCarousel'
 
 /**
  * A page-opening banner whose background photograph slides.
@@ -74,52 +61,9 @@ export const HeroMarqueeBlockView = ({ block }: { block: HeroMarqueeBlock }) => 
     .map((entry) => entry.image)
     .filter((image): image is MediaDoc => typeof image === 'object' && image !== null)
 
-  /*
-   * With one photograph there is nothing to slide, so the banner falls back to
-   * the still version of itself rather than animating a single panel.
-   */
-  const sliding = photos.length > 1
-  const slides = sliding ? [...photos, ...photos] : photos
-
-  const seconds = SECONDS_PER_PHOTO[block.speed ?? 'calm'] ?? SECONDS_PER_PHOTO.calm!
-  const duration = `${seconds * Math.max(photos.length, 1)}s`
-
   return (
     <section data-invert="true" data-ground="brand" className="relative isolate overflow-hidden">
-      {/* ------------------------------------------------ the sliding backdrop */}
-      {photos.length > 0 ? (
-        <div aria-hidden="true" className="siws-hero-slides absolute inset-0 -z-20">
-          <div
-            className="siws-hero-slides-track"
-            style={{
-              width: `${slides.length * 100}%`,
-              ...(sliding ? { animationDuration: duration } : { animation: 'none' }),
-            }}
-          >
-            {slides.map((photo, i) => (
-              <div
-                key={`${photo.id}-${i}`}
-                className="relative h-full shrink-0"
-                style={{ width: `${100 / slides.length}%` }}
-              >
-                <Media
-                  resource={photo}
-                  sizes="100vw"
-                  /*
-                   * Only the first is eager. It is the largest thing above the
-                   * fold and so the LCP candidate; the rest are minutes away
-                   * and have no business competing for bandwidth on first
-                   * paint.
-                   */
-                  priority={i === 0}
-                  fill
-                  className="scale-110 object-cover object-[center_35%] blur-[3px]"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
+      <HeroCarousel photos={photos} />
 
       {/*
         The same gradient the still hero uses, over whichever photograph is

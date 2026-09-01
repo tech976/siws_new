@@ -901,62 +901,36 @@ main > header + section[data-ground]:not([data-ground='white']) {
 }
 
 /*
-  THE HERO BACKDROP THAT SLIDES.
+  THE HERO CAROUSEL INDICATOR.
 
-  One flex track holding every photograph twice, translated 0 to -50% — the
-  same trick the testimonial walls use, at the scale of a whole banner. At the
-  halfway point the second copy sits exactly where the first began, so there
-  is no seam and nothing has to be measured at runtime.
+  Four bars under the banner, the active one filling over the time its
+  photograph is held. The fill is a scaled span rather than an animated width:
+  `transform` is composited and `width` is layout, and this runs for four and
+  a half seconds out of every four and a half.
 
-  Slide WIDTHS are set inline as a percentage of the track, not here: they
-  depend on how many photographs the block was given.
+  The crossfade itself is not here — it is an inline `opacity` transition on
+  each photograph, because its duration and the dwell are the component's to
+  decide and a keyframe percentage cannot read a custom property.
 
-  `will-change` is deliberate and narrow. It promotes the track to its own
-  compositor layer so the browser moves pixels it has already painted instead
-  of repainting a blurred, scaled, full-bleed photograph every frame — which
-  is the difference between this being free and being the most expensive thing
-  on the page. It is on one element, not on each slide.
+  Pausing is handled in the component, which sets `animation-play-state` when
+  a pointer is over the banner. Reduced motion is handled there too: the bar
+  is simply drawn full rather than animated, so the indicator still says which
+  photograph is showing without anything moving to say it.
 */
-.siws-hero-slides {
-  overflow: hidden;
-}
-
-.siws-hero-slides-track {
-  display: flex;
-  height: 100%;
-  will-change: transform;
-  animation: siws-hero-slide 240s linear infinite;
-}
-
-@keyframes siws-hero-slide {
+@keyframes siws-hero-progress {
   from {
-    transform: translateX(0);
+    transform: scaleX(0);
   }
   to {
-    transform: translateX(-50%);
+    transform: scaleX(1);
   }
 }
 
 /*
-  Paused when a visitor reaches the banner with the pointer or tabs into it —
-  WCAG 2.1 SC 2.2.2 wants a way to stop motion that starts on its own, and the
-  banner holds the page's only h1 and its first button.
+  Paused for the keyboard as well as the pointer. The banner holds the page's
+  only h1 and its first button, so somebody tabbing into it has as much claim
+  to a still picture as somebody hovering over it (WCAG 2.1 SC 2.2.2).
 */
-section:hover > .siws-hero-slides .siws-hero-slides-track,
-section:focus-within > .siws-hero-slides .siws-hero-slides-track {
+section:focus-within .siws-hero-progress {
   animation-play-state: paused;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  /*
-    IT STOPS ON THE FIRST PHOTOGRAPH (SC 2.3.3).
-
-    Not merely paused: the track is pinned to its start, so the banner is the
-    still photographic hero it would otherwise have been. Nothing is lost —
-    every photograph here is also in the Gallery.
-  */
-  .siws-hero-slides-track {
-    animation: none !important;
-    transform: none !important;
-  }
 }
