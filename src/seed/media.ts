@@ -108,6 +108,30 @@ const IMAGES: ImageSeed[] = [
     depictsChildren: true,
   },
   {
+    file: 'kg-classroom-tables.jpg',
+    filename: 'kg-classroom-tables.jpg',
+    /*
+     * The Kindergarten banner photograph.
+     *
+     * A whole class rather than a corner of one, which is what the top of the
+     * page is being asked to say: this is the size of a year group and this is
+     * the room it sits in. It goes behind the brand gradient at a 3px blur, so
+     * what has to survive is the shape of the room and the mass of colour —
+     * both of which it has, and neither of which depends on a single face.
+     */
+    alt: 'A full kindergarten class in yellow and green SIWS uniform, seated around two large curved white tables and turning to face the camera.',
+    caption: 'A full class around the curved group tables',
+    /*
+     * The faces run in a band from roughly a third of the way down to just
+     * past the middle. Left at 50 the banner crop cut through the back row;
+     * 45 keeps every row inside the strip.
+     */
+    focalY: 45,
+    depictsChildren: true,
+    unit: 'kindergarten',
+    category: 'In the classroom',
+  },
+  {
     file: 'g2.jpeg',
     filename: 'kg-classroom-group.jpg',
     // Thirteen children stacked front to back over half the frame, and the

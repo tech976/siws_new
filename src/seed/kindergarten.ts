@@ -227,6 +227,8 @@ const main = async () => {
   const img = {
     classroomActivity: await mediaByFilename(payload, 'kg-classroom-activity.jpg'),
     activityTable: await mediaByFilename(payload, 'kg-activity-table.jpg'),
+    // The banner photograph: a whole class, not a corner of one.
+    classroomTables: await mediaByFilename(payload, 'kg-classroom-tables.jpg'),
     classroomGroup: await mediaByFilename(payload, 'kg-classroom-group.jpg'),
     classroomSeated: await mediaByFilename(payload, 'kg-classroom-seated.jpg'),
     playArea: await mediaByFilename(payload, 'kg-play-area.jpg'),
@@ -515,7 +517,24 @@ const main = async () => {
            * back to the flat panel rather than losing its gradient and the
            * contrast that goes with it.
            */
-          ...(img.activityTable ? { image: img.activityTable } : {}),
+          /*
+           * A WHOLE CLASS, not a corner of one.
+           *
+           * The banner had been a small group at one table, which at 3px of
+           * blur behind a gradient read as an indistinct patch of colour — it
+           * could have been four children anywhere. This one is a full year
+           * group around both curved tables, so the thing that survives the
+           * blur is the scale of the room and how many children are in it,
+           * which is what a parent is at the top of this page to find out.
+           *
+           * `activityTable` stays in the library and keeps its place in the
+           * campus row below.
+           */
+          ...(img.classroomTables
+            ? { image: img.classroomTables }
+            : img.activityTable
+              ? { image: img.activityTable }
+              : {}),
           // Plain string: the hero's `intro` is a textarea, not rich text.
           intro:
             'Strong academic foundations for the SSC / State Board years ahead, a structured early-learning approach, and a safe, nurturing and child-friendly campus — with a focus on discipline, values and confidence.',
@@ -553,12 +572,20 @@ const main = async () => {
         },
         /**
          * The campus section, matching the approved page: a scrolling row of
-         * photographs, followed by the facilities written out as text.
+         * photographs, each captioned with the facility it shows.
          *
-         * Split into two blocks rather than one grid of captioned cards because
-         * the facilities list must stay readable when the photographs are not —
-         * a visitor on a slow connection, or one who cannot see the images, still
-         * gets the full list of what the campus has.
+         * This used to be followed by "What the campus offers", a card grid
+         * naming the same seven facilities in words. Two blocks saying the
+         * same thing back to back made the page argue with itself: a parent
+         * scrolled a row of photographs of the classrooms, then immediately
+         * read a card telling them the classrooms are spacious. The row is
+         * the better of the two — a photograph of the room is worth more than
+         * an adjective about it — so the cards have gone.
+         *
+         * What the cards carried and the photographs cannot — the canteen,
+         * the washrooms and the monitored entry, none of which are in this
+         * row — has moved into the intro line below, so removing the block
+         * does not quietly remove the facts with it.
          */
         {
           blockType: 'gallery',
@@ -567,7 +594,9 @@ const main = async () => {
           headingLevel: 'h2',
           layout: 'carousel',
           background: 'white',
-          intro: richText(['A child-friendly campus in Wadala.']),
+          intro: richText([
+            'A child-friendly campus in Wadala, with a pure vegetarian canteen cooking on site, washrooms fitted at child height and cleaned through the day, and monitored entry throughout.',
+          ]),
           images: [
             ...shot(img.classroomActivity, 'Spacious, well-ventilated classrooms'),
             ...shot(img.playArea, 'Safe play and activity area'),
@@ -575,69 +604,22 @@ const main = async () => {
             ...shot(img.teacherWithChildren, 'Supportive and trained school staff'),
             ...shot(img.classroomSeated, 'Dedicated activity rooms'),
             /*
+             * Freed up by the banner, which now carries the whole-class
+             * photograph instead. Eight tiles rather than seven also gives the
+             * loop a longer run before a visitor sees the first one come round
+             * again.
+             */
+            ...shot(img.activityTable, 'Low tables and chairs sized for small children'),
+            ...shot(img.childrenTogether, 'Room to play together between lessons'),
+            /*
              * The canteen tray and the washroom tap came off this row at the
              * school's request (2026-08-25). Both are also the two the media
              * seed flags as not looking like SIWS's own photography, so they
              * were the weakest of the nine either way. They stay in the
-             * library, and the facilities LIST below still names both.
+             * library, and the intro line above still names both.
              */
             ...shot(img.smartBoard, 'Interactive smart boards in every classroom'),
             ...shot(img.drawingClass, 'Quiet, focused work at every desk'),
-          ],
-        },
-        /*
-         * Cards rather than a two-column tick list.
-         *
-         * Seven ticks of equal weight gave the eye nothing to land on, so a
-         * parent had to read all seven to find the one they came for. A card
-         * with a picture on it can be recognised before it is read, which is
-         * the whole point of a facilities list.
-         *
-         * Seven items falls as four cards then three, and the renderer widens
-         * the last row so it fills the line rather than trailing off.
-         */
-        {
-          blockType: 'featureList',
-          heading: 'What the campus offers',
-          headingLevel: 'h3',
-          layout: 'cards',
-          background: 'white',
-          items: [
-            {
-              title: 'Spacious & Well-Ventilated Classrooms',
-              description: 'Bright, airy rooms designed for young learners.',
-              icon: 'classroom',
-            },
-            {
-              title: 'Secure & Child-Friendly Campus',
-              description: 'Monitored entry and child-safe infrastructure throughout.',
-              icon: 'security',
-            },
-            {
-              title: 'Safe Play & Activity Area',
-              description: 'Supervised space for games and structured play.',
-              icon: 'play',
-            },
-            {
-              title: 'Dedicated Activity Rooms',
-              description: 'Separate spaces for art, music and hands-on learning.',
-              icon: 'activity',
-            },
-            {
-              title: 'Pure Veg Canteen',
-              description: 'Hygienic, purely vegetarian food prepared on campus.',
-              icon: 'canteen',
-            },
-            {
-              title: 'Clean & Hygienic Washrooms',
-              description: 'Child-height fittings, cleaned and checked through the day.',
-              icon: 'hygiene',
-            },
-            {
-              title: 'Supportive & Trained School Staff',
-              description: 'Attentive staff experienced with early years children.',
-              icon: 'staff',
-            },
           ],
         },
         {
@@ -1254,7 +1236,7 @@ const main = async () => {
       slug: 'achievements',
       title: 'Achievements',
       intro:
-        'The competitions our four- and five-year-olds have entered, the prizes they have brought back, and the quieter milestones that never come with a trophy.',
+        'The competitions our Kindergarten children take part in, the prizes they bring home, and the everyday milestones we celebrate along the way.',
       showInNav: true,
       navLabel: 'Achievements',
       navOrder: 42,
@@ -1327,14 +1309,33 @@ const main = async () => {
               when: '2024–25',
             }),
             /*
-             * NO BADGE ON THIS ONE, deliberately. Six children entered and the
-             * photograph shows their numbered cards, not a prize — so the tile
-             * says they took part and stops there. The block leaves the badge
-             * off when no prize is named, which is the whole reason it is an
-             * optional field.
+             * THE BADGE NAMES THE ENTRY, NOT A PRIZE.
+             *
+             * This tile had no badge at all, which was honest but left it the
+             * odd one out in a row of nine — a gap where every neighbour has a
+             * yellow pill reads as a tile that failed to load rather than a
+             * deliberate silence.
+             *
+             * So it gets a badge that says what the photograph actually shows.
+             * The children are wearing numbered entrant cards; there is no
+             * trophy and no certificate anywhere in the frame, and nothing in
+             * the library records a placing. "Participation" is therefore the
+             * strongest claim the evidence supports, and the tile now matches
+             * its neighbours without asserting a win nobody recorded.
+             *
+             * It reads as a badge because it is the ordinary word for one —
+             * every neighbour names a thing received, and this names the entry
+             * itself. An earlier draft counted the children instead ("Six
+             * entrants"), which stated a fact but did not sound like any label
+             * a school would print.
+             *
+             * No `when`: the year of this competition is not recorded against
+             * the photograph, and a guessed one on a prize wall is worse than
+             * none.
              */
             ...won(img.prizeFancyDressEntrants, {
               title: 'Interschool fancy dress',
+              award: 'Participation',
               detail:
                 'Six entrants and six costumes made at home — a fruit seller, a pilot, a beauty queen, a campaigner, Spider-Man and a bunch of grapes.',
             }),
@@ -1861,6 +1862,132 @@ const main = async () => {
           intro: richText([
             'Patient, trained educators who understand early childhood development.',
           ]),
+        },
+      ],
+    },
+
+    /* ------------------------------------------------ RULES AND UNIFORM ---
+     *
+     * Written from the guidelines SIWS supplied, and split into the two things
+     * a parent actually comes here to do: find out what to buy, and find out
+     * what is expected of them.
+     *
+     * THE RULES ARE CARDS WITH TITLES, not the numbered sentences as supplied.
+     * Seven sentences of near-identical length set as a list is a wall — a
+     * parent looking for the attendance requirement has to read six other
+     * rules to find it. Giving each one a two- or three-word title puts the
+     * subject first, so the page can be scanned and the sentence read only
+     * once the right rule has been found. The wording of each rule is
+     * otherwise the school's own.
+     *
+     * "Pupil" is not used, here or anywhere else on the site, per SIWS's
+     * instruction of 2026-08-27. The supplied text says "pupils"; this says
+     * "children", which is what the rest of the Kindergarten section says.
+     */
+    {
+      slug: 'school-rules',
+      title: 'Rules, Discipline & Uniform',
+      intro:
+        'What children wear to school, and what we ask of families to keep the day running smoothly.',
+      showInNav: true,
+      navLabel: 'Rules & Uniform',
+      navOrder: 9,
+      metaDescription:
+        'The Kindergarten uniform at SIWS Wadala — girls, boys, P.T. days and footwear — and the general school rules on attendance, punctuality, recess food and safety.',
+      layout: [
+        /*
+         * Four cards, which the row-fill logic lays out as a single row of
+         * four on a large screen and a two-by-two block below that — even
+         * either way, with no stretched card at the end.
+         *
+         * No icons. The icon set runs to classrooms, laboratories and sports
+         * pitches; there is nothing in it for a frock, a shirt or a shoe, and
+         * a card labelled "Girls" under a picture of a school building is
+         * worse than a card with no picture at all.
+         */
+        {
+          blockType: 'featureList',
+          heading: 'The uniform',
+          accentWord: 'uniform',
+          headingLevel: 'h2',
+          layout: 'cards',
+          background: 'white',
+          intro: richText([
+            'Terrycot, in lemon yellow and mehendi green. The same cloth for both, so a class photograph reads as one group.',
+          ]),
+          items: [
+            {
+              title: 'Girls',
+              description:
+                'A terrycot frock in lemon yellow and mehendi green, with checks and dots.',
+            },
+            {
+              title: 'Boys',
+              description:
+                'A lemon yellow terrycot shirt with dots, and mehendi green checked half pants.',
+            },
+            {
+              title: 'P.T. uniform',
+              description: 'Worn every Wednesday, in place of the regular uniform.',
+            },
+            {
+              title: 'Footwear',
+              description:
+                'All-season black shoes with a Velcro strap, and lemon yellow socks with stripes.',
+            },
+          ],
+        },
+        /*
+         * Numbered cards on the tinted ground, so the two sections of this
+         * page do not read as one long run of white boxes. Seven falls as four
+         * then three, and the second row widens to fill the line.
+         */
+        {
+          blockType: 'featureList',
+          heading: 'General rules',
+          accentWord: 'rules',
+          headingLevel: 'h2',
+          layout: 'cards',
+          marker: 'number',
+          background: 'tint',
+          intro: richText([
+            'These apply through the year. Anything you are unsure about, the school office will answer.',
+          ]),
+          items: [
+            {
+              title: 'Diary and identity card',
+              description:
+                'Every child must carry the school diary and the identity card to school daily.',
+            },
+            {
+              title: 'Arriving on time',
+              description: 'Parents must ensure that their child reaches school on time.',
+            },
+            {
+              title: 'Fees',
+              description: 'Parents are advised to remit the fees for the whole year.',
+            },
+            {
+              title: 'Attendance',
+              description:
+                'A minimum attendance of 75% of the total number of working days is required of every child.',
+            },
+            {
+              title: 'No gold ornaments',
+              description:
+                'Children are requested not to wear any gold ornaments, for the sake of their personal safety.',
+            },
+            {
+              title: 'Food at recess',
+              description:
+                'Children should bring only dry food for recess. Please avoid oily and liquid food.',
+            },
+            {
+              title: 'School property',
+              description:
+                'Any damage to school property — inside or outside the classrooms, or anywhere within the school premises — is to be made good by those responsible, or by their parents.',
+            },
+          ],
         },
       ],
     },

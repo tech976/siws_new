@@ -187,9 +187,12 @@ const UNIT: Entry[] = [
  * (2026-08-24). Junior College keeps it.
  */
 const UNIT_OMIT: Record<string, string[]> = {
-  // Kindergarten also drops Rules & Uniform (2026-08-25), leaving Academics as
-  // its overview and Our Teachers. Primary and Secondary keep it: only the
-  // Kindergarten section asked for it off.
+  /*
+   * Rules & Uniform came off Kindergarten on 2026-08-25 because the page was
+   * empty, and went back on 2026-09-01 now that SIWS has supplied the uniform
+   * specification and the general rules. Academics therefore carries Our
+   * Teachers and Rules & Uniform again.
+   */
   /*
    * FAQ comes off because Admissions FAQ answers the same questions and is
    * where a parent goes looking for them — two FAQs in one menu is a choice
@@ -198,7 +201,7 @@ const UNIT_OMIT: Record<string, string[]> = {
    * Student Wall comes off because it is still the placeholder page; Student
    * Life keeps Transport and gains the Campus Gallery below.
    */
-  kindergarten: ['annual-calendar', 'school-rules', 'faq', 'student-wall'],
+  kindergarten: ['annual-calendar', 'faq', 'student-wall'],
   primary: ['annual-calendar'],
   secondary: ['annual-calendar'],
   /*
