@@ -57,7 +57,25 @@ export const CardGridBlockView = ({ block }: { block: CardGridBlock }) => {
         <RichText data={block.intro} className="mb-10 siws-centre mx-auto max-w-3xl" />
       ) : null}
 
-      <ul className={`grid gap-6 ${COLUMN_CLASS[columns] ?? COLUMN_CLASS['3']}`}>
+      {/*
+        A LONE CARD IS NOT A ONE-CARD ROW.
+
+        The column setting offers two, three or four across and nothing else,
+        so a grid left holding a single card laid it out in the first cell of a
+        two-column track and left the second empty — under a centred heading,
+        that reads as a card that failed to load rather than as a section with
+        one thing in it. Kindergarten's "More on school life" hit this the
+        moment Transport came off it.
+
+        So one card ignores the column setting and is centred at a card's
+        width instead. Capped rather than full-width: a single card stretched
+        across the container stops looking like a card at all.
+      */}
+      <ul
+        className={`grid gap-6 ${
+          cards.length === 1 ? 'mx-auto max-w-md' : (COLUMN_CLASS[columns] ?? COLUMN_CLASS['3'])
+        }`}
+      >
         {cards.map((card, index) => {
           const link = card.cta?.[0]?.link
           const href = resolveCMSHref(link)
@@ -115,7 +133,13 @@ export const CardGridBlockView = ({ block }: { block: CardGridBlock }) => {
                  */
                 <Media
                   resource={card.image}
-                  sizes={SIZES[columns] ?? SIZES['3']}
+                  /* A lone card is capped at 28rem, not sized off the column
+                     setting it is no longer laid out by. */
+                  sizes={
+                    cards.length === 1
+                      ? '(min-width: 640px) 28rem, 100vw'
+                      : (SIZES[columns] ?? SIZES['3'])
+                  }
                   className={
                     card.fit === 'whole'
                       ? /*
