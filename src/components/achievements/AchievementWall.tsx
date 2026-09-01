@@ -106,13 +106,28 @@ const AchievementTile = ({
       of colour stops, so a single scrim that changed its stops on hover would
       snap. The base never moves and the second fades in over it.
     */}
+    {/*
+      SOFTENED, NOT REMOVED. It was 95% brand at the foot of the tile falling
+      to nothing by 60% of its height — nearly solid navy under the words, and
+      the whole drop happening across a third of the tile. Two things made that
+      read as harsh: the darkest point was close enough to opaque that the
+      photograph simply stopped, and the ramp was short enough to show as a
+      band rather than a fade.
+
+      So the floor comes down and the ramp lengthens: 82% at the very bottom,
+      still dark enough to carry white type over any photograph, easing through
+      a lower mid-point over a longer distance so there is no visible edge. The
+      top of every picture is still untouched — reaching further up is what
+      tints a wall of nine photographs blue, which is the other way this goes
+      wrong.
+    */}
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-deep/95 via-brand-deep/72 via-24% to-transparent to-60%"
+      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-deep/82 via-brand-deep/44 via-30% to-transparent to-68%"
     />
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-deep/60 via-brand-deep/30 via-24% to-transparent to-72% opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100"
+      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-deep/38 via-brand-deep/16 via-30% to-transparent to-76% opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100"
     />
 
     {/*
