@@ -2147,14 +2147,14 @@ const main = async () => {
             ]),
           },
           {
-            question: 'Is there a uniform, and are there rules about it?',
+            question: 'What are the uniform rules?',
             answer: richText([
-              'Yes. All students come to school in the prescribed uniform and are expected to be neat and tidy. What the uniform consists of is set out on the rules and uniform page.',
+              'All students come to school in the prescribed uniform and are expected to be neat and tidy. What the uniform consists of is set out on the rules and uniform page.',
               'Children are asked not to wear ornaments or a watch. That is a safety rule rather than a dress rule — students are responsible for the safe custody of their own books and belongings.',
             ]),
           },
           {
-            question: 'Is the campus supervised?',
+            question: 'How is the campus kept safe?',
             answer: richText([
               'The entire campus — classrooms, corridors, entrances and common areas — is monitored by CCTV, and movement between rooms is supervised. Safety is the reason the school also asks visitors to come in only with the Head Teacher’s consent.',
             ]),
@@ -2176,7 +2176,7 @@ const main = async () => {
             ]),
           },
           {
-            question: 'How is it taught?',
+            question: 'How are lessons taught?',
             answer: richText([
               'Through child-centred, activity-based and competency-driven methods, so a lesson is understood rather than memorised. Every classroom has an interactive smart panel, and multimedia lessons are used alongside the board and the exercise book.',
               'There is continuous formative assessment with constructive feedback, and individual attention and remedial support wherever a child needs it.',
@@ -2189,7 +2189,7 @@ const main = async () => {
             ]),
           },
           {
-            question: 'What can my child take part in besides lessons?',
+            question: 'What can my child take part in outside lessons?',
             answer: richText([
               'Twelve competitions run through the year — recitation, fancy dress, elocution, drawing and painting, story telling, group singing, handwriting, work experience, clay work, rangoli, best out of waste, and sports and games.',
               'Alongside those are literary and language activities, art, craft, music and dance, sport, cultural celebrations, environmental work and leadership opportunities. The Student Life pages set all of it out.',
@@ -2198,7 +2198,7 @@ const main = async () => {
           {
             question: 'Who teaches my child?',
             answer: richText([
-              'The section has twenty-two teachers under two head teachers — Mrs. Geeta Raja, I/C Head Teacher, and Mrs. Sreedevi Prasanna Bagayatkar, Head Teacher — qualified in B.A., B.Com., M.A., B.Ed. and D.Ed., with an art teacher among them. Many have taught here for more than twenty years. Every name is on the teachers page.',
+              'The section has twenty-two teachers under two head teachers, qualified in B.A., B.Com., M.A., B.Ed. and D.Ed., with an art teacher among them. Many have taught here for more than twenty years. Every name, and who leads each teaching team, is on the teachers page.',
             ]),
           },
         ],
@@ -2218,7 +2218,7 @@ const main = async () => {
             ]),
           },
           {
-            question: 'We have moved, or changed our phone number.',
+            question: 'How do I tell the school we have moved or changed our number?',
             answer: richText([
               'Tell the office promptly. The school keeps a record of the address and telephone number of every student’s parents or guardians, and it is only useful if it is current.',
             ]),
@@ -2236,7 +2236,7 @@ const main = async () => {
             ]),
           },
           {
-            question: 'Is there financial help available?',
+            question: 'Is there financial help?',
             answer: richText([
               'SIWS administers 151 scholarship and endowment funds, given by well-wishers over more than nine decades and awarded from the Kindergarten Section through to the S.S.C. Examination. Three of them name the Wadala Primary Section specifically; they are listed on the admissions page.',
             ]),
