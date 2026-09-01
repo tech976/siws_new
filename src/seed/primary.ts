@@ -29,6 +29,26 @@ const { richText } = await import('./lexical')
  */
 const CLASS_OPTIONS = ['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4']
 
+/**
+ * PRIMARY SECTION CONTACT DETAILS
+ * ===============================
+ * Supplied by SIWS for the Primary Section, and the only contact details
+ * this section shows. They are held here rather than typed into each page
+ * because eight places print them, and eight copies drift.
+ *
+ * Primary only. The other three units and the portal keep the Society's
+ * general email and mobile from `units-content.ts`.
+ *
+ * TWO NUMBERS, ONE `phone` FIELD. The unit's `phone` becomes a `tel:`
+ * link and holds a single value, so a pair in it would produce a link that
+ * dials neither. PRIMARY_PHONE is what the footer dials; both numbers are
+ * printed together wherever the office is named in full.
+ */
+const PRIMARY_PHONE = '022-24114262'
+const PRIMARY_PHONE_ALT = '022-24115055'
+const PRIMARY_PHONES = `${PRIMARY_PHONE} or ${PRIMARY_PHONE_ALT}`
+const PRIMARY_EMAIL = 'admissions@siwsschool.edu.in'
+
 const SUBJECTS = [
   { title: 'English' },
   { title: 'Marathi' },
@@ -212,8 +232,7 @@ const MATUNGA_FACULTY = [
   { name: 'Ms. Payal Sandeep Shukla', qualifications: 'H.S.C., D.Ed.' },
   { name: 'Mrs. Mary Dolours Richard', qualifications: 'B.A., D.Ed.' },
   { name: 'Ms. Prema Keshwan Devendra', qualifications: 'B.A., D.Ed.' },
-  // No qualifications given on the list she appears on, so none are shown.
-  { name: 'Ms. Vaishali Baghat' },
+  { name: 'Ms. Vaishali Baghat', qualifications: 'M.A., D.T.Ed., NET' },
 ]
 
 /** Head teacher first; the rest in the order SIWS listed them. */
@@ -235,8 +254,11 @@ const FACULTY = [
   { name: 'Gurjit Kaur Matta', qualifications: 'B.A., D.Ed.' },
   { name: 'Shruti Sampat Gaware', qualifications: 'B.A., D.Ed.' },
   { name: 'Deepika Naidu', qualifications: 'H.S.C., D.Ed.' },
-  // Listed with a subject rather than a qualification.
-  { name: 'Deepika Boricha', designation: 'Arts Teacher' },
+  {
+    name: 'Deepika Boricha',
+    designation: 'Arts Teacher',
+    qualifications: 'H.S.C., A.T.D.',
+  },
 ]
 
 /**
@@ -380,6 +402,10 @@ const main = async () => {
       tagline: 'Maharashtra State Board | Grades 1 to 4',
       description:
         'Grades 1 to 4 following the Maharashtra State Board curriculum, aligned with NEP 2020 — nurturing confident, responsible and joyful learners.',
+      // Overrides the Society-wide pair from `units-content.ts` for this
+      // section only. One number, because the field is a `tel:` link.
+      phone: PRIMARY_PHONE,
+      email: PRIMARY_EMAIL,
     } as never,
   })
 
@@ -872,11 +898,11 @@ const main = async () => {
           {
             title: 'Admissions',
             description:
-              'For enquiries about Grades 1 to 4 at either campus — admissions@siws.edu.in',
+              `For enquiries about Grades 1 to 4 at either campus — ${PRIMARY_EMAIL}, or telephone ${PRIMARY_PHONES}.`,
           },
           {
             title: 'General enquiries',
-            description: 'For anything else — info@siws.edu.in',
+            description: `For anything else — ${PRIMARY_EMAIL}, or telephone ${PRIMARY_PHONES}.`,
           },
         ],
       },
@@ -992,7 +1018,7 @@ const main = async () => {
             link: {
               label: 'Email the admissions team',
               type: 'external',
-              url: 'mailto:admissions@siws.edu.in',
+              url: `mailto:${PRIMARY_EMAIL}`,
               appearance: 'primary',
             },
           },
@@ -1226,7 +1252,7 @@ const main = async () => {
             title: 'Tell us which grade',
             icon: 'communication',
             description:
-              'Write to admissions@siws.edu.in, or send the enquiry form on the contact page, saying which grade and which academic year you are asking about.',
+              `Write to ${PRIMARY_EMAIL} or telephone ${PRIMARY_PHONES}, or send the enquiry form on the contact page, saying which grade and which academic year you are asking about.`,
           },
           {
             title: 'Collect the admission form',
@@ -1356,7 +1382,7 @@ const main = async () => {
             link: {
               label: 'Email the admissions team',
               type: 'external',
-              url: 'mailto:admissions@siws.edu.in',
+              url: `mailto:${PRIMARY_EMAIL}`,
               appearance: 'primary',
             },
           },
@@ -1462,7 +1488,7 @@ const main = async () => {
           {
             question: 'How do I start?',
             answer: richText([
-              'Write to admissions@siws.edu.in, or send the enquiry form on our contact page, saying which grade and which academic year you are asking about. That one detail is what lets the office tell you straight away whether there is anything to apply for.',
+              `Write to ${PRIMARY_EMAIL} or telephone ${PRIMARY_PHONES}, or send the enquiry form on our contact page, saying which grade and which academic year you are asking about. That one detail is what lets the office tell you straight away whether there is anything to apply for.`,
             ]),
           },
           {
@@ -1543,7 +1569,7 @@ const main = async () => {
             link: {
               label: 'Email the admissions team',
               type: 'external',
-              url: 'mailto:admissions@siws.edu.in',
+              url: `mailto:${PRIMARY_EMAIL}`,
               appearance: 'primary',
             },
           },
@@ -2517,7 +2543,7 @@ const main = async () => {
           {
             title: 'Write to the school office',
             description:
-              'For anything the class teacher cannot settle, info@siws.edu.in reaches the office, and the office will arrange a time with the Head Teacher.',
+              `For anything the class teacher cannot settle, write to ${PRIMARY_EMAIL} or telephone ${PRIMARY_PHONES}, and the office will arrange a time with the Head Teacher.`,
           },
           ...(contactPageId
             ? [
