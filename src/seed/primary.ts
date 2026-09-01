@@ -42,14 +42,16 @@ const SUBJECTS = [
    * column between Mathematics and Art, and left Physical Education stranded
    * on a row of its own, which is what the section looked wrong for.
    *
-   * Folded into the title, all seven subjects are one line each, the four rows
+   * Folded into the title, all nine subjects are one line each, the five rows
    * come out even, and not a word is lost. The block's own single-column
    * layout is the one built for items that carry a paragraph.
    */
   { title: 'EVS (Science, History, Geography and Civics)' },
+  { title: 'ICT' },
   { title: 'Art' },
   { title: 'Work Experience' },
   { title: 'Physical Education' },
+  { title: 'Value Education' },
 ]
 
 const GRADE_CURRICULUM = [
@@ -1444,7 +1446,7 @@ const main = async () => {
           {
             question: 'Which medium and board is the teaching in?',
             answer: richText([
-              'English medium, following the Maharashtra State Board curriculum aligned with NEP 2020. English, Marathi, Mathematics, EVS, Art, Work Experience and Physical Education are all taught from Grade 1.',
+              'English medium, following the Maharashtra State Board curriculum aligned with NEP 2020. English, Marathi, Mathematics, EVS, ICT, Art, Work Experience, Physical Education and Value Education are all taught from Grade 1.',
             ]),
           },
         ],
@@ -2348,7 +2350,7 @@ const main = async () => {
           {
             question: 'What is my child taught?',
             answer: richText([
-              'English, Marathi, Mathematics, EVS — which takes in Science, History, Geography and Civics — Art, Work Experience and Physical Education. The curriculum is the Maharashtra State Board’s, aligned with NEP 2020, in English medium.',
+              'English, Marathi, Mathematics, EVS — which takes in Science, History, Geography and Civics — ICT, Art, Work Experience, Physical Education and Value Education. The curriculum is the Maharashtra State Board’s, aligned with NEP 2020, in English medium.',
             ]),
           },
           {
