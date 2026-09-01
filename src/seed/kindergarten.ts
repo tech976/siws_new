@@ -272,6 +272,26 @@ const main = async () => {
       payload,
       'pre-primary-section-classroom-campus-images-2.jpg',
     ),
+    /*
+     * THE PRIZE PHOTOGRAPHS, for the Achievements page.
+     *
+     * Every one of these is a group of Kindergarten children holding something
+     * they were given. They are named here rather than pulled off the gallery
+     * wall because the Achievements page states what each one WAS — the
+     * competition, the prize — and that claim has to be attached to a known
+     * photograph, not to whatever happens to be filed under the heading.
+     */
+    prizeNatyaTarang: await mediaByFilename(payload, 'siws-natya-tarang.jpg'),
+    prizeFancyDress: await mediaByFilename(payload, 'siws-fancy-dress-environment.jpg'),
+    prizeAndhra: await mediaByFilename(payload, 'siws-award-andhra.jpg'),
+    prizeDanceCompetition: await mediaByFilename(payload, 'siws-dance-competition.jpg'),
+    prizeDanceTrophy: await mediaByFilename(payload, 'kg-dance-trophy-2024.jpg'),
+    prizeOurLadysGarden: await mediaByFilename(payload, 'kg-dance-ourladys-garden.jpg'),
+    prizeIgnitedMind: await mediaByFilename(payload, 'ignited-mind-lab-2026.jpg'),
+    prizeDistribution: await mediaByFilename(payload, 'kg-prize-distribution-2025.jpg'),
+    prizeInterClass: await mediaByFilename(payload, 'kg-prize-distribution-2025-group.jpg'),
+    prizeSports: await mediaByFilename(payload, 'kg-annual-sports-prizes.jpg'),
+    prizeFancyDressEntrants: await mediaByFilename(payload, 'kg-fancy-dress-entrants.jpg'),
     // Portrait, and the only play-area shot that is — it fills the frame whole.
     slide: await mediaByFilename(payload, 'pre-primary-section-classroom-campus-images-5.jpg'),
   }
@@ -286,6 +306,17 @@ const main = async () => {
   /** Gallery entry, skipped entirely when the image is absent. */
   const shot = (id: number | null, caption: string) =>
     id === null ? [] : [{ image: id, caption }]
+
+  /**
+   * One tile on the achievement wall, skipped entirely when its photograph is
+   * absent. The block requires a picture per row — a prize with no photograph
+   * would be a card in a wall of photographs — so a missing file has to remove
+   * the whole claim rather than leave a hole in the grid.
+   */
+  const won = (
+    photo: number | null,
+    fields: { title: string; award?: string; when?: string; detail?: string; feature?: boolean },
+  ) => (photo === null ? [] : [{ photo, ...fields }])
 
   // -- Fill in the unit's own details, so the footer and contact page work ---
   await payload.update({
@@ -718,7 +749,7 @@ const main = async () => {
                * child will not be taught in. The card runs on its icon until
                * the school sends one.
                */
-              title: 'Digital board and Educom facility',
+              title: 'Digital board facility',
               description: 'Technology-supported teaching in the early years classroom.',
               icon: 'computers',
             },
@@ -1224,13 +1255,92 @@ const main = async () => {
       slug: 'achievements',
       title: 'Achievements',
       intro:
-        'At this age the milestones matter more than the medals. These are the four things the Kindergarten years are building.',
+        'The competitions our four- and five-year-olds have entered, the prizes they have brought back, and the quieter milestones that never come with a trophy.',
       showInNav: true,
       navLabel: 'Achievements',
       navOrder: 42,
       metaDescription:
-        'What children work towards in the SIWS Kindergarten years — early literacy, number sense, motor skills and social confidence.',
+        'Prizes, competitions and prize days in the SIWS Kindergarten section in Wadala — and the early literacy, number and social milestones behind them.',
       layout: [
+        {
+          blockType: 'achievementWall',
+          heading: 'Competitions and prize days',
+          accentWord: 'prize days',
+          headingLevel: 'h2',
+          background: 'white',
+          intro: richText([
+            'Kindergarten children enter interschool competitions alongside the older sections, and the section holds its own prize days through the year. Open any photograph to see it properly.',
+          ]),
+          items: [
+            /*
+             * THE LARGE TILE. Chosen because it is the least ambiguous thing
+             * on this page: the certificates name the competition, the year
+             * and the class, so nothing about it rests on anybody's memory.
+             */
+            ...won(img.prizeIgnitedMind, {
+              title: 'Ignited Mind Lab — Mental Maths Competition',
+              award: 'Certificates and medals',
+              when: '2025',
+              detail:
+                'Eleven children came back with a Certificate of Achievement and a gold medal each, having secured an A grade in the Jr. KG and Sr. KG rounds.',
+              feature: true,
+            }),
+            ...won(img.prizeFancyDress, {
+              title: 'Our Lady’s Garden, Auxilium Convent',
+              award: 'Four prizes',
+              detail:
+                'The interschool fancy dress competition. Our costumes were made at home on an environmental theme — a painted globe, a model of the Earth, a windmill and a solar panel.',
+            }),
+            ...won(img.prizeDanceTrophy, {
+              title: 'Interschool dance competition',
+              award: 'Trophy and certificate',
+              when: 'August 2024',
+              detail:
+                'A tricolour group dance for Independence Day, and the trophy and certificate from The Andhra Education Society’s Pre-Primary School that came back with it.',
+            }),
+            ...won(img.prizeOurLadysGarden, {
+              title: 'Group dance at Our Lady’s Garden',
+              award: 'Trophy and certificate',
+              detail:
+                'Thirteen children in the regional costume of a different state each, and the two staff members who taught them the piece.',
+            }),
+            ...won(img.prizeAndhra, {
+              title: 'Andhra Education Society',
+              award: 'One prize',
+              detail: 'Receiving the certificate on stage at the end of the competition.',
+            }),
+            ...won(img.prizeSports, {
+              title: 'Annual school sports',
+              award: 'Trophies and certificates',
+              detail:
+                'The Kindergarten section’s own sports day, and the prize distribution that closes it.',
+            }),
+            ...won(img.prizeInterClass, {
+              title: 'Interclass competition',
+              award: 'Certificates of honour',
+              when: '2024–25',
+              detail:
+                'Held between the Kindergarten classes through the year, with the certificates handed out on prize day.',
+            }),
+            ...won(img.prizeDistribution, {
+              title: 'Annual prize distribution',
+              award: 'Certificates and prizes',
+              when: '2024–25',
+            }),
+            /*
+             * NO BADGE ON THIS ONE, deliberately. Six children entered and the
+             * photograph shows their numbered cards, not a prize — so the tile
+             * says they took part and stops there. The block leaves the badge
+             * off when no prize is named, which is the whole reason it is an
+             * optional field.
+             */
+            ...won(img.prizeFancyDressEntrants, {
+              title: 'Interschool fancy dress',
+              detail:
+                'Six entrants and six costumes made at home — a fruit seller, a pilot, a beauty queen, a campaigner, Spider-Man and a bunch of grapes.',
+            }),
+          ],
+        },
         {
           blockType: 'featureList',
           heading: 'Milestones we build towards',
@@ -1239,7 +1349,7 @@ const main = async () => {
           // Cards: four pillars each carrying a short paragraph, which a tick
           // list would run together into one block of prose.
           layout: 'cards',
-          background: 'white',
+          background: 'sea',
           items: [
             {
               title: 'Foundational literacy',
@@ -1274,7 +1384,7 @@ const main = async () => {
           headingLevel: 'h2',
           marker: 'number',
           columns: '1',
-          background: 'sea',
+          background: 'white',
           items: [
             {
               title: 'Continuous observation, not examinations',
@@ -1290,26 +1400,6 @@ const main = async () => {
               title: 'In the school diary',
               description:
                 'The diary goes home with your child and is the everyday line between the classroom and the kitchen table.',
-            },
-          ],
-        },
-        {
-          blockType: 'callToAction',
-          heading: 'Prizes and competitions',
-          accentWord: 'Prizes',
-          headingLevel: 'h2',
-          background: 'white',
-          body: richText([
-            'Kindergarten children take part in interschool competitions alongside the older sections. Photographs of those the section has won are on the SIWS gallery.',
-          ]),
-          links: [
-            {
-              link: {
-                label: 'See the SIWS gallery',
-                type: 'internal',
-                reference: LINK_TO('/gallery'),
-                appearance: 'primary',
-              },
             },
           ],
         },

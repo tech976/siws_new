@@ -1,6 +1,7 @@
 import type { Page, Unit } from '@/payload-types'
 
 import { AccordionBlockView } from './AccordionBlockView'
+import { AchievementWallBlockView } from './AchievementWallBlockView'
 import { AnnouncementsBlockView } from './AnnouncementsBlockView'
 import { CallToActionBlockView } from './CallToActionBlockView'
 import { BentoBlockView } from './BentoBlockView'
@@ -103,6 +104,8 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
 
           case 'photoLibrary':
             return <PhotoLibraryBlockView key={key} block={block} />
+          case 'achievementWall':
+            return <AchievementWallBlockView key={key} block={block} />
           case 'accordion':
             return <AccordionBlockView key={key} block={block} index={index} />
           case 'testimonials':
