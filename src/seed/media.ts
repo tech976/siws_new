@@ -650,6 +650,56 @@ const IMAGES: ImageSeed[] = [
     // Read rather than admired: never cropped.
     showWhole: true,
   },
+
+  /*
+   * Supplied by SIWS on 2026-09-01 for the Kindergarten campus row.
+   *
+   * All four show identifiable children, so all four are `depictsChildren` and
+   * none of them publishes until `npm run record:consent` has covered them.
+   *
+   * The alt text was written from the photographs themselves rather than from
+   * their filenames — the note at the top of this file explains why that
+   * distinction matters, and it is the only way "a child at the back holding
+   * up a handmade tricolour" gets said at all.
+   */
+  {
+    file: 'kg-play-slide.jpg',
+    filename: 'kg-play-slide.jpg',
+    category: 'Play and activity',
+    alt: 'Kindergarten children playing on a red slide and climbing frame under a canopy, on the green artificial-turf play area, one child mid-slide and others waiting their turn on the platform above.',
+    caption: 'The covered play area',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-classroom-full-class.jpg',
+    filename: 'kg-classroom-full-class.jpg',
+    category: 'Classrooms',
+    alt: 'A full kindergarten class in yellow and green SIWS uniform standing all the way around a large curved white table, with a child at the back holding up a handmade Indian flag made from painted handprints.',
+    caption: 'A full class around the curved group table',
+    depictsChildren: true,
+  },
+  {
+    /*
+     * An OUTING, not a facility — the venue is a commercial play centre and its
+     * branding is the largest thing in the frame. Filed under "Beyond the
+     * classroom" for that reason, and the caption says outing in as many
+     * words, so nothing here can be read as something the campus has.
+     */
+    file: 'kg-outing-play-space.jpg',
+    filename: 'kg-outing-play-space.jpg',
+    category: 'Beyond the classroom',
+    alt: 'A kindergarten class posing together on a low round stage in front of a brightly lit space-themed backdrop at an indoor play centre, during a class outing.',
+    caption: 'A class outing to an indoor play space',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-sports-day-winners.jpg',
+    filename: 'kg-sports-day-winners.jpg',
+    category: 'Achievements',
+    alt: 'Thirteen kindergarten children holding certificates and trophies, seated and standing in two rows beneath a banner reading “Welcome to SIWS KG Section Sport’s Day”.',
+    caption: 'Prize day at the Kindergarten annual sports',
+    depictsChildren: true,
+  },
 ]
 
 /*

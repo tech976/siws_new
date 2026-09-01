@@ -238,6 +238,11 @@ const main = async () => {
     handwashing: await mediaByFilename(payload, 'kg-handwashing.jpg'),
     smartBoard: await mediaByFilename(payload, 'kg-smart-board.jpg'),
     drawingClass: await mediaByFilename(payload, 'kg-drawing-class.jpg'),
+    // Supplied by SIWS on 2026-09-01, for the campus row.
+    playSlide: await mediaByFilename(payload, 'kg-play-slide.jpg'),
+    classroomFullClass: await mediaByFilename(payload, 'kg-classroom-full-class.jpg'),
+    outingPlaySpace: await mediaByFilename(payload, 'kg-outing-play-space.jpg'),
+    sportsDayWinners: await mediaByFilename(payload, 'kg-sports-day-winners.jpg'),
     activityLiteracy: await mediaByFilename(payload, 'kg-activity-literacy.jpg'),
     activityCreative: await mediaByFilename(payload, 'kg-activity-creative.jpg'),
     activityMotor: await mediaByFilename(payload, 'kg-activity-motor.jpg'),
@@ -330,7 +335,7 @@ const main = async () => {
       addressLine2: 'Sion–Wadala Estate Road, Wadala',
       city: 'Mumbai',
       postalCode: '400031',
-      email: 'info@siws.edu.in',
+      email: 'info@siwsschool.edu.in',
       phone: '+91 98927 03893',
       admissionsEmail: 'admissions@siws.edu.in',
       contactEmail: 'info@siws.edu.in',
@@ -620,6 +625,25 @@ const main = async () => {
              */
             ...shot(img.smartBoard, 'Interactive smart boards in every classroom'),
             ...shot(img.drawingClass, 'Quiet, focused work at every desk'),
+            /*
+             * Added 2026-09-01. The first two are the campus: the play
+             * equipment this row had no photograph of at all, and a full class
+             * at the curved tables the row already describes in words.
+             *
+             * THE LAST TWO ARE NOT FACILITIES, and are captioned so they
+             * cannot be read as any. One is an outing to a commercial play
+             * centre whose branding fills the frame, the other a prize day.
+             * Both were asked for by name, so both are here; but a parent
+             * scanning a row headed "Campus and Facilities" is reading it as a
+             * list of what the school HAS, and an indoor play centre the
+             * school visited is not something it has. The Student Life gallery
+             * and the achievements wall are where each of them says something
+             * true — see the note to SIWS at the end of this run.
+             */
+            ...shot(img.playSlide, 'A covered play area with slide and climbing frame'),
+            ...shot(img.classroomFullClass, 'Bright classrooms with child-height furniture'),
+            ...shot(img.outingPlaySpace, 'A class outing to an indoor play space'),
+            ...shot(img.sportsDayWinners, 'Prize day at the Kindergarten annual sports'),
           ],
         },
         {
@@ -1178,6 +1202,20 @@ const main = async () => {
             { title: 'Finger, thumb and palm painting', icon: 'activity' },
           ],
         },
+        /*
+         * A TRANSPORT CARD WAS HERE, and is gone at SIWS's instruction
+         * (2026-09-01) — the same page, for the same reason, that came off
+         * Primary. SIWS has supplied no operator, no route and no fare, so it
+         * never said anything a parent could act on; `institution.ts` carries
+         * the standing warning about it.
+         *
+         * The page is dropped from Kindergarten's menu by `UNIT_OMIT` in
+         * `seed/nav.ts` — which otherwise recreates it as a placeholder — and
+         * unpublished by `UNIT_UNPUBLISH` in the same file, so its address
+         * 404s and it leaves the quick-links panel. Removing this card is the
+         * third part of that: a signpost pointing at a page that is no longer
+         * there is worse than no signpost.
+         */
         {
           blockType: 'cardGrid',
           heading: 'More on school life',
@@ -1196,19 +1234,6 @@ const main = async () => {
                     label: 'See the photographs',
                     type: 'internal',
                     reference: LINK_TO('/kindergarten/gallery'),
-                  },
-                },
-              ],
-            },
-            {
-              title: 'Transport',
-              description: 'How children travel to and from the Wadala campus.',
-              cta: [
-                {
-                  link: {
-                    label: 'Transport details',
-                    type: 'internal',
-                    reference: LINK_TO('/kindergarten/transport'),
                   },
                 },
               ],
@@ -1237,9 +1262,15 @@ const main = async () => {
       title: 'Achievements',
       intro:
         'The competitions our Kindergarten children take part in, the prizes they bring home, and the everyday milestones we celebrate along the way.',
+      /*
+       * The one entry kept from the old Updates drop-down, and now a
+       * top-level link in its own right (2026-09-01). `seed/nav.ts` gives
+       * it the slot Updates held, just after Admissions; the order below
+       * only matters if this seed is the last one run.
+       */
       showInNav: true,
       navLabel: 'Achievements',
-      navOrder: 42,
+      navOrder: 35,
       metaDescription:
         'Prizes, competitions and prize days in the SIWS Kindergarten section in Wadala — and the early literacy, number and social milestones behind them.',
       layout: [
@@ -1433,7 +1464,22 @@ const main = async () => {
       title: 'Updates',
       intro:
         'News, achievements and the documents you may need — the parts of the Kindergarten section that change through the year.',
-      showInNav: true,
+      /*
+       * OFF THE MENU, ON THE SITE (2026-09-01).
+       *
+       * SIWS asked for the Updates drop-down to come out of the
+       * Kindergarten bar and for Achievements to stand on its own there
+       * instead. This page is not deleted and not unpublished: it still
+       * answers at /kindergarten/updates and its card grid below is still
+       * the one place that gathers News, Achievements and the Download
+       * Centre, so anything linking here keeps working.
+       *
+       * The flag has to be false HERE as well as in `seed/nav.ts`, which
+       * clears it: whichever of the two seeds runs last wins, and with
+       * `showInNav: true` still written here a re-run of `npm run seed:kg`
+       * would put the drop-down straight back.
+       */
+      showInNav: false,
       navLabel: 'Updates',
       navOrder: 40,
       metaDescription:
@@ -1516,7 +1562,10 @@ const main = async () => {
       title: 'News & Events',
       intro:
         'The Kindergarten year has a shape to it. These are the things that come round every year — dated notices appear here as they are announced.',
-      showInNav: true,
+      // Out of the menu with its parent — see the note on the Updates page
+      // above. The page stays published, and the Updates card grid and the
+      // home page still link to it.
+      showInNav: false,
       navLabel: 'News & Events',
       navOrder: 41,
       metaDescription:
@@ -1904,21 +1953,26 @@ const main = async () => {
         'The Kindergarten uniform at SIWS Wadala — girls, boys, P.T. days and footwear — and the general school rules on attendance, punctuality, recess food and safety.',
       layout: [
         /*
-         * Four cards, which the row-fill logic lays out as a single row of
-         * four on a large screen and a two-by-two block below that — even
-         * either way, with no stretched card at the end.
+         * A SPECIFICATION, which is what this is: four labels and what each
+         * one means. A parent arrives knowing whether they need the girls' row
+         * or the footwear row, so the labels hold their own column and the eye
+         * finds the right line without reading the other three.
          *
-         * No icons. The icon set runs to classrooms, laboratories and sports
-         * pitches; there is nothing in it for a frock, a shirt or a shoe, and
-         * a card labelled "Girls" under a picture of a school building is
-         * worse than a card with no picture at all.
+         * It was cards, then a ticked list, and both were the wrong shape.
+         * Cards set four one-sentence specifications side by side, which reads
+         * as four categories to compare rather than a table to consult, and
+         * gave each a 96px disc holding a tick. The list layout kept the tick
+         * and dropped the disc, which was smaller but no more meaningful —
+         * four identical ticks over a frock, a shirt, a P.T. kit and a pair of
+         * shoes say nothing about any of them, and there is nothing in the
+         * icon set to put there instead.
          */
         {
           blockType: 'featureList',
           heading: 'The uniform',
           accentWord: 'uniform',
           headingLevel: 'h2',
-          layout: 'cards',
+          layout: 'spec',
           background: 'white',
           intro: richText([
             'Terrycot, in lemon yellow and mehendi green. The same cloth for both, so a class photograph reads as one group.',
@@ -1946,9 +2000,21 @@ const main = async () => {
           ],
         },
         /*
-         * Numbered cards on the tinted ground, so the two sections of this
-         * page do not read as one long run of white boxes. Seven falls as four
-         * then three, and the second row widens to fill the line.
+         * Cards on the tinted ground, so the two sections of this page do not
+         * read as one long run of white boxes. Seven falls as four then three,
+         * and the second row widens to fill the line.
+         *
+         * ICONS, NOT NUMBERS. These were numbered 1–7, which told a parent
+         * they were in an order — they are not; no rule here comes before
+         * another — and set the reader counting rather than reading. Each card
+         * also carried a tick below its text, seven of them, identical, saying
+         * nothing about which rule it sat under.
+         *
+         * An icon per rule does the job the numeral was pretending to: the
+         * clock is punctuality, the calendar is attendance, the rupee is fees.
+         * A parent looking for one rule can now find it without reading the
+         * other six, which is the whole reason these are cards with titles
+         * rather than the seven sentences as supplied.
          */
         {
           blockType: 'featureList',
@@ -1956,7 +2022,7 @@ const main = async () => {
           accentWord: 'rules',
           headingLevel: 'h2',
           layout: 'cards',
-          marker: 'number',
+          marker: 'icon',
           background: 'tint',
           intro: richText([
             'These apply through the year. Anything you are unsure about, the school office will answer.',
@@ -1964,34 +2030,41 @@ const main = async () => {
           items: [
             {
               title: 'Diary and identity card',
+              icon: 'diary',
               description:
                 'Every child must carry the school diary and the identity card to school daily.',
             },
             {
               title: 'Arriving on time',
+              icon: 'punctuality',
               description: 'Parents must ensure that their child reaches school on time.',
             },
             {
               title: 'Fees',
+              icon: 'fees',
               description: 'Parents are advised to remit the fees for the whole year.',
             },
             {
               title: 'Attendance',
+              icon: 'attendance',
               description:
                 'A minimum attendance of 75% of the total number of working days is required of every child.',
             },
             {
               title: 'No gold ornaments',
+              icon: 'valuables',
               description:
                 'Children are requested not to wear any gold ornaments, for the sake of their personal safety.',
             },
             {
               title: 'Food at recess',
+              icon: 'canteen',
               description:
                 'Children should bring only dry food for recess. Please avoid oily and liquid food.',
             },
             {
               title: 'School property',
+              icon: 'premises',
               description:
                 'Any damage to school property — inside or outside the classrooms, or anywhere within the school premises — is to be made good by those responsible, or by their parents.',
             },
@@ -2046,9 +2119,9 @@ const main = async () => {
                 'Admissions for the next academic year begin in November. It is worth contacting us before then so we can tell you when forms are available.',
             },
             {
-              title: 'Collect and submit the form at the school',
+              title: 'Admission forms are handled in person at the school office, not online',
               description:
-                'Admission forms are handled in person at the school office, not online.',
+                'Admission forms are available at the school office and must be collected and submitted in person. Online submission is not available.',
             },
             {
               title: 'Send us an enquiry any time',
