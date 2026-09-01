@@ -1,6 +1,7 @@
 import type { Block } from 'payload'
 
 import { AccordionBlock } from './AccordionBlock'
+import { AchievementWallBlock } from './AchievementWallBlock'
 import { AnnouncementsBlock } from './AnnouncementsBlock'
 import { CallToActionBlock } from './CallToActionBlock'
 import { BentoBlock } from './BentoBlock'
@@ -49,6 +50,7 @@ export const contentBlocks: Block[] = [
   GalleryBlock,
   VideoGalleryBlock,
   PhotoLibraryBlock,
+  AchievementWallBlock,
   DividerBlock,
   MapBlock,
   AccordionBlock,
@@ -64,6 +66,7 @@ export const contentBlocks: Block[] = [
 
 export {
   AccordionBlock,
+  AchievementWallBlock,
   AnnouncementsBlock,
   QuickNavBlock,
   LogoStripBlock,

@@ -134,9 +134,13 @@ export const LightboxModal = ({
           {/* The side panel: what this picture is. */}
           <div className="flex w-full shrink-0 flex-col p-7 lg:w-80 lg:p-8">
             <div className="flex items-start justify-between gap-4">
-              <span className="inline-block rounded-pill bg-accent px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-brand-deep">
-                {photo.category}
-              </span>
+              {photo.category ? (
+                <span className="inline-block rounded-pill bg-accent px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-brand-deep">
+                  {photo.category}
+                </span>
+              ) : (
+                <span />
+              )}
               <button
                 type="button"
                 onClick={onClose}
@@ -151,6 +155,10 @@ export const LightboxModal = ({
               <p className="mt-5 text-[1.05rem] leading-relaxed font-medium text-brand">
                 {photo.caption}
               </p>
+            ) : null}
+
+            {photo.detail ? (
+              <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-soft">{photo.detail}</p>
             ) : null}
 
             {/*
