@@ -247,12 +247,29 @@ const UNIT_OMIT: Record<string, string[]> = {
     'download-centre',
   ],
   /*
-   * Student Wall and Transport come off at SIWS's instruction (2026-09-01).
-   * Both are also gone from `seed/primary.ts`, and their rows are deleted by
+   * Student Wall and Transport come off at SIWS's instruction (2026-09-01),
+   * and Admissions with its FAQ on the same instruction. All four are also
+   * gone from `seed/primary.ts`, and their rows are deleted by
    * `npm run remove:primary-pages` — this entry is what stops the menu
    * template creating them again as empty placeholders on the next run.
+   *
+   * A parent with an admission question is not left without a route: the
+   * header's "Enquire about admission" button goes to the contact page and
+   * its enquiry form, which is where the enquiry was always answered.
+   *
+   * ACHIEVEMENTS is here for the opposite reason — not to remove it, but to
+   * take it OUT OF THE UPDATES DROP-DOWN so `UNIT_EXTRA` below can put it
+   * back on the top row. Omit-then-add is the order the tree is built in,
+   * so the two entries together are a move rather than a deletion.
    */
-  primary: ['annual-calendar', 'student-wall', 'transport'],
+  primary: [
+    'annual-calendar',
+    'student-wall',
+    'transport',
+    'admissions',
+    'admissions-faq',
+    'achievements',
+  ],
   secondary: ['annual-calendar'],
   /*
    * Junior College drops four more, at SIWS's request (2026-08-29).
@@ -291,7 +308,23 @@ const UNIT_EXTRA: Record<
     item: Entry
   }[]
 > = {
-  primary: [{ parent: 'updates', after: 'news', item: { slug: 'events', label: 'Events' } }],
+  primary: [
+    { parent: 'updates', after: 'news', item: { slug: 'events', label: 'Events' } },
+    /*
+     * Achievements on the top row, at SIWS's instruction. It was the second
+     * item inside Updates, which put the section's prizes behind a hover
+     * and a second click.
+     *
+     * After Academics rather than first: the row reads About, Academics,
+     * Achievements — what the school is, what it teaches, what that has
+     * won — and the drop-down it left keeps News, Events and the rest.
+     */
+    {
+      parent: null,
+      after: 'academics',
+      item: { slug: 'achievements', label: 'Achievements' },
+    },
+  ],
   /*
    * ACHIEVEMENTS, ON ITS OWN, WHERE THE UPDATES DROP-DOWN USED TO BE.
    *

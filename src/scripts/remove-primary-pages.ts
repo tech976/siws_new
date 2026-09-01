@@ -6,7 +6,8 @@ const { getPayload } = await import('payload')
 const { default: config } = await import('@payload-config')
 
 /**
- * Deletes the Primary pages SIWS asked to drop: Student Wall and Transport.
+ * Deletes the Primary pages SIWS asked to drop: Student Wall, Transport,
+ * Admissions and the Admissions FAQ.
  *
  * Same reason this exists as a script rather than as part of `seed:primary`:
  * the seeds only ever create or update. Nothing in them removes a page they no
@@ -14,6 +15,10 @@ const { default: config } = await import('@payload-config')
  * recognise would wipe every page an editor had added in the admin panel. So
  * taking the two out of the seed leaves them published in the database, still
  * in the menu and still reachable by URL. This removes them.
+ *
+ * Admissions and its FAQ came off with the enquiry route intact: the header’s
+ * "Enquire about admission" button points at the contact page and its enquiry
+ * form, which is where an admission question was always answered.
  *
  * Transport is the page `institution.ts` warns about: SIWS has supplied no
  * operator, no route and no fare, so it never carried anything a parent could
@@ -26,7 +31,7 @@ const { default: config } = await import('@payload-config')
  *   npm run remove:primary-pages
  */
 
-const SLUGS = ['student-wall', 'transport']
+const SLUGS = ['student-wall', 'transport', 'admissions', 'admissions-faq']
 
 const main = async () => {
   const payload = await getPayload({ config })

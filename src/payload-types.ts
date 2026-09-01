@@ -369,6 +369,10 @@ export interface Unit {
   postalCode?: string | null;
   phone?: string | null;
   /**
+   * Optional. Printed beside the first wherever the number appears, with a dialling link of its own.
+   */
+  phoneAlt?: string | null;
+  /**
    * The email address shown publicly on the website.
    */
   email?: string | null;
@@ -3494,6 +3498,7 @@ export interface UnitsSelect<T extends boolean = true> {
   city?: T;
   postalCode?: T;
   phone?: T;
+  phoneAlt?: T;
   email?: T;
   mapEmbedUrl?: T;
   admissionsEmail?: T;
