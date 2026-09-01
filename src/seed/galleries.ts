@@ -97,16 +97,23 @@ const main = async () => {
    * Categories a section's gallery does not show, by unit slug.
    *
    * Not a way of hiding photographs — every one of these is published, and each
-   * is somewhere better. Primary's Onam pictures are the whole of its Events
-   * page, banner and films included, and repeating the same five here left the
-   * gallery reading as an overflow of that page rather than as a wall of its
-   * own. They are still in the portal's own gallery under Celebrations.
+   * is somewhere better.
+   *
+   * PRIMARY'S ONAM PICTURES USED TO BE LISTED HERE, on the reasoning that
+   * they were the whole of the section's Events page already and repeating
+   * them made the gallery read as an overflow of it. That was wrong about
+   * where a reader goes next: the Onam card on the Events page is a LINK TO
+   * THIS GALLERY, so the one place the pictures were promised was the one
+   * place they had been taken out of, and the card led to a wall without a
+   * single photograph of the day on it.
+   *
+   * The invitation banner is not among them. It is `showInGallery: false` on
+   * the media record — a poster rather than a photograph of the day — so it
+   * stays on the Events card and out of the wall without needing a rule here.
    *
    * A category named here that the unit does not have is simply ignored.
    */
-  const OMIT_CATEGORY: Record<string, string[]> = {
-    primary: ['Onam'],
-  }
+  const OMIT_CATEGORY: Record<string, string[]> = {}
 
   /**
    * Individual photographs a section's wall does not show, keyed by unit slug.
