@@ -198,8 +198,16 @@ const UNIT_OMIT: Record<string, string[]> = {
    * where a parent goes looking for them — two FAQs in one menu is a choice
    * the visitor has to make before they can read either.
    *
-   * Student Wall comes off because it is still the placeholder page; Student
-   * Life keeps Transport and gains the Campus Gallery below.
+   * Student Wall comes off because it is still the placeholder page, and
+   * Transport with it at SIWS's instruction (2026-09-01) — the same page, for
+   * the same reason, that came off Primary: no operator, no route and no fare
+   * have been supplied, so it never carried anything a parent could act on.
+   * That empties the Student Life drop-down of the two children the template
+   * gives it; the entry stays in the bar and gains the Campus Gallery, which
+   * `UNIT_MIRROR` places under it.
+   *
+   * Transport is named in `UNIT_UNPUBLISH` below as well, because SIWS asked
+   * for the page gone rather than merely out of the menu.
    */
   /*
    * `school-rules` is deliberately NOT omitted here. It was, until the page
@@ -207,7 +215,37 @@ const UNIT_OMIT: Record<string, string[]> = {
    * other side of this merge still carried the older list, and taking it
    * wholesale would have hidden the rules page the same day it was written.
    */
-  kindergarten: ['annual-calendar', 'faq', 'student-wall'],
+  /*
+   * THE WHOLE UPDATES DROP-DOWN COMES OFF KINDERGARTEN (2026-09-01).
+   *
+   * SIWS asked for Achievements to stand on its own in the bar, and once it
+   * does there is nothing left worth a drop-down: Updates itself was only a
+   * card grid pointing at its own three children, News & Events is the
+   * evergreen "what we mark through the year" page, and Events and Download
+   * Centre are still the placeholder the menu template created.
+   *
+   * All four are named here rather than only `updates`, and they have to be:
+   * `getNavItems` PROMOTES a child whose parent has left the menu to the top
+   * level — losing a parent should not make a published page unreachable — so
+   * omitting the parent alone would have moved News, Events and Download
+   * Centre into the top row rather than out of the menu. Every one of these
+   * pages stays published at its own address (the Updates page still links to
+   * all three), and Download Centre keeps its place in the quick-links panel.
+   *
+   * `achievements` is deliberately NOT in this list. It leaves the drop-down
+   * with its parent and comes straight back as a top-level entry in
+   * `UNIT_EXTRA` below.
+   */
+  kindergarten: [
+    'annual-calendar',
+    'faq',
+    'student-wall',
+    'transport',
+    'updates',
+    'news',
+    'events',
+    'download-centre',
+  ],
   /*
    * Student Wall and Transport come off at SIWS's instruction (2026-09-01).
    * Both are also gone from `seed/primary.ts`, and their rows are deleted by
@@ -255,6 +293,18 @@ const UNIT_EXTRA: Record<
 > = {
   primary: [{ parent: 'updates', after: 'news', item: { slug: 'events', label: 'Events' } }],
   /*
+   * ACHIEVEMENTS, ON ITS OWN, WHERE THE UPDATES DROP-DOWN USED TO BE.
+   *
+   * The counterpart to the Kindergarten block in `UNIT_OMIT`: that takes the
+   * drop-down away and this puts back the one entry SIWS wants kept. It is
+   * placed `after: 'admissions'` so it lands in the slot Updates held, and
+   * not first — a top-level extra with no `after` is unshifted to the front
+   * of the bar, ahead of About, which is not where a parent looks for it.
+   */
+  kindergarten: [
+    { parent: null, after: 'admissions', item: { slug: 'achievements', label: 'Achievements' } },
+  ],
+  /*
    * JUNIOR COLLEGE'S FRONT PAGE IS ITS ABOUT PAGE.
    *
    * The section has no written About page — the one in the database is still a
@@ -301,6 +351,23 @@ const UNIT_MIRROR: Record<string, { slug: string; under: string }[]> = {
  * words on it should not be in here; take it out of the menu instead.
  */
 const UNIT_UNPUBLISH: Record<string, string[]> = {
+  /*
+   * Kindergarten's Transport page, at SIWS's instruction (2026-09-01).
+   *
+   * It qualifies for this list rather than for `UNIT_OMIT` alone because it is
+   * still the "content to come" placeholder — `pages-general.ts` gives it a
+   * banner and a line telling the reader to ring the office, and nothing else,
+   * because the school has supplied no operator, route or fare. Nobody has
+   * written anything here that unpublishing would take away.
+   *
+   * Primary answered the same instruction by DELETING its Transport row
+   * (`npm run remove:primary-pages`). This does not, and the difference is
+   * deliberate: unpublishing gets the visitor-facing result the deletion got —
+   * the address 404s, the page leaves the menu and the quick-links panel — and
+   * leaves the document in the admin panel, so SIWS can publish it in one
+   * click on the day they do have a route to publish.
+   */
+  kindergarten: ['transport'],
   /*
    * Junior College, at SIWS's request (2026-08-29). The teachers roster has
    * not been supplied, and neither the annual calendar nor the rules have been
