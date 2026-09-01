@@ -1244,14 +1244,20 @@ const main = async () => {
         'Prizes, competitions and prize days in the SIWS Kindergarten section in Wadala — and the early literacy, number and social milestones behind them.',
       layout: [
         {
+          /*
+           * NO HEADING AND NO INTRO ON THIS BLOCK.
+           *
+           * The page's own title and intro already say that this is the
+           * Achievements page and what is on it, and the wall is the first
+           * thing under them. A second heading immediately beneath, saying
+           * much the same in different words, was one line of furniture
+           * between the reader and the photographs.
+           *
+           * The field is optional and `SectionHeading` renders nothing when it
+           * is empty, so the wall simply starts at the top of its band.
+           */
           blockType: 'achievementWall',
-          heading: 'Competitions and prize days',
-          accentWord: 'prize days',
-          headingLevel: 'h2',
           background: 'white',
-          intro: richText([
-            'Kindergarten children enter interschool competitions alongside the older sections, and the section holds its own prize days through the year. Open any photograph to see it properly.',
-          ]),
           items: [
             /*
              * THE LARGE TILE. Chosen because it is the least ambiguous thing
@@ -1314,7 +1320,9 @@ const main = async () => {
              * This tile had no badge at all, which was honest but left it the
              * odd one out in a row of nine — a gap where every neighbour has a
              * yellow pill reads as a tile that failed to load rather than a
-             * deliberate silence.
+             * deliberate silence. (The badges wait for hover now, so the gap is
+             * only ever seen on one tile at a time. It still reads as a fault
+             * when it is seen, which is why this stays.)
              *
              * So it gets a badge that says what the photograph actually shows.
              * The children are wearing numbered entrant cards; there is no

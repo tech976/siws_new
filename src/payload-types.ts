@@ -1653,7 +1653,7 @@ export interface AchievementWallBlock {
          */
         title: string;
         /**
-         * Shown as a badge on the tile — “First prize”, “Four prizes”, “Certificates and medals”. Leave empty if nothing was won, and the badge is simply not shown.
+         * A badge — “First prize”, “Four prizes”, “Certificates and medals”. It appears on the tile when a visitor hovers or tabs to it, and again when they open the photograph. Leave empty if nothing was won, and there is simply no badge.
          */
         award?: string | null;
         /**
