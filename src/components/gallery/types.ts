@@ -19,4 +19,12 @@ export interface GalleryPhoto {
   feature: boolean
   /** Shown whole on a plain ground rather than cropped to its tile. */
   showWhole?: boolean
+  /**
+   * A longer line shown only in the lightbox.
+   *
+   * The achievement wall uses it for the part of the story that would not fit
+   * on a tile — who took part, what the prize actually was. A gallery
+   * photograph normally has none, and the panel simply omits the paragraph.
+   */
+  detail?: string
 }

@@ -200,6 +200,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'fancy-dress-environment.jpg',
     filename: 'siws-fancy-dress-environment.jpg',
+    focalY: 62,
+    category: 'Achievements',
     alt: 'Two young students in a fancy-dress competition, one wearing a painted globe costume and the other holding a model of the Earth.',
     caption: 'Showcasing creativity and environmental awareness',
     depictsChildren: true,
@@ -339,8 +341,112 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'award-andhra.jpg',
     filename: 'siws-award-andhra.jpg',
+    focalY: 56,
+    category: 'Achievements',
     alt: 'A kindergarten student in costume being handed a certificate on stage by a teacher, with three staff members alongside and a sunflower backdrop behind.',
     caption: 'Receiving a prize at an interschool competition',
+    depictsChildren: true,
+  },
+  /*
+   * THE KINDERGARTEN PRIZE PHOTOGRAPHS.
+   *
+   * Everything a four- or five-year-old at SIWS has been photographed winning.
+   * Each caption says only what is legible in the picture itself — the banner
+   * behind the children, or the certificate in their hands — because a school
+   * inventing the name of a prize is a worse failure than a vague caption.
+   *
+   * `dance-competition.jpeg` was already in the library and already used by
+   * `galleries.ts`, but it had never been written down here: it arrived
+   * through `photos:import`, whose manifest is not in version control. A
+   * rebuild from a clean database would have lost it. It is described here now
+   * so it survives one.
+   */
+  {
+    file: 'dance-competition.jpeg',
+    filename: 'siws-dance-competition.jpg',
+    focalY: 56,
+    unit: 'kindergarten',
+    category: 'Achievements',
+    alt: 'Seven Kindergarten girls in orange, white and green dance costumes holding Indian flags, in front of a blackboard reading “Inter School Dance Competition, 14-08-2024”.',
+    caption: 'Inter-school dance competition, 14 August 2024',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-dance-trophy-2024.jpg',
+    filename: 'kg-dance-trophy-2024.jpg',
+    focalY: 58,
+    unit: 'kindergarten',
+    category: 'Achievements',
+    alt: 'The same group of Kindergarten dancers in tricolour costume holding a trophy and a certificate from The Andhra Education Society’s Pre-Primary School, in a corridor decorated with paper peacocks.',
+    caption: 'The trophy and certificate that came back with them',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-dance-ourladys-garden.jpg',
+    filename: 'kg-dance-ourladys-garden.jpg',
+    focalY: 60,
+    unit: 'kindergarten',
+    category: 'Achievements',
+    alt: 'Thirteen Kindergarten children in regional Indian costume on stage with three teachers, one child holding a trophy and another a certificate, beneath an Our Lady’s Garden banner.',
+    caption: 'Our Lady’s Garden — a trophy and a certificate for the group dance',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-fancy-dress-entrants.jpg',
+    filename: 'kg-fancy-dress-entrants.jpg',
+    focalY: 58,
+    unit: 'kindergarten',
+    category: 'Achievements',
+    alt: 'Six Kindergarten children in fancy dress with numbered cards pinned to them — a fruit seller, a pilot, a beauty queen, a campaigner, Spider-Man and a bunch of grapes — with three teachers behind and a cardboard aeroplane at their feet.',
+    caption: 'Six entrants, six costumes made at home',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-prize-distribution-2025.jpg',
+    filename: 'kg-prize-distribution-2025.jpg',
+    unit: 'kindergarten',
+    category: 'Achievements',
+    /* Portrait, and the faces are in the lower half — see the focal point. */
+    focalY: 62,
+    alt: 'Kindergarten children in yellow and green uniform holding Certificates of Honour and wrapped prizes, under paper lanterns and a banner reading “Annual Prize Distribution 2024-25”.',
+    caption: 'Annual prize distribution, 2024–25',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-prize-distribution-2025-group.jpg',
+    filename: 'kg-prize-distribution-2025-group.jpg',
+    unit: 'kindergarten',
+    category: 'Achievements',
+    alt: 'Sixteen Kindergarten children kneeling and standing with wrapped prizes and Inter Class Competition certificates of honour, in front of a gold and white prize-day backdrop.',
+    caption: 'Certificates of honour from the inter-class competition',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-annual-sports-prizes.jpg',
+    filename: 'kg-annual-sports-prizes.jpg',
+    focalY: 60,
+    unit: 'kindergarten',
+    category: 'Achievements',
+    alt: 'Fifteen Kindergarten children in red and black sports kit holding trophies and Annual School Sports certificates, in a classroom painted with a yellow submarine, beneath a banner reading “Annual Prize Distribution — SIWS KG Section”.',
+    caption: 'Annual school sports — the Kindergarten prize day',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-stage-regional-dance.jpg',
+    filename: 'kg-stage-regional-dance.jpg',
+    unit: 'kindergarten',
+    category: 'Achievements',
+    alt: 'A long line of Kindergarten children in green and pink Maharashtrian costume standing across a stage at the end of a performance.',
+    caption: 'The whole line, at the end of the dance',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-dance-rehearsal.jpg',
+    filename: 'kg-dance-rehearsal.jpg',
+    unit: 'kindergarten',
+    category: 'Achievements',
+    alt: 'Kindergarten children in costume rehearsing a dance in the school hall, spread across the floor mid-step.',
+    caption: 'Rehearsing in the hall, the week before',
     depictsChildren: true,
   },
   {
@@ -390,6 +496,7 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'natya-tarang.jpg',
     filename: 'siws-natya-tarang.jpg',
+    category: 'Achievements',
     alt: 'A stage full of young SIWS students in bright regional costume, arms raised mid-performance, at the Natya Tarang inter-school dance competition.',
     caption: 'Natya Tarang — our inter-school dance and music competition',
     depictsChildren: true,

@@ -1,0 +1,247 @@
+'use client'
+
+import { Expand } from 'lucide-react'
+import { useCallback, useState } from 'react'
+
+import { LightboxModal } from '@/components/gallery/LightboxModal'
+import type { GalleryPhoto } from '@/components/gallery/types'
+import { Media } from '@/components/Media'
+
+/**
+ * One achievement as the wall needs it. `GalleryPhoto` carries the picture and
+ * the two lines the lightbox already knows how to show; `when` and `feature`
+ * are the wall's own.
+ */
+export interface Achievement extends GalleryPhoto {
+  when?: string
+  feature: boolean
+}
+
+/**
+ * THE TILE.
+ *
+ * A photograph, a badge saying what was won, and the occasion beneath it —
+ * all of it visible at rest, on a phone, with no pointer anywhere near it.
+ * That is the whole difference between this and the gallery wall next door,
+ * and it follows from the content: here the words are the achievement and the
+ * photograph is the proof, so the words cannot be the part that hides.
+ *
+ * WHAT MOVES, AND WHY
+ * -------------------
+ * The photograph scales a little and the tile lifts, both on hover and on
+ * keyboard focus. That is the affordance — it says the tile is a control
+ * before anybody clicks it — and the expand glyph in the corner says what
+ * kind. Under `prefers-reduced-motion` all of it becomes a change of shadow
+ * and a change of scrim, so the affordance survives without the movement
+ * (SC 2.3.3): `motion-safe:` is doing that work on every transform below.
+ *
+ * WHY THE SCRIM IS ALWAYS THERE
+ * -----------------------------
+ * White text on an unknown photograph is a contrast failure waiting for the
+ * wrong picture (SC 1.4.3). The gradient is opaque under the text and clear
+ * over the top half, so the tile still reads as a photograph rather than as a
+ * dark card, and it deepens on hover so the type stays comfortable while the
+ * picture behind it is zooming.
+ */
+const AchievementTile = ({
+  item,
+  eager,
+  onOpen,
+}: {
+  item: Achievement
+  eager: boolean
+  onOpen: () => void
+}) => (
+  <li
+    className={[
+      'group relative overflow-hidden rounded-3xl bg-brand-tint',
+      'ring-1 ring-line/60 shadow-[0_1px_2px_rgba(36,39,111,0.04),0_10px_28px_-14px_rgba(36,39,111,0.22)]',
+      'transition-[transform,box-shadow] duration-300 ease-out',
+      'hover:shadow-[0_2px_8px_rgba(36,39,111,0.10),0_26px_50px_-18px_rgba(36,39,111,0.38)]',
+      'focus-within:shadow-[0_2px_8px_rgba(36,39,111,0.10),0_26px_50px_-18px_rgba(36,39,111,0.38)]',
+      'motion-safe:hover:-translate-y-1 motion-safe:focus-within:-translate-y-1',
+      item.feature ? 'sm:col-span-2 sm:row-span-2' : '',
+    ].join(' ')}
+  >
+    <Media
+      resource={item.media}
+      /*
+       * A feature tile is genuinely twice the width of the others, and telling
+       * the browser otherwise is how a wall ends up either soft or several
+       * times heavier than it needs to be.
+       */
+      sizes={
+        item.feature
+          ? '(min-width: 1024px) 66vw, (min-width: 640px) 100vw, 100vw'
+          : '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'
+      }
+      priority={eager}
+      fill
+      className="object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.06] motion-safe:group-focus-within:scale-[1.06]"
+    />
+
+    {/*
+      Legibility first, atmosphere second.
+
+      The gradient runs out at 60% of the tile, so the top of every photograph
+      is untouched. Reaching further — an even fade over the whole tile — put a
+      wash of brand blue across nine photographs at once and made the wall look
+      tinted rather than photographed.
+
+      TWO layers, not one: a gradient cannot be transitioned between two sets
+      of colour stops, so a single scrim that changed its stops on hover would
+      snap. The base never moves and the second fades in over it.
+    */}
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-deep/95 via-brand-deep/72 via-24% to-transparent to-60%"
+    />
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-deep/60 via-brand-deep/30 via-24% to-transparent to-72% opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100"
+    />
+
+    {/*
+      The affordance. It appears rather than sitting there permanently,
+      because at rest the tile should read as a photograph with a caption, and
+      a glyph on every tile of a nine-tile wall is nine pieces of furniture.
+    */}
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute right-4 top-4 grid size-9 place-items-center rounded-full bg-white/95 text-brand opacity-0 shadow-card transition-[opacity,transform] duration-300 group-hover:opacity-100 group-focus-within:opacity-100 motion-safe:scale-90 motion-safe:group-hover:scale-100 motion-safe:group-focus-within:scale-100"
+    >
+      <Expand size={16} strokeWidth={2.4} />
+    </span>
+
+    {/* ------------------------------------------------------------ the words */}
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 p-5 sm:p-6">
+      {/*
+        The prize and the year share a row. They were stacked, and on a tile
+        whose caption sits over a group photograph every line of text is
+        another row of children hidden — so the two shortest things on the
+        card go side by side and the picture keeps the space.
+      */}
+      {item.category || item.when ? (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          {item.category ? (
+            <span className="inline-block rounded-pill bg-accent px-3 py-1 text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-brand-deep">
+              {item.category}
+            </span>
+          ) : null}
+          {item.when ? (
+            <span className="text-[0.8125rem] font-semibold text-white/80">{item.when}</span>
+          ) : null}
+        </div>
+      ) : null}
+
+      <p
+        className={[
+          'mt-2 font-bold leading-snug text-balance text-white',
+          /*
+           * The feature tile is four times the area, so its title steps up a
+           * size. Without that the large tile reads as a small tile that has
+           * been stretched, which is the usual way a bento grid goes wrong.
+           */
+          item.feature ? 'text-[1.125rem] sm:text-[1.375rem]' : 'text-[1.0625rem]',
+        ].join(' ')}
+      >
+        {item.caption}
+      </p>
+    </div>
+
+    {/*
+      THE WHOLE TILE IS THE BUTTON, and it is a real one — reached by Tab,
+      fired by Enter and Space, and named by what it opens. An `onClick` on the
+      `<li>` would be none of those things.
+
+      It is last in the source so it sits over the scrim and the words; those
+      are all `pointer-events-none`, so nothing above it swallows the press.
+    */}
+    <button
+      type="button"
+      onClick={onOpen}
+      className="absolute inset-0 size-full cursor-pointer rounded-3xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent focus-visible:ring-inset"
+    >
+      <span className="sr-only">
+        {`Look closely at ${item.caption}${item.category ? ` — ${item.category}` : ''}`}
+      </span>
+    </button>
+  </li>
+)
+
+/**
+ * The wall, and the one piece of state it has: which photograph is open.
+ *
+ * WHY OPENING ONE MATTERS HERE MORE THAN ON A GALLERY
+ * --------------------------------------------------
+ * Almost every one of these is a group photograph of fifteen small children.
+ * At a third of a page nobody can see a face, and the thing a parent is
+ * actually doing on this page is looking for their own child. The lightbox is
+ * not decoration on this wall; it is the point of it, which is why the tiles
+ * carry an expand affordance and why the arrow keys step between them.
+ *
+ * The heading and intro are rendered on the SERVER and passed in as children,
+ * so the rich text converter never reaches the client bundle.
+ */
+export const AchievementWall = ({
+  items,
+  children,
+}: {
+  items: Achievement[]
+  children?: React.ReactNode
+}) => {
+  const [openId, setOpenId] = useState<string | null>(null)
+
+  const index = items.findIndex((item) => item.id === openId)
+  const open = index >= 0 ? items[index]! : null
+
+  const step = useCallback(
+    (by: number) => {
+      if (items.length === 0) return
+      setOpenId((current) => {
+        const at = items.findIndex((item) => item.id === current)
+        if (at < 0) return current
+        return items[(at + by + items.length) % items.length]!.id
+      })
+    },
+    [items],
+  )
+
+  return (
+    <>
+      {children}
+
+      <ul
+        /*
+         * The row is TALLER on a phone, not shorter. Below `sm` no tile spans
+         * anything, so the wall is a single stack of photographs — and a
+         * photograph in a stack wants height, where one in a three-across row
+         * is already wide enough to read.
+         *
+         * `grid-flow-dense` backfills whatever hole the large tile leaves, so
+         * a wall of any length finishes square rather than trailing off.
+         */
+        className="mt-10 grid auto-rows-[16rem] grid-flow-dense grid-cols-1 gap-4 sm:auto-rows-[14rem] sm:grid-cols-2 sm:gap-5 lg:auto-rows-[16rem] lg:grid-cols-3"
+      >
+        {items.map((item, i) => (
+          <AchievementTile
+            key={item.id}
+            item={item}
+            /* The first row or two are above the fold and are not lazy. */
+            eager={i < 3}
+            onOpen={() => setOpenId(item.id)}
+          />
+        ))}
+      </ul>
+
+      <LightboxModal
+        photo={open}
+        onClose={() => setOpenId(null)}
+        onPrevious={() => step(-1)}
+        onNext={() => step(1)}
+        position={index + 1}
+        total={items.length}
+      />
+    </>
+  )
+}

@@ -336,7 +336,6 @@ const main = async () => {
               headingLevel: 'h2',
               layout: 'bento',
               background: 'white',
-              intro: richText([intro]),
               images: wall.map(gallery),
             },
           ]

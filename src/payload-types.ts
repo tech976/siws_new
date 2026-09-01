@@ -579,6 +579,7 @@ export interface Page {
         | GalleryBlock
         | VideoGalleryBlock
         | PhotoLibraryBlock
+        | AchievementWallBlock
         | DividerBlock
         | MapBlock
         | AccordionBlock
@@ -1584,6 +1585,81 @@ export interface PhotoLibraryBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AchievementWallBlock".
+ */
+export interface AchievementWallBlock {
+  /**
+   * Optional.
+   */
+  heading?: string | null;
+  /**
+   * A line or two under the heading, above the photographs.
+   */
+  intro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Strongest first — the first few are what a visitor sees before scrolling.
+   */
+  items?:
+    | {
+        /**
+         * Every achievement needs one. A tile with no photograph would be a card in a wall of pictures.
+         */
+        photo: number | Media;
+        /**
+         * The competition, the occasion or the prize day. Keep it short.
+         */
+        title: string;
+        /**
+         * Shown as a badge on the tile — “First prize”, “Four prizes”, “Certificates and medals”. Leave empty if nothing was won, and the badge is simply not shown.
+         */
+        award?: string | null;
+        /**
+         * A year, or a month and year. Optional.
+         */
+        when?: string | null;
+        /**
+         * Optional, and shown only when somebody opens the photograph — so the tile stays short while the full story is one tap away.
+         */
+        detail?: string | null;
+        /**
+         * Gives this achievement a tile four times the size of the others. Use it on one — marking several makes none of them stand out.
+         */
+        feature?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
+  /**
+   * Type a word from the heading to show it in SIWS accent.
+   */
+  accentWord?: string | null;
+  /**
+   * Text colour adjusts automatically so it stays readable.
+   */
+  background?: ('white' | 'sea' | 'tint' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'achievementWall';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "DividerBlock".
  */
 export interface DividerBlock {
@@ -2489,6 +2565,7 @@ export interface PagesSelect<T extends boolean = true> {
         gallery?: T | GalleryBlockSelect<T>;
         videoGallery?: T | VideoGalleryBlockSelect<T>;
         photoLibrary?: T | PhotoLibraryBlockSelect<T>;
+        achievementWall?: T | AchievementWallBlockSelect<T>;
         divider?: T | DividerBlockSelect<T>;
         map?: T | MapBlockSelect<T>;
         accordion?: T | AccordionBlockSelect<T>;
@@ -2888,6 +2965,30 @@ export interface PhotoLibraryBlockSelect<T extends boolean = true> {
               feature?: T;
               id?: T;
             };
+        id?: T;
+      };
+  headingLevel?: T;
+  accentWord?: T;
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AchievementWallBlock_select".
+ */
+export interface AchievementWallBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  items?:
+    | T
+    | {
+        photo?: T;
+        title?: T;
+        award?: T;
+        when?: T;
+        detail?: T;
+        feature?: T;
         id?: T;
       };
   headingLevel?: T;
