@@ -39,10 +39,10 @@ const CLASS_OPTIONS = ['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4']
  * Primary only. The other three units and the portal keep the Society's
  * general email and mobile from `units-content.ts`.
  *
- * TWO NUMBERS, ONE `phone` FIELD. The unit's `phone` becomes a `tel:`
- * link and holds a single value, so a pair in it would produce a link that
- * dials neither. PRIMARY_PHONE is what the footer dials; both numbers are
- * printed together wherever the office is named in full.
+ * TWO NUMBERS, TWO FIELDS. A `tel:` link holds one number, so a pair in
+ * a single field would dial neither. The unit carries `phone` and
+ * `phoneAlt`, and both are printed wherever the office is reachable —
+ * header, footer, contact cards and the prose — each separately dialable.
  */
 const PRIMARY_PHONE = '022-24114262'
 const PRIMARY_PHONE_ALT = '022-24115055'
@@ -403,8 +403,10 @@ const main = async () => {
       description:
         'Grades 1 to 4 following the Maharashtra State Board curriculum, aligned with NEP 2020 — nurturing confident, responsible and joyful learners.',
       // Overrides the Society-wide pair from `units-content.ts` for this
-      // section only. One number, because the field is a `tel:` link.
+      // section only. Both numbers: `phoneAlt` exists so the header and
+      // footer can print the pair and still give each its own `tel:` link.
       phone: PRIMARY_PHONE,
+      phoneAlt: PRIMARY_PHONE_ALT,
       email: PRIMARY_EMAIL,
     } as never,
   })

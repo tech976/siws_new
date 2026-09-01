@@ -17,6 +17,21 @@ import { UNIT_ACCENTS } from '@/theme/tokens'
  * code so that "new units, sites or pages can be added without redevelopment"
  * (SRS 7, Maintainability).
  */
+/**
+ * Shared by both telephone fields, so the two cannot drift apart.
+ *
+ * Permissive on formatting, strict on digit count, so Indian landline,
+ * mobile and +91 forms are all accepted.
+ */
+const validatePhone = (value: unknown): true | string => {
+  if (value === null || value === undefined || value === '') return true
+  if (typeof value !== 'string') return 'Enter a valid phone number.'
+  const digits = value.replace(/\D/g, '')
+  return digits.length >= 8 && digits.length <= 15
+    ? true
+    : 'Enter a valid phone number (8 to 15 digits).'
+}
+
 export const Units: CollectionConfig = {
   slug: 'units',
   // "Unit" is the SRS's term; "School" is what SIWS staff actually call these.
@@ -122,16 +137,32 @@ export const Units: CollectionConfig = {
             {
               name: 'phone',
               type: 'text',
-              validate: (value: unknown) => {
-                if (value === null || value === undefined || value === '') return true
-                if (typeof value !== 'string') return 'Enter a valid phone number.'
-                // Permissive on formatting, strict on digit count, so Indian
-                // landline, mobile and +91 forms are all accepted.
-                const digits = value.replace(/\D/g, '')
-                return digits.length >= 8 && digits.length <= 15
-                  ? true
-                  : 'Enter a valid phone number (8–15 digits).'
+              label: 'Telephone number',
+              validate: validatePhone,
+            },
+            /*
+             * A SECOND NUMBER, because one field could not hold two.
+             *
+             * Whatever is in `phone` becomes a `tel:` link, so a section with
+             * two office lines had to choose: put both in the one field and the
+             * link dials neither, or print one and lose the other. The Primary
+             * Section has two, and the header and footer were showing half of
+             * what a parent needs to reach the office.
+             *
+             * A second field rather than a list: two is what a school office
+             * has, both are printed wherever either is, and an array would put
+             * an ordering question in front of an editor who has not got one
+             * to answer.
+             */
+            {
+              name: 'phoneAlt',
+              type: 'text',
+              label: 'Second telephone number',
+              admin: {
+                description:
+                  'Optional. Printed beside the first wherever the number appears, with a dialling link of its own.',
               },
+              validate: validatePhone,
             },
             {
               name: 'email',
