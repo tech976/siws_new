@@ -370,25 +370,21 @@ const main = async () => {
       description:
         'Standards V to X following the Maharashtra State Board curriculum, aligned with NEP 2020 — a learner-centred, competency-based approach at our Wadala campus.',
       /*
-       * The section had no telephone number at all — the header, the footer
-       * and the contact page each render one only when the unit carries it,
-       * so all three were simply blank on this site.
+       * The section's contact number is the school's own landline.
        *
-       * The pair below is what SIWS asked to appear in the footer
-       * (2026-08-29), and it is the same pair the Kindergarten unit carries:
-       * the Society’s general email and mobile number, which reach the
-       * office for any section.
+       * The header, the footer and the contact page each render a number only
+       * when the unit carries one, so all three take this value. It is also
+       * the number the five instructions in the body copy below already name
+       * — telephoning the office to arrange a meeting with a teacher, to ask
+       * about a route, to send feedback — so a reader now sees one number for
+       * this section wherever they look.
        *
-       * 022-24180877 has NOT gone. It is the school’s own landline and it
-       * stays in the five places on this site that tell a reader to ring the
-       * OFFICE about a specific thing — arranging a meeting with a teacher,
-       * asking about a route, sending feedback. A general number in the
-       * footer and a direct number beside the instruction to use it are two
-       * different pieces of information, and the `phone` field holds one
-       * value: whatever is in it becomes a `tel:` link, so two numbers in
-       * the one field would produce a link that dials neither.
+       * It replaces the Society's general mobile (+91 98927 03893), which the
+       * school had asked for in the footer on 2026-08-29 and which the other
+       * three units still carry. The `phone` field holds a single value and
+       * becomes a `tel:` link, so it cannot hold both.
        */
-      phone: '+91 98927 03893',
+      phone: '022-24180877',
       email: 'info@siws.edu.in',
     } as never,
   })
