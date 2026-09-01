@@ -4,6 +4,8 @@ import type { GalleryBlock, Media as MediaDoc } from '@/payload-types'
 
 import { GalleryCarousel } from './GalleryCarousel'
 import { GalleryPager } from './GalleryPager'
+import { headingAnchor } from '@/lib/anchor'
+
 import { Section, SectionHeading, type BlockBackground } from './Section'
 
 /**
@@ -247,7 +249,7 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
   ))
 
   return (
-    <Section background={block.background as BlockBackground}>
+    <Section background={block.background as BlockBackground} id={headingAnchor(block.heading)}>
       {/*
         `mb-4` is the gap down to an INTRO, which then carries its own `mb-8`
         on to the photographs. A gallery with no intro was left with that 16px

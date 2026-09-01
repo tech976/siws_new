@@ -29,6 +29,8 @@ export interface CMSLinkValue {
   label?: string | null
   type?: ('internal' | 'external') | null
   reference?: CMSLinkReference
+  /** A section on the target page — see `headingAnchor`. */
+  anchor?: string | null
   url?: string | null
   newTab?: boolean | null
   appearance?: ('primary' | 'secondary' | 'plain') | null
@@ -77,9 +79,19 @@ export const resolveCMSHref = (link: CMSLinkValue | null | undefined): string | 
   }
 
   const { kind, value } = unwrapReference(link.reference)
-  return kind === 'media'
-    ? mediaHref(value as Media | number | null)
-    : pageHref(value as Page | number | null)
+  if (kind === 'media') return mediaHref(value as Media | number | null)
+
+  const href = pageHref(value as Page | number | null)
+  /*
+   * The fragment is appended only to a resolved page. On an unpublished or
+   * deleted target `pageHref` returns null, and "#onam" on its own would
+   * turn an inert link into one that jumps to the top of the page the
+   * reader is already on — a worse answer than the span FR-QL-06 asks for.
+   */
+  if (!href) return null
+  return typeof link.anchor === 'string' && link.anchor.length > 0
+    ? `${href}#${link.anchor}`
+    : href
 }
 
 export const CMSLink = ({

@@ -94,6 +94,25 @@ export const linkField = ({
       },
     },
     {
+      name: 'anchor',
+      type: 'text',
+      label: 'Section on that page',
+      admin: {
+        condition: isInternal,
+        description:
+          'Optional. The heading to open at, lower-cased with spaces as hyphens — “onam” for a section headed Onam. Leave empty to arrive at the top.',
+      },
+      validate: (value: unknown) => {
+        if (value === null || value === undefined || value === '') return true
+        if (typeof value !== 'string') return 'Enter a section name.'
+        // The id is derived from the heading by `headingAnchor`, so an
+        // anchor in any other shape can never match one.
+        return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)
+          ? true
+          : 'Use lower-case letters, numbers and hyphens only — for example “onam”.'
+      },
+    },
+    {
       name: 'url',
       type: 'text',
       required: true,

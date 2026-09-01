@@ -722,6 +722,10 @@ export interface HeroBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Optional. The heading to open at, lower-cased with spaces as hyphens — “onam” for a section headed Onam. Leave empty to arrive at the top.
+           */
+          anchor?: string | null;
           url?: string | null;
           /**
            * How the link is styled.
@@ -780,6 +784,10 @@ export interface HeroCarouselBlock {
                   relationTo: 'pages';
                   value: number | Page;
                 } | null;
+                /**
+                 * Optional. The heading to open at, lower-cased with spaces as hyphens — “onam” for a section headed Onam. Leave empty to arrive at the top.
+                 */
+                anchor?: string | null;
                 url?: string | null;
               };
               id?: string | null;
@@ -859,6 +867,10 @@ export interface HeroMarqueeBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Optional. The heading to open at, lower-cased with spaces as hyphens — “onam” for a section headed Onam. Leave empty to arrive at the top.
+           */
+          anchor?: string | null;
           url?: string | null;
           /**
            * How the link is styled.
@@ -989,6 +1001,10 @@ export interface MediaTextBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Optional. The heading to open at, lower-cased with spaces as hyphens — “onam” for a section headed Onam. Leave empty to arrive at the top.
+           */
+          anchor?: string | null;
           url?: string | null;
           /**
            * How the link is styled.
@@ -1082,6 +1098,10 @@ export interface CardGridBlock {
                   relationTo: 'pages';
                   value: number | Page;
                 } | null;
+                /**
+                 * Optional. The heading to open at, lower-cased with spaces as hyphens — “onam” for a section headed Onam. Leave empty to arrive at the top.
+                 */
+                anchor?: string | null;
                 url?: string | null;
               };
               id?: string | null;
@@ -1219,6 +1239,10 @@ export interface ProgramCardsBlock {
                   relationTo: 'pages';
                   value: number | Page;
                 } | null;
+                /**
+                 * Optional. The heading to open at, lower-cased with spaces as hyphens — “onam” for a section headed Onam. Leave empty to arrive at the top.
+                 */
+                anchor?: string | null;
                 url?: string | null;
               };
               id?: string | null;
@@ -1811,6 +1835,10 @@ export interface AnnouncementsBlock {
                       relationTo: 'media';
                       value: number | Media;
                     } | null);
+                /**
+                 * Optional. The heading to open at, lower-cased with spaces as hyphens — “onam” for a section headed Onam. Leave empty to arrive at the top.
+                 */
+                anchor?: string | null;
                 url?: string | null;
               };
               id?: string | null;
@@ -1868,6 +1896,10 @@ export interface QuickNavBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Optional. The heading to open at, lower-cased with spaces as hyphens — “onam” for a section headed Onam. Leave empty to arrive at the top.
+           */
+          anchor?: string | null;
           url?: string | null;
         };
         id?: string | null;
@@ -2141,6 +2173,10 @@ export interface CallToActionBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Optional. The heading to open at, lower-cased with spaces as hyphens — “onam” for a section headed Onam. Leave empty to arrive at the top.
+           */
+          anchor?: string | null;
           url?: string | null;
           /**
            * How the link is styled.
@@ -2629,6 +2665,7 @@ export interface HeroBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               appearance?: T;
             };
@@ -2659,6 +2696,7 @@ export interface HeroCarouselBlockSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    anchor?: T;
                     url?: T;
                   };
               id?: T;
@@ -2699,6 +2737,7 @@ export interface HeroMarqueeBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               appearance?: T;
             };
@@ -2750,6 +2789,7 @@ export interface MediaTextBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               appearance?: T;
             };
@@ -2786,6 +2826,7 @@ export interface CardGridBlockSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    anchor?: T;
                     url?: T;
                   };
               id?: T;
@@ -2846,6 +2887,7 @@ export interface ProgramCardsBlockSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    anchor?: T;
                     url?: T;
                   };
               id?: T;
@@ -3066,6 +3108,7 @@ export interface AnnouncementsBlockSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    anchor?: T;
                     url?: T;
                   };
               id?: T;
@@ -3096,6 +3139,7 @@ export interface QuickNavBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
             };
         id?: T;
@@ -3212,6 +3256,7 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               appearance?: T;
             };

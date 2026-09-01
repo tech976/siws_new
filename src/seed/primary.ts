@@ -669,6 +669,19 @@ const main = async () => {
                                 relationTo: 'pages',
                                 value: galleryPageId,
                               },
+                              /*
+                               * Straight to the Onam band, not the top of the
+                               * wall. The gallery is grouped by category and
+                               * Onam is the second band, so a reader who came
+                               * from this card would otherwise land on the
+                               * Achievements photographs and have to scroll
+                               * past them to reach what they clicked for.
+                               *
+                               * 'onam' is what `headingAnchor` makes of the
+                               * band's own heading, which `seed:galleries`
+                               * sets from the category name.
+                               */
+                              anchor: 'onam',
                             },
                           },
                         ],
@@ -1668,7 +1681,7 @@ const main = async () => {
 
   // ------------------------------------------- UPDATES, NEWS & STUDENT LIFE
   /*
-   * Five pages that carried a heading and nothing else.
+   * Three pages that carried a heading and nothing else.
    *
    * There is one hard constraint running through all of them: this section's
    * whole photographed record is eleven pictures of two occasions — Natya
@@ -1680,12 +1693,13 @@ const main = async () => {
    *   Updates      — what has happened lately, and where the rest of it is
    *   News         — the things worth telling you, newest first
    *   Student Life — what school is like beyond the timetable
-   *   Student Wall — what the children themselves took part in
-   *   Transport    — how a child gets here, and who to ask
    *
-   * Nothing here invents a bus route, a fare or a term date. `institution.ts`
-   * says exactly why, and Transport below is the page that warning was written
-   * about.
+   * STUDENT WALL AND TRANSPORT WERE HERE, and are gone at SIWS's instruction.
+   * Transport was the page `institution.ts` warns about — the school has
+   * supplied no operator, route or fare, so it never said anything a parent
+   * could act on. Both are dropped from Primary's menu in `UNIT_OMIT` in
+   * `seed/nav.ts`, which otherwise recreates them as placeholders, and the
+   * rows are deleted by `npm run remove:primary-pages`.
    */
   const newsShots = {
     firstPrize: await photo('natya-tarang-2026-first-prize.jpg'),
@@ -1710,224 +1724,6 @@ const main = async () => {
     },
     { title: 'No school business is transacted on Saturdays, Sundays and holidays.' },
   ]
-
-  // ------------------------------------------------------------- TRANSPORT
-  await upsert({
-    slug: 'transport',
-    title: 'Transport',
-    intro: 'How children reach the school, and who to ask about the part we cannot publish.',
-    /*
-     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
-     *
-     * This is a CHILD entry in the shared unit template. Setting it true from
-     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
-     * wins — so running this seed after `seed:nav` climbed every child out
-     * to the top row at once. Secondary reached thirteen top-level items and
-     * the buttons wrapped onto a second line.
-     *
-     * Omitting the field is NOT enough: `payload.update` keeps the existing
-     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
-     * rather than leaving it alone. False explicitly means the worst this seed
-     * can do is drop the entry until `seed:nav` runs — which is the
-     * documented order anyway, and a missing drop-down entry is a far smaller
-     * fault than a menu that wraps.
-     */
-    showInNav: false,
-    navLabel: 'Transport',
-    navOrder: 72,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'Getting to SIWS Primary School in Wadala — railway concession forms, arrival and collection, and who to ask about travel arrangements.',
-    layout: [
-      /*
-       * THIS PAGE DOES NOT LIST A BUS ROUTE, AND THAT IS THE POINT.
-       *
-       * SIWS has supplied nothing about school transport — no operator, no
-       * route, no fare — and `institution.ts` already names Transport as one
-       * of the pages left as a placeholder for exactly that reason: an
-       * invented bus route outlives the placeholder it replaced and is read
-       * as fact.
-       *
-       * A placeholder was still the wrong answer, because two things ARE
-       * known and are what most families actually need: the school issues
-       * railway concession forms, and it has a rule about who may come onto
-       * the campus during the day. Those are here, said plainly, and the one
-       * unknown is handed to the office instead of being guessed at.
-       */
-      {
-        blockType: 'featureList',
-        heading: 'What the school can help with',
-        accentWord: 'help with',
-        headingLevel: 'h2',
-        layout: 'cards',
-        background: 'sea',
-        items: [
-          {
-            title: 'Railway concession forms',
-            icon: 'transport',
-            description:
-              'Issued by the school office between 1.00 p.m. and 2.30 p.m. only — as are date of birth, bonafide student, first attempt and leaving certificates.',
-          },
-          {
-            title: 'Arriving and being collected',
-            icon: 'security',
-            description:
-              'Entrances, corridors and common areas are covered by CCTV, and movement between rooms is supervised.',
-          },
-          {
-            title: 'Anything else about travel',
-            icon: 'communication',
-            description:
-              'Ask the office. Questions about your particular route are answered better by somebody who knows this year’s arrangements than by a page.',
-          },
-        ],
-      },
-      {
-        blockType: 'richText',
-        heading: 'Coming onto the campus',
-        accentWord: 'campus',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'Parents and guardians are asked not to come in to see a child or a teacher during school hours without the prior consent of the Head Teacher. It is not a formality — it is how the school knows exactly who is on the campus while the children are in it.',
-        ]),
-      },
-      ...(contactPageId
-        ? [
-            {
-              blockType: 'callToAction',
-              heading: 'Ask about your route',
-              background: 'brand',
-              text: richText([
-                'Tell us where your child will be travelling from and the office will tell you what is possible.',
-              ]),
-              links: [
-                {
-                  link: {
-                    label: 'Contact the school',
-                    type: 'internal',
-                    reference: { relationTo: 'pages', value: contactPageId },
-                    appearance: 'primary',
-                  },
-                },
-              ],
-            },
-          ]
-        : []),
-    ],
-  })
-
-  // ----------------------------------------------------------- STUDENT WALL
-  await upsert({
-    slug: 'student-wall',
-    title: 'Student Wall',
-    intro:
-      'The children’s own year — what they entered, what they performed, what they brought back.',
-    /*
-     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
-     *
-     * This is a CHILD entry in the shared unit template. Setting it true from
-     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
-     * wins — so running this seed after `seed:nav` climbed every child out
-     * to the top row at once. Secondary reached thirteen top-level items and
-     * the buttons wrapped onto a second line.
-     *
-     * Omitting the field is NOT enough: `payload.update` keeps the existing
-     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
-     * rather than leaving it alone. False explicitly means the worst this seed
-     * can do is drop the entry until `seed:nav` runs — which is the
-     * documented order anyway, and a missing drop-down entry is a far smaller
-     * fault than a menu that wraps.
-     */
-    showInNav: false,
-    navLabel: 'Student Wall',
-    navOrder: 71,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'The students of SIWS Primary School on stage and in competition — Natya Tarang 2026, the Ignited Mind Lab programme, and the twelve competitions held through the year.',
-    layout: [
-      {
-        blockType: 'richText',
-        heading: 'The children’s own year',
-        accentWord: 'own year',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'Everything on this page was done by children in Grades 1 to 4 — on a stage, at a competition table, or in front of a school assembly. It is deliberately not a list of what the school offers them. It is what they did with it.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Ways a child takes part',
-        accentWord: 'takes part',
-        headingLevel: 'h2',
-        layout: 'cards',
-        background: 'sea',
-        items: [
-          {
-            title: 'On stage',
-            icon: 'music',
-            description:
-              'Our dancers took first place in Category A at Natya Tarang 2026, the inter-school and college group dance competition — a trophy and a cheque for twenty thousand rupees.',
-          },
-          {
-            title: 'In competition',
-            icon: 'trophy',
-            description:
-              'Twelve competitions run through the year, from recitation and elocution to rangoli, clay work and best out of waste.',
-          },
-          {
-            title: 'In the programme',
-            icon: 'thinking',
-            description:
-              'Eleven children came back from the Ignited Mind Lab programme with certificates of achievement and medals.',
-          },
-          {
-            title: 'In the neighbourhood',
-            icon: 'care',
-            description:
-              'At Raksha Bandhan the children tied rakhis to the men and women who look after the streets around the school.',
-          },
-        ],
-      },
-      {
-        blockType: 'featureList',
-        heading: 'The competitions a child can enter',
-        accentWord: 'competitions',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2-centre',
-        background: 'white',
-        items: COMPETITIONS,
-      },
-      ...(achievementsPageId
-        ? [
-            {
-              blockType: 'callToAction',
-              heading: 'See what they brought back',
-              background: 'sea',
-              text: richText([
-                'The trophy, the cheque, the certificates and the company in costume — photographed on the day.',
-              ]),
-              links: [
-                {
-                  link: {
-                    label: 'Open Achievements',
-                    type: 'internal',
-                    reference: { relationTo: 'pages', value: achievementsPageId },
-                    appearance: 'primary',
-                  },
-                },
-              ],
-            },
-          ]
-        : []),
-    ],
-  })
 
   // ------------------------------------------------------------ STUDENT LIFE
   await upsert({
