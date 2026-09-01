@@ -1333,6 +1333,12 @@ export interface FeatureListBlock {
               | 'medal'
               | 'merit'
               | 'pass'
+              | 'diary'
+              | 'punctuality'
+              | 'fees'
+              | 'attendance'
+              | 'valuables'
+              | 'premises'
             )
           | null;
         /**
@@ -1363,13 +1369,13 @@ export interface FeatureListBlock {
    */
   accentWord?: string | null;
   /**
-   * Cards suit a handful of facilities a parent should be able to scan. A list suits rules, curricula and anything long. Compact suits a set of short labels — a subject list, a set of methods — where a full card per item is mostly empty space. Showcase is for a few items that each have a photograph worth showing: prizes, events, achievements.
+   * Cards suit a handful of facilities a parent should be able to scan. A list suits rules, curricula and anything long. Compact suits a set of short labels — a subject list, a set of methods — where a full card per item is mostly empty space. Showcase is for a few items that each have a photograph worth showing: prizes, events, achievements. Specification is for a short set where each title NAMES something and the text describes it — a uniform, a set of timings, a fee table: the titles line up in their own column so a parent can find their row without reading the others.
    */
-  layout?: ('list' | 'cards' | 'compact' | 'showcase') | null;
+  layout?: ('list' | 'cards' | 'compact' | 'showcase' | 'spec') | null;
   /**
-   * Choose numbers when the order matters, otherwise ticks. On cards, numbers add a coloured badge and rule to each one.
+   * Choose numbers when the order matters, otherwise ticks. On cards, numbers add a coloured badge and rule to each one. “Its own icon” is for cards whose points are unordered but each about a different thing — a set of rules, say: it puts the icon chosen on each item next to its heading, instead of the large disc above it.
    */
-  marker?: ('tick' | 'number') | null;
+  marker?: ('tick' | 'number' | 'icon') | null;
   /**
    * Always a single column on phones. “Kept together” narrows the two columns and centres them under the heading — for a SHORT list, where columns spread across the full width leave each one with a long empty tail and the section stops looking composed.
    */
