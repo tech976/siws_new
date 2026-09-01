@@ -1193,418 +1193,6 @@ const main = async () => {
     ],
   })
 
-  // ------------------------------------------------------------- ADMISSIONS
-  await upsert({
-    slug: 'admissions',
-    title: 'Admissions',
-    intro:
-      'Admissions to the Primary Section are conducted in accordance with the guidelines and norms prescribed by the Education Department, Government of Maharashtra.',
-    showInNav: true,
-    navLabel: 'Admissions',
-    navOrder: 10,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'How admission to SIWS Primary School works for Grades 1 to 4, under Education Department norms.',
-    layout: [
-      /*
-       * The page opened straight onto the three admission routes, and the
-       * first of them began "from our Pre-Primary Section" — so the first
-       * thing a reader met was a sentence about a different section of the
-       * school, and the page read as though it were the Pre-Primary's own.
-       *
-       * This paragraph goes first and says which grades this is, before any
-       * route is described. The Pre-Primary is then clearly what a child
-       * arrives FROM rather than what the page is about.
-       */
-      {
-        blockType: 'richText',
-        heading: 'Admission to Grades 1 to 4',
-        accentWord: 'Grades 1 to 4',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'This page is about joining the Primary Section — Grades 1 to 4. Admission is conducted in accordance with the guidelines and norms prescribed by the Education Department, Government of Maharashtra, and every place is offered against a vacancy in the grade applied for.',
-          'Most of Grade 1 comes up from our own Pre-Primary Section. Whatever seats are left after that are open to new applicants, and Grades 2, 3 and 4 are open only where a child has left and a seat is free.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Who can apply, and for which grade',
-        accentWord: 'which grade',
-        headingLevel: 'h2',
-        marker: 'number',
-        columns: '1',
-        background: 'sea',
-        items: [
-          {
-            title: 'Grade 1 — from our Pre-Primary Section',
-            description:
-              'Children from our Pre-Primary Section are promoted to Grade 1 upon submission of the prescribed admission form and completion of the required formalities, as per the Education Department’s norms.',
-          },
-          {
-            title: 'Grade 1 — new admissions',
-            description:
-              'Fresh admissions to Grade 1 are offered only if vacancies are available after the admission process for students from the Pre-Primary Section is completed.',
-          },
-          {
-            title: 'Grades 2, 3 and 4',
-            description:
-              'Admissions to these grades are considered only against vacant seats, subject to the school’s admission policy and the applicable rules and regulations of the Education Department.',
-          },
-        ],
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Applying, step by step',
-        accentWord: 'step by step',
-        headingLevel: 'h2',
-        layout: 'cards',
-        background: 'white',
-        items: [
-          {
-            title: 'Tell us which grade',
-            icon: 'communication',
-            description:
-              `Write to ${PRIMARY_EMAIL} or telephone ${PRIMARY_PHONES}, or send the enquiry form on the contact page, saying which grade and which academic year you are asking about.`,
-          },
-          {
-            title: 'Collect the admission form',
-            icon: 'study',
-            description:
-              'The prescribed admission form is issued by the school office. The office will tell you which documents to bring with it.',
-          },
-          {
-            title: 'Submit it with the formalities completed',
-            icon: 'staff',
-            description:
-              'The form is returned to the office with the required formalities completed, as laid down in the Education Department’s norms.',
-          },
-          {
-            title: 'A place is offered against a vacancy',
-            icon: 'pass',
-            description:
-              'Grade 1 places are offered once the Pre-Primary promotions are complete. Grades 2 to 4 are offered only where a seat is actually vacant.',
-          },
-        ],
-      },
-      {
-        blockType: 'richText',
-        heading: 'Scholarships',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'sea',
-        content: richText([
-          'SIWS administers 151 scholarship and endowment funds, given by well-wishers of the institution over more than nine decades. They are awarded right across the institution, from the Kindergarten Section through to the S.S.C. Examination.',
-        ]),
-      },
-      {
-        /**
-         * Only funds whose own wording names the Primary section or Standards
-         * I–IV are listed here. The rest are on the institution-wide register —
-         * a Primary page claiming a Standard X award would mislead a parent.
-         */
-        blockType: 'featureList',
-        heading: 'Funds awarded to Primary students',
-        accentWord: 'Primary students',
-        headingLevel: 'h3',
-        marker: 'tick',
-        columns: '1',
-        background: 'sea',
-        items: [
-          {
-            title: 'Ms. G. Radha Head Teacher Primary School, Wadala Endowment Scholarship Fund',
-            description: 'For standing first in each standard, i.e., from I to IV.',
-          },
-          {
-            title: 'Mrs. Sakuntala Nair Head Teacher Wadala Primary Section Merit Scholarship Fund',
-            description: 'For the rank holder of Standard IV.',
-          },
-          {
-            title:
-              'Mrs. B. Sarasa Mani – Head Teacher, Wadala Primary Section Endowment Scholarship Fund',
-            description:
-              'Awarded to the student who secures the highest marks in Mathematics in Standard IV (one from each of the three divisions).',
-          },
-          {
-            title: 'Mr. K. Raman Memorial Scholarship Fund',
-            description: 'To 4th Standard students scoring highest marks in Mathematics.',
-          },
-          {
-            title: 'Mrs. Lakshmi Ammal Commemoration Scholarship Fund',
-            description: 'To be awarded to the student who stands first in each standard.',
-          },
-          {
-            title: 'Smt. Thirumalai Narasimha Iyengar Commemoration Scholarship Fund',
-            description: 'To be awarded to the student who stands first in each standard.',
-          },
-          {
-            title: 'Smt. T. Janaki Ammal Scholarship Fund',
-            description: 'To a deserving student from the Primary Section.',
-          },
-          {
-            title: 'Shri. S. Ramanathan Endowment Scholarship Fund',
-            description:
-              'To a financially weak deserving student in the Primary or Secondary Section.',
-          },
-          {
-            title: 'Shri. V.A. Venugopal Endowment Scholarship Fund',
-            description: 'To a financially weak and deserving boy or girl of Standards I to X.',
-          },
-          {
-            title: 'Late Mrs. T. S. Swaminathan Merit Scholarship Fund',
-            description: 'To students from K.G. to Secondary.',
-          },
-          {
-            title: 'Late Mrs. Meenakshi Swaminathan Scholarship Fund',
-            description: 'To the needy student from K.G. to Secondary.',
-          },
-        ],
-      },
-      ...(scholarshipsPageId
-        ? [
-            {
-              blockType: 'callToAction',
-              heading: 'See every SIWS scholarship fund',
-              background: 'tint',
-              text: richText([
-                'The complete register of all 151 merit, open and arts funds is published for the whole institution.',
-              ]),
-              links: [
-                {
-                  link: {
-                    label: 'View the full scholarship register',
-                    type: 'internal',
-                    reference: {
-                      relationTo: 'pages',
-                      value: scholarshipsPageId,
-                    },
-                    appearance: 'secondary',
-                  },
-                },
-              ],
-            },
-          ]
-        : []),
-      {
-        blockType: 'callToAction',
-        heading: 'Questions about admission?',
-        background: 'brand',
-        text: richText(['Our admissions team is happy to talk you through the process.']),
-        links: [
-          {
-            link: {
-              label: 'Email the admissions team',
-              type: 'external',
-              url: `mailto:${PRIMARY_EMAIL}`,
-              appearance: 'primary',
-            },
-          },
-        ],
-      },
-    ],
-  })
-
-  // --------------------------------------------------------- ADMISSIONS FAQ
-  /*
-   * The questions the office actually gets, in the order somebody asks them:
-   * whether the school is right for the child, then how to apply, then what
-   * happens once a place is offered.
-   *
-   * Several answers end by pointing at the office. That is deliberate. Fees,
-   * term dates, the document list and the timetable are not in this project
-   * yet, and an FAQ that guessed at them would be worse than one that says
-   * who knows. Each of those answers still says everything that IS settled —
-   * so nobody is sent to the office to be told something this page could
-   * have told them.
-   *
-   * `allowMultipleOpen: false` on all three: a reader comparing two answers
-   * on a phone loses their place when both are long, and only one question is
-   * ever actually being asked.
-   */
-  await upsert({
-    slug: 'admissions-faq',
-    title: 'Admissions FAQ',
-    intro: 'The questions the office is asked most often about joining Grades 1 to 4.',
-    /*
-     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
-     *
-     * This is a CHILD entry in the shared unit template. Setting it true from
-     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
-     * wins — so running this seed after `seed:nav` climbed every child out
-     * to the top row at once. Secondary reached thirteen top-level items and
-     * the buttons wrapped onto a second line.
-     *
-     * Omitting the field is NOT enough: `payload.update` keeps the existing
-     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
-     * rather than leaving it alone. False explicitly means the worst this seed
-     * can do is drop the entry until `seed:nav` runs — which is the
-     * documented order anyway, and a missing drop-down entry is a far smaller
-     * fault than a menu that wraps.
-     */
-    showInNav: false,
-    navLabel: 'Admissions FAQ',
-    navOrder: 11,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'Common questions about admission to SIWS Primary School — which grades have places, how to apply, what happens after the Pre-Primary Section, scholarships and school rules.',
-    layout: [
-      {
-        blockType: 'accordion',
-        heading: 'Before you apply',
-        accentWord: 'apply',
-        headingLevel: 'h2',
-        background: 'white',
-        allowMultipleOpen: false,
-        items: [
-          {
-            question: 'Which grades does the Primary Section take?',
-            answer: richText([
-              'Grades 1 to 4, on the Maharashtra State Board curriculum. Children below Grade 1 are in our Pre-Primary Section, and Grade 5 onwards is the Secondary School — both on the same campus.',
-            ]),
-          },
-          {
-            question: 'Are there places in every grade?',
-            answer: richText([
-              'No. Grade 1 is the one grade that fills as a matter of course, because most of it comes up from our own Pre-Primary Section. New applicants are considered for whatever is left after that.',
-              'Grades 2, 3 and 4 are open only against a vacant seat — that is, only when a child has left. Some years there are several, some years there are none.',
-            ]),
-          },
-          {
-            question: 'My child is in the SIWS Pre-Primary Section. Is Grade 1 automatic?',
-            answer: richText([
-              'Children from our Pre-Primary Section are promoted to Grade 1 on submission of the prescribed admission form and completion of the required formalities, under the Education Department’s norms. It is not an application competing with others, but the form still has to be filled in and handed back on time.',
-            ]),
-          },
-          {
-            question: 'What rules do you follow in deciding admissions?',
-            answer: richText([
-              'Admissions to the Primary Section are conducted in accordance with the guidelines and norms prescribed by the Education Department, Government of Maharashtra, and the school’s own admission policy.',
-            ]),
-          },
-          {
-            question: 'Which medium and board is the teaching in?',
-            answer: richText([
-              'English medium, following the Maharashtra State Board curriculum aligned with NEP 2020. English, Marathi, Mathematics, EVS, ICT, Art, Work Experience, Physical Education and Value Education are all taught from Grade 1.',
-            ]),
-          },
-        ],
-      },
-      {
-        blockType: 'accordion',
-        heading: 'Applying',
-        accentWord: 'Applying',
-        headingLevel: 'h2',
-        background: 'sea',
-        allowMultipleOpen: false,
-        items: [
-          {
-            question: 'How do I start?',
-            answer: richText([
-              `Write to ${PRIMARY_EMAIL} or telephone ${PRIMARY_PHONES}, or send the enquiry form on our contact page, saying which grade and which academic year you are asking about. That one detail is what lets the office tell you straight away whether there is anything to apply for.`,
-            ]),
-          },
-          {
-            question: 'Where do I get the admission form?',
-            answer: richText([
-              'The prescribed admission form is issued by the school office. Ask for it when you enquire, and the office will tell you when forms for that year are available.',
-            ]),
-          },
-          {
-            question: 'Which documents do I need to bring?',
-            answer: richText([
-              'The office will give you the list when it issues the form — it depends on the grade and on whether your child is transferring from another school. Please ask before you come in, rather than making the trip twice.',
-            ]),
-          },
-          {
-            question: 'When do admissions open?',
-            answer: richText([
-              'The dates follow the Education Department’s calendar for the year and are not fixed by the school, so they move. Contact the office and ask to be told when forms for the coming year are issued.',
-            ]),
-          },
-          {
-            question: 'My child is transferring from another school mid-year. Is that possible?',
-            answer: richText([
-              'Only against a vacant seat in the grade concerned, and subject to the school’s admission policy and the Education Department’s rules. Ask the office about the specific grade — the answer changes through the year.',
-            ]),
-          },
-        ],
-      },
-      {
-        blockType: 'accordion',
-        heading: 'Once a place is offered',
-        accentWord: 'offered',
-        headingLevel: 'h2',
-        background: 'white',
-        allowMultipleOpen: false,
-        items: [
-          {
-            question: 'What are the fees?',
-            answer: richText([
-              'The fee structure for the current year is with the school office, and it is what you should ask for when you enquire. We would rather tell you the real figure than publish one that goes out of date.',
-            ]),
-          },
-          {
-            question: 'Is there any financial help?',
-            answer: richText([
-              'SIWS administers 151 scholarship and endowment funds, given by well-wishers over more than nine decades and awarded from the Kindergarten Section through to the S.S.C. Examination. Three of them name the Wadala Primary Section specifically. They are listed on the admissions page.',
-            ]),
-          },
-          {
-            question: 'Is there a uniform?',
-            answer: richText([
-              'Yes. What students wear, and the general rules parents are asked to follow, are set out on the school rules and uniform page.',
-            ]),
-          },
-          {
-            question: 'Can I visit before deciding?',
-            answer: richText([
-              'Please arrange it with the office first. Parents and guardians are asked not to come in to see a child or a teacher during school hours without the prior consent of the Head Teacher — it is how the school knows who is on the campus.',
-            ]),
-          },
-          {
-            question: 'Where do I get a bonafide or railway concession certificate?',
-            answer: richText([
-              'From the school office, between 1.00 p.m. and 2.30 p.m. only. The same window covers date of birth, first attempt and leaving certificates.',
-            ]),
-          },
-        ],
-      },
-      {
-        blockType: 'callToAction',
-        heading: 'Still not sure?',
-        background: 'brand',
-        text: richText([
-          'If the answer you need is not here, the admissions team would rather you asked than guessed.',
-        ]),
-        links: [
-          {
-            link: {
-              label: 'Email the admissions team',
-              type: 'external',
-              url: `mailto:${PRIMARY_EMAIL}`,
-              appearance: 'primary',
-            },
-          },
-          ...(contactPageId
-            ? [
-                {
-                  link: {
-                    label: 'Send an enquiry',
-                    type: 'internal',
-                    reference: { relationTo: 'pages', value: contactPageId },
-                    appearance: 'secondary',
-                  },
-                },
-              ]
-            : []),
-        ],
-      },
-    ],
-  })
-
   // ------------------------------------------------------- RULES & UNIFORM
   await upsert({
     slug: 'school-rules',
@@ -2119,7 +1707,6 @@ const main = async () => {
    * rules, the curriculum, or the staffing — all of it set out earlier in this
    * file — and the one link between the two pages is the note at the foot.
    */
-  const admissionsFaqPageId = await pageId('admissions-faq')
 
   await upsert({
     slug: 'faq',
@@ -2240,31 +1827,33 @@ const main = async () => {
           {
             question: 'Is there financial help?',
             answer: richText([
-              'SIWS administers 151 scholarship and endowment funds, given by well-wishers over more than nine decades and awarded from the Kindergarten Section through to the S.S.C. Examination. Three of them name the Wadala Primary Section specifically; they are listed on the admissions page.',
+              'SIWS administers 151 scholarship and endowment funds, given by well-wishers over more than nine decades and awarded from the Kindergarten Section through to the S.S.C. Examination. Three of them name the Wadala Primary Section specifically, and the whole register is linked below.',
             ]),
           },
         ],
       },
       /*
-       * The one place the two FAQs meet. A parent who arrives here with an
-       * admission question should be sent on in one click rather than reading
-       * fifteen answers that are not theirs.
+       * INHERITED FROM THE ADMISSIONS PAGE, which carried it until that page
+       * was removed. The register is institution-wide and this section's own
+       * scholarship answer sits a few centimetres above, so the link belongs
+       * here rather than nowhere — without it, Primary names 151 funds and
+       * offers no way to read them.
        */
-      ...(admissionsFaqPageId
+      ...(scholarshipsPageId
         ? [
             {
               blockType: 'callToAction',
-              heading: 'Asking about joining the school?',
+              heading: 'See every SIWS scholarship fund',
               background: 'brand',
               text: richText([
-                'Questions about applying — which grades have places, how to get a form, what to bring — are answered on their own page.',
+                'The complete register of all 151 merit, open and arts funds is published for the whole institution.',
               ]),
               links: [
                 {
                   link: {
-                    label: 'Open the Admissions FAQ',
+                    label: 'View the full scholarship register',
                     type: 'internal',
-                    reference: { relationTo: 'pages', value: admissionsFaqPageId },
+                    reference: { relationTo: 'pages', value: scholarshipsPageId },
                     appearance: 'primary',
                   },
                 },
