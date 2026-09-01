@@ -60,6 +60,7 @@
     "seed:refresh": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-refresh.ts",
     "seed:onam": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/onam.ts",
     "seed:vision-bg": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/vision-background.ts",
+    "remove:primary-pages": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/remove-primary-pages.ts",
     "remove:primary-campus-pages": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/remove-primary-campus-pages.ts",
     "publish:menu-parents": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/publish-menu-parents.ts",
     "seed:image-filing": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/image-filing.ts"

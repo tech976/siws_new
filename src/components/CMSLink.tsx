@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 
+import { headingAnchor } from '@/lib/anchor'
 import { isExternalHref, mediaHref, pageHref } from '@/lib/href'
 import type { Media, Page } from '@/payload-types'
 
@@ -29,25 +30,12 @@ export interface CMSLinkValue {
   label?: string | null
   type?: ('internal' | 'external') | null
   reference?: CMSLinkReference
-  url?: string | null
+  /** A section on the target page — see `headingAnchor`. */
   anchor?: string | null
+  url?: string | null
   newTab?: boolean | null
   appearance?: ('primary' | 'secondary' | 'plain') | null
 }
-
-/**
- * Slugified the same way `GalleryBlockView` builds its section `id`, so an
- * editor can type the heading as they see it — "Onam Event" — and still hit
- * `#onam-event`. A value that is already a slug passes through unchanged.
- */
-const toAnchor = (value: string): string =>
-  value
-    .trim()
-    .replace(/^#/, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-')
 
 const unwrapReference = (
   reference: CMSLinkReference | undefined,
@@ -97,12 +85,30 @@ export const resolveCMSHref = (link: CMSLinkValue | null | undefined): string | 
       ? mediaHref(value as Media | number | null)
       : pageHref(value as Page | number | null)
 
-  // The fragment is appended only to a href that actually resolved, so an
-  // unpublished target still returns null and renders inert (FR-QL-06) rather
-  // than becoming a bare "#onam-event" that scrolls the current page.
+  /*
+   * The fragment is appended only to a href that actually resolved. On an
+   * unpublished or deleted target `pageHref` returns null, and "#onam" on its
+   * own would turn an inert link into one that jumps to the top of the page
+   * the reader is already on — a worse answer than the span FR-QL-06 asks for.
+   */
   if (!href || kind === 'media' || !link.anchor) return href
 
-  const fragment = toAnchor(link.anchor)
+  /*
+   * Normalised through the SAME function that writes the ids — `Section`
+   * derives its `id` from the block heading with `headingAnchor`, so anything
+   * else here is a second slugifier that agrees with the first until it does
+   * not. The two implementations this merge brought together disagreed on
+   * exactly the headings you would not test: one stripped accents to their
+   * base letter and the other deleted them, and one collapsed a run of
+   * punctuation to a single dash where the other kept every hyphen the editor
+   * typed. "Sección" and "Onam - Events" each resolved to an id that does not
+   * exist on the page, and a fragment that matches nothing fails silently —
+   * the reader lands at the top and nothing reports it.
+   *
+   * Stripping a leading "#" stays, because an editor typing "#onam" into a
+   * field labelled "section" is typing the thing they see in the address bar.
+   */
+  const fragment = headingAnchor(link.anchor.replace(/^#/, ''))
   return fragment ? `${href}#${fragment}` : href
 }
 

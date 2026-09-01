@@ -201,8 +201,20 @@ const UNIT_OMIT: Record<string, string[]> = {
    * Student Wall comes off because it is still the placeholder page; Student
    * Life keeps Transport and gains the Campus Gallery below.
    */
+  /*
+   * `school-rules` is deliberately NOT omitted here. It was, until the page
+   * had content; the comment above records it going back on 2026-09-01. The
+   * other side of this merge still carried the older list, and taking it
+   * wholesale would have hidden the rules page the same day it was written.
+   */
   kindergarten: ['annual-calendar', 'faq', 'student-wall'],
-  primary: ['annual-calendar'],
+  /*
+   * Student Wall and Transport come off at SIWS's instruction (2026-09-01).
+   * Both are also gone from `seed/primary.ts`, and their rows are deleted by
+   * `npm run remove:primary-pages` — this entry is what stops the menu
+   * template creating them again as empty placeholders on the next run.
+   */
+  primary: ['annual-calendar', 'student-wall', 'transport'],
   secondary: ['annual-calendar'],
   /*
    * Junior College drops four more, at SIWS's request (2026-08-29).

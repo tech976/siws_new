@@ -103,6 +103,18 @@ const STEPS: Step[] = [
    * reports that and does nothing.
    */
   { script: 'primary:merge', does: 'retiring the Wadala and Matunga campus pages' },
+  /*
+   * Here for exactly the reason `primary:merge` above is, and it arrived
+   * without a place in this list because it was written on a branch that did
+   * not have this list.
+   *
+   * `seed:primary` stopped defining Student Wall and Transport; seeds only
+   * create and update, so both pages stay published, in the menu and reachable
+   * on every database that was seeded before the change. The removal is only
+   * real on a machine that also runs this — so it runs here, with the others,
+   * rather than depending on somebody remembering it.
+   */
+  { script: 'remove:primary-pages', does: 'removing the Student Wall and Transport pages' },
   { script: 'seed:secondary', does: 'the Secondary site' },
   { script: 'seed:jc', does: 'the Junior College site' },
   { script: 'seed:hod', does: 'the heads of department' },

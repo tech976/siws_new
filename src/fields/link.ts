@@ -103,6 +103,15 @@ export const linkField = ({
        * Deliberately not an external-style URL: the target is still a real
        * relationship, so FR-QL-06 keeps working — unpublish the page and the
        * link still hides itself rather than 404ing with a fragment attached.
+       *
+       * NO SLUG VALIDATION, DELIBERATELY. This merge arrived with a second
+       * `anchor` field beside this one that rejected anything not already
+       * lower-cased and hyphenated, which would have failed an editor typing
+       * the heading exactly as it appears on the page. It is unnecessary:
+       * `CMSLink` puts this value through `headingAnchor` — the same function
+       * that writes the ids — so "Onam Event", "onam-event" and "#onam-event"
+       * all resolve to the same section. Asking staff to slugify by hand is
+       * asking them to do something the code already does correctly.
        */
       name: 'anchor',
       type: 'text',

@@ -4,6 +4,8 @@ import type { GalleryBlock, Media as MediaDoc } from '@/payload-types'
 
 import { GalleryCarousel } from './GalleryCarousel'
 import { GalleryPager } from './GalleryPager'
+import { headingAnchor } from '@/lib/anchor'
+
 import { Section, SectionHeading, type BlockBackground } from './Section'
 
 /**
@@ -249,20 +251,14 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
    * section has. The gallery seed builds one block per category, so this gives
    * every category a stable address without anything else having to name it.
    *
-   * Headings come from staff-entered category names, so the slug is built by
-   * stripping rather than trusting: anything that is not a letter, digit or
-   * space becomes nothing, and runs of whitespace become a single dash.
+   * The slug comes from `headingAnchor` rather than being built here, because
+   * `CMSLink` has to derive the SAME string from the anchor an editor typed.
+   * Two copies of the rule in two files is one copy too many: they were in
+   * fact already disagreeing on accents and on hyphens the editor typed, and a
+   * fragment that matches no id fails silently.
    */
-  const anchorId = block.heading
-    ? block.heading
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .trim()
-        .replace(/\s+/g, '-') || undefined
-    : undefined
-
   return (
-    <Section background={block.background as BlockBackground} id={anchorId}>
+    <Section background={block.background as BlockBackground} id={headingAnchor(block.heading)}>
       {/*
         `mb-4` is the gap down to an INTRO, which then carries its own `mb-8`
         on to the photographs. A gallery with no intro was left with that 16px

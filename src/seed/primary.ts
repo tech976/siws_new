@@ -29,6 +29,26 @@ const { richText } = await import('./lexical')
  */
 const CLASS_OPTIONS = ['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4']
 
+/**
+ * PRIMARY SECTION CONTACT DETAILS
+ * ===============================
+ * Supplied by SIWS for the Primary Section, and the only contact details
+ * this section shows. They are held here rather than typed into each page
+ * because eight places print them, and eight copies drift.
+ *
+ * Primary only. The other three units and the portal keep the Society's
+ * general email and mobile from `units-content.ts`.
+ *
+ * TWO NUMBERS, ONE `phone` FIELD. The unit's `phone` becomes a `tel:`
+ * link and holds a single value, so a pair in it would produce a link that
+ * dials neither. PRIMARY_PHONE is what the footer dials; both numbers are
+ * printed together wherever the office is named in full.
+ */
+const PRIMARY_PHONE = '022-24114262'
+const PRIMARY_PHONE_ALT = '022-24115055'
+const PRIMARY_PHONES = `${PRIMARY_PHONE} or ${PRIMARY_PHONE_ALT}`
+const PRIMARY_EMAIL = 'admissions@siwsschool.edu.in'
+
 /*
  * The subjects, each with an icon so the list reads as a syllabus rather than
  * eight ticks in a column. The icons come from the block's fixed set — see
@@ -222,6 +242,19 @@ const MATUNGA_FACULTY = [
   { name: 'Ms. Payal Sandeep Shukla', qualifications: 'H.S.C., D.Ed.' },
   { name: 'Mrs. Mary Dolours Richard', qualifications: 'B.A., D.Ed.' },
   { name: 'Ms. Prema Keshwan Devendra', qualifications: 'B.A., D.Ed.' },
+  /*
+   * KEPT ACROSS THE MERGE, DELIBERATELY. The other side of this merge had
+   * dropped this teacher from the list — not in any commit of its own, but
+   * silently, inside an earlier merge resolution, with nothing recorded
+   * anywhere about why. Straight three-way semantics would have honoured that
+   * as a deletion and taken a serving teacher off the staff page.
+   *
+   * Two things say she belongs here: the row is still in the faculty table on
+   * a database restored from the committed dump, and the commit this line
+   * arrives in is the one that supplies her qualifications. Nobody fills in
+   * the qualifications of a teacher they are removing.
+   */
+  { name: 'Ms. Vaishali Baghat', qualifications: 'M.A., D.T.Ed., NET' },
 ]
 
 /** The 18 rules Matunga supplied, verbatim. */
@@ -275,8 +308,11 @@ const FACULTY = [
   { name: 'Gurjit Kaur Matta', qualifications: 'B.A., D.Ed.' },
   { name: 'Shruti Sampat Gaware', qualifications: 'B.A., D.Ed.' },
   { name: 'Deepika Naidu', qualifications: 'H.S.C., D.Ed.' },
-  // Listed with a subject rather than a qualification.
-  { name: 'Deepika Boricha', designation: 'Arts Teacher' },
+  {
+    name: 'Deepika Boricha',
+    designation: 'Arts Teacher',
+    qualifications: 'H.S.C., A.T.D.',
+  },
 ]
 
 /**
@@ -466,6 +502,10 @@ const main = async () => {
       tagline: 'Maharashtra State Board | Grades 1 to 4',
       description:
         'Grades 1 to 4 following the Maharashtra State Board curriculum, aligned with NEP 2020 — nurturing confident, responsible and joyful learners.',
+      // Overrides the Society-wide pair from `units-content.ts` for this
+      // section only. One number, because the field is a `tel:` link.
+      phone: PRIMARY_PHONE,
+      email: PRIMARY_EMAIL,
     } as never,
   })
 
@@ -721,6 +761,19 @@ const main = async () => {
                                 relationTo: 'pages',
                                 value: galleryPageId,
                               },
+                              /*
+                               * Straight to the Onam band, not the top of the
+                               * wall. The gallery is grouped by category and
+                               * Onam is the second band, so a reader who came
+                               * from this card would otherwise land on the
+                               * Achievements photographs and have to scroll
+                               * past them to reach what they clicked for.
+                               *
+                               * 'onam' is what `headingAnchor` makes of the
+                               * band's own heading, which `seed:galleries`
+                               * sets from the category name.
+                               */
+                              anchor: 'onam',
                             },
                           },
                         ],
@@ -953,11 +1006,11 @@ const main = async () => {
           {
             title: 'Admissions',
             description:
-              'For enquiries about Grades 1 to 4 at either campus — admissions@siws.edu.in',
+              `For enquiries about Grades 1 to 4 at either campus — ${PRIMARY_EMAIL}, or telephone ${PRIMARY_PHONES}.`,
           },
           {
             title: 'General enquiries',
-            description: 'For anything else — info@siws.edu.in',
+            description: `For anything else — ${PRIMARY_EMAIL}, or telephone ${PRIMARY_PHONES}.`,
           },
         ],
       },
@@ -1079,7 +1132,7 @@ const main = async () => {
             link: {
               label: 'Email the admissions team',
               type: 'external',
-              url: 'mailto:admissions@siws.edu.in',
+              url: `mailto:${PRIMARY_EMAIL}`,
               appearance: 'primary',
             },
           },
@@ -1337,7 +1390,7 @@ const main = async () => {
             title: 'Tell us which grade',
             icon: 'communication',
             description:
-              'Write to admissions@siws.edu.in, or send the enquiry form on the contact page, saying which grade and which academic year you are asking about.',
+              `Write to ${PRIMARY_EMAIL} or telephone ${PRIMARY_PHONES}, or send the enquiry form on the contact page, saying which grade and which academic year you are asking about.`,
           },
           {
             title: 'Collect the admission form',
@@ -1467,7 +1520,7 @@ const main = async () => {
             link: {
               label: 'Email the admissions team',
               type: 'external',
-              url: 'mailto:admissions@siws.edu.in',
+              url: `mailto:${PRIMARY_EMAIL}`,
               appearance: 'primary',
             },
           },
@@ -1573,7 +1626,7 @@ const main = async () => {
           {
             question: 'How do I start?',
             answer: richText([
-              'Write to admissions@siws.edu.in, or send the enquiry form on our contact page, saying which grade and which academic year you are asking about. That one detail is what lets the office tell you straight away whether there is anything to apply for.',
+              `Write to ${PRIMARY_EMAIL} or telephone ${PRIMARY_PHONES}, or send the enquiry form on our contact page, saying which grade and which academic year you are asking about. That one detail is what lets the office tell you straight away whether there is anything to apply for.`,
             ]),
           },
           {
@@ -1654,7 +1707,7 @@ const main = async () => {
             link: {
               label: 'Email the admissions team',
               type: 'external',
-              url: 'mailto:admissions@siws.edu.in',
+              url: `mailto:${PRIMARY_EMAIL}`,
               appearance: 'primary',
             },
           },
@@ -1765,7 +1818,7 @@ const main = async () => {
 
   // ------------------------------------------- UPDATES, NEWS & STUDENT LIFE
   /*
-   * Five pages that carried a heading and nothing else.
+   * Three pages that carried a heading and nothing else.
    *
    * There is one hard constraint running through all of them: this section's
    * whole photographed record is eleven pictures of two occasions — Natya
@@ -1777,12 +1830,13 @@ const main = async () => {
    *   Updates      — what has happened lately, and where the rest of it is
    *   News         — the things worth telling you, newest first
    *   Student Life — what school is like beyond the timetable
-   *   Student Wall — what the children themselves took part in
-   *   Transport    — how a child gets here, and who to ask
    *
-   * Nothing here invents a bus route, a fare or a term date. `institution.ts`
-   * says exactly why, and Transport below is the page that warning was written
-   * about.
+   * STUDENT WALL AND TRANSPORT WERE HERE, and are gone at SIWS's instruction.
+   * Transport was the page `institution.ts` warns about — the school has
+   * supplied no operator, route or fare, so it never said anything a parent
+   * could act on. Both are dropped from Primary's menu in `UNIT_OMIT` in
+   * `seed/nav.ts`, which otherwise recreates them as placeholders, and the
+   * rows are deleted by `npm run remove:primary-pages`.
    */
   const newsShots = {
     firstPrize: await photo('natya-tarang-2026-first-prize.jpg'),
@@ -1807,224 +1861,6 @@ const main = async () => {
     },
     { title: 'No school business is transacted on Saturdays, Sundays and holidays.' },
   ]
-
-  // ------------------------------------------------------------- TRANSPORT
-  await upsert({
-    slug: 'transport',
-    title: 'Transport',
-    intro: 'How children reach the school, and who to ask about the part we cannot publish.',
-    /*
-     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
-     *
-     * This is a CHILD entry in the shared unit template. Setting it true from
-     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
-     * wins — so running this seed after `seed:nav` climbed every child out
-     * to the top row at once. Secondary reached thirteen top-level items and
-     * the buttons wrapped onto a second line.
-     *
-     * Omitting the field is NOT enough: `payload.update` keeps the existing
-     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
-     * rather than leaving it alone. False explicitly means the worst this seed
-     * can do is drop the entry until `seed:nav` runs — which is the
-     * documented order anyway, and a missing drop-down entry is a far smaller
-     * fault than a menu that wraps.
-     */
-    showInNav: false,
-    navLabel: 'Transport',
-    navOrder: 72,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'Getting to SIWS Primary School in Wadala — railway concession forms, arrival and collection, and who to ask about travel arrangements.',
-    layout: [
-      /*
-       * THIS PAGE DOES NOT LIST A BUS ROUTE, AND THAT IS THE POINT.
-       *
-       * SIWS has supplied nothing about school transport — no operator, no
-       * route, no fare — and `institution.ts` already names Transport as one
-       * of the pages left as a placeholder for exactly that reason: an
-       * invented bus route outlives the placeholder it replaced and is read
-       * as fact.
-       *
-       * A placeholder was still the wrong answer, because two things ARE
-       * known and are what most families actually need: the school issues
-       * railway concession forms, and it has a rule about who may come onto
-       * the campus during the day. Those are here, said plainly, and the one
-       * unknown is handed to the office instead of being guessed at.
-       */
-      {
-        blockType: 'featureList',
-        heading: 'What the school can help with',
-        accentWord: 'help with',
-        headingLevel: 'h2',
-        layout: 'cards',
-        background: 'sea',
-        items: [
-          {
-            title: 'Railway concession forms',
-            icon: 'transport',
-            description:
-              'Issued by the school office between 1.00 p.m. and 2.30 p.m. only — as are date of birth, bonafide student, first attempt and leaving certificates.',
-          },
-          {
-            title: 'Arriving and being collected',
-            icon: 'security',
-            description:
-              'Entrances, corridors and common areas are covered by CCTV, and movement between rooms is supervised.',
-          },
-          {
-            title: 'Anything else about travel',
-            icon: 'communication',
-            description:
-              'Ask the office. Questions about your particular route are answered better by somebody who knows this year’s arrangements than by a page.',
-          },
-        ],
-      },
-      {
-        blockType: 'richText',
-        heading: 'Coming onto the campus',
-        accentWord: 'campus',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'Parents and guardians are asked not to come in to see a child or a teacher during school hours without the prior consent of the Head Teacher. It is not a formality — it is how the school knows exactly who is on the campus while the children are in it.',
-        ]),
-      },
-      ...(contactPageId
-        ? [
-            {
-              blockType: 'callToAction',
-              heading: 'Ask about your route',
-              background: 'brand',
-              text: richText([
-                'Tell us where your child will be travelling from and the office will tell you what is possible.',
-              ]),
-              links: [
-                {
-                  link: {
-                    label: 'Contact the school',
-                    type: 'internal',
-                    reference: { relationTo: 'pages', value: contactPageId },
-                    appearance: 'primary',
-                  },
-                },
-              ],
-            },
-          ]
-        : []),
-    ],
-  })
-
-  // ----------------------------------------------------------- STUDENT WALL
-  await upsert({
-    slug: 'student-wall',
-    title: 'Student Wall',
-    intro:
-      'The children’s own year — what they entered, what they performed, what they brought back.',
-    /*
-     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
-     *
-     * This is a CHILD entry in the shared unit template. Setting it true from
-     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
-     * wins — so running this seed after `seed:nav` climbed every child out
-     * to the top row at once. Secondary reached thirteen top-level items and
-     * the buttons wrapped onto a second line.
-     *
-     * Omitting the field is NOT enough: `payload.update` keeps the existing
-     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
-     * rather than leaving it alone. False explicitly means the worst this seed
-     * can do is drop the entry until `seed:nav` runs — which is the
-     * documented order anyway, and a missing drop-down entry is a far smaller
-     * fault than a menu that wraps.
-     */
-    showInNav: false,
-    navLabel: 'Student Wall',
-    navOrder: 71,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'The students of SIWS Primary School on stage and in competition — Natya Tarang 2026, the Ignited Mind Lab programme, and the twelve competitions held through the year.',
-    layout: [
-      {
-        blockType: 'richText',
-        heading: 'The children’s own year',
-        accentWord: 'own year',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'Everything on this page was done by children in Grades 1 to 4 — on a stage, at a competition table, or in front of a school assembly. It is deliberately not a list of what the school offers them. It is what they did with it.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Ways a child takes part',
-        accentWord: 'takes part',
-        headingLevel: 'h2',
-        layout: 'cards',
-        background: 'sea',
-        items: [
-          {
-            title: 'On stage',
-            icon: 'music',
-            description:
-              'Our dancers took first place in Category A at Natya Tarang 2026, the inter-school and college group dance competition — a trophy and a cheque for twenty thousand rupees.',
-          },
-          {
-            title: 'In competition',
-            icon: 'trophy',
-            description:
-              'Twelve competitions run through the year, from recitation and elocution to rangoli, clay work and best out of waste.',
-          },
-          {
-            title: 'In the programme',
-            icon: 'thinking',
-            description:
-              'Eleven children came back from the Ignited Mind Lab programme with certificates of achievement and medals.',
-          },
-          {
-            title: 'In the neighbourhood',
-            icon: 'care',
-            description:
-              'At Raksha Bandhan the children tied rakhis to the men and women who look after the streets around the school.',
-          },
-        ],
-      },
-      {
-        blockType: 'featureList',
-        heading: 'The competitions a child can enter',
-        accentWord: 'competitions',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2-centre',
-        background: 'white',
-        items: COMPETITIONS,
-      },
-      ...(achievementsPageId
-        ? [
-            {
-              blockType: 'callToAction',
-              heading: 'See what they brought back',
-              background: 'sea',
-              text: richText([
-                'The trophy, the cheque, the certificates and the company in costume — photographed on the day.',
-              ]),
-              links: [
-                {
-                  link: {
-                    label: 'Open Achievements',
-                    type: 'internal',
-                    reference: { relationTo: 'pages', value: achievementsPageId },
-                    appearance: 'primary',
-                  },
-                },
-              ],
-            },
-          ]
-        : []),
-    ],
-  })
 
   // ------------------------------------------------------------ STUDENT LIFE
   await upsert({
@@ -2448,14 +2284,14 @@ const main = async () => {
             ]),
           },
           {
-            question: 'Is there a uniform, and are there rules about it?',
+            question: 'What are the uniform rules?',
             answer: richText([
-              'Yes. All students come to school in the prescribed uniform and are expected to be neat and tidy. What the uniform consists of is set out on the rules and uniform page.',
+              'All students come to school in the prescribed uniform and are expected to be neat and tidy. What the uniform consists of is set out on the rules and uniform page.',
               'Children are asked not to wear ornaments or a watch. That is a safety rule rather than a dress rule — students are responsible for the safe custody of their own books and belongings.',
             ]),
           },
           {
-            question: 'Is the campus supervised?',
+            question: 'How is the campus kept safe?',
             answer: richText([
               'The entire campus — classrooms, corridors, entrances and common areas — is monitored by CCTV, and movement between rooms is supervised. Safety is the reason the school also asks visitors to come in only with the Head Teacher’s consent.',
             ]),
@@ -2477,7 +2313,7 @@ const main = async () => {
             ]),
           },
           {
-            question: 'How is it taught?',
+            question: 'How are lessons taught?',
             answer: richText([
               'Through child-centred, activity-based and competency-driven methods, so a lesson is understood rather than memorised. Every classroom has an interactive smart panel, and multimedia lessons are used alongside the board and the exercise book.',
               'There is continuous formative assessment with constructive feedback, and individual attention and remedial support wherever a child needs it.',
@@ -2490,7 +2326,7 @@ const main = async () => {
             ]),
           },
           {
-            question: 'What can my child take part in besides lessons?',
+            question: 'What can my child take part in outside lessons?',
             answer: richText([
               'Twelve competitions run through the year — recitation, fancy dress, elocution, drawing and painting, story telling, group singing, handwriting, work experience, clay work, rangoli, best out of waste, and sports and games.',
               'Alongside those are literary and language activities, art, craft, music and dance, sport, cultural celebrations, environmental work and leadership opportunities. The Student Life pages set all of it out.',
@@ -2499,7 +2335,7 @@ const main = async () => {
           {
             question: 'Who teaches my child?',
             answer: richText([
-              'The section has twenty-two teachers under two head teachers — Mrs. Geeta Raja, I/C Head Teacher, and Mrs. Sreedevi Prasanna Bagayatkar, Head Teacher — qualified in B.A., B.Com., M.A., B.Ed. and D.Ed., with an art teacher among them. Many have taught here for more than twenty years. Every name is on the teachers page.',
+              'The section has twenty-two teachers under two head teachers, qualified in B.A., B.Com., M.A., B.Ed. and D.Ed., with an art teacher among them. Many have taught here for more than twenty years. Every name, and who leads each teaching team, is on the teachers page.',
             ]),
           },
         ],
@@ -2519,7 +2355,7 @@ const main = async () => {
             ]),
           },
           {
-            question: 'We have moved, or changed our phone number.',
+            question: 'How do I tell the school we have moved or changed our number?',
             answer: richText([
               'Tell the office promptly. The school keeps a record of the address and telephone number of every student’s parents or guardians, and it is only useful if it is current.',
             ]),
@@ -2537,7 +2373,7 @@ const main = async () => {
             ]),
           },
           {
-            question: 'Is there financial help available?',
+            question: 'Is there financial help?',
             answer: richText([
               'SIWS administers 151 scholarship and endowment funds, given by well-wishers over more than nine decades and awarded from the Kindergarten Section through to the S.S.C. Examination. Three of them name the Wadala Primary Section specifically; they are listed on the admissions page.',
             ]),
@@ -2640,7 +2476,7 @@ const main = async () => {
           {
             title: 'Write to the school office',
             description:
-              'For anything the class teacher cannot settle, info@siws.edu.in reaches the office, and the office will arrange a time with the Head Teacher.',
+              `For anything the class teacher cannot settle, write to ${PRIMARY_EMAIL} or telephone ${PRIMARY_PHONES}, and the office will arrange a time with the Head Teacher.`,
           },
           ...(contactPageId
             ? [
