@@ -1,7 +1,7 @@
 import { CMSLink } from '@/components/CMSLink'
 import type { HeroMarqueeBlock, Media as MediaDoc } from '@/payload-types'
 
-import { HeroCarousel } from './HeroCarousel'
+import { HeroStage } from './HeroStage'
 
 /**
  * A page-opening banner whose background photograph slides.
@@ -61,29 +61,33 @@ export const HeroMarqueeBlockView = ({ block }: { block: HeroMarqueeBlock }) => 
     .map((entry) => entry.image)
     .filter((image): image is MediaDoc => typeof image === 'object' && image !== null)
 
+  /*
+   * EVERYTHING BELOW IS RENDERED ON THE SERVER AND HANDED TO `HeroStage` AS
+   * CHILDREN.
+   *
+   * That is what keeps the type still. React sees the same element reference
+   * every time the stage re-renders for a new photograph, so it skips this
+   * whole subtree — the heading cannot re-render, re-animate or re-flow when
+   * the picture behind it changes.
+   *
+   * The reveal classes run once, on load, and are staged a breath apart so the
+   * order of the three lines is read before it is parsed.
+   */
   return (
-    <section data-invert="true" data-ground="brand" className="relative isolate overflow-hidden">
-      <HeroCarousel photos={photos} />
-
-      {/*
-        The same gradient the still hero uses, over whichever photograph is
-        passing. It is what makes white type legible on all of them without
-        anybody having to check each picture individually.
-      */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-gradient-to-r from-brand/85 via-brand/70 to-brand/55"
-      />
-
-      {/* ----------------------------------------------------------- the words */}
+    <HeroStage photos={photos}>
       <div className="siws-container flex min-h-[32rem] flex-col items-center justify-center py-16 text-center sm:min-h-[36rem] sm:py-20">
         {block.eyebrow ? (
-          <p className="inline-flex w-fit items-center rounded-pill border border-white/40 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm">
+          <p className="siws-hero-rise inline-flex w-fit items-center rounded-pill border border-white/40 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm">
             {block.eyebrow}
           </p>
         ) : null}
 
-        <h1 className="mt-7 leading-[1.06] tracking-tight text-balance">{title}</h1>
+        <h1
+          className="siws-hero-rise mt-7 leading-[1.06] tracking-tight text-balance"
+          style={{ animationDelay: '60ms' }}
+        >
+          {title}
+        </h1>
 
         {/*
           The three-step ladder the still hero established: 48 / 26 / 17 in
@@ -91,19 +95,28 @@ export const HeroMarqueeBlockView = ({ block }: { block: HeroMarqueeBlock }) => 
           so the order survives where one of the three runs to a single line.
         */}
         {block.subtitle ? (
-          <p className="mx-auto mt-5 max-w-3xl text-xl leading-snug font-semibold text-balance text-white sm:text-[1.625rem]">
+          <p
+            className="siws-hero-rise mx-auto mt-5 max-w-3xl text-xl leading-snug font-semibold text-balance text-white sm:text-[1.625rem]"
+            style={{ animationDelay: '150ms' }}
+          >
             {block.subtitle}
           </p>
         ) : null}
 
         {block.intro ? (
-          <p className="mx-auto mt-4 max-w-2xl text-[0.9375rem] leading-relaxed font-normal text-balance text-white/75 sm:text-[1.0625rem]">
+          <p
+            className="siws-hero-rise mx-auto mt-4 max-w-2xl text-[0.9375rem] leading-relaxed font-normal text-balance text-white/75 sm:text-[1.0625rem]"
+            style={{ animationDelay: '230ms' }}
+          >
             {block.intro}
           </p>
         ) : null}
 
         {links.length > 0 ? (
-          <div className="mt-9 flex flex-wrap justify-center gap-4">
+          <div
+            className="siws-hero-rise mt-9 flex flex-wrap justify-center gap-4"
+            style={{ animationDelay: '310ms' }}
+          >
             {links.map((entry, i) => (
               <CMSLink key={entry.id ?? i} link={entry.link} />
             ))}
@@ -111,7 +124,10 @@ export const HeroMarqueeBlockView = ({ block }: { block: HeroMarqueeBlock }) => 
         ) : null}
 
         {highlights.length > 0 ? (
-          <dl className="mt-14 grid w-full max-w-4xl grid-cols-1 gap-y-8 border-t border-white/25 pt-9 sm:grid-cols-3 sm:gap-x-10">
+          <dl
+            className="siws-hero-rise mt-14 grid w-full max-w-4xl grid-cols-1 gap-y-8 border-t border-white/25 pt-9 sm:grid-cols-3 sm:gap-x-10"
+            style={{ animationDelay: '390ms' }}
+          >
             {highlights.map((entry, i) => (
               <div key={entry.id ?? i} className="border-white/25 sm:border-l sm:first:border-l-0">
                 <dt className="text-3xl leading-none whitespace-nowrap text-white sm:text-4xl">
@@ -125,6 +141,6 @@ export const HeroMarqueeBlockView = ({ block }: { block: HeroMarqueeBlock }) => 
           </dl>
         ) : null}
       </div>
-    </section>
+    </HeroStage>
   )
 }

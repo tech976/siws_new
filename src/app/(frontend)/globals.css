@@ -900,24 +900,128 @@ main > header + section[data-ground]:not([data-ground='white']) {
   }
 }
 
+/* ==========================================================================
+   THE PORTAL BANNER
+
+   Four things move, and each one answers a different question. Anything that
+   could not name its question was cut.
+
+     the dissolve    atmosphere — a school is not one photograph
+     the drift       life       — a still photograph under still type is a screenshot
+     the parallax    depth      — the banner recedes rather than scrolling away
+     the first rise  hierarchy  — the order of the three lines, read once
+
+   All of it is transform and opacity, so every frame is compositor work: no
+   layout, no paint, nothing for the main thread to do while somebody scrolls.
+
+   The two custom properties are written straight onto the section by
+   `HeroStage` inside a rAF callback. React never sees them.
+   ========================================================================== */
+
+.siws-hero {
+  /*
+   * Declared so the properties always resolve, including in the first frame
+   * before any script has run and on a page where JavaScript never arrives.
+   * Without these the transforms below would be invalid and the banner would
+   * render unstyled for a moment.
+   */
+  --hero-p: 0;
+  --hero-mx: 0px;
+  --hero-my: 0px;
+}
+
 /*
-  THE HERO CAROUSEL INDICATOR.
+  THE PHOTOGRAPHY LAGS THE PAGE.
 
-  Four bars under the banner, the active one filling over the time its
-  photograph is held. The fill is a scaled span rather than an animated width:
-  `transform` is composited and `width` is layout, and this runs for four and
-  a half seconds out of every four and a half.
+  As the banner leaves, its picture is pushed back down by a fraction of the
+  distance travelled and grows very slightly. The section below therefore
+  arrives over a receding photograph rather than after a departing one — one
+  composition flowing into the next, which is the point of the effect and the
+  reason it is this restrained.
 
-  The crossfade itself is not here — it is an inline `opacity` transition on
-  each photograph, because its duration and the dwell are the component's to
-  decide and a keyframe percentage cannot read a custom property.
-
-  Pausing is handled in the component, which sets `animation-play-state` when
-  a pointer is over the banner. Reduced motion is handled there too: the bar
-  is simply drawn full rather than animated, so the indicator still says which
-  photograph is showing without anything moving to say it.
+  The pointer offset rides in the same transform. Six pixels at the edge of the
+  banner, nothing at its centre: enough that the photograph reads as sitting
+  behind the words, far too little to be a tilting card.
 */
-@keyframes siws-hero-progress {
+.siws-hero-media {
+  transform: translate3d(var(--hero-mx), calc(var(--hero-my) + var(--hero-p) * 7rem), 0)
+    scale(calc(1 + var(--hero-p) * 0.04));
+  /*
+   * For the pointer's return to centre, so the picture settles rather than
+   * snapping. Short enough not to lag a scroll, which is already smooth
+   * because it is driven once per frame.
+   */
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.siws-hero-content {
+  transform: translate3d(0, calc(var(--hero-p) * -2.5rem), 0);
+  opacity: calc(1 - var(--hero-p) * 0.9);
+  will-change: transform, opacity;
+}
+
+/*
+  THE DRIFT: two per cent of scale over the life of one photograph.
+
+  Below the threshold of being noticed and above the threshold of being felt.
+  It runs a little longer than the dwell so the picture is still moving all the
+  way through the dissolve — a photograph that stops moving before it fades is
+  the moment the whole thing reads as a slideshow.
+
+  Fractional percentages rather than pixels, so the drift is the same
+  proportion of the frame on a phone as on a desktop.
+*/
+@keyframes siws-hero-drift {
+  from {
+    transform: scale(1.02) translate3d(0.4%, 0.3%, 0);
+  }
+  to {
+    transform: scale(1) translate3d(-0.4%, -0.3%, 0);
+  }
+}
+
+.siws-hero-drift {
+  animation: siws-hero-drift 6600ms cubic-bezier(0.33, 0, 0.67, 1) forwards;
+  will-change: transform;
+}
+
+/*
+  THE FIRST RISE.
+
+  Eighteen pixels and a fade on an ease-out with no overshoot — the curve a
+  heavy thing makes coming to rest, not the one a spring makes. It runs once,
+  on load, staggered a breath apart down the lines so the hierarchy is read
+  before it is parsed.
+
+  `backwards` matters: without it each line would be painted in its final
+  position for the length of its own delay and then jump back to the start.
+*/
+@keyframes siws-hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.siws-hero-rise {
+  animation: siws-hero-rise 900ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+/*
+  THE ONLY INDICATOR: a hairline along the foot of the banner, filling over the
+  life of the photograph above it.
+
+  It sits exactly where the section already ends, so at rest it reads as the
+  edge of the banner rather than as a control. Scaled rather than widened —
+  `transform` is composited, `width` is layout, and this runs for five seconds
+  out of every five.
+*/
+@keyframes siws-hero-tick {
   from {
     transform: scaleX(0);
   }
@@ -926,11 +1030,52 @@ main > header + section[data-ground]:not([data-ground='white']) {
   }
 }
 
+.siws-hero-tick {
+  animation-name: siws-hero-tick;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
 /*
   Paused for the keyboard as well as the pointer. The banner holds the page's
-  only h1 and its first button, so somebody tabbing into it has as much claim
+  only h1 and its first button, so somebody tabbing into it has the same claim
   to a still picture as somebody hovering over it (WCAG 2.1 SC 2.2.2).
 */
-section:focus-within .siws-hero-progress {
+.siws-hero:focus-within .siws-hero-tick,
+.siws-hero:focus-within .siws-hero-drift {
   animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /*
+   * NOTHING MOVES, AND NOTHING IS WITHHELD.
+   *
+   * The photographs still change — `HeroStage` swaps them instead of fading —
+   * so the atmosphere survives; it is only the travel across the screen that
+   * goes. The parallax and pointer offsets are pinned to zero here as well as
+   * being switched off in the component, because a custom property left over
+   * from before the setting changed would otherwise still apply.
+   *
+   * SC 2.3.3: motion triggered by interaction is removed unless it is
+   * essential. None of this is essential.
+   */
+  .siws-hero {
+    --hero-p: 0;
+    --hero-mx: 0px;
+    --hero-my: 0px;
+  }
+
+  .siws-hero-media,
+  .siws-hero-content {
+    transform: none;
+    opacity: 1;
+    transition: none;
+    will-change: auto;
+  }
+
+  .siws-hero-drift,
+  .siws-hero-rise,
+  .siws-hero-tick {
+    animation: none;
+  }
 }
