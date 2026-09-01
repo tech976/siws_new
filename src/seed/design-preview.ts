@@ -157,9 +157,21 @@ const main = async () => {
       headingLevel: 'h2',
       background: 'white',
       items: [
-        { label: 'Discover SIWS', icon: 'building', link: { type: 'external', url: 'https://siws.edu.in' } },
-        { label: 'Our management', icon: 'people', link: { type: 'external', url: 'https://siws.edu.in' } },
-        { label: 'Organogram', icon: 'chart', link: { type: 'external', url: 'https://siws.edu.in' } },
+        {
+          label: 'Discover SIWS',
+          icon: 'building',
+          link: { type: 'external', url: 'https://siws.edu.in' },
+        },
+        {
+          label: 'Our management',
+          icon: 'people',
+          link: { type: 'external', url: 'https://siws.edu.in' },
+        },
+        {
+          label: 'Organogram',
+          icon: 'chart',
+          link: { type: 'external', url: 'https://siws.edu.in' },
+        },
       ],
     },
 

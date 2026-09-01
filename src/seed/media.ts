@@ -5,6 +5,7 @@ import path from 'path'
 import sharp from 'sharp'
 
 import { loadEnv } from '@/utilities/load-env'
+import { findMediaId } from '@/utilities/media-lookup'
 
 loadEnv()
 
@@ -627,11 +628,19 @@ const IMAGES: ImageSeed[] = [
   },
 ]
 
-/** `kg-play-area-2.jpg` -> `kg-play-area.jpg`; anything else is left alone. */
-const baseName = (filename: string) => filename.replace(/-d+(.[^.]+)$/, '$1')
-
-/** `kg-play-area.jpg` -> `kg-play-area`, for a prefix query. */
-const stemOf = (filename: string) => filename.replace(/.[^.]+$/, '')
+/*
+ * The name-matching lives in `@/utilities/media-lookup` now.
+ *
+ * It was two one-line helpers here, and one of them was wrong: `/-d+(.[^.]+)$/`
+ * matches a literal letter "d", not a digit, so it never stripped Payload's
+ * collision counter and never recognised a photograph this script had already
+ * uploaded. Every run therefore uploaded the whole set again — `-1`, then `-2`,
+ * then `-3` — while the pages went on pointing at whichever copy was written
+ * last. The seed written to stop duplicates was the thing making them.
+ *
+ * Three other seeds had their own copies of the same idea, two of them
+ * exact-match only. One shared implementation is the fix.
+ */
 
 const main = async () => {
   const payload = await getPayload({ config })
@@ -690,14 +699,7 @@ const main = async () => {
        * again: eight photographs became sixteen, and the focal points and
        * consent records stayed on the copies nothing pointed at any more.
        */
-      const found = await payload.find({
-        collection: 'media',
-        where: { filename: { like: `${stemOf(image.filename)}%` } },
-        limit: 10,
-        depth: 0,
-        overrideAccess: true,
-      })
-      const existingDoc = found.docs.find((d) => baseName(String(d.filename)) === image.filename)
+      const existingId = await findMediaId(payload, image.filename)
 
       const data = {
         alt: image.alt,
@@ -710,7 +712,7 @@ const main = async () => {
         ...(image.focalY === undefined ? {} : { focalX: 50, focalY: image.focalY }),
       }
 
-      if (existingDoc) {
+      if (existingId !== null) {
         /*
          * No `filePath` on the update path. Passing one made Payload write
          * the binary again on every run, and because the name was already
@@ -722,7 +724,7 @@ const main = async () => {
          */
         await payload.update({
           collection: 'media',
-          id: existingDoc.id,
+          id: existingId,
           data: data as never,
           overrideAccess: true,
         })

@@ -239,7 +239,10 @@ const main = async () => {
             { text: 'A focus on discipline, values and confidence' },
             { text: 'A safe, supervised campus in Wadala' },
           ],
-          badge: { title: 'Admissions enquiries welcome', subtitle: 'Speak to our admissions team' },
+          badge: {
+            title: 'Admissions enquiries welcome',
+            subtitle: 'Speak to our admissions team',
+          },
           form: {
             title: 'Enquire about admission',
             subtitle: 'Tell us about your child and we will get in touch.',
@@ -285,7 +288,8 @@ const main = async () => {
             },
             {
               title: 'We contact you',
-              description: 'Our admissions team will call to answer questions and confirm eligibility.',
+              description:
+                'Our admissions team will call to answer questions and confirm eligibility.',
             },
             {
               title: 'Visit the campus',

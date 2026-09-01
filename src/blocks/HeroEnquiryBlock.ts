@@ -51,7 +51,9 @@ export const HeroEnquiryBlock: Block = {
       name: 'badge',
       type: 'group',
       label: 'Admissions badge',
-      admin: { description: 'The highlighted panel under the list. Leave the title blank to hide it.' },
+      admin: {
+        description: 'The highlighted panel under the list. Leave the title blank to hide it.',
+      },
       fields: [
         {
           name: 'title',

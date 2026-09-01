@@ -60,6 +60,7 @@ const main = async () => {
 
   const { docs } = await payload.find({
     collection: 'media',
+    sort: 'id',
     limit: 1000,
     depth: 0,
     overrideAccess: true,
@@ -151,6 +152,14 @@ const main = async () => {
     'jc-independence-day-2026.jpg': 'junior-college',
   }
 
+  /*
+   * Posters and invitations come out here, not in the filter above.
+   *
+   * They are perfectly publishable — the event page shows them — so counting
+   * them as "held back" would report a consent problem that does not exist.
+   * They are simply not photographs of the school, and a designed banner sitting
+   * in a grid of pictures taken at the event reads as a mistake.
+   */
   const gallery = (item: MediaDoc) => ({
     image: item.id,
     // The library's caption if it has one; otherwise nothing. The alt text is
@@ -264,26 +273,18 @@ const main = async () => {
        */
       layout: (() => {
         /**
-         * Grouped by CAMPUS first, then category.
+         * Grouped by CATEGORY only.
          *
-         * The Primary Section runs at Wadala and Matunga and they are separate
-         * schools to a parent — different head teacher, different roster,
-         * different house rules. Merging their photographs into one grid would
-         * show a family the wrong campus. The campus prefix is added only when
-         * a unit actually has more than one, so single-campus sections read as
-         * they did before.
+         * This used to group by campus first, on the reasoning that Wadala and
+         * Matunga were separate schools to a parent - different head teacher,
+         * different roster, different house rules - so one combined grid would
+         * show a family the wrong campus. The Primary Section has since merged
+         * into a single school, so a campus prefix would now split one school's
+         * photographs under two headings that mean nothing to a visitor.
          */
-        const campuses = new Set(images.map((item) => (item.campus ?? '').trim()).filter(Boolean))
-        const label: Record<string, string> = {
-          wadala: 'Wadala',
-          matunga: 'Matunga',
-        }
-
         const groups = new Map<string, MediaDoc[]>()
         for (const item of images) {
-          const cat = (item.category ?? '').trim() || 'Other photographs'
-          const camp = (item.campus ?? '').trim()
-          const key = campuses.size > 1 && camp ? `${label[camp] ?? camp} campus — ${cat}` : cat
+          const key = (item.category ?? '').trim() || 'Other photographs'
           const bucket = groups.get(key)
           if (bucket) bucket.push(item)
           else groups.set(key, [item])

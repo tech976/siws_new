@@ -240,7 +240,7 @@ export interface Media {
    */
   category?: string | null;
   /**
-   * Turn this off for posters, notices and video thumbnails — anything that is part of a page rather than a photograph of the school.
+   * Turn this off for posters, invitations, notices and video thumbnails — anything that announces an event or belongs to a page, rather than a photograph of the school. It still works anywhere a page points at it by name.
    */
   showInGallery?: boolean | null;
   /**
@@ -722,6 +722,10 @@ export interface HeroBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+           */
+          anchor?: string | null;
           url?: string | null;
           /**
            * How the link is styled.
@@ -780,6 +784,10 @@ export interface HeroCarouselBlock {
                   relationTo: 'pages';
                   value: number | Page;
                 } | null;
+                /**
+                 * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+                 */
+                anchor?: string | null;
                 url?: string | null;
               };
               id?: string | null;
@@ -859,6 +867,10 @@ export interface HeroMarqueeBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+           */
+          anchor?: string | null;
           url?: string | null;
           /**
            * How the link is styled.
@@ -989,6 +1001,10 @@ export interface MediaTextBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+           */
+          anchor?: string | null;
           url?: string | null;
           /**
            * How the link is styled.
@@ -1045,6 +1061,10 @@ export interface CardGridBlock {
    * On phones the cards always stack into a single column, whichever setting is chosen.
    */
   columns?: ('2' | '3' | '4') | null;
+  /**
+   * Choose “Poster” for invitations and event notices, so no text is cut off.
+   */
+  imageFrame?: ('photo' | 'poster') | null;
   cards?:
     | {
         title: string;
@@ -1082,6 +1102,10 @@ export interface CardGridBlock {
                   relationTo: 'pages';
                   value: number | Page;
                 } | null;
+                /**
+                 * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+                 */
+                anchor?: string | null;
                 url?: string | null;
               };
               id?: string | null;
@@ -1219,6 +1243,10 @@ export interface ProgramCardsBlock {
                   relationTo: 'pages';
                   value: number | Page;
                 } | null;
+                /**
+                 * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+                 */
+                anchor?: string | null;
                 url?: string | null;
               };
               id?: string | null;
@@ -1389,6 +1417,7 @@ export interface FacultyBlock {
    * Grouping puts each head teacher at the top of her own column with her teachers beneath, side by side. It reads the groups off the roster itself and ignores the campus setting above.
    */
   layout?: ('grid' | 'teams') | null;
+  cardLayout?: ('beside' | 'centred') | null;
   showQualifications?: boolean | null;
   /**
    * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
@@ -1811,6 +1840,10 @@ export interface AnnouncementsBlock {
                       relationTo: 'media';
                       value: number | Media;
                     } | null);
+                /**
+                 * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+                 */
+                anchor?: string | null;
                 url?: string | null;
               };
               id?: string | null;
@@ -1868,6 +1901,10 @@ export interface QuickNavBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+           */
+          anchor?: string | null;
           url?: string | null;
         };
         id?: string | null;
@@ -2141,6 +2178,10 @@ export interface CallToActionBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+           */
+          anchor?: string | null;
           url?: string | null;
           /**
            * How the link is styled.
@@ -2629,6 +2670,7 @@ export interface HeroBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               appearance?: T;
             };
@@ -2659,6 +2701,7 @@ export interface HeroCarouselBlockSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    anchor?: T;
                     url?: T;
                   };
               id?: T;
@@ -2699,6 +2742,7 @@ export interface HeroMarqueeBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               appearance?: T;
             };
@@ -2750,6 +2794,7 @@ export interface MediaTextBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               appearance?: T;
             };
@@ -2769,6 +2814,7 @@ export interface CardGridBlockSelect<T extends boolean = true> {
   heading?: T;
   intro?: T;
   columns?: T;
+  imageFrame?: T;
   cards?:
     | T
     | {
@@ -2786,6 +2832,7 @@ export interface CardGridBlockSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    anchor?: T;
                     url?: T;
                   };
               id?: T;
@@ -2846,6 +2893,7 @@ export interface ProgramCardsBlockSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    anchor?: T;
                     url?: T;
                   };
               id?: T;
@@ -2895,6 +2943,7 @@ export interface FacultyBlockSelect<T extends boolean = true> {
   intro?: T;
   campus?: T;
   layout?: T;
+  cardLayout?: T;
   showQualifications?: T;
   headingLevel?: T;
   accentWord?: T;
@@ -3066,6 +3115,7 @@ export interface AnnouncementsBlockSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    anchor?: T;
                     url?: T;
                   };
               id?: T;
@@ -3096,6 +3146,7 @@ export interface QuickNavBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
             };
         id?: T;
@@ -3212,6 +3263,7 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               appearance?: T;
             };

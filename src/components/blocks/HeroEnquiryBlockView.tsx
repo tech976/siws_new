@@ -96,9 +96,7 @@ export const HeroEnquiryBlockView = ({
           </h1>
 
           {block.subtitle ? (
-            <p className="mt-4 text-lg font-semibold text-accent sm:text-xl">
-              {block.subtitle}
-            </p>
+            <p className="mt-4 text-lg font-semibold text-accent sm:text-xl">{block.subtitle}</p>
           ) : null}
 
           {benefits.length > 0 ? (

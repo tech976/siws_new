@@ -297,7 +297,9 @@ export const FeatureListBlockView = ({ block }: { block: FeatureListBlock }) => 
         className={block.intro ? 'mb-4' : 'mb-10'}
       />
 
-      {block.intro ? <RichText data={block.intro} className="mb-9 siws-centre mx-auto max-w-3xl" /> : null}
+      {block.intro ? (
+        <RichText data={block.intro} className="mb-9 siws-centre mx-auto max-w-3xl" />
+      ) : null}
 
       {/*
         An ordered list when the marker is a number, so the numbering is real
@@ -488,7 +490,9 @@ const FeatureCards = ({ block }: { block: FeatureListBlock }) => {
         </div>
       ) : null}
 
-      {block.intro ? <RichText data={block.intro} className="mt-6 siws-centre mx-auto max-w-3xl" /> : null}
+      {block.intro ? (
+        <RichText data={block.intro} className="mt-6 siws-centre mx-auto max-w-3xl" />
+      ) : null}
 
       {/*
         THE GUTTER IS AT LEAST THE CARD'S OWN PADDING.
@@ -788,8 +792,8 @@ const Item = ({
   const Icon = !numbered && item.icon ? FEATURE_ICONS[item.icon] : undefined
 
   return (
-  <li className="flex items-start gap-4">
-    {/*
+    <li className="flex items-start gap-4">
+      {/*
       THE DISC AND THE TITLE ARE THE SAME HEIGHT, so they centre on each other
       without anybody nudging either one.
 
@@ -800,37 +804,43 @@ const Item = ({
       are 28px now: no offset, nothing to keep in sync by hand, and it holds if
       the type scale changes.
     */}
-    <span
-      aria-hidden="true"
-      /*
-       * The ring is what makes the marker exist on a tinted section.
-       *
-       * `bg-sea` is the same colour a "sea" section is painted, so on
-       * /kindergarten/admissions the numbered steps had their discs dissolve
-       * into the background and the numbers floated loose beside the text. The
-       * fill is right on white and had simply never been checked against the
-       * tint it shares a name with. A hairline of brand at 15% draws the edge
-       * on the tint and is barely present on white, where the fill already
-       * does the work.
-       */
-      className="grid size-7 shrink-0 place-items-center rounded-full bg-sea text-sm font-bold text-brand ring-1 ring-brand/15"
-    >
-      {/* Lighter than the tick's stroke: these glyphs carry detail a 3px
+      <span
+        aria-hidden="true"
+        /*
+         * The ring is what makes the marker exist on a tinted section.
+         *
+         * `bg-sea` is the same colour a "sea" section is painted, so on
+         * /kindergarten/admissions the numbered steps had their discs dissolve
+         * into the background and the numbers floated loose beside the text. The
+         * fill is right on white and had simply never been checked against the
+         * tint it shares a name with. A hairline of brand at 15% draws the edge
+         * on the tint and is barely present on white, where the fill already
+         * does the work.
+         */
+        className="grid size-7 shrink-0 place-items-center rounded-full bg-sea text-sm font-bold text-brand ring-1 ring-brand/15"
+      >
+        {/* Lighter than the tick's stroke: these glyphs carry detail a 3px
           stroke closes up at 17px. */}
-      {numbered ? index + 1 : Icon ? <Icon size={16} strokeWidth={2.1} /> : <Check size={16} strokeWidth={3} />}
-    </span>
-    <span>
-      <strong className="block text-[1.05rem] leading-7 text-brand">{item.title}</strong>
-      {/*
+        {numbered ? (
+          index + 1
+        ) : Icon ? (
+          <Icon size={16} strokeWidth={2.1} />
+        ) : (
+          <Check size={16} strokeWidth={3} />
+        )}
+      </span>
+      <span>
+        <strong className="block text-[1.05rem] leading-7 text-brand">{item.title}</strong>
+        {/*
         8px, not 4. A title and its explanation were nearly touching, which
         made each point read as one run-on line instead of a heading and a
         sentence — and `leading-relaxed` because this is the text a parent
         actually reads, not a label.
       */}
-      {item.description ? (
-        <span className="mt-2 block leading-relaxed text-ink-soft">{item.description}</span>
-      ) : null}
-    </span>
-  </li>
+        {item.description ? (
+          <span className="mt-2 block leading-relaxed text-ink-soft">{item.description}</span>
+        ) : null}
+      </span>
+    </li>
   )
 }

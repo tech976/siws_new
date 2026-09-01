@@ -27,9 +27,7 @@ export const HeroCarouselBlockView = ({ block }: { block: HeroCarouselBlock }) =
   const [active, setActive] = useState(0)
 
   const height =
-    block.height === 'standard'
-      ? 'h-[clamp(18rem,42vw,26rem)]'
-      : 'h-[clamp(22rem,56vw,34rem)]'
+    block.height === 'standard' ? 'h-[clamp(18rem,42vw,26rem)]' : 'h-[clamp(22rem,56vw,34rem)]'
 
   /** Reads the nearest slide from scroll position, so dots track a swipe too. */
   const syncActive = useCallback(() => {
@@ -53,9 +51,7 @@ export const HeroCarouselBlockView = ({ block }: { block: HeroCarouselBlock }) =
     track.scrollTo({
       left: clamped * track.clientWidth,
       // Honours the visitor's reduced-motion setting rather than always animating.
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        ? 'auto'
-        : 'smooth',
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
     })
   }
 
@@ -64,7 +60,11 @@ export const HeroCarouselBlockView = ({ block }: { block: HeroCarouselBlock }) =
   const multiple = slides.length > 1
 
   return (
-    <section aria-roledescription="carousel" aria-label="Highlights" className="siws-container py-6">
+    <section
+      aria-roledescription="carousel"
+      aria-label="Highlights"
+      className="siws-container py-6"
+    >
       <div className="relative">
         <ul
           ref={trackRef}
@@ -95,9 +95,7 @@ export const HeroCarouselBlockView = ({ block }: { block: HeroCarouselBlock }) =
                     guaranteed any other way.
                   */}
                   <div className="max-w-3xl rounded-xl bg-white/95 p-4 backdrop-blur-sm sm:p-5">
-                    {slide.title ? (
-                      <h2 className="card-title text-brand">{slide.title}</h2>
-                    ) : null}
+                    {slide.title ? <h2 className="card-title text-brand">{slide.title}</h2> : null}
 
                     {slide.caption ? (
                       <p
@@ -109,9 +107,7 @@ export const HeroCarouselBlockView = ({ block }: { block: HeroCarouselBlock }) =
                       </p>
                     ) : null}
 
-                    {slide.link ? (
-                      <CMSLink link={slide.link} className="mt-3 inline-flex" />
-                    ) : null}
+                    {slide.link ? <CMSLink link={slide.link} className="mt-3 inline-flex" /> : null}
                   </div>
                 </div>
               ) : null}

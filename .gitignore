@@ -48,3 +48,8 @@ yarn-error.log*
 
 # A personal copy of the SRS. The current spec is committed; this is not.
 SIWS_School_Website_SRS_v2_ORIGINAL_backup.pdf
+
+# Records which commit this machine last built its database from, written by
+# `seed:refresh` and read by `seed:verify`. Local state — it describes THIS
+# database, not the project.
+.seed-state.json

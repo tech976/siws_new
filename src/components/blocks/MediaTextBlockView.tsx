@@ -138,7 +138,10 @@ export const MediaTextBlockView = ({ block }: { block: MediaTextBlock }) => {
       <Section background={block.background as BlockBackground}>
         {block.heading ? (
           <div className="mb-10">
-            <span aria-hidden="true" className="mx-auto mb-5 block h-1 w-12 rounded-full bg-accent" />
+            <span
+              aria-hidden="true"
+              className="mx-auto mb-5 block h-1 w-12 rounded-full bg-accent"
+            />
             <SectionHeading
               heading={block.heading}
               accentWord={block.accentWord}
@@ -300,7 +303,9 @@ export const MediaTextBlockView = ({ block }: { block: MediaTextBlock }) => {
           >
             <Media
               resource={block.image}
-              sizes={upright ? '(min-width: 1024px) 28rem, 24rem' : '(min-width: 1024px) 45vw, 100vw'}
+              sizes={
+                upright ? '(min-width: 1024px) 28rem, 24rem' : '(min-width: 1024px) 45vw, 100vw'
+              }
               fill
               className="object-cover"
             />

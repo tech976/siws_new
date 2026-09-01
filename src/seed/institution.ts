@@ -43,21 +43,47 @@ const VISION =
   'To be a leading educational institution that nurtures knowledge, character, innovation, and lifelong learning, empowering every student to become a responsible global citizen and a catalyst for positive societal change.'
 
 const MISSION: { title: string }[] = [
-  { title: 'To provide holistic, inclusive, and value-based education in a safe and nurturing environment.' },
+  {
+    title:
+      'To provide holistic, inclusive, and value-based education in a safe and nurturing environment.',
+  },
   { title: 'To inspire academic excellence through innovative teaching and continuous learning.' },
-  { title: 'To develop character, integrity, leadership, and social responsibility among students.' },
+  {
+    title: 'To develop character, integrity, leadership, and social responsibility among students.',
+  },
   { title: 'To foster creativity, critical thinking, scientific temper, and digital readiness.' },
-  { title: 'To empower every learner with the knowledge, skills, and confidence needed to succeed in an ever-changing world.' },
-  { title: 'To preserve our rich educational heritage while embracing emerging technologies and global best practices.' },
+  {
+    title:
+      'To empower every learner with the knowledge, skills, and confidence needed to succeed in an ever-changing world.',
+  },
+  {
+    title:
+      'To preserve our rich educational heritage while embracing emerging technologies and global best practices.',
+  },
 ]
 
 const CORE_VALUES = [
-  { title: 'Integrity', description: 'We uphold honesty, ethics and accountability in all that we do.' },
-  { title: 'Excellence', description: 'We encourage every learner to strive for their highest potential.' },
+  {
+    title: 'Integrity',
+    description: 'We uphold honesty, ethics and accountability in all that we do.',
+  },
+  {
+    title: 'Excellence',
+    description: 'We encourage every learner to strive for their highest potential.',
+  },
   { title: 'Respect', description: 'We value diversity, empathy and mutual respect.' },
-  { title: 'Innovation', description: 'We embrace creativity, technology and continuous improvement.' },
-  { title: 'Service', description: 'We believe education should inspire meaningful contributions to society.' },
-  { title: 'Lifelong Learning', description: 'We cultivate curiosity and a passion for continuous growth.' },
+  {
+    title: 'Innovation',
+    description: 'We embrace creativity, technology and continuous improvement.',
+  },
+  {
+    title: 'Service',
+    description: 'We believe education should inspire meaningful contributions to society.',
+  },
+  {
+    title: 'Lifelong Learning',
+    description: 'We cultivate curiosity and a passion for continuous growth.',
+  },
 ]
 
 const main = async () => {
@@ -93,9 +119,30 @@ const main = async () => {
    * counter for one file written repeatedly, not a different photograph.
    */
   /** Strips Payload's collision counter, so `kg-handwashing-2.jpg` matches `kg-handwashing.jpg`. */
-  const baseName = (filename: string) => filename.replace(/-\d+(\.[^.]+)$/, "$1")
+  const baseName = (filename: string) => filename.replace(/-\d+(\.[^.]+)$/, '$1')
+
+  /*
+   * Every photograph this seed asks for by name and does not find.
+   *
+   * A miss is not harmless here. The banner and the History picture fall back
+   * to nothing, and a named tile on the "Life at SIWS" wall is skipped and its
+   * slot handed to the generic filler pool — so the page comes up looking
+   * complete while showing a photograph nobody chose. That is indistinguishable
+   * from "someone changed the images", and it is what a teammate sees after
+   * pulling a commit whose photographs never reached their media library.
+   *
+   * Collected here and reported in one block at the end of the run, so the
+   * cause is named on the terminal instead of being discovered in a browser.
+   */
+  const missingPhotos: string[] = []
 
   const photo = async (filename: string): Promise<number | null> => {
+    const found = await findPhoto(filename)
+    if (found === null) missingPhotos.push(filename)
+    return found
+  }
+
+  const findPhoto = async (filename: string): Promise<number | null> => {
     const exact = await payload.find({
       collection: 'media',
       where: { filename: { equals: filename } },
@@ -112,6 +159,7 @@ const main = async () => {
     const { docs } = await payload.find({
       collection: 'media',
       where: { filename: { like: `${stem}-%${ext}` } },
+      sort: 'id',
       limit: 10,
       depth: 0,
       overrideAccess: true,
@@ -195,6 +243,17 @@ const main = async () => {
     collection: 'media',
     where: { 'withdrawn.isWithdrawn': { not_equals: true } },
     limit: 20,
+    /*
+     * SORTED, and it has to be.
+     *
+     * Without this the query returned whatever order the database felt like,
+     * which is insertion order and therefore different on every developer's
+     * machine. Two people running the same seed against the same photographs
+     * got different tiles in the last two slots of the wall, and each assumed
+     * the other had changed them. `id` is stable, so the same library now
+     * produces the same wall everywhere.
+     */
+    sort: 'id',
     depth: 0,
     overrideAccess: true,
   })
@@ -223,9 +282,7 @@ const main = async () => {
       .map((m) => ({ image: m.id, caption: '' })),
   ]
   if (!heroImage) {
-    payload.logger.warn(
-      'No photographs found — run `npm run seed:media` first if you want them.',
-    )
+    payload.logger.warn('No photographs found — run `npm run seed:media` first if you want them.')
   }
 
   /** Upserts an institution-wide page, matched by slug with no unit. */
@@ -492,8 +549,7 @@ const main = async () => {
         headingLevel: 'h2',
         background: 'white',
         label: 'South Indians\u2019 Welfare Society, Wadala',
-        address:
-          'Sewree Estate, 337, Major R Parameswaran Rd, Wadala, Mumbai, Maharashtra 400031',
+        address: 'Sewree Estate, 337, Major R Parameswaran Rd, Wadala, Mumbai, Maharashtra 400031',
         height: 'tall',
       },
     ],
@@ -703,14 +759,28 @@ const main = async () => {
         headingLevel: 'h2',
         background: 'white',
         label: 'South Indians’ Welfare Society, Wadala',
-        address:
-          'Sewree Estate, 337, Major R Parameswaran Rd, Wadala, Mumbai, Maharashtra 400031',
+        address: 'Sewree Estate, 337, Major R Parameswaran Rd, Wadala, Mumbai, Maharashtra 400031',
         height: 'medium',
       },
     ],
   })
 
   payload.logger.info('Institution content seeded.')
+
+  /*
+   * Reported last, and loudly, because this is the failure that does not look
+   * like one. Everything above succeeded; the page is published and complete.
+   * It is simply showing photographs nobody picked.
+   */
+  if (missingPhotos.length > 0) {
+    const names = [...new Set(missingPhotos)]
+    payload.logger.warn(
+      `${names.length} PHOTOGRAPH(S) THIS PAGE NAMES ARE NOT IN YOUR MEDIA LIBRARY:\n` +
+        names.map((name) => `  • ${name}`).join('\n') +
+        `\nThe "Life at SIWS" wall fills any slot it cannot fill by name from whatever else is in the library, so the page will look finished while showing pictures that were never chosen for it. If a teammate's commit added these photographs, run \`npm run seed:media\` (and \`npm run seed:onam\`) first, then run this again.`,
+    )
+  }
+
   payload.logger.warn(
     'NOTE: the supplied content names a Degree College as part of the SIWS group. It is described in the text but has no unit website, since the SRS scopes this project to four units.',
   )

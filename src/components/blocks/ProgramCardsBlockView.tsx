@@ -62,9 +62,7 @@ export const ProgramCardsBlockView = ({ block }: { block: ProgramCardsBlock }) =
 
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5">
               <div className="min-w-0">
-                <h3
-                  className="text-xl leading-tight text-white"
-                >
+                <h3 className="text-xl leading-tight text-white">
                   {card.link ? (
                     /* The whole card is the target — `after:absolute` stretches
                        the link over it, so the hit area is the card while the

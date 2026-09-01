@@ -92,11 +92,39 @@ const run = async () => {
 
   const { docs: allMedia } = await payload.find({
     collection: 'media',
+    /*
+     * SORTED, and this is the one that mattered most.
+     *
+     * This page's banner, its About photograph and its nine gallery tiles are
+     * all taken from this list — the first atmospheric match for the banner,
+     * `.slice(0, 9)` for the gallery. Unsorted, the list came back in whatever
+     * order the database felt like, which is insertion order and therefore
+     * different on every machine. Two people running the same seed against the
+     * same photographs got different pictures on the home page, and each
+     * concluded the other had changed them.
+     *
+     * `id` is stable and shared, so the same library now composes the same page
+     * everywhere. It also means the oldest photographs are preferred, which is
+     * what a reader expects: adding a new set for one event should not silently
+     * re-cast the banner of every unit.
+     */
+    sort: 'id',
     limit: 600,
     depth: 0,
     overrideAccess: true,
   })
-  const usable = allMedia.filter((m) => m.withdrawn?.isWithdrawn !== true)
+  /*
+   * Withdrawn images out (FR-SW-05), and posters out too.
+   *
+   * An event invitation is artwork the school made to announce a day, not a
+   * photograph of it. It belongs on the event's own page; in the home page's
+   * gallery it sat among pictures taken at the celebration and read as a
+   * mistake. `showInGallery` is the flag staff clear for exactly this, and
+   * this gallery was not reading it.
+   */
+  const usable = allMedia.filter(
+    (m) => m.withdrawn?.isWithdrawn !== true && m.showInGallery !== false,
+  )
 
   const unitOf = (v: unknown) =>
     typeof v === 'object' && v !== null ? String((v as { id: number }).id) : v ? String(v) : null
@@ -164,8 +192,7 @@ const run = async () => {
     const atmospheric = mine.filter((m) =>
       ATMOSPHERIC.some((c) => (m.category ?? '').toLowerCase().includes(c)),
     )
-    const pick = (pool: typeof mine, used: Set<number>) =>
-      pool.find((m) => !used.has(m.id)) ?? null
+    const pick = (pool: typeof mine, used: Set<number>) => pool.find((m) => !used.has(m.id)) ?? null
 
     const used = new Set<number>()
     const heroBlock = existing.find((b) => b.blockType === 'hero')
@@ -242,7 +269,15 @@ const run = async () => {
                 direction: 'ltr',
                 textFormat: 0,
                 children: [
-                  { type: 'text', detail: 0, format: 0, mode: 'normal', style: '', text, version: 1 },
+                  {
+                    type: 'text',
+                    detail: 0,
+                    format: 0,
+                    mode: 'normal',
+                    style: '',
+                    text,
+                    version: 1,
+                  },
                 ],
               },
             ],

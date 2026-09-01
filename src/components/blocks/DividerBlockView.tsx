@@ -63,7 +63,6 @@ const HEIGHT_CLASS: Record<string, string> = {
   tall: 'min-h-72 sm:min-h-96',
 }
 
-
 export const DividerBlockView = ({ block }: { block: DividerBlock }) => {
   if (!block.image) return null
 

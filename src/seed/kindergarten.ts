@@ -196,17 +196,16 @@ const mediaByFilename = async (
    * photographs — the block was written, the gallery had nothing to render,
    * and the whole section disappeared off the Kindergarten page.
    */
-  const stem = filename.replace(/\.[^.]+$/, "")
+  const stem = filename.replace(/\.[^.]+$/, '')
   const { docs } = await payload.find({
     collection: 'media',
-    where: { filename: { like: stem + "-%" } },
+    where: { filename: { like: stem + '-%' } },
+    sort: 'id',
     limit: 10,
     depth: 0,
     overrideAccess: true,
   })
-  const suffixed = docs.find(
-    (d) => String(d.filename).replace(/-\d+(\.[^.]+)$/, "$1") === filename,
-  )
+  const suffixed = docs.find((d) => String(d.filename).replace(/-\d+(\.[^.]+)$/, '$1') === filename)
   return (suffixed?.id as number | undefined) ?? null
 }
 
@@ -296,7 +295,9 @@ const main = async () => {
     slide: await mediaByFilename(payload, 'pre-primary-section-classroom-campus-images-5.jpg'),
   }
 
-  const missing = Object.entries(img).filter(([, id]) => id === null).map(([name]) => name)
+  const missing = Object.entries(img)
+    .filter(([, id]) => id === null)
+    .map(([name]) => name)
   if (missing.length > 0) {
     payload.logger.warn(
       `Some photographs are not in the media library yet (${missing.join(', ')}). Run \`npm run seed:media\` first for the full page.`,
@@ -304,8 +305,7 @@ const main = async () => {
   }
 
   /** Gallery entry, skipped entirely when the image is absent. */
-  const shot = (id: number | null, caption: string) =>
-    id === null ? [] : [{ image: id, caption }]
+  const shot = (id: number | null, caption: string) => (id === null ? [] : [{ image: id, caption }])
 
   /**
    * One tile on the achievement wall, skipped entirely when its photograph is
@@ -472,8 +472,7 @@ const main = async () => {
         cards: [
           {
             title: 'Admissions',
-            description:
-              'For enquiries about Jr. KG and Sr. KG admission — admissions@siws.edu.in',
+            description: 'For enquiries about Jr. KG and Sr. KG admission — admissions@siws.edu.in',
           },
           {
             title: 'General enquiries',
@@ -731,8 +730,8 @@ const main = async () => {
             /**
              * Rewritten against SIWS's own answers. The list previously offered
              * general claims from the landing page; these are the specifics the
-             * school actually gave — a KG-to-PG pathway, Educom, the ground and
-             * garden, and staff with 18 to 30 years behind them.
+             * school actually gave — a KG-to-PG pathway, the digital board, the
+             * ground and garden, and staff with 18 to 30 years behind them.
              */
             {
               title: 'A pathway from KG to PG',
@@ -1441,20 +1440,42 @@ const main = async () => {
           cards: [
             {
               title: 'News & Events',
-              description:
-                'What the section marks through the year, and anything coming up.',
-              cta: [{ link: { label: 'See news and events', type: 'internal', reference: LINK_TO('/kindergarten/news') } }],
+              description: 'What the section marks through the year, and anything coming up.',
+              cta: [
+                {
+                  link: {
+                    label: 'See news and events',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/news'),
+                  },
+                },
+              ],
             },
             {
               title: 'Achievements',
-              description:
-                'What the children are working towards, and what they have won.',
-              cta: [{ link: { label: 'See achievements', type: 'internal', reference: LINK_TO('/kindergarten/achievements') } }],
+              description: 'What the children are working towards, and what they have won.',
+              cta: [
+                {
+                  link: {
+                    label: 'See achievements',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/achievements'),
+                  },
+                },
+              ],
             },
             {
               title: 'Download Centre',
               description: 'Forms, circulars and the documents parents are asked for.',
-              cta: [{ link: { label: 'Go to downloads', type: 'internal', reference: LINK_TO('/kindergarten/download-centre') } }],
+              cta: [
+                {
+                  link: {
+                    label: 'Go to downloads',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/download-centre'),
+                  },
+                },
+              ],
             },
           ],
         },
@@ -1553,8 +1574,7 @@ const main = async () => {
     {
       slug: 'admissions-faq',
       title: 'Admissions FAQ',
-      intro:
-        'The questions the office is asked most often about joining the Kindergarten section.',
+      intro: 'The questions the office is asked most often about joining the Kindergarten section.',
       showInNav: true,
       navLabel: 'Admissions FAQ',
       navOrder: 2,
@@ -1980,7 +2000,6 @@ const main = async () => {
         },
       ],
     },
-
   ]
 
   // -- Faculty (FR-FAC-01) -------------------------------------------------
@@ -2043,14 +2062,20 @@ const main = async () => {
     }
     if (value && typeof value === 'object') {
       return Object.fromEntries(
-        Object.entries(value as Record<string, unknown>).map(([key, item]) => [key, stripMarkers(item)]),
+        Object.entries(value as Record<string, unknown>).map(([key, item]) => [
+          key,
+          stripMarkers(item),
+        ]),
       )
     }
     return value
   }
 
   for (const page of pages) {
-    const result = await upsertPage({ ...page, layout: stripMarkers(page.layout) as SeedPage['layout'] })
+    const result = await upsertPage({
+      ...page,
+      layout: stripMarkers(page.layout) as SeedPage['layout'],
+    })
     idBySlug.set(page.slug, result.id as number)
     if (result.created) created += 1
     else updated += 1
@@ -2114,7 +2139,8 @@ const main = async () => {
           if (!raw.includes('__linkTo')) return true
           const marker = raw.match(/"__linkTo":"([^"]+)"/)?.[1] ?? ''
           const parts = marker.split('/').filter(Boolean)
-          const slug = parts.length === 1 && parts[0] === 'gallery' ? '__portal-gallery' : (parts.pop() ?? '')
+          const slug =
+            parts.length === 1 && parts[0] === 'gallery' ? '__portal-gallery' : (parts.pop() ?? '')
           if (idBySlug.has(slug)) return true
           unresolved.push(marker)
           return false
@@ -2133,7 +2159,8 @@ const main = async () => {
          * the whole-group wall would quietly point at the section's own.
          */
         const parts = marker.split('/').filter(Boolean)
-        const slug = parts.length === 1 && parts[0] === 'gallery' ? '__portal-gallery' : (parts.pop() ?? '')
+        const slug =
+          parts.length === 1 && parts[0] === 'gallery' ? '__portal-gallery' : (parts.pop() ?? '')
         const id = idBySlug.get(slug)
         if (id === undefined) {
           unresolved.push(marker)
@@ -2142,7 +2169,10 @@ const main = async () => {
         return { relationTo: 'pages', value: id }
       }
       return Object.fromEntries(
-        Object.entries(value as Record<string, unknown>).map(([key, item]) => [key, resolveLinks(item)]),
+        Object.entries(value as Record<string, unknown>).map(([key, item]) => [
+          key,
+          resolveLinks(item),
+        ]),
       )
     }
     return value

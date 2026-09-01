@@ -1,4 +1,5 @@
 import { loadEnv } from '@/utilities/load-env'
+import { findMediaId } from '@/utilities/media-lookup'
 
 loadEnv()
 
@@ -33,18 +34,31 @@ const IMAGE_FILENAME = 'kg-classroom-activity.jpg'
 const run = async () => {
   const payload = await getPayload({ config })
 
-  const { docs: media } = await payload.find({
-    collection: 'media',
-    where: { filename: { equals: IMAGE_FILENAME } },
-    limit: 1,
-    overrideAccess: true,
-  })
+  // Suffix-tolerant: `media/` is committed, so the stored row is very often
+  // `kg-classroom-activity-1.jpg` rather than the name written above.
+  const imageId = await findMediaId(payload, IMAGE_FILENAME)
 
-  const image = media[0]
-  if (!image) {
+  if (imageId === null) {
     payload.logger.error(`${IMAGE_FILENAME} is not in the media library. Run: npm run seed:media`)
     process.exit(1)
   }
+
+  /*
+   * Whether this photograph may be published at all.
+   *
+   * FR-PRV-11: a picture of an identifiable student is publishable only where
+   * a parental-permission record exists. The check is made here rather than
+   * assumed either way, because both assumptions have been wrong — publishing
+   * regardless would have shipped a child's photograph without a record, and
+   * drafting regardless is what quietly unpublished this page on every run.
+   */
+  const shot = await payload.findByID({
+    collection: 'media',
+    id: imageId,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const consented = shot?.depictsChildren !== true || shot?.parentalConsent?.obtained === true
 
   const { docs: pages } = await payload.find({
     collection: 'pages',
@@ -62,28 +76,47 @@ const run = async () => {
   }
 
   const layout = (page.layout ?? []).map((block) =>
-    block.blockType === 'hero' ? { ...block, image: image.id, highlights: HIGHLIGHTS } : block,
+    block.blockType === 'hero' ? { ...block, image: imageId, highlights: HIGHLIGHTS } : block,
   )
 
   if (!layout.some((block) => block.blockType === 'hero')) {
-    payload.logger.error('The portal home page has no banner block to put the photograph in.')
-    process.exit(1)
+    /*
+     * SUPERSEDED, NOT BROKEN.
+     *
+     * This seed fills the single-photograph `hero` block. The front page
+     * carries a `heroMarquee` now — four photographs that crossfade, built by
+     * `seed:portal-marquee`, which runs after this in the refresh and owns
+     * the banner outright.
+     *
+     * Exiting 1 here failed the whole refresh at step 22 of 25 on any machine
+     * whose banner had already been rebuilt, which is every machine after the
+     * first run. A seed whose block has been replaced by a better one should
+     * say so and stand down.
+     */
+    payload.logger.info(
+      'The portal home page uses the crossfading banner now, which seed:portal-marquee owns. Nothing to do here.',
+    )
+    process.exit(0)
   }
 
   await payload.update({
     collection: 'pages',
     id: page.id,
-    data: { layout },
-    draft: true,
+    data: { layout, ...(consented ? { _status: 'published' } : {}) },
+    ...(consented ? {} : { draft: true }),
     overrideAccess: true,
   })
 
-  payload.logger.info(`Draft updated — banner now uses ${IMAGE_FILENAME} with 3 facts.`)
-  payload.logger.warn(
-    'NOT PUBLISHED. This photograph shows identifiable children and has no parental-consent ' +
-      'record, so publishing is blocked by design. Record consent (npm run record:consent) and ' +
-      'publish the page from the admin panel.',
-  )
+  if (consented) {
+    payload.logger.info(`Banner updated and published — ${IMAGE_FILENAME} with 3 facts.`)
+  } else {
+    payload.logger.info(`Draft updated — banner now uses ${IMAGE_FILENAME} with 3 facts.`)
+    payload.logger.warn(
+      'NOT PUBLISHED. This photograph shows identifiable children and has no parental-consent ' +
+        'record, so publishing is blocked by design. Record consent (npm run record:consent) and ' +
+        'publish the page from the admin panel.',
+    )
+  }
 
   process.exit(0)
 }

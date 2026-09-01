@@ -99,6 +99,7 @@ const main = async () => {
         ...(unitId === null ? [] : [{ unit: { equals: unitId } }]),
       ],
     },
+    sort: 'id',
     limit: 2000,
     depth: 0,
     overrideAccess: true,

@@ -155,10 +155,30 @@ const main = async () => {
     block.blockType === 'hero' || block.blockType === 'heroMarquee' ? marquee : block,
   )
 
+  /*
+   * `_status` IS PASSED BACK, AND IT SAYS PUBLISHED.
+   *
+   * Two things went wrong here and they pull in opposite directions.
+   *
+   * Omitting the field entirely — which is what this did — makes Payload reset
+   * it to its default on any update outside draft mode. Rebuilding the banner
+   * therefore took the portal's front page offline and reported success, and
+   * the site went on serving an older published version with no banner at all.
+   *
+   * Handing back whatever status the page already had is the usual fix, and it
+   * is the wrong one here: it preserves a draft that an earlier run left
+   * behind, so the front page stays dark and every subsequent run faithfully
+   * keeps it that way.
+   *
+   * Published, then — and this seed is entitled to say so. The consent gate
+   * above drops any photograph showing identifiable children without a
+   * permission record (FR-PRV-11), so a banner that exists at all is one whose
+   * pictures may be shown. There is nothing else holding this page back.
+   */
   await payload.update({
     collection: 'pages',
     id: home.id,
-    data: { layout } as never,
+    data: { layout, _status: 'published' } as never,
     overrideAccess: true,
   })
 

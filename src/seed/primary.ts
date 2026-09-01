@@ -7,7 +7,7 @@ const { default: config } = await import('@payload-config')
 const { richText } = await import('./lexical')
 
 /**
- * Seeds the Primary section from the information requirement
+ * Seeds the Primary section — one school, no campus split — from the information requirement
  * document SIWS returned.
  *
  * Everything published here is SIWS's own wording. Where the document left a
@@ -29,6 +29,16 @@ const { richText } = await import('./lexical')
  */
 const CLASS_OPTIONS = ['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4']
 
+/*
+ * The subjects, each with an icon so the list reads as a syllabus rather than
+ * eight ticks in a column. The icons come from the block's fixed set — see
+ * FEATURE_ICON_OPTIONS — so the section keeps one visual voice.
+ *
+ * COMPUTER was added at SIWS's instruction (2026-08-26). It is not in the
+ * requirement document the rest of this file is built from, so it carries no
+ * description: what is taught in it, and from which grade, has not been
+ * supplied. The seed reports it at the end of the run for confirmation.
+ */
 const SUBJECTS = [
   { title: 'English' },
   { title: 'Marathi' },
@@ -212,9 +222,39 @@ const MATUNGA_FACULTY = [
   { name: 'Ms. Payal Sandeep Shukla', qualifications: 'H.S.C., D.Ed.' },
   { name: 'Mrs. Mary Dolours Richard', qualifications: 'B.A., D.Ed.' },
   { name: 'Ms. Prema Keshwan Devendra', qualifications: 'B.A., D.Ed.' },
-  // No qualifications given on the list she appears on, so none are shown.
-  { name: 'Ms. Vaishali Baghat' },
 ]
+
+/** The 18 rules Matunga supplied, verbatim. */
+const MATUNGA_RULES: string[] = [
+  'Bring the school calendar every day.',
+  'Maintain at least 80% attendance.',
+  'Wear proper school uniform.',
+  'Take care of your books and belongings; don’t wear ornaments.',
+  'Maintain discipline in school and during activities.',
+  'Speak only in English in school.',
+  'Avoid late coming, absenteeism, and indiscipline.',
+  'Do not damage school property; compensation must be paid if damaged.',
+  'Parents should meet teachers only with prior permission.',
+  'Inform the school of any change in address or phone number.',
+  'Do not give cash or gifts to teachers.',
+  'Do not bring unnecessary books, magazines, or newspapers. Bring only dry snacks.',
+  'Do not participate in political or communal activities.',
+  'Parents should ensure regularity, homework, and discipline.',
+  'Be regular, obedient and polite.',
+  'No school office work on Saturdays, Sundays, or holidays.',
+  'Certificates are issued only during the specified office hours.',
+  'Follow the Library Rules.',
+]
+
+/*
+ * MATUNGA_SUBJECTS and MATUNGA_BENEFITS lived here.
+ *
+ * They existed only to fill the Matunga campus page, which is gone now that
+ * the Primary Section is one school. Their content was a differently-worded
+ * copy of SUBJECTS and PROGRAMME_BENEFITS above ("Environmental Studies Part 1
+ * and 2" for "EVS", "Physical Training" for "Physical Education"), so nothing
+ * the school actually teaches is lost by dropping them.
+ */
 
 /** Head teacher first; the rest in the order SIWS listed them. */
 const FACULTY = [
@@ -331,6 +371,44 @@ const GENERAL_RULES: string[] = [
   'Railway concession forms and other certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — will be issued between 1.00 p.m. and 2.30 p.m. only.',
 ]
 
+/**
+ * THE MERGED HOUSE RULES.
+ *
+ * These were published as two numbered lists — one per campus — precisely
+ * because they are not the same document. The second list sets an 80%
+ * attendance requirement and an English-only rule the first does not contain,
+ * and the first covers infectious illness, identity cards and railway
+ * concession hours the second does not.
+ *
+ * The section is one school now, so it gets one list, and the union is the only
+ * safe way to build it: dropping either document's rules would quietly release
+ * families from something the school still asks of them. That does mean every
+ * family is now shown every rule, including ones that previously applied to
+ * only half the school — SIWS should read this list once and strike anything
+ * the merged school no longer enforces.
+ *
+ * Deduplicated on a normalised form so "Wear proper school uniform." and
+ * "Wear proper school uniform" do not both appear.
+ */
+const normalise = (rule: string) =>
+  rule
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+const MERGED_RULES: string[] = (() => {
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const rule of [...GENERAL_RULES, ...MATUNGA_RULES]) {
+    const key = normalise(rule)
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(rule)
+  }
+  return out
+})()
+
 const main = async () => {
   const payload = await getPayload({ config })
 
@@ -374,7 +452,15 @@ const main = async () => {
     id: primary.id,
     overrideAccess: true,
     data: {
-      // main portal prints this name in its school list.
+      /*
+       * ONE SCHOOL, NOT TWO CAMPUSES.
+       *
+       * The Primary Section used to be published as a Wadala campus and a
+       * Matunga campus with separate pages, separate rosters and separate rule
+       * lists. SIWS has since merged them, so nothing here names a location:
+       * it is one Primary School with one teaching team, and a parent reading
+       * this should not have to work out which half of it applies to them.
+       */
       name: 'SIWS Primary School',
       shortName: 'Primary School',
       tagline: 'Maharashtra State Board | Grades 1 to 4',
@@ -388,55 +474,48 @@ const main = async () => {
   let facultyUpdated = 0
 
   /**
-   * BACKFILL, and it must run before the upsert loop.
+   * UNTAG, and it must run before the upsert loop.
    *
-   * The 13 Wadala teachers were seeded before the campus field existed, so they
-   * carry no campus. The loop below matches on name + unit + campus, which
-   * would miss every one of them and create a second, duplicate roster. They
-   * were all Wadala — that is the only campus this seed had ever covered — so
-   * they are stamped as such first.
+   * Every Primary teacher already in the database carries `campus: wadala` or
+   * `campus: matunga` from when the section was published as two schools. The
+   * Teachers page is now a single list with no campus filter, so the tag has
+   * nothing left to select on — and leaving it set would keep the old split
+   * alive anywhere a block or report still groups by it. Clearing it is what
+   * actually merges the two rosters, rather than merely hiding the seam.
    */
-  const { docs: untagged } = await payload.find({
+  const { docs: tagged } = await payload.find({
     collection: 'faculty',
-    where: {
-      and: [{ unit: { equals: primary.id } }, { campus: { exists: false } }],
-    },
+    where: { and: [{ unit: { equals: primary.id } }, { campus: { exists: true } }] },
     limit: 200,
     depth: 0,
     overrideAccess: true,
   })
 
-  for (const teacher of untagged) {
+  for (const teacher of tagged) {
     await payload.update({
       collection: 'faculty',
       id: teacher.id,
-      data: { campus: 'wadala' } as never,
+      data: { campus: null } as never,
       overrideAccess: true,
     })
   }
 
-  if (untagged.length > 0) {
-    payload.logger.info(`Tagged ${untagged.length} existing teachers as the Wadala campus.`)
+  if (tagged.length > 0) {
+    payload.logger.info(`Untagged ${tagged.length} teachers — the Primary roster is now one list.`)
   }
 
   /**
-   * Both rosters, each tagged with its campus. `order` restarts per campus so
-   * each campus's head teacher sits at 1 — the Faculty block filters by campus,
-   * and a shared sequence would put Matunga's head teacher tenth in her own
-   * list.
+   * ONE ROSTER.
+   *
+   * Both teaching teams in a single sequence, so `order` runs 1..n across the
+   * whole school rather than restarting per campus. The head teacher of the
+   * merged school sits at 1; the second team follows in its own order behind
+   * the first. No entry carries a campus.
    */
-  const roster = [
-    ...FACULTY.map((teacher, index) => ({
-      ...teacher,
-      campus: 'wadala',
-      order: index + 1,
-    })),
-    ...MATUNGA_FACULTY.map((teacher, index) => ({
-      ...teacher,
-      campus: 'matunga',
-      order: index + 1,
-    })),
-  ]
+  const roster = [...FACULTY, ...MATUNGA_FACULTY].map((teacher, index) => ({
+    ...teacher,
+    order: index + 1,
+  }))
 
   for (const teacher of roster) {
     const existing = await payload.find({
@@ -445,10 +524,9 @@ const main = async () => {
         and: [
           { name: { equals: teacher.name } },
           { unit: { equals: primary.id } },
-          // Campus is part of the identity: two campuses may one day employ
-          // people of the same name, and matching on name alone would have one
-          // seed overwrite the other's teacher.
-          { campus: { equals: teacher.campus } },
+          // Name and unit are the whole identity now. If the same person was
+          // on both rosters, the two rows collapse into one — which is the
+          // right answer for a school that no longer has two of anything.
         ],
       },
       limit: 1,
@@ -850,9 +928,12 @@ const main = async () => {
           title: 'Enquire about admission',
           subtitle: 'Tell us about your child and we will get in touch.',
           classOptions: CLASS_OPTIONS.map((label) => ({ label })),
-          // Both campuses, so the parent chooses and the enquiry reaches the
-          // right head teacher.
-          // No campus picker: there is one Primary Section to enquire about.
+          /*
+           * No campus choice. The form used to ask which campus so the enquiry
+           * could reach the right head teacher; there is one Primary School and
+           * one head teacher now, so the question has no answer to offer and is
+           * left off entirely rather than shown with a single option.
+           */
           campusOptions: [],
           trustPoints: [
             { text: 'Over 90 years of educational service since 1934' },
@@ -925,6 +1006,12 @@ const main = async () => {
           },
         ],
       },
+      /*
+       * The "Our two campuses" card pair used to sit here, sending parents off
+       * to a Wadala page and a Matunga page. Both are gone: there is one
+       * Primary School, so there is nothing to choose between and no second
+       * page to link to.
+       */
       {
         blockType: 'richText',
         heading: 'A caring, inclusive and stimulating school',
@@ -1028,8 +1115,24 @@ const main = async () => {
         ]),
       },
       {
+        /*
+         * The compact layout, not a tick list and not cards.
+         *
+         * Ticks in two columns said nothing about the subjects and gave a
+         * parent scanning the page nothing to catch on. Cards are the other
+         * extreme: this block's own note explains that a card earns its size
+         * when it carries a picture and a sentence, and a one-word label given
+         * a card becomes a tall box that is mostly empty — eight of them, with
+         * a ragged last row.
+         *
+         * Compact is the middle: a labelled tile per subject, icon beside the
+         * words, three across. It reads as a syllabus at a glance, and the
+         * tiles are a fixed height so the last row not dividing by three stops
+         * mattering.
+         */
         blockType: 'featureList',
         heading: 'Subjects taught',
+        accentWord: 'Subjects',
         headingLevel: 'h2',
         marker: 'tick',
         columns: '2-centre',
@@ -1127,26 +1230,34 @@ const main = async () => {
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'Meet the teaching team at SIWS Primary School — experienced, qualified staff.',
+      'Meet the teaching team at SIWS Primary School — experienced, qualified staff for Grades 1 to 4.',
     layout: [
-      /*
-       * One roster. It was two blocks filtered by campus, on the reasoning
-       * that a parent had already chosen a location and an unlabelled merged
-       * list would leave them unable to tell who teaches their child. With one
-       * campus there is nothing left to tell apart, and `campus` defaults to
-       * every campus — so this lists all of them.
+      /**
+       * ONE LIST.
+       *
+       * This was two faculty blocks, one per campus, on the reasoning that a
+       * parent had already chosen a location and needed to know which half of
+       * the roster taught their child. That reasoning is spent: the section is
+       * one school now, so a split list would ask a parent to pick between two
+       * things that no longer exist. No `campus` key, so the block takes the
+       * whole Primary roster in `order`.
        */
       {
         blockType: 'faculty',
-        heading: 'Our teaching team',
-        accentWord: 'teaching team',
+        heading: 'Our teachers',
+        accentWord: 'teachers',
         headingLevel: 'h2',
-        // Two head teachers, each with her own staff listed beneath her.
-        layout: 'teams',
+        /*
+         * Monogram above the name rather than beside it. Beside it, the text
+         * column on a three-across grid is narrow enough that the longer names
+         * on this roster — "Nadar Alagumathi Selvaganeshan" — wrap to two lines
+         * while the monogram sits alone against the space underneath.
+         */
+        cardLayout: 'centred',
         showQualifications: true,
         background: 'white',
         intro: richText([
-          'Our teachers are well trained, with over 20 years of teaching experience.',
+          'Our teachers are well trained, with over 20 years of teaching experience. With knowledge and passion, they create classrooms where every child feels encouraged to explore and succeed.',
         ]),
       },
     ],
@@ -1593,6 +1704,17 @@ const main = async () => {
     metaDescription: 'General rules, discipline and uniform guidelines for SIWS Primary School.',
     layout: [
       {
+        /**
+         * ONE UNIFORM SPECIFICATION, AND IT NEEDS CONFIRMING.
+         *
+         * Only one of the two merged documents ever described the uniform in
+         * detail; the other said no more than "wear proper school uniform". It
+         * used to be labelled as that campus's own so no family bought a
+         * uniform on the strength of a page that had never checked. With the
+         * campuses merged there is no label left to qualify it, so it now reads
+         * as the school's — which is only true if SIWS has in fact standardised
+         * on it. That is flagged at the end of this run.
+         */
         blockType: 'featureList',
         heading: 'Uniform',
         accentWord: 'Uniform',
@@ -1628,6 +1750,7 @@ const main = async () => {
         ],
       },
       {
+        // Both campuses' lists, merged and deduplicated. See MERGED_RULES.
         blockType: 'featureList',
         heading: 'General rules',
         accentWord: 'rules',
@@ -1635,7 +1758,7 @@ const main = async () => {
         marker: 'number',
         columns: '1',
         background: 'sea',
-        items: GENERAL_RULES.map((title) => ({ title })),
+        items: MERGED_RULES.map((title) => ({ title })),
       },
     ],
   })
@@ -2808,10 +2931,20 @@ const main = async () => {
     ],
   })
 
-  payload.logger.info('Primary content seeded.')
+  payload.logger.info(
+    `Primary content seeded — one school, ${MERGED_RULES.length} merged house rules.`,
+  )
 
   payload.logger.warn(
     'STILL TO COME from SIWS: fee details; campus, classroom and facility photographs; teacher photographs; parent testimonials; alumni achievements; press mentions; awards and certifications; social media handles; and the legal documents (privacy policy, terms, fee/refund policy, RTI disclosures). No page invents any of these.',
+  )
+  payload.logger.warn(
+    `TO CONFIRM AFTER THE MERGE — the two campuses were published separately until now, and merging them forced two decisions this seed could not make on its own:\n` +
+      `  • HOUSE RULES — the two documents were not the same. The page now shows the union of both (${MERGED_RULES.length} rules), because dropping either set would release families from something the school may still ask of them. That means every family is shown rules that previously applied to only half the school — notably the 80% attendance requirement and the English-only rule. Please strike anything the merged school no longer enforces.\n` +
+      `  • UNIFORM — only one of the two documents ever specified a uniform; the other said only "wear proper school uniform". That specification is now published as the school's, unqualified. Confirm SIWS has standardised on it before a family buys one.`,
+  )
+  payload.logger.warn(
+    'ICT and VALUE EDUCATION are published as Primary subjects on SIWS’s instruction, and are in neither requirement document. The Academics page now tells parents the Primary Section teaches both. Confirm they are taught, and from which grade — neither tile carries a description, because none was supplied.',
   )
 }
 

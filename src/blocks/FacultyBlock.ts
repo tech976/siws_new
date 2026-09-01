@@ -57,6 +57,30 @@ export const FacultyBlock: Block = {
       },
     },
     {
+      /**
+       * How each teacher's card is arranged.
+       *
+       * "Beside the name" is the original: monogram on the left, details in a
+       * column to its right. It is compact, but on a three-across grid the
+       * remaining width is narrow enough that a long name — "Nadar Alagumathi
+       * Selvaganeshan" — wraps to two lines while the monogram sits alone
+       * against the whitespace beneath it.
+       *
+       * "Above the name" gives the whole card width to the text and puts the
+       * monogram on top, centred. Nothing wraps against a fixed column any
+       * more, and the roster reads as a wall of people rather than a list with
+       * decorations.
+       */
+      name: 'cardLayout',
+      type: 'select',
+      defaultValue: 'beside',
+      label: 'Where the monogram sits',
+      options: [
+        { label: 'Monogram beside the name', value: 'beside' },
+        { label: 'Monogram above the name, centred', value: 'centred' },
+      ],
+    },
+    {
       name: 'showQualifications',
       type: 'checkbox',
       defaultValue: true,

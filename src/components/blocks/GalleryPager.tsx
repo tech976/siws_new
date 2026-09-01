@@ -39,9 +39,7 @@ export const GalleryPager = ({ items, perPage }: GalleryPagerProps) => {
     const grid = document.getElementById(gridId)
     grid?.scrollIntoView({
       block: 'start',
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        ? 'auto'
-        : 'smooth',
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
     })
     grid?.focus()
   }
@@ -65,7 +63,10 @@ export const GalleryPager = ({ items, perPage }: GalleryPagerProps) => {
       </p>
 
       {pages > 1 ? (
-        <nav aria-label="Gallery pages" className="mt-4 flex flex-wrap items-center justify-center gap-2">
+        <nav
+          aria-label="Gallery pages"
+          className="mt-4 flex flex-wrap items-center justify-center gap-2"
+        >
           <button
             type="button"
             onClick={() => go(page - 1)}
@@ -82,12 +83,7 @@ export const GalleryPager = ({ items, perPage }: GalleryPagerProps) => {
              * navigation, it is a wall — so it shows first, last, and the pages
              * either side of where you are.
              */
-            .filter(
-              (index) =>
-                index === 0 ||
-                index === pages - 1 ||
-                Math.abs(index - page) <= 1,
-            )
+            .filter((index) => index === 0 || index === pages - 1 || Math.abs(index - page) <= 1)
             .map((index, position, shown) => (
               <span key={index} className="flex items-center gap-2">
                 {position > 0 && index - shown[position - 1]! > 1 ? (
@@ -106,9 +102,7 @@ export const GalleryPager = ({ items, perPage }: GalleryPagerProps) => {
                   }`}
                 >
                   {index + 1}
-                  <span className="sr-only">
-                    {index === page ? ' (current page)' : ''}
-                  </span>
+                  <span className="sr-only">{index === page ? ' (current page)' : ''}</span>
                 </button>
               </span>
             ))}

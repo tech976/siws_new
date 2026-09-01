@@ -105,10 +105,7 @@ export const Media: CollectionConfig = {
 
     create: ({ req }) => {
       const user = req.user as AccessUser | null
-      return (
-        isAdmin(user) ||
-        hasRole(user, ROLES.unitHead, ROLES.contentManager, ROLES.editor)
-      )
+      return isAdmin(user) || hasRole(user, ROLES.unitHead, ROLES.contentManager, ROLES.editor)
     },
 
     update: ({ req }) => {
@@ -120,10 +117,7 @@ export const Media: CollectionConfig = {
       const ids = unitIdsOf(user)
       // Staff may edit items belonging to their unit, plus shared items that
       // carry no unit, plus anything they uploaded themselves.
-      const clauses: Where[] = [
-        { unit: { exists: false } },
-        { uploadedBy: { equals: user.id } },
-      ]
+      const clauses: Where[] = [{ unit: { exists: false } }, { uploadedBy: { equals: user.id } }]
       if (ids.length > 0) clauses.push({ unit: { in: ids } })
 
       return { or: clauses }
@@ -333,8 +327,10 @@ export const Media: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description:
-          'Turn this off for posters, notices and video thumbnails — anything that is part of a page rather than a photograph of the school.',
+          'Turn this off for posters, invitations, notices and video thumbnails — anything that announces an event or belongs to a page, rather than a photograph of the school. It still works anywhere a page points at it by name.',
       },
+      /* Every gallery query filters on this column. */
+      index: true,
     },
     {
       /**

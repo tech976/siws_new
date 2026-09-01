@@ -99,11 +99,7 @@ const BENTO_SIZES = [
  * reads as broken. The gradient is dark enough for white text at every tile
  * size and only covers the bottom third, so the photograph is still the tile.
  */
-const BentoGallery = ({
-  images,
-}: {
-  images: NonNullable<GalleryBlock['images']>
-}) => (
+const BentoGallery = ({ images }: { images: NonNullable<GalleryBlock['images']> }) => (
   /*
    * The row height is TALLER on a phone, not shorter.
    *
@@ -246,8 +242,27 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
     </article>
   ))
 
+  /*
+   * An anchor derived from the heading, so one group on a gallery page can be
+   * linked to directly — `/primary/gallery#onam-event` lands on the Onam
+   * photographs rather than at the top of a page holding every group the
+   * section has. The gallery seed builds one block per category, so this gives
+   * every category a stable address without anything else having to name it.
+   *
+   * Headings come from staff-entered category names, so the slug is built by
+   * stripping rather than trusting: anything that is not a letter, digit or
+   * space becomes nothing, and runs of whitespace become a single dash.
+   */
+  const anchorId = block.heading
+    ? block.heading
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-') || undefined
+    : undefined
+
   return (
-    <Section background={block.background as BlockBackground}>
+    <Section background={block.background as BlockBackground} id={anchorId}>
       {/*
         `mb-4` is the gap down to an INTRO, which then carries its own `mb-8`
         on to the photographs. A gallery with no intro was left with that 16px

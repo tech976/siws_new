@@ -243,6 +243,7 @@ const main = async () => {
       const { docs } = await payload.find({
         collection: 'media',
         where: { depictsChildren: { equals: true } },
+        sort: 'id',
         limit: 200,
         depth: 0,
         overrideAccess: true,
