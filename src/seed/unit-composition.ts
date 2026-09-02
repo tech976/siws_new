@@ -1,5 +1,7 @@
 import { loadEnv } from '@/utilities/load-env'
 
+import { hasAuthoredHome } from './authored-home-pages'
+
 loadEnv()
 
 const { getPayload } = await import('payload')
@@ -133,6 +135,12 @@ const run = async () => {
   const notes: string[] = []
 
   for (const unit of units) {
+    /* As in `unit-home`: an authored home page is not re-composed. */
+    if (hasAuthoredHome(unit.slug as string)) {
+      notes.push(`${unit.slug}: home page is authored in its own seed — left alone`)
+      continue
+    }
+
     const { docs: pages } = await payload.find({
       collection: 'pages',
       where: { and: [{ slug: { equals: 'home' } }, { unit: { equals: unit.id } }] },

@@ -1,5 +1,7 @@
 import { loadEnv } from '@/utilities/load-env'
 
+import { hasAuthoredHome } from './authored-home-pages'
+
 loadEnv()
 
 const { getPayload } = await import('payload')
@@ -51,6 +53,16 @@ const run = async () => {
   const notes: string[] = []
 
   for (const unit of units) {
+    /*
+     * A section that has authored its own home page keeps it. This step
+     * REPLACES the layout, so running it over a designed page discards the
+     * design — see `authored-home-pages.ts`.
+     */
+    if (hasAuthoredHome(unit.slug as string)) {
+      notes.push(`${unit.slug}: home page is authored in its own seed — left alone`)
+      continue
+    }
+
     const { docs: pages } = await payload.find({
       collection: 'pages',
       where: { and: [{ slug: { equals: 'home' } }, { unit: { equals: unit.id } }] },

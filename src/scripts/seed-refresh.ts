@@ -136,15 +136,27 @@ const STEPS: Step[] = [
    * ended up with less than the live site. The photographs did not fail to
    * arrive — they were arranged, and then the arrangement was overwritten.
    *
-   * Order matters twice over:
-   *   unit-home BEFORE unit-composition, because the composition keeps the
-   *     hero block it finds (`source: 'keep'`) and unit-home is what creates it.
-   *   kg-home AFTER unit-composition, or the shared pattern overwrites the
-   *     Kindergarten page's own arrangement.
+   * Order matters: unit-home BEFORE unit-composition, because the composition
+   * keeps the hero block it finds (`source: 'keep'`) and unit-home is what
+   * creates it.
+   *
+   * `seed:kg-home` USED TO RUN HERE and no longer does.
+   *
+   * It re-arranged the Kindergarten home page into the shared shape — the
+   * feature lists became a bento grid and three card grids, the prose became
+   * media bands. But that page is not an unwritten one waiting to be given a
+   * shape: `kindergarten.ts` authors it in full, twelve bands, opening on
+   * "Wadala's Most Trusted Kindergarten Since 1934". Running the arrangement
+   * over it replaced a design with a default.
+   *
+   * The script is kept, and can still be run by hand for a page that wants
+   * that arrangement. It is out of the automatic order because the automatic
+   * order is what quietly undid the section's own work on every single run.
+   * The two shared steps above skip it for the same reason — see
+   * `src/seed/authored-home-pages.ts`.
    */
   { script: 'seed:unit-home', does: 'photographic banners on each unit home page' },
   { script: 'seed:unit-composition', does: 'the shared home-page composition' },
-  { script: 'seed:kg-home', does: 'the Kindergarten home page arrangement' },
   { script: 'seed:move-enquiry', does: 'the enquiry form off home, onto Admissions' },
   { script: 'seed:section-images', does: 'photographs onto the pages they belong to' },
   { script: 'seed:portal-hero', does: 'the portal’s opening banner' },
