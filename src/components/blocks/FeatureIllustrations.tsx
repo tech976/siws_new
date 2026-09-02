@@ -358,13 +358,15 @@ export const FEATURE_GLYPHS: Record<string, (props: IllustrationProps) => React.
 }
 
 /** Keyed by the values in `FEATURE_ICON_OPTIONS`. */
-export const FEATURE_ILLUSTRATIONS: Record<string, (props: IllustrationProps) => React.JSX.Element> =
-  {
-    classroom: ClassroomIllustration,
-    security: SecurityIllustration,
-    play: PlayIllustration,
-    activity: ActivityRoomIllustration,
-    canteen: CanteenIllustration,
-    hygiene: HygieneIllustration,
-    staff: StaffIllustration,
-  }
+export const FEATURE_ILLUSTRATIONS: Record<
+  string,
+  (props: IllustrationProps) => React.JSX.Element
+> = {
+  classroom: ClassroomIllustration,
+  security: SecurityIllustration,
+  play: PlayIllustration,
+  activity: ActivityRoomIllustration,
+  canteen: CanteenIllustration,
+  hygiene: HygieneIllustration,
+  staff: StaffIllustration,
+}

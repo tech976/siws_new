@@ -5,6 +5,7 @@ import path from 'path'
 import sharp from 'sharp'
 
 import { loadEnv } from '@/utilities/load-env'
+import { findMediaId } from '@/utilities/media-lookup'
 
 loadEnv()
 
@@ -105,6 +106,30 @@ const IMAGES: ImageSeed[] = [
     alt: 'Kindergarten children in SIWS uniform sitting at curved group tables, colouring in activity books with crayons.',
     caption: 'Spacious, well-ventilated classrooms with group seating',
     depictsChildren: true,
+  },
+  {
+    file: 'kg-classroom-tables.jpg',
+    filename: 'kg-classroom-tables.jpg',
+    /*
+     * The Kindergarten banner photograph.
+     *
+     * A whole class rather than a corner of one, which is what the top of the
+     * page is being asked to say: this is the size of a year group and this is
+     * the room it sits in. It goes behind the brand gradient at a 3px blur, so
+     * what has to survive is the shape of the room and the mass of colour —
+     * both of which it has, and neither of which depends on a single face.
+     */
+    alt: 'A full kindergarten class in yellow and green SIWS uniform, seated around two large curved white tables and turning to face the camera.',
+    caption: 'A full class around the curved group tables',
+    /*
+     * The faces run in a band from roughly a third of the way down to just
+     * past the middle. Left at 50 the banner crop cut through the back row;
+     * 45 keeps every row inside the strip.
+     */
+    focalY: 45,
+    depictsChildren: true,
+    unit: 'kindergarten',
+    category: 'In the classroom',
   },
   {
     file: 'g2.jpeg',
@@ -488,7 +513,13 @@ const IMAGES: ImageSeed[] = [
     filename: 'kg-dance-rehearsal.jpg',
     unit: 'kindergarten',
     category: 'Achievements',
-    alt: 'Kindergarten children in costume rehearsing a dance in the school hall, spread across the floor mid-step.',
+    /*
+     * "In costume" was wrong — they are in ordinary school uniform, barefoot,
+     * on floor marks. Checked against the photograph on 2026-09-02, because
+     * alt text is the whole of what a blind reader gets and a detail nobody
+     * verified is a detail invented.
+     */
+    alt: 'Kindergarten children rehearsing a dance in the school hall, barefoot and in school uniform with yellow headbands, spread across floor markings mid-step.',
     caption: 'Rehearsing in the hall, the week before',
     depictsChildren: true,
   },
@@ -668,13 +699,79 @@ const IMAGES: ImageSeed[] = [
     // Read rather than admired: never cropped.
     showWhole: true,
   },
+
+  /*
+   * Supplied by SIWS on 2026-09-01 for the Kindergarten campus row.
+   *
+   * All four show identifiable children, so all four are `depictsChildren` and
+   * none of them publishes until `npm run record:consent` has covered them.
+   *
+   * The alt text was written from the photographs themselves rather than from
+   * their filenames — the note at the top of this file explains why that
+   * distinction matters, and it is the only way "a child at the back holding
+   * up a handmade tricolour" gets said at all.
+   */
+  {
+    file: 'kg-play-slide.jpg',
+    filename: 'kg-play-slide.jpg',
+    category: 'Play and activity',
+    alt: 'Kindergarten children playing on a red slide and climbing frame under a canopy, on the green artificial-turf play area, one child mid-slide and others waiting their turn on the platform above.',
+    caption: 'The covered play area',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-classroom-full-class.jpg',
+    filename: 'kg-classroom-full-class.jpg',
+    category: 'Classrooms',
+    alt: 'A full kindergarten class in yellow and green SIWS uniform standing all the way around a large curved white table, with a child at the back holding up a handmade Indian flag made from painted handprints.',
+    caption: 'A full class around the curved group table',
+    depictsChildren: true,
+  },
+  {
+    /*
+     * An OUTING, not a facility — the venue is a commercial play centre and its
+     * branding is the largest thing in the frame. Filed under "Beyond the
+     * classroom" for that reason, and the caption says outing in as many
+     * words, so nothing here can be read as something the campus has.
+     */
+    file: 'kg-outing-play-space.jpg',
+    filename: 'kg-outing-play-space.jpg',
+    category: 'Beyond the classroom',
+    alt: 'A kindergarten class posing together on a low round stage in front of a brightly lit space-themed backdrop at an indoor play centre, during a class outing.',
+    caption: 'A class outing to an indoor play space',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-sports-day-winners.jpg',
+    filename: 'kg-sports-day-winners.jpg',
+    category: 'Achievements',
+    alt: 'Thirteen kindergarten children holding certificates and trophies, seated and standing in two rows beneath a banner reading “Welcome to SIWS KG Section Sport’s Day”.',
+    caption: 'Prize day at the Kindergarten annual sports',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-sports-day-podium.jpg',
+    filename: 'kg-sports-day-podium.jpg',
+    category: 'Achievements',
+    alt: 'Four kindergarten children in red and navy sports kit on a winners’ podium numbered 1, 2 and 3, each holding a gold trophy, with a table of further trophies behind them on the turf pitch.',
+    caption: 'On the podium at the Kindergarten sports day',
+    depictsChildren: true,
+  },
 ]
 
-/** `kg-play-area-2.jpg` -> `kg-play-area.jpg`; anything else is left alone. */
-const baseName = (filename: string) => filename.replace(/-d+(.[^.]+)$/, '$1')
-
-/** `kg-play-area.jpg` -> `kg-play-area`, for a prefix query. */
-const stemOf = (filename: string) => filename.replace(/.[^.]+$/, '')
+/*
+ * The name-matching lives in `@/utilities/media-lookup` now.
+ *
+ * It was two one-line helpers here, and one of them was wrong: `/-d+(.[^.]+)$/`
+ * matches a literal letter "d", not a digit, so it never stripped Payload's
+ * collision counter and never recognised a photograph this script had already
+ * uploaded. Every run therefore uploaded the whole set again — `-1`, then `-2`,
+ * then `-3` — while the pages went on pointing at whichever copy was written
+ * last. The seed written to stop duplicates was the thing making them.
+ *
+ * Three other seeds had their own copies of the same idea, two of them
+ * exact-match only. One shared implementation is the fix.
+ */
 
 const main = async () => {
   const payload = await getPayload({ config })
@@ -733,14 +830,7 @@ const main = async () => {
        * again: eight photographs became sixteen, and the focal points and
        * consent records stayed on the copies nothing pointed at any more.
        */
-      const found = await payload.find({
-        collection: 'media',
-        where: { filename: { like: `${stemOf(image.filename)}%` } },
-        limit: 10,
-        depth: 0,
-        overrideAccess: true,
-      })
-      const existingDoc = found.docs.find((d) => baseName(String(d.filename)) === image.filename)
+      const existingId = await findMediaId(payload, image.filename)
 
       const data = {
         alt: image.alt,
@@ -753,7 +843,7 @@ const main = async () => {
         ...(image.focalY === undefined ? {} : { focalX: 50, focalY: image.focalY }),
       }
 
-      if (existingDoc) {
+      if (existingId !== null) {
         /*
          * No `filePath` on the update path. Passing one made Payload write
          * the binary again on every run, and because the name was already
@@ -765,7 +855,7 @@ const main = async () => {
          */
         await payload.update({
           collection: 'media',
-          id: existingDoc.id,
+          id: existingId,
           data: data as never,
           overrideAccess: true,
         })

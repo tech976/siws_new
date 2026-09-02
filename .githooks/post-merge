@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# Runs after `git pull` / `git merge`.
+#
+# WHY THIS EXISTS
+# ---------------
+# The site renders from Postgres, not from the repository. A pull brings a
+# teammate's seed scripts and image files onto disk and changes nothing on
+# screen until those seeds run against YOUR database.
+#
+# Skipping it does not leave the page blank, which is what made this so hard to
+# spot: a photograph a page names but cannot find is replaced by whatever else
+# is in the library, so the page looks finished while showing pictures nobody
+# chose. People reported it as "someone changed the images".
+#
+# WHY IT WARNS RATHER THAN JUST RUNNING THE SEEDS
+# -----------------------------------------------
+# Re-seeding takes a couple of minutes and writes to the database. Doing that
+# automatically on every pull would interrupt work mid-task, and a run that is
+# interrupted leaves the site half-updated — the exact failure this is meant to
+# prevent. So the default is to say so, loudly and unmissably.
+#
+# If you would rather it just ran, set SIWS_AUTO_SEED=1 in your shell profile.
+
+CHANGED=$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD 2>/dev/null)
+
+# Only the things that decide what the site shows.
+echo "$CHANGED" | grep -qE '^(src/seed/|src/collections/|src/blocks/|assets/images/|media/)' || exit 0
+
+CHANGED_SEEDS=$(echo "$CHANGED" | grep -E '^src/seed/' | sed 's#^src/seed/##' | tr '\n' ' ')
+
+printf '\n'
+printf '  ============================================================\n'
+printf '   THIS PULL CHANGED WHAT THE SITE SHOWS.\n'
+printf '  ============================================================\n\n'
+if [ -n "$CHANGED_SEEDS" ]; then
+  printf '   Seed scripts changed: %s\n\n' "$CHANGED_SEEDS"
+fi
+printf '   Your database still holds the old content. Until you re-seed,\n'
+printf '   pages will render the previous images — and any photograph a page\n'
+printf '   names but cannot find is SUBSTITUTED, not left blank. The site\n'
+printf '   will look finished while showing pictures nobody chose.\n\n'
+printf '     npm run seed:refresh\n\n'
+printf '  ============================================================\n\n'
+
+if [ "$SIWS_AUTO_SEED" = "1" ]; then
+  printf '   SIWS_AUTO_SEED=1 — running it now.\n\n'
+  npm run seed:refresh
+fi
+
+exit 0

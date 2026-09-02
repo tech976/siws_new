@@ -72,6 +72,7 @@ const run = async () => {
 
   const { docs: allMedia } = await payload.find({
     collection: 'media',
+    sort: 'id',
     limit: 600,
     depth: 0,
     overrideAccess: true,
@@ -185,7 +186,8 @@ const run = async () => {
     if (!node || typeof node !== 'object') return 0
     const n = node as Record<string, unknown>
     if (typeof n.text === 'string') return n.text.trim().split(/\s+/).filter(Boolean).length
-    const kids = (n.children ?? (n.root as Record<string, unknown>)?.children) as unknown[] | undefined
+    const kids = (n.children ?? (n.root as Record<string, unknown>)?.children) as
+      unknown[] | undefined
     return Array.isArray(kids) ? kids.reduce((sum: number, k) => sum + wordCount(k), 0) : 0
   }
   const convertible = new Set(

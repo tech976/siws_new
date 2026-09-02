@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { draftMode } from 'next/headers'
+import { cookies, draftMode } from 'next/headers'
 import type { ReactNode } from 'react'
 
 import { LivePreviewListener } from '@/components/preview/LivePreviewListener'
@@ -52,34 +52,63 @@ export const viewport: Viewport = {
   themeColor: '#2e3192',
 }
 
+/**
+ * The visitor's saved text-size and contrast choice, read on the SERVER.
+ *
+ * WHY A COOKIE AND NOT localStorage
+ * ---------------------------------
+ * This used to be an inline `<script>` in a hand-written `<head>` that read
+ * localStorage and set the attributes before first paint. The intent was right
+ * and the mechanism was not:
+ *
+ *  - React 19 refuses to run a script it creates on the client, and says so on
+ *    the console every time it renders one. The tag worked from the
+ *    server-rendered HTML and would have silently stopped working on any
+ *    render that recreated it — the failure mode being no visible error and a
+ *    visitor who needs large text not getting it.
+ *  - It also had to mutate `<html>` before hydration, which is a deliberate
+ *    server/client mismatch. That is what `suppressHydrationWarning` on the
+ *    element below was covering for.
+ *
+ * localStorage cannot be read on the server; a cookie can. So the attributes
+ * are now rendered into the HTML by the server that sends it. There is no
+ * script to run, nothing to mutate before hydration, and no frame in which the
+ * default is on screen — the markup arrives correct.
+ *
+ * The layout already awaits `draftMode()`, so it was never static and reading
+ * a cookie costs it no caching it had.
+ *
+ * VALUES ARE WHITELISTED, NOT PASSED THROUGH. A cookie is visitor-controlled
+ * input, and this one is written straight into an attribute on `<html>`.
+ * Anything but the two known settings is ignored.
+ */
+const TEXT_SIZE_COOKIE = 'siws_text_size'
+const CONTRAST_COOKIE = 'siws_contrast'
+
 const FrontendLayout = async ({ children }: { children: ReactNode }) => {
   // BR-EDIT-04 — the preview chrome exists only while draft mode is on, so a
   // public visitor is never served either component.
   const { isEnabled: isDraft } = await draftMode()
 
+  const cookieStore = await cookies()
+  const savedSize = cookieStore.get(TEXT_SIZE_COOKIE)?.value
+  const textSize = savedSize === 'large' || savedSize === 'x-large' ? savedSize : undefined
+  const contrast = cookieStore.get(CONTRAST_COOKIE)?.value === 'high' ? 'high' : undefined
+
   return (
-    <html lang="en-IN" className={fontVariables} suppressHydrationWarning>
-      <head>
-        {/*
-          Applies the visitor's saved text-size and contrast choice BEFORE
-          first paint.
-          
-          Setting it from React instead would render the default first and
-          repaint a frame later, so someone who needs large text or high
-          contrast — precisely the visitor least able to cope with it — gets a
-          flash of the version they cannot read. It is inline and tiny for the
-          same reason: an external file would arrive too late to help.
-          
-          Wrapped in try/catch because private browsing can throw on
-          localStorage access, and a failed preference must not stop the page
-          rendering.
-        */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `try{var d=document.documentElement,t=localStorage.getItem('siws:text-size'),c=localStorage.getItem('siws:contrast');if(t&&t!=='normal')d.setAttribute('data-text-size',t);if(c==='high')d.setAttribute('data-contrast','high')}catch(e){}`,
-          }}
-        />
-      </head>
+    <html
+      lang="en-IN"
+      className={fontVariables}
+      /*
+       * Kept even though the pre-hydration script is gone: browser extensions
+       * and translation tools routinely add attributes to <html> before React
+       * looks at it, and the accessibility controls change these two at
+       * runtime. Neither is a mismatch worth a console error.
+       */
+      suppressHydrationWarning
+      data-text-size={textSize}
+      data-contrast={contrast}
+    >
       <body>
         {/* SRS 4.4 — skip-to-content link, the first thing a keyboard user reaches. */}
         <a href="#main-content" className="skip-link">

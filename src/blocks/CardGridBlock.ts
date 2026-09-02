@@ -36,6 +36,30 @@ export const CardGridBlock: Block = {
       },
     },
     {
+      /**
+       * How the card's image is framed.
+       *
+       * "Photograph" crops to a 4:3 window, which is right for a picture: the
+       * subject is in the middle and a consistent window is what makes a row of
+       * cards read as a row.
+       *
+       * "Poster" does not crop. An invitation or an event notice carries its
+       * date, time and venue at the very top and bottom of a portrait design —
+       * exactly the parts a 4:3 crop removes — so the whole image is fitted
+       * inside the frame instead, on a tinted ground where it does not fill it.
+       */
+      name: 'imageFrame',
+      type: 'select',
+      defaultValue: 'photo',
+      options: [
+        { label: 'Photograph — fill the frame, cropping to fit', value: 'photo' },
+        { label: 'Poster — show the whole image, do not crop', value: 'poster' },
+      ],
+      admin: {
+        description: 'Choose “Poster” for invitations and event notices, so no text is cut off.',
+      },
+    },
+    {
       name: 'cards',
       type: 'array',
       minRows: 1,
@@ -74,8 +98,7 @@ export const CardGridBlock: Block = {
           type: 'textarea',
           maxLength: 320,
           admin: {
-            description:
-              'Keep cards to a similar length — uneven text makes the grid look ragged.',
+            description: 'Keep cards to a similar length — uneven text makes the grid look ragged.',
           },
         },
         {

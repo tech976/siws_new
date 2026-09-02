@@ -7,7 +7,7 @@ const { default: config } = await import('@payload-config')
 const { richText } = await import('./lexical')
 
 /**
- * Seeds the Primary section from the information requirement
+ * Seeds the Primary section — one school, no campus split — from the information requirement
  * document SIWS returned.
  *
  * Everything published here is SIWS's own wording. Where the document left a
@@ -29,6 +29,36 @@ const { richText } = await import('./lexical')
  */
 const CLASS_OPTIONS = ['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4']
 
+/**
+ * PRIMARY SECTION CONTACT DETAILS
+ * ===============================
+ * Supplied by SIWS for the Primary Section, and the only contact details
+ * this section shows. They are held here rather than typed into each page
+ * because eight places print them, and eight copies drift.
+ *
+ * Primary only. The other three units and the portal keep the Society's
+ * general email and mobile from `units-content.ts`.
+ *
+ * TWO NUMBERS, TWO FIELDS. A `tel:` link holds one number, so a pair in
+ * a single field would dial neither. The unit carries `phone` and
+ * `phoneAlt`, and both are printed wherever the office is reachable —
+ * header, footer, contact cards and the prose — each separately dialable.
+ */
+const PRIMARY_PHONE = '022-24114262'
+const PRIMARY_PHONE_ALT = '022-24115055'
+const PRIMARY_PHONES = `${PRIMARY_PHONE} or ${PRIMARY_PHONE_ALT}`
+const PRIMARY_EMAIL = 'admissions@siwsschool.edu.in'
+
+/*
+ * The subjects, each with an icon so the list reads as a syllabus rather than
+ * eight ticks in a column. The icons come from the block's fixed set — see
+ * FEATURE_ICON_OPTIONS — so the section keeps one visual voice.
+ *
+ * COMPUTER was added at SIWS's instruction (2026-08-26). It is not in the
+ * requirement document the rest of this file is built from, so it carries no
+ * description: what is taught in it, and from which grade, has not been
+ * supplied. The seed reports it at the end of the run for confirmation.
+ */
 const SUBJECTS = [
   { title: 'English' },
   { title: 'Marathi' },
@@ -42,14 +72,16 @@ const SUBJECTS = [
    * column between Mathematics and Art, and left Physical Education stranded
    * on a row of its own, which is what the section looked wrong for.
    *
-   * Folded into the title, all seven subjects are one line each, the four rows
+   * Folded into the title, all nine subjects are one line each, the five rows
    * come out even, and not a word is lost. The block's own single-column
    * layout is the one built for items that carry a paragraph.
    */
   { title: 'EVS (Science, History, Geography and Civics)' },
+  { title: 'ICT' },
   { title: 'Art' },
   { title: 'Work Experience' },
   { title: 'Physical Education' },
+  { title: 'Value Education' },
 ]
 
 const GRADE_CURRICULUM = [
@@ -296,9 +328,52 @@ const MATUNGA_FACULTY = [
   { name: 'Ms. Payal Sandeep Shukla', qualifications: 'H.S.C., D.Ed.' },
   { name: 'Mrs. Mary Dolours Richard', qualifications: 'B.A., D.Ed.' },
   { name: 'Ms. Prema Keshwan Devendra', qualifications: 'B.A., D.Ed.' },
-  // No qualifications given on the list she appears on, so none are shown.
-  { name: 'Ms. Vaishali Baghat' },
+  /*
+   * KEPT ACROSS THE MERGE, DELIBERATELY. The other side of this merge had
+   * dropped this teacher from the list — not in any commit of its own, but
+   * silently, inside an earlier merge resolution, with nothing recorded
+   * anywhere about why. Straight three-way semantics would have honoured that
+   * as a deletion and taken a serving teacher off the staff page.
+   *
+   * Two things say she belongs here: the row is still in the faculty table on
+   * a database restored from the committed dump, and the commit this line
+   * arrives in is the one that supplies her qualifications. Nobody fills in
+   * the qualifications of a teacher they are removing.
+   */
+  { name: 'Ms. Vaishali Baghat', qualifications: 'M.A., D.T.Ed., NET' },
 ]
+
+/** The 18 rules Matunga supplied, verbatim. */
+const MATUNGA_RULES: string[] = [
+  'Bring the school calendar every day.',
+  'Maintain at least 80% attendance.',
+  'Wear proper school uniform.',
+  'Take care of your books and belongings; don’t wear ornaments.',
+  'Maintain discipline in school and during activities.',
+  'Speak only in English in school.',
+  'Avoid late coming, absenteeism, and indiscipline.',
+  'Do not damage school property; compensation must be paid if damaged.',
+  'Parents should meet teachers only with prior permission.',
+  'Inform the school of any change in address or phone number.',
+  'Do not give cash or gifts to teachers.',
+  'Do not bring unnecessary books, magazines, or newspapers. Bring only dry snacks.',
+  'Do not participate in political or communal activities.',
+  'Parents should ensure regularity, homework, and discipline.',
+  'Be regular, obedient and polite.',
+  'No school office work on Saturdays, Sundays, or holidays.',
+  'Certificates are issued only during the specified office hours.',
+  'Follow the Library Rules.',
+]
+
+/*
+ * MATUNGA_SUBJECTS and MATUNGA_BENEFITS lived here.
+ *
+ * They existed only to fill the Matunga campus page, which is gone now that
+ * the Primary Section is one school. Their content was a differently-worded
+ * copy of SUBJECTS and PROGRAMME_BENEFITS above ("Environmental Studies Part 1
+ * and 2" for "EVS", "Physical Training" for "Physical Education"), so nothing
+ * the school actually teaches is lost by dropping them.
+ */
 
 /** Head teacher first; the rest in the order SIWS listed them. */
 const FACULTY = [
@@ -319,8 +394,11 @@ const FACULTY = [
   { name: 'Gurjit Kaur Matta', qualifications: 'B.A., D.Ed.' },
   { name: 'Shruti Sampat Gaware', qualifications: 'B.A., D.Ed.' },
   { name: 'Deepika Naidu', qualifications: 'H.S.C., D.Ed.' },
-  // Listed with a subject rather than a qualification.
-  { name: 'Deepika Boricha', designation: 'Arts Teacher' },
+  {
+    name: 'Deepika Boricha',
+    designation: 'Arts Teacher',
+    qualifications: 'H.S.C., A.T.D.',
+  },
 ]
 
 /**
@@ -412,8 +490,46 @@ const GENERAL_RULES: string[] = [
   'The school observes the “Principles of Discipline” set out in Rule 53 of the Grant-In-Aid Code: regularity and implicit obedience; politeness and courtesy of speech and conduct together with cleanliness of dress and person; and students’ responsibility to the school for their conduct both inside and outside it.',
   'No school business will be transacted on Saturdays, Sundays and holidays.',
   'Any student who is persistently non-co-operative, repeatedly or wilfully mischievous, guilty of gross malpractice in connection with examinations, or has committed an act of serious indiscipline or misbehaviour, or who in the opinion of the Head of the School has an undesirable influence on fellow students, is liable to be expelled permanently or removed for a specific period, with the reasons recorded in writing.',
-  'Railway concession forms and other certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — will be issued between 1.00 p.m. and 2.30 p.m. only.',
+  'Certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — will be issued between 1.00 p.m. and 2.30 p.m. only.',
 ]
+
+/**
+ * THE MERGED HOUSE RULES.
+ *
+ * These were published as two numbered lists — one per campus — precisely
+ * because they are not the same document. The second list sets an 80%
+ * attendance requirement and an English-only rule the first does not contain,
+ * and the first covers infectious illness, identity cards and the office
+ * hours for certificates the second does not.
+ *
+ * The section is one school now, so it gets one list, and the union is the only
+ * safe way to build it: dropping either document's rules would quietly release
+ * families from something the school still asks of them. That does mean every
+ * family is now shown every rule, including ones that previously applied to
+ * only half the school — SIWS should read this list once and strike anything
+ * the merged school no longer enforces.
+ *
+ * Deduplicated on a normalised form so "Wear proper school uniform." and
+ * "Wear proper school uniform" do not both appear.
+ */
+const normalise = (rule: string) =>
+  rule
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+const MERGED_RULES: string[] = (() => {
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const rule of [...GENERAL_RULES, ...MATUNGA_RULES]) {
+    const key = normalise(rule)
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(rule)
+  }
+  return out
+})()
 
 const main = async () => {
   const payload = await getPayload({ config })
@@ -458,12 +574,26 @@ const main = async () => {
     id: primary.id,
     overrideAccess: true,
     data: {
-      // main portal prints this name in its school list.
+      /*
+       * ONE SCHOOL, NOT TWO CAMPUSES.
+       *
+       * The Primary Section used to be published as a Wadala campus and a
+       * Matunga campus with separate pages, separate rosters and separate rule
+       * lists. SIWS has since merged them, so nothing here names a location:
+       * it is one Primary School with one teaching team, and a parent reading
+       * this should not have to work out which half of it applies to them.
+       */
       name: 'SIWS Primary School',
       shortName: 'Primary School',
       tagline: 'Maharashtra State Board | Grades 1 to 4',
       description:
         'Grades 1 to 4 following the Maharashtra State Board curriculum, aligned with NEP 2020 — nurturing confident, responsible and joyful learners.',
+      // Overrides the Society-wide pair from `units-content.ts` for this
+      // section only. Both numbers: `phoneAlt` exists so the header and
+      // footer can print the pair and still give each its own `tel:` link.
+      phone: PRIMARY_PHONE,
+      phoneAlt: PRIMARY_PHONE_ALT,
+      email: PRIMARY_EMAIL,
     } as never,
   })
 
@@ -472,55 +602,48 @@ const main = async () => {
   let facultyUpdated = 0
 
   /**
-   * BACKFILL, and it must run before the upsert loop.
+   * UNTAG, and it must run before the upsert loop.
    *
-   * The 13 Wadala teachers were seeded before the campus field existed, so they
-   * carry no campus. The loop below matches on name + unit + campus, which
-   * would miss every one of them and create a second, duplicate roster. They
-   * were all Wadala — that is the only campus this seed had ever covered — so
-   * they are stamped as such first.
+   * Every Primary teacher already in the database carries `campus: wadala` or
+   * `campus: matunga` from when the section was published as two schools. The
+   * Teachers page is now a single list with no campus filter, so the tag has
+   * nothing left to select on — and leaving it set would keep the old split
+   * alive anywhere a block or report still groups by it. Clearing it is what
+   * actually merges the two rosters, rather than merely hiding the seam.
    */
-  const { docs: untagged } = await payload.find({
+  const { docs: tagged } = await payload.find({
     collection: 'faculty',
-    where: {
-      and: [{ unit: { equals: primary.id } }, { campus: { exists: false } }],
-    },
+    where: { and: [{ unit: { equals: primary.id } }, { campus: { exists: true } }] },
     limit: 200,
     depth: 0,
     overrideAccess: true,
   })
 
-  for (const teacher of untagged) {
+  for (const teacher of tagged) {
     await payload.update({
       collection: 'faculty',
       id: teacher.id,
-      data: { campus: 'wadala' } as never,
+      data: { campus: null } as never,
       overrideAccess: true,
     })
   }
 
-  if (untagged.length > 0) {
-    payload.logger.info(`Tagged ${untagged.length} existing teachers as the Wadala campus.`)
+  if (tagged.length > 0) {
+    payload.logger.info(`Untagged ${tagged.length} teachers — the Primary roster is now one list.`)
   }
 
   /**
-   * Both rosters, each tagged with its campus. `order` restarts per campus so
-   * each campus's head teacher sits at 1 — the Faculty block filters by campus,
-   * and a shared sequence would put Matunga's head teacher tenth in her own
-   * list.
+   * ONE ROSTER.
+   *
+   * Both teaching teams in a single sequence, so `order` runs 1..n across the
+   * whole school rather than restarting per campus. The head teacher of the
+   * merged school sits at 1; the second team follows in its own order behind
+   * the first. No entry carries a campus.
    */
-  const roster = [
-    ...FACULTY.map((teacher, index) => ({
-      ...teacher,
-      campus: 'wadala',
-      order: index + 1,
-    })),
-    ...MATUNGA_FACULTY.map((teacher, index) => ({
-      ...teacher,
-      campus: 'matunga',
-      order: index + 1,
-    })),
-  ]
+  const roster = [...FACULTY, ...MATUNGA_FACULTY].map((teacher, index) => ({
+    ...teacher,
+    order: index + 1,
+  }))
 
   for (const teacher of roster) {
     const existing = await payload.find({
@@ -529,10 +652,9 @@ const main = async () => {
         and: [
           { name: { equals: teacher.name } },
           { unit: { equals: primary.id } },
-          // Campus is part of the identity: two campuses may one day employ
-          // people of the same name, and matching on name alone would have one
-          // seed overwrite the other's teacher.
-          { campus: { equals: teacher.campus } },
+          // Name and unit are the whole identity now. If the same person was
+          // on both rosters, the two rows collapse into one — which is the
+          // right answer for a school that no longer has two of anything.
         ],
       },
       limit: 1,
@@ -750,6 +872,19 @@ const main = async () => {
                                 relationTo: 'pages',
                                 value: galleryPageId,
                               },
+                              /*
+                               * Straight to the Onam band, not the top of the
+                               * wall. The gallery is grouped by category and
+                               * Onam is the second band, so a reader who came
+                               * from this card would otherwise land on the
+                               * Achievements photographs and have to scroll
+                               * past them to reach what they clicked for.
+                               *
+                               * 'onam' is what `headingAnchor` makes of the
+                               * band's own heading, which `seed:galleries`
+                               * sets from the category name.
+                               */
+                              anchor: 'onam',
                             },
                           },
                         ],
@@ -957,9 +1092,12 @@ const main = async () => {
           title: 'Enquire about admission',
           subtitle: 'Tell us about your child and we will get in touch.',
           classOptions: CLASS_OPTIONS.map((label) => ({ label })),
-          // Both campuses, so the parent chooses and the enquiry reaches the
-          // right head teacher.
-          // No campus picker: there is one Primary Section to enquire about.
+          /*
+           * No campus choice. The form used to ask which campus so the enquiry
+           * could reach the right head teacher; there is one Primary School and
+           * one head teacher now, so the question has no answer to offer and is
+           * left off entirely rather than shown with a single option.
+           */
           campusOptions: [],
           trustPoints: [
             { text: 'Over 90 years of educational service since 1934' },
@@ -979,11 +1117,11 @@ const main = async () => {
           {
             title: 'Admissions',
             description:
-              'For enquiries about Grades 1 to 4 at either campus — admissions@siws.edu.in',
+              `For enquiries about Grades 1 to 4 at either campus — ${PRIMARY_EMAIL}, or telephone ${PRIMARY_PHONES}.`,
           },
           {
             title: 'General enquiries',
-            description: 'For anything else — info@siws.edu.in',
+            description: `For anything else — ${PRIMARY_EMAIL}, or telephone ${PRIMARY_PHONES}.`,
           },
         ],
       },
@@ -1032,6 +1170,12 @@ const main = async () => {
           },
         ],
       },
+      /*
+       * The "Our two campuses" card pair used to sit here, sending parents off
+       * to a Wadala page and a Matunga page. Both are gone: there is one
+       * Primary School, so there is nothing to choose between and no second
+       * page to link to.
+       */
       {
         blockType: 'richText',
         heading: 'A caring, inclusive and stimulating school',
@@ -1099,7 +1243,7 @@ const main = async () => {
             link: {
               label: 'Email the admissions team',
               type: 'external',
-              url: 'mailto:admissions@siws.edu.in',
+              url: `mailto:${PRIMARY_EMAIL}`,
               appearance: 'primary',
             },
           },
@@ -1148,6 +1292,13 @@ const main = async () => {
          * Now every list takes the layout its CONTENT asks for, and the panel
          * cap in §4 is held at two for the page: the practices and the holistic
          * programme, which are the claims a parent is actually weighing.
+         *
+         * On this block in particular: ticks in two columns said nothing about
+         * the subjects and gave a parent scanning the page nothing to catch
+         * on, while a card given a one-word label becomes a tall box that is
+         * mostly empty. Compact is the middle — a labelled tile per subject,
+         * three across, at a fixed height, so the last row not dividing by
+         * three stops mattering.
          */
         blockType: 'featureList',
         heading: 'Subjects taught',
@@ -1262,439 +1413,35 @@ const main = async () => {
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'Meet the teaching team at SIWS Primary School — experienced, qualified staff.',
+      'Meet the teaching team at SIWS Primary School — experienced, qualified staff for Grades 1 to 4.',
     layout: [
-      /*
-       * One roster. It was two blocks filtered by campus, on the reasoning
-       * that a parent had already chosen a location and an unlabelled merged
-       * list would leave them unable to tell who teaches their child. With one
-       * campus there is nothing left to tell apart, and `campus` defaults to
-       * every campus — so this lists all of them.
+      /**
+       * ONE LIST.
+       *
+       * This was two faculty blocks, one per campus, on the reasoning that a
+       * parent had already chosen a location and needed to know which half of
+       * the roster taught their child. That reasoning is spent: the section is
+       * one school now, so a split list would ask a parent to pick between two
+       * things that no longer exist. No `campus` key, so the block takes the
+       * whole Primary roster in `order`.
        */
       {
         blockType: 'faculty',
-        heading: 'Our teaching team',
-        accentWord: 'teaching team',
+        heading: 'Our teachers',
+        accentWord: 'teachers',
         headingLevel: 'h2',
-        // Two head teachers, each with her own staff listed beneath her.
-        layout: 'teams',
+        /*
+         * Monogram above the name rather than beside it. Beside it, the text
+         * column on a three-across grid is narrow enough that the longer names
+         * on this roster — "Nadar Alagumathi Selvaganeshan" — wrap to two lines
+         * while the monogram sits alone against the space underneath.
+         */
+        cardLayout: 'centred',
         showQualifications: true,
         background: 'white',
         intro: richText([
-          'Our teachers are well trained, with over 20 years of teaching experience.',
+          'Our teachers are well trained, with over 20 years of teaching experience. With knowledge and passion, they create classrooms where every child feels encouraged to explore and succeed.',
         ]),
-      },
-    ],
-  })
-
-  // ------------------------------------------------------------- ADMISSIONS
-  await upsert({
-    slug: 'admissions',
-    title: 'Admissions',
-    intro:
-      'Admissions to the Primary Section are conducted in accordance with the guidelines and norms prescribed by the Education Department, Government of Maharashtra.',
-    showInNav: true,
-    navLabel: 'Admissions',
-    navOrder: 10,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'How admission to SIWS Primary School works for Grades 1 to 4, under Education Department norms.',
-    layout: [
-      /*
-       * The page opened straight onto the three admission routes, and the
-       * first of them began "from our Pre-Primary Section" — so the first
-       * thing a reader met was a sentence about a different section of the
-       * school, and the page read as though it were the Pre-Primary's own.
-       *
-       * This paragraph goes first and says which grades this is, before any
-       * route is described. The Pre-Primary is then clearly what a child
-       * arrives FROM rather than what the page is about.
-       */
-      {
-        blockType: 'richText',
-        heading: 'Admission to Grades 1 to 4',
-        accentWord: 'Grades 1 to 4',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'This page is about joining the Primary Section — Grades 1 to 4. Admission is conducted in accordance with the guidelines and norms prescribed by the Education Department, Government of Maharashtra, and every place is offered against a vacancy in the grade applied for.',
-          'Most of Grade 1 comes up from our own Pre-Primary Section. Whatever seats are left after that are open to new applicants, and Grades 2, 3 and 4 are open only where a child has left and a seat is free.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Who can apply, and for which grade',
-        accentWord: 'which grade',
-        headingLevel: 'h2',
-        marker: 'number',
-        columns: '1',
-        background: 'sea',
-        items: [
-          {
-            title: 'Grade 1 — from our Pre-Primary Section',
-            description:
-              'Children from our Pre-Primary Section are promoted to Grade 1 upon submission of the prescribed admission form and completion of the required formalities, as per the Education Department’s norms.',
-          },
-          {
-            title: 'Grade 1 — new admissions',
-            description:
-              'Fresh admissions to Grade 1 are offered only if vacancies are available after the admission process for students from the Pre-Primary Section is completed.',
-          },
-          {
-            title: 'Grades 2, 3 and 4',
-            description:
-              'Admissions to these grades are considered only against vacant seats, subject to the school’s admission policy and the applicable rules and regulations of the Education Department.',
-          },
-        ],
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Applying, step by step',
-        accentWord: 'step by step',
-        headingLevel: 'h2',
-        layout: 'cards',
-        background: 'white',
-        items: [
-          {
-            title: 'Tell us which grade',
-            icon: 'communication',
-            description:
-              'Write to admissions@siws.edu.in, or send the enquiry form on the contact page, saying which grade and which academic year you are asking about.',
-          },
-          {
-            title: 'Collect the admission form',
-            icon: 'study',
-            description:
-              'The prescribed admission form is issued by the school office. The office will tell you which documents to bring with it.',
-          },
-          {
-            title: 'Submit it with the formalities completed',
-            icon: 'staff',
-            description:
-              'The form is returned to the office with the required formalities completed, as laid down in the Education Department’s norms.',
-          },
-          {
-            title: 'A place is offered against a vacancy',
-            icon: 'pass',
-            description:
-              'Grade 1 places are offered once the Pre-Primary promotions are complete. Grades 2 to 4 are offered only where a seat is actually vacant.',
-          },
-        ],
-      },
-      {
-        blockType: 'richText',
-        heading: 'Scholarships',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'sea',
-        content: richText([
-          'SIWS administers 151 scholarship and endowment funds, given by well-wishers of the institution over more than nine decades. They are awarded right across the institution, from the Kindergarten Section through to the S.S.C. Examination.',
-        ]),
-      },
-      {
-        /**
-         * Only funds whose own wording names the Primary section or Standards
-         * I–IV are listed here. The rest are on the institution-wide register —
-         * a Primary page claiming a Standard X award would mislead a parent.
-         */
-        blockType: 'featureList',
-        heading: 'Funds awarded to Primary students',
-        accentWord: 'Primary students',
-        headingLevel: 'h3',
-        marker: 'tick',
-        columns: '1',
-        background: 'sea',
-        items: [
-          {
-            title: 'Ms. G. Radha Head Teacher Primary School, Wadala Endowment Scholarship Fund',
-            description: 'For standing first in each standard, i.e., from I to IV.',
-          },
-          {
-            title: 'Mrs. Sakuntala Nair Head Teacher Wadala Primary Section Merit Scholarship Fund',
-            description: 'For the rank holder of Standard IV.',
-          },
-          {
-            title:
-              'Mrs. B. Sarasa Mani – Head Teacher, Wadala Primary Section Endowment Scholarship Fund',
-            description:
-              'Awarded to the student who secures the highest marks in Mathematics in Standard IV (one from each of the three divisions).',
-          },
-          {
-            title: 'Mr. K. Raman Memorial Scholarship Fund',
-            description: 'To 4th Standard students scoring highest marks in Mathematics.',
-          },
-          {
-            title: 'Mrs. Lakshmi Ammal Commemoration Scholarship Fund',
-            description: 'To be awarded to the student who stands first in each standard.',
-          },
-          {
-            title: 'Smt. Thirumalai Narasimha Iyengar Commemoration Scholarship Fund',
-            description: 'To be awarded to the student who stands first in each standard.',
-          },
-          {
-            title: 'Smt. T. Janaki Ammal Scholarship Fund',
-            description: 'To a deserving student from the Primary Section.',
-          },
-          {
-            title: 'Shri. S. Ramanathan Endowment Scholarship Fund',
-            description:
-              'To a financially weak deserving student in the Primary or Secondary Section.',
-          },
-          {
-            title: 'Shri. V.A. Venugopal Endowment Scholarship Fund',
-            description: 'To a financially weak and deserving boy or girl of Standards I to X.',
-          },
-          {
-            title: 'Late Mrs. T. S. Swaminathan Merit Scholarship Fund',
-            description: 'To students from K.G. to Secondary.',
-          },
-          {
-            title: 'Late Mrs. Meenakshi Swaminathan Scholarship Fund',
-            description: 'To the needy student from K.G. to Secondary.',
-          },
-        ],
-      },
-      ...(scholarshipsPageId
-        ? [
-            {
-              blockType: 'callToAction',
-              heading: 'See every SIWS scholarship fund',
-              background: 'tint',
-              text: richText([
-                'The complete register of all 151 merit, open and arts funds is published for the whole institution.',
-              ]),
-              links: [
-                {
-                  link: {
-                    label: 'View the full scholarship register',
-                    type: 'internal',
-                    reference: {
-                      relationTo: 'pages',
-                      value: scholarshipsPageId,
-                    },
-                    appearance: 'secondary',
-                  },
-                },
-              ],
-            },
-          ]
-        : []),
-      {
-        blockType: 'callToAction',
-        heading: 'Questions about admission?',
-        background: 'brand',
-        text: richText(['Our admissions team is happy to talk you through the process.']),
-        links: [
-          {
-            link: {
-              label: 'Email the admissions team',
-              type: 'external',
-              url: 'mailto:admissions@siws.edu.in',
-              appearance: 'primary',
-            },
-          },
-        ],
-      },
-    ],
-  })
-
-  // --------------------------------------------------------- ADMISSIONS FAQ
-  /*
-   * The questions the office actually gets, in the order somebody asks them:
-   * whether the school is right for the child, then how to apply, then what
-   * happens once a place is offered.
-   *
-   * Several answers end by pointing at the office. That is deliberate. Fees,
-   * term dates, the document list and the timetable are not in this project
-   * yet, and an FAQ that guessed at them would be worse than one that says
-   * who knows. Each of those answers still says everything that IS settled —
-   * so nobody is sent to the office to be told something this page could
-   * have told them.
-   *
-   * `allowMultipleOpen: false` on all three: a reader comparing two answers
-   * on a phone loses their place when both are long, and only one question is
-   * ever actually being asked.
-   */
-  await upsert({
-    slug: 'admissions-faq',
-    title: 'Admissions FAQ',
-    intro: 'The questions the office is asked most often about joining Grades 1 to 4.',
-    /*
-     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
-     *
-     * This is a CHILD entry in the shared unit template. Setting it true from
-     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
-     * wins — so running this seed after `seed:nav` climbed every child out
-     * to the top row at once. Secondary reached thirteen top-level items and
-     * the buttons wrapped onto a second line.
-     *
-     * Omitting the field is NOT enough: `payload.update` keeps the existing
-     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
-     * rather than leaving it alone. False explicitly means the worst this seed
-     * can do is drop the entry until `seed:nav` runs — which is the
-     * documented order anyway, and a missing drop-down entry is a far smaller
-     * fault than a menu that wraps.
-     */
-    showInNav: false,
-    navLabel: 'Admissions FAQ',
-    navOrder: 11,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'Common questions about admission to SIWS Primary School — which grades have places, how to apply, what happens after the Pre-Primary Section, scholarships and school rules.',
-    layout: [
-      {
-        blockType: 'accordion',
-        heading: 'Before you apply',
-        accentWord: 'apply',
-        headingLevel: 'h2',
-        background: 'white',
-        allowMultipleOpen: false,
-        items: [
-          {
-            question: 'Which grades does the Primary Section take?',
-            answer: richText([
-              'Grades 1 to 4, on the Maharashtra State Board curriculum. Children below Grade 1 are in our Pre-Primary Section, and Grade 5 onwards is the Secondary School — both on the same campus.',
-            ]),
-          },
-          {
-            question: 'Are there places in every grade?',
-            answer: richText([
-              'No. Grade 1 is the one grade that fills as a matter of course, because most of it comes up from our own Pre-Primary Section. New applicants are considered for whatever is left after that.',
-              'Grades 2, 3 and 4 are open only against a vacant seat — that is, only when a child has left. Some years there are several, some years there are none.',
-            ]),
-          },
-          {
-            question: 'My child is in the SIWS Pre-Primary Section. Is Grade 1 automatic?',
-            answer: richText([
-              'Children from our Pre-Primary Section are promoted to Grade 1 on submission of the prescribed admission form and completion of the required formalities, under the Education Department’s norms. It is not an application competing with others, but the form still has to be filled in and handed back on time.',
-            ]),
-          },
-          {
-            question: 'What rules do you follow in deciding admissions?',
-            answer: richText([
-              'Admissions to the Primary Section are conducted in accordance with the guidelines and norms prescribed by the Education Department, Government of Maharashtra, and the school’s own admission policy.',
-            ]),
-          },
-          {
-            question: 'Which medium and board is the teaching in?',
-            answer: richText([
-              'English medium, following the Maharashtra State Board curriculum aligned with NEP 2020. English, Marathi, Mathematics, EVS, Art, Work Experience and Physical Education are all taught from Grade 1.',
-            ]),
-          },
-        ],
-      },
-      {
-        blockType: 'accordion',
-        heading: 'Applying',
-        accentWord: 'Applying',
-        headingLevel: 'h2',
-        background: 'sea',
-        allowMultipleOpen: false,
-        items: [
-          {
-            question: 'How do I start?',
-            answer: richText([
-              'Write to admissions@siws.edu.in, or send the enquiry form on our contact page, saying which grade and which academic year you are asking about. That one detail is what lets the office tell you straight away whether there is anything to apply for.',
-            ]),
-          },
-          {
-            question: 'Where do I get the admission form?',
-            answer: richText([
-              'The prescribed admission form is issued by the school office. Ask for it when you enquire, and the office will tell you when forms for that year are available.',
-            ]),
-          },
-          {
-            question: 'Which documents do I need to bring?',
-            answer: richText([
-              'The office will give you the list when it issues the form — it depends on the grade and on whether your child is transferring from another school. Please ask before you come in, rather than making the trip twice.',
-            ]),
-          },
-          {
-            question: 'When do admissions open?',
-            answer: richText([
-              'The dates follow the Education Department’s calendar for the year and are not fixed by the school, so they move. Contact the office and ask to be told when forms for the coming year are issued.',
-            ]),
-          },
-          {
-            question: 'My child is transferring from another school mid-year. Is that possible?',
-            answer: richText([
-              'Only against a vacant seat in the grade concerned, and subject to the school’s admission policy and the Education Department’s rules. Ask the office about the specific grade — the answer changes through the year.',
-            ]),
-          },
-        ],
-      },
-      {
-        blockType: 'accordion',
-        heading: 'Once a place is offered',
-        accentWord: 'offered',
-        headingLevel: 'h2',
-        background: 'white',
-        allowMultipleOpen: false,
-        items: [
-          {
-            question: 'What are the fees?',
-            answer: richText([
-              'The fee structure for the current year is with the school office, and it is what you should ask for when you enquire. We would rather tell you the real figure than publish one that goes out of date.',
-            ]),
-          },
-          {
-            question: 'Is there any financial help?',
-            answer: richText([
-              'SIWS administers 151 scholarship and endowment funds, given by well-wishers over more than nine decades and awarded from the Kindergarten Section through to the S.S.C. Examination. Three of them name the Wadala Primary Section specifically. They are listed on the admissions page.',
-            ]),
-          },
-          {
-            question: 'Is there a uniform?',
-            answer: richText([
-              'Yes. What students wear, and the general rules parents are asked to follow, are set out on the school rules and uniform page.',
-            ]),
-          },
-          {
-            question: 'Can I visit before deciding?',
-            answer: richText([
-              'Please arrange it with the office first. Parents and guardians are asked not to come in to see a child or a teacher during school hours without the prior consent of the Head Teacher — it is how the school knows who is on the campus.',
-            ]),
-          },
-          {
-            question: 'Where do I get a bonafide or railway concession certificate?',
-            answer: richText([
-              'From the school office, between 1.00 p.m. and 2.30 p.m. only. The same window covers date of birth, first attempt and leaving certificates.',
-            ]),
-          },
-        ],
-      },
-      {
-        blockType: 'callToAction',
-        heading: 'Still not sure?',
-        background: 'brand',
-        text: richText([
-          'If the answer you need is not here, the admissions team would rather you asked than guessed.',
-        ]),
-        links: [
-          {
-            link: {
-              label: 'Email the admissions team',
-              type: 'external',
-              url: 'mailto:admissions@siws.edu.in',
-              appearance: 'primary',
-            },
-          },
-          ...(contactPageId
-            ? [
-                {
-                  link: {
-                    label: 'Send an enquiry',
-                    type: 'internal',
-                    reference: { relationTo: 'pages', value: contactPageId },
-                    appearance: 'secondary',
-                  },
-                },
-              ]
-            : []),
-        ],
       },
     ],
   })
@@ -1728,6 +1475,17 @@ const main = async () => {
     metaDescription: 'General rules, discipline and uniform guidelines for SIWS Primary School.',
     layout: [
       {
+        /**
+         * ONE UNIFORM SPECIFICATION, AND IT NEEDS CONFIRMING.
+         *
+         * Only one of the two merged documents ever described the uniform in
+         * detail; the other said no more than "wear proper school uniform". It
+         * used to be labelled as that campus's own so no family bought a
+         * uniform on the strength of a page that had never checked. With the
+         * campuses merged there is no label left to qualify it, so it now reads
+         * as the school's — which is only true if SIWS has in fact standardised
+         * on it. That is flagged at the end of this run.
+         */
         blockType: 'featureList',
         heading: 'Uniform',
         accentWord: 'Uniform',
@@ -1763,6 +1521,7 @@ const main = async () => {
         ],
       },
       {
+        // Both campuses' lists, merged and deduplicated. See MERGED_RULES.
         blockType: 'featureList',
         heading: 'General rules',
         accentWord: 'rules',
@@ -1770,14 +1529,14 @@ const main = async () => {
         marker: 'number',
         columns: '1',
         background: 'sea',
-        items: GENERAL_RULES.map((title) => ({ title })),
+        items: MERGED_RULES.map((title) => ({ title })),
       },
     ],
   })
 
   // ------------------------------------------- UPDATES, NEWS & STUDENT LIFE
   /*
-   * Five pages that carried a heading and nothing else.
+   * Three pages that carried a heading and nothing else.
    *
    * There is one hard constraint running through all of them: this section's
    * whole photographed record is eleven pictures of two occasions — Natya
@@ -1789,12 +1548,13 @@ const main = async () => {
    *   Updates      — what has happened lately, and where the rest of it is
    *   News         — the things worth telling you, newest first
    *   Student Life — what school is like beyond the timetable
-   *   Student Wall — what the children themselves took part in
-   *   Transport    — how a child gets here, and who to ask
    *
-   * Nothing here invents a bus route, a fare or a term date. `institution.ts`
-   * says exactly why, and Transport below is the page that warning was written
-   * about.
+   * STUDENT WALL AND TRANSPORT WERE HERE, and are gone at SIWS's instruction.
+   * Transport was the page `institution.ts` warns about — the school has
+   * supplied no operator, route or fare, so it never said anything a parent
+   * could act on. Both are dropped from Primary's menu in `UNIT_OMIT` in
+   * `seed/nav.ts`, which otherwise recreates them as placeholders, and the
+   * rows are deleted by `npm run remove:primary-pages`.
    */
   const newsShots = {
     firstPrize: await photo('natya-tarang-2026-first-prize.jpg'),
@@ -1815,228 +1575,10 @@ const main = async () => {
   const OFFICE_NOTICES = [
     {
       title:
-        'Railway concession forms and other certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
+        'Certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
     },
     { title: 'No school business is transacted on Saturdays, Sundays and holidays.' },
   ]
-
-  // ------------------------------------------------------------- TRANSPORT
-  await upsert({
-    slug: 'transport',
-    title: 'Transport',
-    intro: 'How children reach the school, and who to ask about the part we cannot publish.',
-    /*
-     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
-     *
-     * This is a CHILD entry in the shared unit template. Setting it true from
-     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
-     * wins — so running this seed after `seed:nav` climbed every child out
-     * to the top row at once. Secondary reached thirteen top-level items and
-     * the buttons wrapped onto a second line.
-     *
-     * Omitting the field is NOT enough: `payload.update` keeps the existing
-     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
-     * rather than leaving it alone. False explicitly means the worst this seed
-     * can do is drop the entry until `seed:nav` runs — which is the
-     * documented order anyway, and a missing drop-down entry is a far smaller
-     * fault than a menu that wraps.
-     */
-    showInNav: false,
-    navLabel: 'Transport',
-    navOrder: 72,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'Getting to SIWS Primary School in Wadala — railway concession forms, arrival and collection, and who to ask about travel arrangements.',
-    layout: [
-      /*
-       * THIS PAGE DOES NOT LIST A BUS ROUTE, AND THAT IS THE POINT.
-       *
-       * SIWS has supplied nothing about school transport — no operator, no
-       * route, no fare — and `institution.ts` already names Transport as one
-       * of the pages left as a placeholder for exactly that reason: an
-       * invented bus route outlives the placeholder it replaced and is read
-       * as fact.
-       *
-       * A placeholder was still the wrong answer, because two things ARE
-       * known and are what most families actually need: the school issues
-       * railway concession forms, and it has a rule about who may come onto
-       * the campus during the day. Those are here, said plainly, and the one
-       * unknown is handed to the office instead of being guessed at.
-       */
-      {
-        blockType: 'featureList',
-        heading: 'What the school can help with',
-        accentWord: 'help with',
-        headingLevel: 'h2',
-        layout: 'cards',
-        background: 'sea',
-        items: [
-          {
-            title: 'Railway concession forms',
-            icon: 'transport',
-            description:
-              'Issued by the school office between 1.00 p.m. and 2.30 p.m. only — as are date of birth, bonafide student, first attempt and leaving certificates.',
-          },
-          {
-            title: 'Arriving and being collected',
-            icon: 'security',
-            description:
-              'Entrances, corridors and common areas are covered by CCTV, and movement between rooms is supervised.',
-          },
-          {
-            title: 'Anything else about travel',
-            icon: 'communication',
-            description:
-              'Ask the office. Questions about your particular route are answered better by somebody who knows this year’s arrangements than by a page.',
-          },
-        ],
-      },
-      {
-        blockType: 'richText',
-        heading: 'Coming onto the campus',
-        accentWord: 'campus',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'Parents and guardians are asked not to come in to see a child or a teacher during school hours without the prior consent of the Head Teacher. It is not a formality — it is how the school knows exactly who is on the campus while the children are in it.',
-        ]),
-      },
-      ...(contactPageId
-        ? [
-            {
-              blockType: 'callToAction',
-              heading: 'Ask about your route',
-              background: 'brand',
-              text: richText([
-                'Tell us where your child will be travelling from and the office will tell you what is possible.',
-              ]),
-              links: [
-                {
-                  link: {
-                    label: 'Contact the school',
-                    type: 'internal',
-                    reference: { relationTo: 'pages', value: contactPageId },
-                    appearance: 'primary',
-                  },
-                },
-              ],
-            },
-          ]
-        : []),
-    ],
-  })
-
-  // ----------------------------------------------------------- STUDENT WALL
-  await upsert({
-    slug: 'student-wall',
-    title: 'Student Wall',
-    intro:
-      'The children’s own year — what they entered, what they performed, what they brought back.',
-    /*
-     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
-     *
-     * This is a CHILD entry in the shared unit template. Setting it true from
-     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
-     * wins — so running this seed after `seed:nav` climbed every child out
-     * to the top row at once. Secondary reached thirteen top-level items and
-     * the buttons wrapped onto a second line.
-     *
-     * Omitting the field is NOT enough: `payload.update` keeps the existing
-     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
-     * rather than leaving it alone. False explicitly means the worst this seed
-     * can do is drop the entry until `seed:nav` runs — which is the
-     * documented order anyway, and a missing drop-down entry is a far smaller
-     * fault than a menu that wraps.
-     */
-    showInNav: false,
-    navLabel: 'Student Wall',
-    navOrder: 71,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'The students of SIWS Primary School on stage and in competition — Natya Tarang 2026, the Ignited Mind Lab programme, and the twelve competitions held through the year.',
-    layout: [
-      {
-        blockType: 'richText',
-        heading: 'The children’s own year',
-        accentWord: 'own year',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'Everything on this page was done by children in Grades 1 to 4 — on a stage, at a competition table, or in front of a school assembly. It is deliberately not a list of what the school offers them. It is what they did with it.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Ways a child takes part',
-        accentWord: 'takes part',
-        headingLevel: 'h2',
-        layout: 'cards',
-        background: 'sea',
-        items: [
-          {
-            title: 'On stage',
-            icon: 'music',
-            description:
-              'Our dancers took first place in Category A at Natya Tarang 2026, the inter-school and college group dance competition — a trophy and a cheque for twenty thousand rupees.',
-          },
-          {
-            title: 'In competition',
-            icon: 'trophy',
-            description:
-              'Twelve competitions run through the year, from recitation and elocution to rangoli, clay work and best out of waste.',
-          },
-          {
-            title: 'In the programme',
-            icon: 'thinking',
-            description:
-              'Eleven children came back from the Ignited Mind Lab programme with certificates of achievement and medals.',
-          },
-          {
-            title: 'In the neighbourhood',
-            icon: 'care',
-            description:
-              'At Raksha Bandhan the children tied rakhis to the men and women who look after the streets around the school.',
-          },
-        ],
-      },
-      {
-        blockType: 'featureList',
-        heading: 'The competitions a child can enter',
-        accentWord: 'competitions',
-        headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2-centre',
-        background: 'white',
-        items: COMPETITIONS,
-      },
-      ...(achievementsPageId
-        ? [
-            {
-              blockType: 'callToAction',
-              heading: 'See what they brought back',
-              background: 'sea',
-              text: richText([
-                'The trophy, the cheque, the certificates and the company in costume — photographed on the day.',
-              ]),
-              links: [
-                {
-                  link: {
-                    label: 'Open Achievements',
-                    type: 'internal',
-                    reference: { relationTo: 'pages', value: achievementsPageId },
-                    appearance: 'primary',
-                  },
-                },
-              ],
-            },
-          ]
-        : []),
-    ],
-  })
 
   // ------------------------------------------------------------ STUDENT LIFE
   await upsert({
@@ -2430,7 +1972,6 @@ const main = async () => {
    * rules, the curriculum, or the staffing — all of it set out earlier in this
    * file — and the one link between the two pages is the note at the foot.
    */
-  const admissionsFaqPageId = await pageId('admissions-faq')
 
   await upsert({
     slug: 'faq',
@@ -2460,14 +2001,14 @@ const main = async () => {
             ]),
           },
           {
-            question: 'Is there a uniform, and are there rules about it?',
+            question: 'What are the uniform rules?',
             answer: richText([
-              'Yes. All students come to school in the prescribed uniform and are expected to be neat and tidy. What the uniform consists of is set out on the rules and uniform page.',
+              'All students come to school in the prescribed uniform and are expected to be neat and tidy. What the uniform consists of is set out on the rules and uniform page.',
               'Children are asked not to wear ornaments or a watch. That is a safety rule rather than a dress rule — students are responsible for the safe custody of their own books and belongings.',
             ]),
           },
           {
-            question: 'Is the campus supervised?',
+            question: 'How is the campus kept safe?',
             answer: richText([
               'The entire campus — classrooms, corridors, entrances and common areas — is monitored by CCTV, and movement between rooms is supervised. Safety is the reason the school also asks visitors to come in only with the Head Teacher’s consent.',
             ]),
@@ -2485,11 +2026,11 @@ const main = async () => {
           {
             question: 'What is my child taught?',
             answer: richText([
-              'English, Marathi, Mathematics, EVS — which takes in Science, History, Geography and Civics — Art, Work Experience and Physical Education. The curriculum is the Maharashtra State Board’s, aligned with NEP 2020, in English medium.',
+              'English, Marathi, Mathematics, EVS — which takes in Science, History, Geography and Civics — ICT, Art, Work Experience, Physical Education and Value Education. The curriculum is the Maharashtra State Board’s, aligned with NEP 2020, in English medium.',
             ]),
           },
           {
-            question: 'How is it taught?',
+            question: 'How are lessons taught?',
             answer: richText([
               'Through child-centred, activity-based and competency-driven methods, so a lesson is understood rather than memorised. Every classroom has an interactive smart panel, and multimedia lessons are used alongside the board and the exercise book.',
               'There is continuous formative assessment with constructive feedback, and individual attention and remedial support wherever a child needs it.',
@@ -2502,7 +2043,7 @@ const main = async () => {
             ]),
           },
           {
-            question: 'What can my child take part in besides lessons?',
+            question: 'What can my child take part in outside lessons?',
             answer: richText([
               'Twelve competitions run through the year — recitation, fancy dress, elocution, drawing and painting, story telling, group singing, handwriting, work experience, clay work, rangoli, best out of waste, and sports and games.',
               'Alongside those are literary and language activities, art, craft, music and dance, sport, cultural celebrations, environmental work and leadership opportunities. The Student Life pages set all of it out.',
@@ -2511,7 +2052,7 @@ const main = async () => {
           {
             question: 'Who teaches my child?',
             answer: richText([
-              'The section has twenty-two teachers under two head teachers — Mrs. Geeta Raja, I/C Head Teacher, and Mrs. Sreedevi Prasanna Bagayatkar, Head Teacher — qualified in B.A., B.Com., M.A., B.Ed. and D.Ed., with an art teacher among them. Many have taught here for more than twenty years. Every name is on the teachers page.',
+              'The section has twenty-two teachers under two head teachers, qualified in B.A., B.Com., M.A., B.Ed. and D.Ed., with an art teacher among them. Many have taught here for more than twenty years. Every name, and who leads each teaching team, is on the teachers page.',
             ]),
           },
         ],
@@ -2531,13 +2072,13 @@ const main = async () => {
             ]),
           },
           {
-            question: 'We have moved, or changed our phone number.',
+            question: 'How do I tell the school we have moved or changed our number?',
             answer: richText([
               'Tell the office promptly. The school keeps a record of the address and telephone number of every student’s parents or guardians, and it is only useful if it is current.',
             ]),
           },
           {
-            question: 'When can I get a bonafide or railway concession certificate?',
+            question: 'When can I get a bonafide certificate?',
             answer: richText([
               'From the school office between 1.00 p.m. and 2.30 p.m. only. The same window covers date of birth, first attempt and leaving certificates. No school business is transacted on Saturdays, Sundays or holidays.',
             ]),
@@ -2549,33 +2090,35 @@ const main = async () => {
             ]),
           },
           {
-            question: 'Is there financial help available?',
+            question: 'Is there financial help?',
             answer: richText([
-              'SIWS administers 151 scholarship and endowment funds, given by well-wishers over more than nine decades and awarded from the Kindergarten Section through to the S.S.C. Examination. Three of them name the Wadala Primary Section specifically; they are listed on the admissions page.',
+              'SIWS administers 151 scholarship and endowment funds, given by well-wishers over more than nine decades and awarded from the Kindergarten Section through to the S.S.C. Examination. Three of them name the Wadala Primary Section specifically, and the whole register is linked below.',
             ]),
           },
         ],
       },
       /*
-       * The one place the two FAQs meet. A parent who arrives here with an
-       * admission question should be sent on in one click rather than reading
-       * fifteen answers that are not theirs.
+       * INHERITED FROM THE ADMISSIONS PAGE, which carried it until that page
+       * was removed. The register is institution-wide and this section's own
+       * scholarship answer sits a few centimetres above, so the link belongs
+       * here rather than nowhere — without it, Primary names 151 funds and
+       * offers no way to read them.
        */
-      ...(admissionsFaqPageId
+      ...(scholarshipsPageId
         ? [
             {
               blockType: 'callToAction',
-              heading: 'Asking about joining the school?',
+              heading: 'See every SIWS scholarship fund',
               background: 'brand',
               text: richText([
-                'Questions about applying — which grades have places, how to get a form, what to bring — are answered on their own page.',
+                'The complete register of all 151 merit, open and arts funds is published for the whole institution.',
               ]),
               links: [
                 {
                   link: {
-                    label: 'Open the Admissions FAQ',
+                    label: 'View the full scholarship register',
                     type: 'internal',
-                    reference: { relationTo: 'pages', value: admissionsFaqPageId },
+                    reference: { relationTo: 'pages', value: scholarshipsPageId },
                     appearance: 'primary',
                   },
                 },
@@ -2652,7 +2195,7 @@ const main = async () => {
           {
             title: 'Write to the school office',
             description:
-              'For anything the class teacher cannot settle, info@siws.edu.in reaches the office, and the office will arrange a time with the Head Teacher.',
+              `For anything the class teacher cannot settle, write to ${PRIMARY_EMAIL} or telephone ${PRIMARY_PHONES}, and the office will arrange a time with the Head Teacher.`,
           },
           ...(contactPageId
             ? [
@@ -2756,7 +2299,7 @@ const main = async () => {
               'Space for the sports, drawing, clay work, rangoli and group singing the section competes in through the year.',
           },
           {
-            title: 'Teachers who stay',
+            title: 'Years of dedication',
             icon: 'staff',
             description:
               'Twenty-two teachers, many of them more than twenty years in this section — the most important thing on any campus.',
@@ -2783,7 +2326,7 @@ const main = async () => {
         width: 'normal',
         background: 'sea',
         content: richText([
-          'Railway concession forms and other certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
+          'Certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
         ]),
       },
       ...(galleryPageId
@@ -3054,10 +2597,20 @@ const main = async () => {
     ],
   })
 
-  payload.logger.info('Primary content seeded.')
+  payload.logger.info(
+    `Primary content seeded — one school, ${MERGED_RULES.length} merged house rules.`,
+  )
 
   payload.logger.warn(
     'STILL TO COME from SIWS: fee details; campus, classroom and facility photographs; teacher photographs; parent testimonials; alumni achievements; press mentions; awards and certifications; social media handles; and the legal documents (privacy policy, terms, fee/refund policy, RTI disclosures). No page invents any of these.',
+  )
+  payload.logger.warn(
+    `TO CONFIRM AFTER THE MERGE — the two campuses were published separately until now, and merging them forced two decisions this seed could not make on its own:\n` +
+      `  • HOUSE RULES — the two documents were not the same. The page now shows the union of both (${MERGED_RULES.length} rules), because dropping either set would release families from something the school may still ask of them. That means every family is shown rules that previously applied to only half the school — notably the 80% attendance requirement and the English-only rule. Please strike anything the merged school no longer enforces.\n` +
+      `  • UNIFORM — only one of the two documents ever specified a uniform; the other said only "wear proper school uniform". That specification is now published as the school's, unqualified. Confirm SIWS has standardised on it before a family buys one.`,
+  )
+  payload.logger.warn(
+    'ICT and VALUE EDUCATION are published as Primary subjects on SIWS’s instruction, and are in neither requirement document. The Academics page now tells parents the Primary Section teaches both. Confirm they are taught, and from which grade — neither tile carries a description, because none was supplied.',
   )
 }
 

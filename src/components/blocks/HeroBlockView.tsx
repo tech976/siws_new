@@ -1,15 +1,15 @@
-import { CMSLink } from "@/components/CMSLink";
-import { Media } from "@/components/Media";
-import type { HeroBlock } from "@/payload-types";
+import { CMSLink } from '@/components/CMSLink'
+import { Media } from '@/components/Media'
+import type { HeroBlock } from '@/payload-types'
 
-import { type BlockBackground } from "./Section";
+import { type BlockBackground } from './Section'
 
 const BACKGROUND_CLASS: Record<BlockBackground, string> = {
-  white: "bg-white",
-  sea: "bg-sea",
-  tint: "bg-brand-tint",
-  brand: "bg-brand",
-};
+  white: 'bg-white',
+  sea: 'bg-sea',
+  tint: 'bg-brand-tint',
+  brand: 'bg-brand',
+}
 
 /**
  * A page-opening banner.
@@ -39,14 +39,12 @@ const BACKGROUND_CLASS: Record<BlockBackground, string> = {
  * inner page that never gets a picture still opens properly.
  */
 export const HeroBlockView = ({ block }: { block: HeroBlock }) => {
-  const variant = (block.background ?? "brand") as BlockBackground;
-  const links = block.links ?? [];
-  const highlights = (block.highlights ?? []).filter((entry) =>
-    entry.value?.trim(),
-  );
+  const variant = (block.background ?? 'brand') as BlockBackground
+  const links = block.links ?? []
+  const highlights = (block.highlights ?? []).filter((entry) => entry.value?.trim())
 
-  const accent = block.accentWord?.trim();
-  const index = accent && block.title ? block.title.indexOf(accent) : -1;
+  const accent = block.accentWord?.trim()
+  const index = accent && block.title ? block.title.indexOf(accent) : -1
 
   const title =
     index >= 0 && accent ? (
@@ -57,15 +55,15 @@ export const HeroBlockView = ({ block }: { block: HeroBlock }) => {
       </>
     ) : (
       block.title
-    );
+    )
 
   /* ---------------------------------------------------------------- no image */
 
   if (!block.image) {
-    const inverted = variant === "brand";
+    const inverted = variant === 'brand'
     return (
       <section
-        data-invert={inverted ? "true" : undefined}
+        data-invert={inverted ? 'true' : undefined}
         className={`relative isolate ${BACKGROUND_CLASS[variant] ?? BACKGROUND_CLASS.brand}`}
       >
         {/*
@@ -83,23 +81,19 @@ export const HeroBlockView = ({ block }: { block: HeroBlock }) => {
           {block.eyebrow ? (
             <p
               className={`inline-flex items-center rounded-pill border px-4 py-1.5 text-xs font-semibold tracking-[0.14em] uppercase ${
-                inverted
-                  ? "border-white/30 text-accent"
-                  : "border-line text-brand"
+                inverted ? 'border-white/30 text-accent' : 'border-line text-brand'
               }`}
             >
               {block.eyebrow}
             </p>
           ) : null}
 
-          <h1 className="mx-auto mt-6 max-w-4xl text-balance">
-            {title}
-          </h1>
+          <h1 className="mx-auto mt-6 max-w-4xl text-balance">{title}</h1>
 
           {block.subtitle ? (
             /* The same three-step ladder as the banner above — see there. */
             <p
-              className={`mx-auto mt-5 max-w-3xl text-center text-xl leading-snug font-semibold text-balance  ${inverted ? "text-white" : "text-brand"}`}
+              className={`mx-auto mt-5 max-w-3xl text-center text-xl leading-snug font-semibold text-balance ${inverted ? "text-white" : "text-brand"}`}
             >
               {block.subtitle}
             </p>
@@ -107,7 +101,7 @@ export const HeroBlockView = ({ block }: { block: HeroBlock }) => {
 
           {block.intro ? (
             <p
-              className={`mx-auto mt-4 max-w-2xl text-center t-small leading-relaxed font-normal text-balance  ${inverted ? "text-white/75" : "text-ink-muted"}`}
+              className={`mx-auto mt-4 max-w-2xl text-center t-small leading-relaxed font-normal text-balance ${inverted ? "text-white/75" : "text-ink-muted"}`}
             >
               {block.intro}
             </p>
@@ -122,7 +116,7 @@ export const HeroBlockView = ({ block }: { block: HeroBlock }) => {
           ) : null}
         </div>
       </section>
-    );
+    )
   }
 
   /* -------------------------------------------------------------- with image */
@@ -162,9 +156,7 @@ export const HeroBlockView = ({ block }: { block: HeroBlock }) => {
 
         {/* Size from the global h1 scale; the tight leading is this banner's own,
             so a two-line title stays a block over the photograph. */}
-        <h1 className="mt-7 leading-[1.06] tracking-tight text-balance">
-          {title}
-        </h1>
+        <h1 className="mt-7 leading-[1.06] tracking-tight text-balance">{title}</h1>
 
         {block.subtitle ? (
           /*
@@ -205,10 +197,7 @@ export const HeroBlockView = ({ block }: { block: HeroBlock }) => {
         {highlights.length > 0 ? (
           <dl className="mt-14 w-full max-w-4xl grid grid-cols-1 gap-y-8 border-t border-white/25 pt-9 sm:grid-cols-3 sm:gap-x-10">
             {highlights.map((entry, i) => (
-              <div
-                key={entry.id ?? i}
-                className="border-white/25 sm:border-l sm:first:border-l-0"
-              >
+              <div key={entry.id ?? i} className="border-white/25 sm:border-l sm:first:border-l-0">
                 <dt className="text-3xl leading-none whitespace-nowrap text-white sm:text-4xl">
                   {entry.value}
                 </dt>

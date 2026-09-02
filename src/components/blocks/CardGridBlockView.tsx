@@ -17,9 +17,21 @@ const SIZES: Record<string, string> = {
   '4': '(min-width: 1024px) 23vw, (min-width: 640px) 45vw, 100vw',
 }
 
+/*
+ * A photograph fills its window and is cropped to it; a poster is fitted whole
+ * inside one. `object-contain` leaves bars where the image does not fill the
+ * frame, so the poster frame paints a tinted ground behind it rather than
+ * leaving the card's white showing through as a mismatched border.
+ */
+const FRAME_CLASS: Record<string, string> = {
+  photo: 'aspect-4/3 w-full object-cover',
+  poster: 'aspect-4/3 w-full object-contain bg-brand-tint',
+}
+
 export const CardGridBlockView = ({ block }: { block: CardGridBlock }) => {
   const columns = block.columns ?? '3'
   const cards = block.cards ?? []
+  const frame = FRAME_CLASS[block.imageFrame ?? 'photo'] ?? FRAME_CLASS.photo
 
   if (cards.length === 0) return null
 
@@ -45,7 +57,25 @@ export const CardGridBlockView = ({ block }: { block: CardGridBlock }) => {
         <RichText data={block.intro} className="mb-10 siws-centre mx-auto max-w-3xl" />
       ) : null}
 
-      <ul className={`grid gap-6 ${COLUMN_CLASS[columns] ?? COLUMN_CLASS['3']}`}>
+      {/*
+        A LONE CARD IS NOT A ONE-CARD ROW.
+
+        The column setting offers two, three or four across and nothing else,
+        so a grid left holding a single card laid it out in the first cell of a
+        two-column track and left the second empty — under a centred heading,
+        that reads as a card that failed to load rather than as a section with
+        one thing in it. Kindergarten's "More on school life" hit this the
+        moment Transport came off it.
+
+        So one card ignores the column setting and is centred at a card's
+        width instead. Capped rather than full-width: a single card stretched
+        across the container stops looking like a card at all.
+      */}
+      <ul
+        className={`grid gap-6 ${
+          cards.length === 1 ? 'mx-auto max-w-md' : (COLUMN_CLASS[columns] ?? COLUMN_CLASS['3'])
+        }`}
+      >
         {cards.map((card, index) => {
           const link = card.cta?.[0]?.link
           const href = resolveCMSHref(link)
@@ -103,7 +133,13 @@ export const CardGridBlockView = ({ block }: { block: CardGridBlock }) => {
                  */
                 <Media
                   resource={card.image}
-                  sizes={SIZES[columns] ?? SIZES['3']}
+                  /* A lone card is capped at 28rem, not sized off the column
+                     setting it is no longer laid out by. */
+                  sizes={
+                    cards.length === 1
+                      ? '(min-width: 640px) 28rem, 100vw'
+                      : (SIZES[columns] ?? SIZES['3'])
+                  }
                   className={
                     card.fit === 'whole'
                       ? /*
@@ -116,9 +152,14 @@ export const CardGridBlockView = ({ block }: { block: CardGridBlock }) => {
                          * about 130px of white down either side. An upright
                          * picture needs an upright card, not a wide card with
                          * an upright picture parked in it.
+                         *
+                         * This overrides the block's own `imageFrame`, which
+                         * is the coarser setting: the frame says what KIND of
+                         * picture the grid holds, and this says that one card
+                         * is not like the others.
                          */
                         'h-auto w-full'
-                      : 'aspect-4/3 w-full object-cover'
+                      : frame
                   }
                 />
               ) : null}

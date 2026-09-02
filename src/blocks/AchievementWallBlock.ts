@@ -9,16 +9,24 @@ import { BLOCK_GROUPS, blockAdmin, headingField, sectionOptions } from './shared
  *
  * WHY THIS IS NOT THE GALLERY BLOCK
  * ---------------------------------
- * `photoLibrary` and `gallery` both reveal their captions on hover, which is
+ * `photoLibrary` and `gallery` reveal their whole caption on hover, which is
  * right for an album: there the photograph is the content and a permanent
  * strip of text over every tile flattens the wall.
  *
  * On an achievements page the caption IS the content. A parent scanning the
- * page is reading what was won and when; the photograph is the evidence. Text
- * that only appears under a mouse would hide the substance of the page from
- * every phone, and hiding content behind hover is a failure regardless
- * (WCAG 2.1 SC 1.4.13 governs what it takes to show such content at all; the
- * simpler answer is not to hide it).
+ * page is reading what happened and when, and the photograph is the evidence —
+ * so the occasion and the year are painted on the tile at rest, on a phone,
+ * with no pointer anywhere near it.
+ *
+ * THE ONE EXCEPTION IS THE AWARD BADGE, and it is a deliberate one: nine
+ * yellow pills lit at once turned the wall into a wall of labels, so the badge
+ * now waits for hover or keyboard focus. What keeps that from being content
+ * hidden behind a pointer (WCAG 2.1 SC 1.4.13) is that the badge is nowhere
+ * near the only route to the award — every tile is a button that opens the
+ * lightbox, which renders the same badge, and the button's accessible name
+ * carries the award text whether or not anything is painted. A phone reaches
+ * it by tapping, which is what a phone was going to do with a wall of group
+ * photographs anyway.
  *
  * WHY THIS IS NOT THE FEATURE LIST EITHER
  * ---------------------------------------
@@ -86,7 +94,7 @@ export const AchievementWallBlock: Block = {
               admin: {
                 width: '50%',
                 description:
-                  'Shown as a badge on the tile — “First prize”, “Four prizes”, “Certificates and medals”. Leave empty if nothing was won, and the badge is simply not shown.',
+                  'A badge — “First prize”, “Four prizes”, “Certificates and medals”. It appears on the tile when a visitor hovers or tabs to it, and again when they open the photograph. Leave empty if nothing was won, and there is simply no badge.',
               },
             },
             {

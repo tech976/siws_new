@@ -12,9 +12,7 @@ export const CallToActionBlockView = ({ block }: { block: CallToActionBlock }) =
       <div className="siws-centre mx-auto max-w-3xl">
         <h2>{block.heading}</h2>
 
-        {block.text ? (
-          <RichText data={block.text} className="mt-4 [&_a]:text-inherit" />
-        ) : null}
+        {block.text ? <RichText data={block.text} className="mt-4 [&_a]:text-inherit" /> : null}
 
         {links.length > 0 ? (
           <div className="mt-8 flex flex-wrap justify-center gap-4">

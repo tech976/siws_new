@@ -73,10 +73,7 @@ export const VideoCard = ({
         className="absolute inset-0 bg-brand-deep/20 transition-colors duration-300 group-hover/play:bg-brand-deep/35"
       />
 
-      <span
-        aria-hidden="true"
-        className="absolute inset-0 grid place-items-center"
-      >
+      <span aria-hidden="true" className="absolute inset-0 grid place-items-center">
         <span className="grid size-16 place-items-center rounded-full bg-white/95 shadow-[0_4px_20px_rgba(0,0,0,0.35)] ring-1 ring-black/5 transition-transform duration-300 group-hover/play:scale-110">
           {/*
             A solid triangle, nudged right by a pixel: a play mark centred on

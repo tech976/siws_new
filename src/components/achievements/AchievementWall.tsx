@@ -20,11 +20,25 @@ export interface Achievement extends GalleryPhoto {
 /**
  * THE TILE.
  *
- * A photograph, a badge saying what was won, and the occasion beneath it —
- * all of it visible at rest, on a phone, with no pointer anywhere near it.
- * That is the whole difference between this and the gallery wall next door,
- * and it follows from the content: here the words are the achievement and the
- * photograph is the proof, so the words cannot be the part that hides.
+ * A photograph, the occasion and the year at rest; the yellow prize badge only
+ * once the tile is hovered or focused. Nine of those badges lit at once read as
+ * a wall of labels rather than a wall of photographs, which is what the badges
+ * were doing to this page.
+ *
+ * WHAT THAT COSTS, AND WHAT PAYS IT BACK
+ * --------------------------------------
+ * It does mean the prize is not on screen at rest, and a phone has no hover to
+ * give. Three things keep it reachable rather than lost:
+ *
+ *  - the occasion is still the tile's title, so nothing about WHAT the tile
+ *    shows depends on a pointer — only the prize does;
+ *  - the whole tile is a button, and opening it shows the prize as a badge in
+ *    the lightbox, which is the path a phone takes anyway;
+ *  - the button's accessible name already carries the prize, so a screen
+ *    reader never depended on the badge being painted.
+ *
+ * `group-focus-within` matters as much as `group-hover` here: without it the
+ * badge would be reachable by mouse and by tap but not by keyboard.
  *
  * WHAT MOVES, AND WHY
  * -------------------
@@ -92,13 +106,28 @@ const AchievementTile = ({
       of colour stops, so a single scrim that changed its stops on hover would
       snap. The base never moves and the second fades in over it.
     */}
+    {/*
+      SOFTENED, NOT REMOVED. It was 95% brand at the foot of the tile falling
+      to nothing by 60% of its height — nearly solid navy under the words, and
+      the whole drop happening across a third of the tile. Two things made that
+      read as harsh: the darkest point was close enough to opaque that the
+      photograph simply stopped, and the ramp was short enough to show as a
+      band rather than a fade.
+
+      So the floor comes down and the ramp lengthens: 82% at the very bottom,
+      still dark enough to carry white type over any photograph, easing through
+      a lower mid-point over a longer distance so there is no visible edge. The
+      top of every picture is still untouched — reaching further up is what
+      tints a wall of nine photographs blue, which is the other way this goes
+      wrong.
+    */}
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-deep/95 via-brand-deep/72 via-24% to-transparent to-60%"
+      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-deep/82 via-brand-deep/44 via-30% to-transparent to-68%"
     />
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-deep/60 via-brand-deep/30 via-24% to-transparent to-72% opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100"
+      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-deep/38 via-brand-deep/16 via-30% to-transparent to-76% opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100"
     />
 
     {/*
@@ -116,22 +145,40 @@ const AchievementTile = ({
     {/* ------------------------------------------------------------ the words */}
     <div className="pointer-events-none absolute inset-x-0 bottom-0 p-5 sm:p-6">
       {/*
-        The prize and the year share a row. They were stacked, and on a tile
-        whose caption sits over a group photograph every line of text is
-        another row of children hidden — so the two shortest things on the
-        card go side by side and the picture keeps the space.
+        THE PRIZE, WHICH IS THE PART THAT WAITS.
+
+        It grows from nothing rather than fading in place, so at rest it costs
+        no space at all — a badge held at `opacity-0` in the flow would leave a
+        blank band over the photograph on all nine tiles, which is the thing
+        being removed.
+
+        `max-height` rather than `height`: the badge wraps to two lines on the
+        longer awards and no fixed height fits both. 6rem is a ceiling the
+        content never reaches, and animating to a ceiling only means the last
+        few milliseconds of the transition have nothing left to move.
+
+        Nothing below it shifts. The caption block is anchored to the BOTTOM of
+        the tile, so the row opens upward into the photograph and the occasion
+        stays exactly where the eye left it.
       */}
-      {item.category || item.when ? (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-          {item.category ? (
-            <span className="inline-block rounded-pill bg-accent px-3 py-1 t-label font-bold uppercase tracking-[0.12em] text-brand-deep">
-              {item.category}
-            </span>
-          ) : null}
-          {item.when ? (
-            <span className="t-caption font-semibold text-white/80">{item.when}</span>
-          ) : null}
+      {item.category ? (
+        <div
+          className={[
+            'max-h-0 overflow-hidden opacity-0',
+            'transition-[max-height,opacity] duration-300 ease-out',
+            'group-hover:max-h-24 group-hover:opacity-100',
+            'group-focus-within:max-h-24 group-focus-within:opacity-100',
+          ].join(' ')}
+        >
+          <span className="mb-2 inline-block rounded-pill bg-accent px-3 py-1 t-label font-bold uppercase tracking-[0.12em] text-brand-deep">
+            {item.category}
+          </span>
         </div>
+      ) : null}
+
+      {/* The year stays. It is one short line and it dates the photograph. */}
+      {item.when ? (
+        <span className="block t-caption font-semibold text-white/80">{item.when}</span>
       ) : null}
 
       <p
@@ -221,7 +268,17 @@ export const AchievementWall = ({
          * `grid-flow-dense` backfills whatever hole the large tile leaves, so
          * a wall of any length finishes square rather than trailing off.
          */
-        className="mt-10 grid auto-rows-[16rem] grid-flow-dense grid-cols-1 gap-4 sm:auto-rows-[14rem] sm:grid-cols-2 sm:gap-5 lg:auto-rows-[16rem] lg:grid-cols-3"
+        className={[
+          /*
+           * The gap belongs to the heading, not to the grid. A wall with no
+           * preamble opens at the top of its band; keeping `mt-10`
+           * unconditionally left it floating below an empty strip.
+           */
+          children ? 'mt-10' : '',
+          'grid auto-rows-[16rem] grid-flow-dense grid-cols-1 gap-4 sm:auto-rows-[14rem] sm:grid-cols-2 sm:gap-5 lg:auto-rows-[16rem] lg:grid-cols-3',
+        ]
+          .filter(Boolean)
+          .join(' ')}
       >
         {items.map((item, i) => (
           <AchievementTile

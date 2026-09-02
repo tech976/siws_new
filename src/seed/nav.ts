@@ -134,7 +134,17 @@ const UNIT: Entry[] = [
     label: 'Updates',
     srs: '5.2',
     children: [
-      { slug: 'news', label: 'News & Events', srs: '5.2' },
+      /*
+       * News and Events are two tabs, not one.
+       *
+       * This was a single "News & Events" entry. A parent looking for what
+       * happened at the school last month does not think of it as news, and an
+       * events listing buried inside a page labelled News is a page nobody
+       * opens — which is exactly what happened. The News entry keeps the `news`
+       * slug so no existing address breaks; only its label narrows.
+       */
+      { slug: 'news', label: 'News', srs: '5.2' },
+      { slug: 'events', label: 'Events', srs: '5.2' },
       { slug: 'achievements', label: 'Achievements', srs: '5.6' },
       { slug: 'download-centre', label: 'Download Centre', srs: '5.21' },
     ],
@@ -177,19 +187,105 @@ const UNIT: Entry[] = [
  * (2026-08-24). Junior College keeps it.
  */
 const UNIT_OMIT: Record<string, string[]> = {
-  // Kindergarten also drops Rules & Uniform (2026-08-25), leaving Academics as
-  // its overview and Our Teachers. Primary and Secondary keep it: only the
-  // Kindergarten section asked for it off.
+  /*
+   * Rules & Uniform came off Kindergarten on 2026-08-25 because the page was
+   * empty, and went back on 2026-09-01 now that SIWS has supplied the uniform
+   * specification and the general rules. Academics therefore carries Our
+   * Teachers and Rules & Uniform again.
+   */
   /*
    * FAQ comes off because Admissions FAQ answers the same questions and is
    * where a parent goes looking for them — two FAQs in one menu is a choice
    * the visitor has to make before they can read either.
    *
-   * Student Wall comes off because it is still the placeholder page; Student
-   * Life keeps Transport and gains the Campus Gallery below.
+   * Student Wall comes off because it is still the placeholder page, and
+   * Transport with it at SIWS's instruction (2026-09-01) — the same page, for
+   * the same reason, that came off Primary: no operator, no route and no fare
+   * have been supplied, so it never carried anything a parent could act on.
+   * That empties the Student Life drop-down of the two children the template
+   * gives it; the entry stays in the bar and gains the Campus Gallery, which
+   * `UNIT_MIRROR` places under it.
+   *
+   * Transport is named in `UNIT_UNPUBLISH` below as well, because SIWS asked
+   * for the page gone rather than merely out of the menu.
    */
-  kindergarten: ['annual-calendar', 'school-rules', 'faq', 'student-wall'],
-  primary: ['annual-calendar'],
+  /*
+   * `school-rules` is deliberately NOT omitted here. It was, until the page
+   * had content; the comment above records it going back on 2026-09-01. The
+   * other side of this merge still carried the older list, and taking it
+   * wholesale would have hidden the rules page the same day it was written.
+   */
+  /*
+   * THE WHOLE UPDATES DROP-DOWN COMES OFF KINDERGARTEN (2026-09-01).
+   *
+   * SIWS asked for Achievements to stand on its own in the bar, and once it
+   * does there is nothing left worth a drop-down: Updates itself was only a
+   * card grid pointing at its own three children, News & Events is the
+   * evergreen "what we mark through the year" page, and Events and Download
+   * Centre are still the placeholder the menu template created.
+   *
+   * All four are named here rather than only `updates`, and they have to be:
+   * `getNavItems` PROMOTES a child whose parent has left the menu to the top
+   * level — losing a parent should not make a published page unreachable — so
+   * omitting the parent alone would have moved News, Events and Download
+   * Centre into the top row rather than out of the menu. Every one of these
+   * pages stays published at its own address (the Updates page still links to
+   * all three), and Download Centre keeps its place in the quick-links panel.
+   *
+   * `achievements` is deliberately NOT in this list. It leaves the drop-down
+   * with its parent and comes straight back as a top-level entry in
+   * `UNIT_EXTRA` below.
+   */
+  /*
+   * UPDATES IS BACK (2026-09-02), carrying News and Events.
+   *
+   * It came off on 2026-09-01 because there was nothing behind it: News was
+   * the evergreen "what we mark through the year" list, and Events and
+   * Download Centre were the placeholder the menu template created. Two of
+   * those three now have content — News is the section's recent stories and
+   * Events is the calendar that used to sit on News — so the drop-down has
+   * something to lead to.
+   *
+   * `download-centre` stays omitted: it is still the placeholder.
+   *
+   * `achievements` stays omitted too, and that is not a contradiction. It
+   * leaves the drop-down here only so `UNIT_EXTRA` can put it back as a
+   * TOP-LEVEL entry, where SIWS asked for it. Omissions are applied to the
+   * template before extras are added, so the two do not fight; without this
+   * line it would appear twice.
+   */
+  kindergarten: [
+    'annual-calendar',
+    'faq',
+    'student-wall',
+    'transport',
+    'achievements',
+    'download-centre',
+  ],
+  /*
+   * Student Wall and Transport come off at SIWS's instruction (2026-09-01),
+   * and Admissions with its FAQ on the same instruction. All four are also
+   * gone from `seed/primary.ts`, and their rows are deleted by
+   * `npm run remove:primary-pages` — this entry is what stops the menu
+   * template creating them again as empty placeholders on the next run.
+   *
+   * A parent with an admission question is not left without a route: the
+   * header's "Enquire about admission" button goes to the contact page and
+   * its enquiry form, which is where the enquiry was always answered.
+   *
+   * ACHIEVEMENTS is here for the opposite reason — not to remove it, but to
+   * take it OUT OF THE UPDATES DROP-DOWN so `UNIT_EXTRA` below can put it
+   * back on the top row. Omit-then-add is the order the tree is built in,
+   * so the two entries together are a move rather than a deletion.
+   */
+  primary: [
+    'annual-calendar',
+    'student-wall',
+    'transport',
+    'admissions',
+    'admissions-faq',
+    'achievements',
+  ],
   /*
    * Secondary drops Admissions and its FAQ at SIWS's request (2026-09-01):
    * the section is to carry no admissions tab, button or FAQ.
@@ -245,7 +341,35 @@ const UNIT_EXTRA: Record<
     item: Entry
   }[]
 > = {
-  primary: [{ parent: 'updates', after: 'news', item: { slug: 'events', label: 'Events' } }],
+  primary: [
+    { parent: 'updates', after: 'news', item: { slug: 'events', label: 'Events' } },
+    /*
+     * Achievements on the top row, at SIWS's instruction. It was the second
+     * item inside Updates, which put the section's prizes behind a hover
+     * and a second click.
+     *
+     * After Academics rather than first: the row reads About, Academics,
+     * Achievements — what the school is, what it teaches, what that has
+     * won — and the drop-down it left keeps News, Events and the rest.
+     */
+    {
+      parent: null,
+      after: 'academics',
+      item: { slug: 'achievements', label: 'Achievements' },
+    },
+  ],
+  /*
+   * ACHIEVEMENTS, ON ITS OWN, WHERE THE UPDATES DROP-DOWN USED TO BE.
+   *
+   * The counterpart to the Kindergarten block in `UNIT_OMIT`: that takes the
+   * drop-down away and this puts back the one entry SIWS wants kept. It is
+   * placed `after: 'admissions'` so it lands in the slot Updates held, and
+   * not first — a top-level extra with no `after` is unshifted to the front
+   * of the bar, ahead of About, which is not where a parent looks for it.
+   */
+  kindergarten: [
+    { parent: null, after: 'admissions', item: { slug: 'achievements', label: 'Achievements' } },
+  ],
   /*
    * JUNIOR COLLEGE'S FRONT PAGE IS ITS ABOUT PAGE.
    *
@@ -294,6 +418,23 @@ const UNIT_MIRROR: Record<string, { slug: string; under: string }[]> = {
  */
 const UNIT_UNPUBLISH: Record<string, string[]> = {
   /*
+   * Kindergarten's Transport page, at SIWS's instruction (2026-09-01).
+   *
+   * It qualifies for this list rather than for `UNIT_OMIT` alone because it is
+   * still the "content to come" placeholder — `pages-general.ts` gives it a
+   * banner and a line telling the reader to ring the office, and nothing else,
+   * because the school has supplied no operator, route or fare. Nobody has
+   * written anything here that unpublishing would take away.
+   *
+   * Primary answered the same instruction by DELETING its Transport row
+   * (`npm run remove:primary-pages`). This does not, and the difference is
+   * deliberate: unpublishing gets the visitor-facing result the deletion got —
+   * the address 404s, the page leaves the menu and the quick-links panel — and
+   * leaves the document in the admin panel, so SIWS can publish it in one
+   * click on the day they do have a route to publish.
+   */
+  kindergarten: ['transport'],
+  /*
    * Junior College, at SIWS's request (2026-08-29). The teachers roster has
    * not been supplied, and neither the annual calendar nor the rules have been
    * written — so all three were serving a page that said only that content was
@@ -305,6 +446,8 @@ const UNIT_UNPUBLISH: Record<string, string[]> = {
 const UNIT_RELABEL: Record<string, Record<string, string>> = {
   // With Events beside it, "News & Events" would name both of them.
   primary: { news: 'News' },
+  // Kindergarten split the same page the same way, for the same reason.
+  kindergarten: { news: 'News' },
   /*
    * The front page reads "About" in the menu, not its own title.
    *
@@ -459,13 +602,13 @@ const run = async () => {
     for (const top of tree) {
       const topId = await ensure(top)
       order += 10
-      await setNav(topId, order, null)
+      await setNav(topId, order, null, top.label)
       placed += 1
 
       for (const child of top.children ?? []) {
         const childId = await ensure(child)
         order += 1
-        await setNav(childId, order, topId)
+        await setNav(childId, order, topId, child.label)
         placed += 1
       }
     }
@@ -574,10 +717,29 @@ const run = async () => {
     }
   ).pool
 
-  const setNav = (id: number | string, order: number, parent: number | string | null) =>
+  /*
+   * `nav_label` is written too, not just the position.
+   *
+   * It was left alone at first, on the reasoning that the menu owns where an
+   * item sits and the page owns what it is called. That fell over the moment an
+   * entry was renamed here: the template said "News", the page still carried
+   * the title it was created with, and the menu went on printing "News &
+   * Events" beside a new "Events" tab. The label is part of the menu's shape,
+   * so the template is the one place that decides it.
+   *
+   * This does overwrite a label edited by hand in the admin panel, exactly as
+   * `nav_order` and `nav_parent_id` already do. The page's own `title` is not
+   * touched — only the words the menu prints.
+   */
+  const setNav = (
+    id: number | string,
+    order: number,
+    parent: number | string | null,
+    label: string,
+  ) =>
     pool.query(
-      'UPDATE pages SET show_in_nav = TRUE, nav_order = $1, nav_parent_id = $2 WHERE id = $3',
-      [order, parent, id],
+      'UPDATE pages SET show_in_nav = TRUE, nav_order = $1, nav_parent_id = $2, nav_label = $3 WHERE id = $4',
+      [order, parent, label, id],
     )
 
   /*

@@ -8,6 +8,7 @@
     "node": ">=20.9.0"
   },
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks || exit 0",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev -p 3001",
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start -p 3001",
@@ -53,7 +54,13 @@
     "seed:portal-marquee": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/portal-hero-marquee.ts",
     "seed:portal-hero": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/portal-hero.ts",
     "photos:consent": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/record-photo-consent.ts",
+    "media:dedupe": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/dedupe-media.ts",
+    "primary:merge": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/merge-primary-campuses.ts",
+    "seed:verify": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-verify.ts",
+    "seed:refresh": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-refresh.ts",
+    "seed:onam": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/onam.ts",
     "seed:vision-bg": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/vision-background.ts",
+    "remove:primary-pages": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/remove-primary-pages.ts",
     "remove:primary-campus-pages": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/remove-primary-campus-pages.ts",
     "remove:secondary-admissions": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/remove-secondary-admissions-pages.ts",
     "publish:menu-parents": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/publish-menu-parents.ts",
@@ -88,5 +95,12 @@
     "tailwindcss": "^4.3.3",
     "tsx": "^4.20.3",
     "typescript": "^5.7.3"
+  },
+  "allowScripts": {
+    "sharp@0.34.5": true,
+    "esbuild@0.18.20": true,
+    "esbuild@0.28.1": true,
+    "esbuild@0.25.12": true,
+    "@parcel/watcher@2.6.0": true
   }
 }

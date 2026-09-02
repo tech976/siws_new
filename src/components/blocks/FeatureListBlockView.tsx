@@ -3,15 +3,21 @@ import {
   BadgeCheck,
   BookOpen,
   Brain,
+  Building2,
   Bus,
+  CalendarCheck,
   Check,
+  Clock,
   FlaskConical,
+  Gem,
   GraduationCap,
   HandHeart,
   Heart,
+  IndianRupee,
   MessagesSquare,
   Monitor,
   Music,
+  NotebookText,
   Palette,
   PersonStanding,
   Medal,
@@ -71,6 +77,21 @@ const FEATURE_ICONS: Record<string, LucideIcon> = {
   medal: Medal,
   merit: Award,
   pass: BadgeCheck,
+  /*
+   * School rules, which the set could not draw before.
+   *
+   * Everything above names a place, an activity or a result. A rules page asks
+   * for none of those — it is about a diary, a start time, a fee, an
+   * attendance figure — so every rule fell back to the same neutral tick, and
+   * seven identical ticks under seven different headings tell a reader the
+   * seven are the same thing. These are the nouns the rules actually contain.
+   */
+  diary: NotebookText,
+  punctuality: Clock,
+  fees: IndianRupee,
+  attendance: CalendarCheck,
+  valuables: Gem,
+  premises: Building2,
 }
 
 /**
@@ -234,6 +255,7 @@ export const FeatureListBlockView = ({ block }: { block: FeatureListBlock }) => 
   if (block.layout === 'compact') return <FeatureCompact block={block} />
   if (block.layout === 'showcase') return <FeatureShowcase block={block} />
   if (block.layout === 'panel') return <FeaturePanel block={block} />
+  if (block.layout === 'spec') return <FeatureSpec block={block} />
 
   const numbered = block.marker === 'number'
   const twoColumns = block.columns !== '1'
@@ -298,7 +320,9 @@ export const FeatureListBlockView = ({ block }: { block: FeatureListBlock }) => 
         className={block.intro ? 'mb-4' : 'mb-10'}
       />
 
-      {block.intro ? <RichText data={block.intro} className="mb-9 siws-centre mx-auto max-w-3xl" /> : null}
+      {block.intro ? (
+        <RichText data={block.intro} className="mb-9 siws-centre mx-auto max-w-3xl" />
+      ) : null}
 
       {/*
         An ordered list when the marker is a number, so the numbering is real
@@ -538,6 +562,88 @@ const FeatureCompact = ({ block }: { block: FeatureListBlock }) => {
 }
 
 /**
+ * The specification layout: a term and its detail, ruled, in two columns.
+ *
+ * WHY IT IS NOT THE LIST LAYOUT
+ * -----------------------------
+ * The list layout puts a marker beside every point, and a marker has to earn
+ * its place. On the Kindergarten uniform it was a tick against "Girls",
+ * "Boys", "P.T. uniform" and "Footwear" — four identical ticks over four
+ * different garments, which reads as a checklist of things to be done rather
+ * than a table of what to buy. There was no better glyph to reach for either:
+ * the icon set runs to classrooms and laboratories and has nothing for a
+ * frock, a shirt or a shoe.
+ *
+ * What this content IS, is a set of terms and their definitions — who wears
+ * what. So it is a `<dl>`: the label is a `<dt>` and the specification a
+ * `<dd>`. That is what the element is for, and it means the pairing is carried
+ * by the markup rather than implied by a bullet, so it survives for a screen
+ * reader and for anyone reading with styles off.
+ *
+ * HOW IT READS
+ * ------------
+ * The labels hold their own column, so the eye runs down the left edge to find
+ * its row and only then reads across — the way anybody uses a specification,
+ * and the reason a parent looking only for the footwear does not have to read
+ * about frocks first.
+ *
+ * Hierarchy comes from WEIGHT AND COLOUR, not size. Label in brand and
+ * semibold, detail the same size in the softer ink: at four rows, scaling the
+ * labels up as well would make the column shout down the side of a section
+ * that is only four lines long. Both sit on the same 28px leading so their
+ * first lines share a baseline — the alignment is the thing that makes a
+ * two-column list look composed rather than merely adjacent.
+ *
+ * A rule BETWEEN rows rather than a box around each. Four boxes are four
+ * objects the eye separates before reading; four ruled rows are one object
+ * with four entries. Below `sm` the columns stack, because a 12rem label
+ * column on a phone leaves the detail about twenty characters wide.
+ */
+const FeatureSpec = ({ block }: { block: FeatureListBlock }) => {
+  const items = block.items ?? []
+
+  return (
+    <Section background={block.background as BlockBackground}>
+      <SectionHeading
+        heading={block.heading}
+        accentWord={block.accentWord}
+        level={block.headingLevel}
+        className={block.intro ? 'mb-4' : 'mb-10'}
+      />
+
+      {block.intro ? (
+        <RichText data={block.intro} className="mb-9 siws-centre mx-auto max-w-3xl" />
+      ) : null}
+
+      <dl className="mx-auto max-w-3xl divide-y divide-line overflow-hidden rounded-2xl bg-white ring-1 ring-line">
+        {items.map((item, index) => (
+          /*
+           * A `div` wrapping each pair is valid inside `dl` and is what makes
+           * the row a grid cell of its own — without it the `dt` and `dd` are
+           * siblings in one long flow and cannot be ruled or aligned as rows.
+           */
+          <div
+            key={item.id ?? index}
+            className="grid gap-x-10 gap-y-1.5 px-6 py-5 sm:grid-cols-[12rem_1fr] sm:px-8 sm:py-6"
+          >
+            <dt className="t-body font-semibold text-brand">{item.title}</dt>
+            {item.description ? (
+              <dd className="leading-7 text-ink-soft">{item.description}</dd>
+            ) : null}
+          </div>
+        ))}
+      </dl>
+
+      {block.footnote ? (
+        <p className="mx-auto mt-6 max-w-3xl t-small text-ink-muted">
+          {block.footnote}
+        </p>
+      ) : null}
+    </Section>
+  )
+}
+
+/**
  * The card layout: a picture on a tinted card, centred, in a grid whose last
  * row always fills the width.
  *
@@ -551,6 +657,21 @@ const FeatureCards = ({ block }: { block: FeatureListBlock }) => {
   const items = block.items ?? []
   const perRow = items.length > 4 && items.length % 4 === 1 ? 3 : 4
   const numbered = block.marker === 'number'
+  /*
+   * The icon sits BESIDE the heading rather than on a disc above it.
+   *
+   * For a set of unordered points that are each about a different thing — the
+   * school rules are the case this was added for — the centred card below is
+   * the wrong shape twice over. Its disc is 96px of mostly empty circle, and
+   * with no icon chosen it falls back to a tick, so seven rules came out as
+   * seven identical checks that said nothing about which rule was which. The
+   * numbered card is wrong too: numbering a set of rules implies an order they
+   * do not have, and the reader counts instead of reading.
+   *
+   * Opt-in, so the nineteen other card blocks on the site keep the layout they
+   * were designed with.
+   */
+  const iconBesideHeading = block.marker === 'icon'
 
   /*
    * One card carrying a photograph sets the shape for the section: every card
@@ -611,7 +732,9 @@ const FeatureCards = ({ block }: { block: FeatureListBlock }) => {
         </div>
       ) : null}
 
-      {block.intro ? <RichText data={block.intro} className="mt-6 siws-centre mx-auto max-w-3xl" /> : null}
+      {block.intro ? (
+        <RichText data={block.intro} className="mt-6 siws-centre mx-auto max-w-3xl" />
+      ) : null}
 
       {/*
         THE GUTTER IS AT LEAST THE CARD'S OWN PADDING.
@@ -746,6 +869,64 @@ const FeatureCards = ({ block }: { block: FeatureListBlock }) => {
                         )}
                       </span>
                     </div>
+                  ) : null}
+                </li>
+              )
+            }
+
+            /*
+             * ICON BESIDE THE HEADING.
+             *
+             * The card is a header row and a paragraph, and nothing else. The
+             * icon and the title share a line because they are one unit — the
+             * icon is the title's mark, not a separate thing above it — and
+             * they centre on each other so no glyph sits low against its word.
+             *
+             * The description starts at the card's own left edge rather than
+             * indenting under the title. Indenting would cost every line the
+             * width of the icon for no gain: the icon has already been read by
+             * then, and these run to two and three lines where a narrowed
+             * measure is felt.
+             *
+             * SPACING, AGAINST THE GUTTER. The padding steps up at `lg` and
+             * not at `sm`, because that is where the gutter does. Between the
+             * two breakpoints the grid is two columns 24px apart, so 28px of
+             * padding would have put more air inside each card than between
+             * it and its neighbour — the point the note on the grid below
+             * makes, and the point at which a row of cards stops reading as
+             * separate cards. 16px from the header row to the paragraph keeps
+             * the two halves of one card grouped more tightly than the cards
+             * are to each other. White on the tinted section, so each rule is
+             * a distinct object rather than a paragraph on a wash.
+             */
+            if (iconBesideHeading && !withPhotos) {
+              return (
+                <li
+                  key={item.id ?? index}
+                  className={`flex flex-col rounded-2xl bg-white p-6 ring-1 ring-line lg:p-7 ${
+                    SPAN_CLASS[row.length] ?? SPAN_CLASS[4]
+                  }`}
+                >
+                  <div className="flex items-center gap-3.5">
+                    <span
+                      aria-hidden="true"
+                      className={`grid size-11 shrink-0 place-items-center rounded-full ${tint.disc}`}
+                    >
+                      {Icon ? (
+                        <Icon size={21} strokeWidth={1.9} className={tint.mark} />
+                      ) : (
+                        <Check size={19} strokeWidth={2.4} className={tint.mark} />
+                      )}
+                    </span>
+                    <CardTitle className="card-title min-w-0 text-balance font-bold text-brand">
+                      {item.title}
+                    </CardTitle>
+                  </div>
+
+                  {item.description ? (
+                    <p className="mt-4 t-small text-ink-soft">
+                      {item.description}
+                    </p>
                   ) : null}
                 </li>
               )
@@ -911,8 +1092,8 @@ const Item = ({
   const Icon = !numbered && item.icon ? FEATURE_ICONS[item.icon] : undefined
 
   return (
-  <li className="flex items-start gap-4">
-    {/*
+    <li className="flex items-start gap-4">
+      {/*
       THE DISC AND THE TITLE ARE THE SAME HEIGHT, so they centre on each other
       without anybody nudging either one.
 
@@ -923,37 +1104,43 @@ const Item = ({
       are 28px now: no offset, nothing to keep in sync by hand, and it holds if
       the type scale changes.
     */}
-    <span
-      aria-hidden="true"
-      /*
-       * The ring is what makes the marker exist on a tinted section.
-       *
-       * `bg-sea` is the same colour a "sea" section is painted, so on
-       * /kindergarten/admissions the numbered steps had their discs dissolve
-       * into the background and the numbers floated loose beside the text. The
-       * fill is right on white and had simply never been checked against the
-       * tint it shares a name with. A hairline of brand at 15% draws the edge
-       * on the tint and is barely present on white, where the fill already
-       * does the work.
-       */
-      className="grid size-7 shrink-0 place-items-center rounded-full bg-sea text-sm font-bold text-brand ring-1 ring-brand/15"
-    >
-      {/* Lighter than the tick's stroke: these glyphs carry detail a 3px
+      <span
+        aria-hidden="true"
+        /*
+         * The ring is what makes the marker exist on a tinted section.
+         *
+         * `bg-sea` is the same colour a "sea" section is painted, so on
+         * /kindergarten/admissions the numbered steps had their discs dissolve
+         * into the background and the numbers floated loose beside the text. The
+         * fill is right on white and had simply never been checked against the
+         * tint it shares a name with. A hairline of brand at 15% draws the edge
+         * on the tint and is barely present on white, where the fill already
+         * does the work.
+         */
+        className="grid size-7 shrink-0 place-items-center rounded-full bg-sea text-sm font-bold text-brand ring-1 ring-brand/15"
+      >
+        {/* Lighter than the tick's stroke: these glyphs carry detail a 3px
           stroke closes up at 17px. */}
-      {numbered ? index + 1 : Icon ? <Icon size={16} strokeWidth={2.1} /> : <Check size={16} strokeWidth={3} />}
-    </span>
-    <span>
-      <strong className="block t-body text-brand">{item.title}</strong>
-      {/*
+        {numbered ? (
+          index + 1
+        ) : Icon ? (
+          <Icon size={16} strokeWidth={2.1} />
+        ) : (
+          <Check size={16} strokeWidth={3} />
+        )}
+      </span>
+      <span>
+        <strong className="block t-body text-brand">{item.title}</strong>
+        {/*
         8px, not 4. A title and its explanation were nearly touching, which
         made each point read as one run-on line instead of a heading and a
         sentence — and `leading-relaxed` because this is the text a parent
         actually reads, not a label.
       */}
-      {item.description ? (
-        <span className="mt-2 block leading-relaxed text-ink-soft">{item.description}</span>
-      ) : null}
-    </span>
-  </li>
+        {item.description ? (
+          <span className="mt-2 block leading-relaxed text-ink-soft">{item.description}</span>
+        ) : null}
+      </span>
+    </li>
   )
 }

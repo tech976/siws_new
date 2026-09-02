@@ -104,7 +104,10 @@ export const StatisticsBlockView = ({ block }: { block: StatisticsBlock }) => {
                   consistent starting point across figures of very different
                   widths — "1934" and "KG–PG" do not align on their own.
                 */}
-                <span aria-hidden="true" className="mx-auto block h-1 w-10 rounded-full bg-accent" />
+                <span
+                  aria-hidden="true"
+                  className="mx-auto block h-1 w-10 rounded-full bg-accent"
+                />
 
                 {/*
                   The figure is the term and the caption its description, so

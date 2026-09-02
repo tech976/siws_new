@@ -4,6 +4,8 @@ import type { GalleryBlock, Media as MediaDoc } from '@/payload-types'
 
 import { GalleryCarousel } from './GalleryCarousel'
 import { GalleryPager } from './GalleryPager'
+import { headingAnchor } from '@/lib/anchor'
+
 import { Section, SectionHeading, type BlockBackground } from './Section'
 
 /**
@@ -99,11 +101,7 @@ const BENTO_SIZES = [
  * reads as broken. The gradient is dark enough for white text at every tile
  * size and only covers the bottom third, so the photograph is still the tile.
  */
-const BentoGallery = ({
-  images,
-}: {
-  images: NonNullable<GalleryBlock['images']>
-}) => (
+const BentoGallery = ({ images }: { images: NonNullable<GalleryBlock['images']> }) => (
   /*
    * The row height is TALLER on a phone, not shorter.
    *
@@ -246,8 +244,21 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
     </article>
   ))
 
+  /*
+   * An anchor derived from the heading, so one group on a gallery page can be
+   * linked to directly — `/primary/gallery#onam-event` lands on the Onam
+   * photographs rather than at the top of a page holding every group the
+   * section has. The gallery seed builds one block per category, so this gives
+   * every category a stable address without anything else having to name it.
+   *
+   * The slug comes from `headingAnchor` rather than being built here, because
+   * `CMSLink` has to derive the SAME string from the anchor an editor typed.
+   * Two copies of the rule in two files is one copy too many: they were in
+   * fact already disagreeing on accents and on hyphens the editor typed, and a
+   * fragment that matches no id fails silently.
+   */
   return (
-    <Section background={block.background as BlockBackground}>
+    <Section background={block.background as BlockBackground} id={headingAnchor(block.heading)}>
       {/*
         `mb-4` is the gap down to an INTRO, which then carries its own `mb-8`
         on to the photographs. A gallery with no intro was left with that 16px

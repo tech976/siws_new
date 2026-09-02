@@ -11,13 +11,7 @@ import { Section, SectionHeading, type BlockBackground } from './Section'
  * browser — all of which a hand-rolled accordion has to reimplement and
  * usually gets subtly wrong.
  */
-export const AccordionBlockView = ({
-  block,
-  index,
-}: {
-  block: AccordionBlock
-  index: number
-}) => {
+export const AccordionBlockView = ({ block, index }: { block: AccordionBlock; index: number }) => {
   const items = block.items ?? []
   if (items.length === 0) return null
 
@@ -42,9 +36,7 @@ export const AccordionBlockView = ({
       <div className="siws-accordion mx-auto max-w-3xl divide-y divide-line border-y border-line">
         {items.map((item, itemIndex) => (
           <details key={item.id ?? itemIndex} name={groupName} className="group py-1">
-            <summary
-              className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-semibold text-brand [&::-webkit-details-marker]:hidden"
-            >
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-semibold text-brand [&::-webkit-details-marker]:hidden">
               <span>{item.question}</span>
               <span
                 aria-hidden="true"

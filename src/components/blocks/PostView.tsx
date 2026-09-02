@@ -73,7 +73,8 @@ const PostVideo = ({ post }: { post: Post }) => {
 
 const PostPhotos = ({ post }: { post: Post }) => {
   const photos = (post.photos ?? []).filter(
-    (photo): photo is NonNullable<typeof photo> & object => typeof photo === 'object' && photo !== null,
+    (photo): photo is NonNullable<typeof photo> & object =>
+      typeof photo === 'object' && photo !== null,
   )
   if (photos.length === 0) return null
 

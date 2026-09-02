@@ -21,7 +21,13 @@ import { Section, SectionHeading, type BlockBackground } from './Section'
  */
 const pastel = (hex: string, strength: number): string => {
   const clean = hex.replace('#', '')
-  const full = clean.length === 3 ? clean.split('').map((c) => c + c).join('') : clean
+  const full =
+    clean.length === 3
+      ? clean
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : clean
   const value = Number.parseInt(full, 16)
   if (!Number.isFinite(value)) return '#ffffff'
 
@@ -55,13 +61,7 @@ const pastel = (hex: string, strength: number): string => {
  * of the same thing; four columns hanging off one line read as four steps of
  * one thing, which is what they are.
  */
-export const UnitLinksBlockView = ({
-  block,
-  units,
-}: {
-  block: UnitLinksBlock
-  units: Unit[]
-}) => {
+export const UnitLinksBlockView = ({ block, units }: { block: UnitLinksBlock; units: Unit[] }) => {
   if (units.length === 0) return null
 
   /*
@@ -120,97 +120,97 @@ export const UnitLinksBlockView = ({
         />
 
         <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-7">
-        {units.map((unit, index) => {
-          const stage = stageFor(unit)
-          const colour = accentHex(unit.accent)
-          const tags = (stage?.tags ?? []).map((tag) => tag.label).filter(Boolean)
+          {units.map((unit, index) => {
+            const stage = stageFor(unit)
+            const colour = accentHex(unit.accent)
+            const tags = (stage?.tags ?? []).map((tag) => tag.label).filter(Boolean)
 
-          return (
-            <li
-              key={unit.id}
-              /*
-               * WHITE, WITH THE SCHOOL'S COLOUR AS THE BORDER.
-               *
-               * These were filled with a tint of each accent. It worked for
-               * the blue and the ink, and not for the two orange schools —
-               * Kindergarten and Secondary both came out a pale yellow that
-               * read as a highlighter rather than as a card.
-               *
-               * All four are white rather than only those two. A tint is a
-               * weight as much as a colour: two filled cards beside two empty
-               * ones reads as two of them being more important, which is not
-               * true of any school here. The colour has not gone — it is in
-               * the border, the marker, and the arrow — it has simply moved
-               * off the largest surface, which is where a pale yellow was
-               * always going to be hardest to make work.
-               *
-               * `h-full` so four cards of different text lengths finish level.
-               */
-              className="group relative flex h-full flex-col rounded-3xl bg-white p-7 pt-9 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 lg:p-8 lg:pt-10"
-              style={{
-                boxShadow: `inset 0 0 0 1.5px ${pastel(colour, 0.38)}`,
-              }}
-            >
-              {/*
+            return (
+              <li
+                key={unit.id}
+                /*
+                 * WHITE, WITH THE SCHOOL'S COLOUR AS THE BORDER.
+                 *
+                 * These were filled with a tint of each accent. It worked for
+                 * the blue and the ink, and not for the two orange schools —
+                 * Kindergarten and Secondary both came out a pale yellow that
+                 * read as a highlighter rather than as a card.
+                 *
+                 * All four are white rather than only those two. A tint is a
+                 * weight as much as a colour: two filled cards beside two empty
+                 * ones reads as two of them being more important, which is not
+                 * true of any school here. The colour has not gone — it is in
+                 * the border, the marker, and the arrow — it has simply moved
+                 * off the largest surface, which is where a pale yellow was
+                 * always going to be hardest to make work.
+                 *
+                 * `h-full` so four cards of different text lengths finish level.
+                 */
+                className="group relative flex h-full flex-col rounded-3xl bg-white p-7 pt-9 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 lg:p-8 lg:pt-10"
+                style={{
+                  boxShadow: `inset 0 0 0 1.5px ${pastel(colour, 0.38)}`,
+                }}
+              >
+                {/*
                 The marker, sitting ON the rule. Its ring is the page's own
                 background rather than a colour, so the rule appears to pass
                 behind the marker instead of touching it.
               */}
-              {/*
+                {/*
                 The marker sits ON the card's top edge, centred over it, so the
                 rule behind still reads as one line running through all four.
                 Its ring is the page's own white, which is what makes the rule
                 appear to pass behind the marker rather than touch it.
               */}
-              <span
-                aria-hidden="true"
-                className="absolute -top-[5px] left-8 size-[11px] rounded-full ring-4 ring-white lg:left-9"
-                style={{ backgroundColor: colour }}
-              />
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-[5px] left-8 size-[11px] rounded-full ring-4 ring-white lg:left-9"
+                  style={{ backgroundColor: colour }}
+                />
 
-              {/*
+                {/*
                 The number is decoration carrying no information a reader needs
                 — the ordered list already states the position — so it is
                 hidden from assistive technology rather than read out as "zero
                 one" before every school name.
               */}
-              <span
-                aria-hidden="true"
-                className="t-figure mb-3 block font-bold text-brand/15 lg:mb-4"
-              >
-                {String(index + 1).padStart(2, '0')}
-              </span>
+                <span
+                  aria-hidden="true"
+                  className="t-figure mb-3 block font-bold text-brand/15 lg:mb-4"
+                >
+                  {String(index + 1).padStart(2, '0')}
+                </span>
 
-              <h3 className="t-h3 font-bold text-brand">
-                {/*
+                <h3 className="t-h3 font-bold text-brand">
+                  {/*
                   The overlay makes the whole stage clickable while keeping the
                   accessible name to just the school.
                 */}
-                <Link
-                  href={`/${unit.slug}`}
-                  className="after:absolute after:inset-0 after:content-['']"
-                >
-                  {unit.shortName}
-                </Link>
-              </h3>
+                  <Link
+                    href={`/${unit.slug}`}
+                    className="after:absolute after:inset-0 after:content-['']"
+                  >
+                    {unit.shortName}
+                  </Link>
+                </h3>
 
-              {stage?.gradeRange ? (
-                <p className="t-small mt-1.5 font-semibold text-ink-muted">
-                  {stage.gradeRange}
-                </p>
-              ) : null}
+                {stage?.gradeRange ? (
+                  <p className="t-small mt-1.5 font-semibold text-ink-muted">
+                    {stage.gradeRange}
+                  </p>
+                ) : null}
 
-              {/*
+                {/*
                 One line for the portal, the school's own tagline if nobody has
                 written one yet.
               */}
-              {stage?.blurb || unit.tagline ? (
-                <p className="t-body mt-4 text-ink-soft">
-                  {stage?.blurb ?? unit.tagline}
-                </p>
-              ) : null}
+                {stage?.blurb || unit.tagline ? (
+                  <p className="t-body mt-4 text-ink-soft">
+                    {stage?.blurb ?? unit.tagline}
+                  </p>
+                ) : null}
 
-              {/*
+                {/*
                 PILLS, NOT A MIDDOT-SEPARATED RUN.
 
                 The separators were their own flex children, so when the row
@@ -219,39 +219,39 @@ export const UnitLinksBlockView = ({
                 thing; giving each its own chip means a wrap can only ever
                 happen between two whole tags.
               */}
-              {tags.length > 0 ? (
-                <ul className="mt-5 flex flex-wrap gap-2">
-                  {tags.map((tag) => (
-                    <li
-                      key={tag}
-                      /*
+                {tags.length > 0 ? (
+                  <ul className="mt-5 flex flex-wrap gap-2">
+                    {tags.map((tag) => (
+                      <li
+                        key={tag}
+                        /*
                         The chips carried `bg-white/70`, which was visible
                         against a tinted card and invisible on a white one.
                         They take the school's own colour at a tenth instead,
                         so they still read as set into the card.
                       */
-                      className="t-caption rounded-pill px-3 py-1.5 font-semibold text-ink-soft"
-                      style={{ backgroundColor: pastel(colour, 0.12) }}
-                    >
-                      {tag}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
+                        className="t-caption rounded-pill px-3 py-1.5 font-semibold text-ink-soft"
+                        style={{ backgroundColor: pastel(colour, 0.12) }}
+                      >
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
 
-              <span
-                aria-hidden="true"
-                className="t-small mt-auto inline-flex items-center gap-1.5 pt-7 font-semibold"
-                style={{ color: colour }}
-              >
-                Visit site
-                <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
-                  →
+                <span
+                  aria-hidden="true"
+                  className="t-small mt-auto inline-flex items-center gap-1.5 pt-7 font-semibold"
+                  style={{ color: colour }}
+                >
+                  Visit site
+                  <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
+                    →
+                  </span>
                 </span>
-              </span>
-            </li>
-          )
-        })}
+              </li>
+            )
+          })}
         </ol>
       </div>
     </Section>

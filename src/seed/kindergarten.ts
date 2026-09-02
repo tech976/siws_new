@@ -196,17 +196,16 @@ const mediaByFilename = async (
    * photographs — the block was written, the gallery had nothing to render,
    * and the whole section disappeared off the Kindergarten page.
    */
-  const stem = filename.replace(/\.[^.]+$/, "")
+  const stem = filename.replace(/\.[^.]+$/, '')
   const { docs } = await payload.find({
     collection: 'media',
-    where: { filename: { like: stem + "-%" } },
+    where: { filename: { like: stem + '-%' } },
+    sort: 'id',
     limit: 10,
     depth: 0,
     overrideAccess: true,
   })
-  const suffixed = docs.find(
-    (d) => String(d.filename).replace(/-\d+(\.[^.]+)$/, "$1") === filename,
-  )
+  const suffixed = docs.find((d) => String(d.filename).replace(/-\d+(\.[^.]+)$/, '$1') === filename)
   return (suffixed?.id as number | undefined) ?? null
 }
 
@@ -228,6 +227,8 @@ const main = async () => {
   const img = {
     classroomActivity: await mediaByFilename(payload, 'kg-classroom-activity.jpg'),
     activityTable: await mediaByFilename(payload, 'kg-activity-table.jpg'),
+    // The banner photograph: a whole class, not a corner of one.
+    classroomTables: await mediaByFilename(payload, 'kg-classroom-tables.jpg'),
     classroomGroup: await mediaByFilename(payload, 'kg-classroom-group.jpg'),
     classroomSeated: await mediaByFilename(payload, 'kg-classroom-seated.jpg'),
     playArea: await mediaByFilename(payload, 'kg-play-area.jpg'),
@@ -237,6 +238,14 @@ const main = async () => {
     handwashing: await mediaByFilename(payload, 'kg-handwashing.jpg'),
     smartBoard: await mediaByFilename(payload, 'kg-smart-board.jpg'),
     drawingClass: await mediaByFilename(payload, 'kg-drawing-class.jpg'),
+    // Supplied by SIWS on 2026-09-01, for the campus row.
+    playSlide: await mediaByFilename(payload, 'kg-play-slide.jpg'),
+    classroomFullClass: await mediaByFilename(payload, 'kg-classroom-full-class.jpg'),
+    outingPlaySpace: await mediaByFilename(payload, 'kg-outing-play-space.jpg'),
+    sportsDayWinners: await mediaByFilename(payload, 'kg-sports-day-winners.jpg'),
+    sportsDayPodium: await mediaByFilename(payload, 'kg-sports-day-podium.jpg'),
+    // The News page leads on this one — the preparation rather than the prize.
+    danceRehearsal: await mediaByFilename(payload, 'kg-dance-rehearsal.jpg'),
     activityLiteracy: await mediaByFilename(payload, 'kg-activity-literacy.jpg'),
     activityCreative: await mediaByFilename(payload, 'kg-activity-creative.jpg'),
     activityMotor: await mediaByFilename(payload, 'kg-activity-motor.jpg'),
@@ -296,7 +305,9 @@ const main = async () => {
     slide: await mediaByFilename(payload, 'pre-primary-section-classroom-campus-images-5.jpg'),
   }
 
-  const missing = Object.entries(img).filter(([, id]) => id === null).map(([name]) => name)
+  const missing = Object.entries(img)
+    .filter(([, id]) => id === null)
+    .map(([name]) => name)
   if (missing.length > 0) {
     payload.logger.warn(
       `Some photographs are not in the media library yet (${missing.join(', ')}). Run \`npm run seed:media\` first for the full page.`,
@@ -304,8 +315,7 @@ const main = async () => {
   }
 
   /** Gallery entry, skipped entirely when the image is absent. */
-  const shot = (id: number | null, caption: string) =>
-    id === null ? [] : [{ image: id, caption }]
+  const shot = (id: number | null, caption: string) => (id === null ? [] : [{ image: id, caption }])
 
   /**
    * One tile on the achievement wall, skipped entirely when its photograph is
@@ -328,10 +338,23 @@ const main = async () => {
       addressLine2: 'Sion–Wadala Estate Road, Wadala',
       city: 'Mumbai',
       postalCode: '400031',
-      email: 'info@siws.edu.in',
+      email: 'info@siwsschool.edu.in',
       phone: '+91 98927 03893',
-      admissionsEmail: 'admissions@siws.edu.in',
-      contactEmail: 'info@siws.edu.in',
+      /*
+       * CORRECTED WITH THE CARDS, and these two matter more than the cards do.
+       *
+       * `admissionsEmail` is not display copy: `actions/enquiry.ts` reads it to
+       * decide where a submitted admission enquiry is DELIVERED (FR-ADM-03),
+       * falling back to `contactEmail` and then `email`. Both were on the short
+       * siws.edu.in domain while `email` above was on siwsschool.edu.in, so
+       * correcting only the two cards a parent reads would have left every
+       * enquiry they then sent going to the domain SIWS has just corrected.
+       *
+       * The same short domain is still on the other units and the portal. Those
+       * are their own sections' decisions and are untouched here.
+       */
+      admissionsEmail: 'admissions@siwsschool.edu.in',
+      contactEmail: 'info@siwsschool.edu.in',
       socialProfiles: [
         { platform: 'whatsapp', url: 'https://wa.me/919892703893', showFeed: false },
         {
@@ -470,14 +493,20 @@ const main = async () => {
         columns: '2',
         background: 'white',
         cards: [
+          /*
+           * siwsschool.edu.in, not siws.edu.in — corrected at SIWS's
+           * instruction (2026-09-02). The short form was on these two cards
+           * only; the unit's own `email` above has always been the long one,
+           * so the contact page was printing both domains at once.
+           */
           {
             title: 'Admissions',
             description:
-              'For enquiries about Jr. KG and Sr. KG admission — admissions@siws.edu.in',
+              'For enquiries about Jr. KG and Sr. KG admission — admissions@siwsschool.edu.in',
           },
           {
             title: 'General enquiries',
-            description: 'For anything else — info@siws.edu.in, +91 98927 03893',
+            description: 'For anything else — info@siwsschool.edu.in, +91 98927 03893',
           },
         ],
       },
@@ -516,7 +545,24 @@ const main = async () => {
            * back to the flat panel rather than losing its gradient and the
            * contrast that goes with it.
            */
-          ...(img.activityTable ? { image: img.activityTable } : {}),
+          /*
+           * A WHOLE CLASS, not a corner of one.
+           *
+           * The banner had been a small group at one table, which at 3px of
+           * blur behind a gradient read as an indistinct patch of colour — it
+           * could have been four children anywhere. This one is a full year
+           * group around both curved tables, so the thing that survives the
+           * blur is the scale of the room and how many children are in it,
+           * which is what a parent is at the top of this page to find out.
+           *
+           * `activityTable` stays in the library and keeps its place in the
+           * campus row below.
+           */
+          ...(img.classroomTables
+            ? { image: img.classroomTables }
+            : img.activityTable
+              ? { image: img.activityTable }
+              : {}),
           // Plain string: the hero's `intro` is a textarea, not rich text.
           intro:
             'Strong academic foundations for the SSC / State Board years ahead, a structured early-learning approach, and a safe, nurturing and child-friendly campus — with a focus on discipline, values and confidence.',
@@ -554,12 +600,20 @@ const main = async () => {
         },
         /**
          * The campus section, matching the approved page: a scrolling row of
-         * photographs, followed by the facilities written out as text.
+         * photographs, each captioned with the facility it shows.
          *
-         * Split into two blocks rather than one grid of captioned cards because
-         * the facilities list must stay readable when the photographs are not —
-         * a visitor on a slow connection, or one who cannot see the images, still
-         * gets the full list of what the campus has.
+         * This used to be followed by "What the campus offers", a card grid
+         * naming the same seven facilities in words. Two blocks saying the
+         * same thing back to back made the page argue with itself: a parent
+         * scrolled a row of photographs of the classrooms, then immediately
+         * read a card telling them the classrooms are spacious. The row is
+         * the better of the two — a photograph of the room is worth more than
+         * an adjective about it — so the cards have gone.
+         *
+         * What the cards carried and the photographs cannot — the canteen,
+         * the washrooms and the monitored entry, none of which are in this
+         * row — has moved into the intro line below, so removing the block
+         * does not quietly remove the facts with it.
          */
         {
           blockType: 'gallery',
@@ -568,7 +622,9 @@ const main = async () => {
           headingLevel: 'h2',
           layout: 'carousel',
           background: 'white',
-          intro: richText(['A child-friendly campus in Wadala.']),
+          intro: richText([
+            'A child-friendly campus in Wadala, with a pure vegetarian canteen cooking on site, washrooms fitted at child height and cleaned through the day, and monitored entry throughout.',
+          ]),
           images: [
             ...shot(img.classroomActivity, 'Spacious, well-ventilated classrooms'),
             ...shot(img.playArea, 'Safe play and activity area'),
@@ -576,69 +632,66 @@ const main = async () => {
             ...shot(img.teacherWithChildren, 'Supportive and trained school staff'),
             ...shot(img.classroomSeated, 'Dedicated activity rooms'),
             /*
+             * Freed up by the banner, which now carries the whole-class
+             * photograph instead. Eight tiles rather than seven also gives the
+             * loop a longer run before a visitor sees the first one come round
+             * again.
+             */
+            ...shot(img.activityTable, 'Low tables and chairs sized for small children'),
+            ...shot(img.childrenTogether, 'Room to play together between lessons'),
+            /*
              * The canteen tray and the washroom tap came off this row at the
              * school's request (2026-08-25). Both are also the two the media
              * seed flags as not looking like SIWS's own photography, so they
              * were the weakest of the nine either way. They stay in the
-             * library, and the facilities LIST below still names both.
+             * library, and the intro line above still names both.
              */
-            ...shot(img.smartBoard, 'Interactive smart boards in every classroom'),
-            ...shot(img.drawingClass, 'Quiet, focused work at every desk'),
-          ],
-        },
-        /*
-         * Cards rather than a two-column tick list.
-         *
-         * Seven ticks of equal weight gave the eye nothing to land on, so a
-         * parent had to read all seven to find the one they came for. A card
-         * with a picture on it can be recognised before it is read, which is
-         * the whole point of a facilities list.
-         *
-         * Seven items falls as four cards then three, and the renderer widens
-         * the last row so it fills the line rather than trailing off.
-         */
-        {
-          blockType: 'featureList',
-          heading: 'What the campus offers',
-          headingLevel: 'h3',
-          layout: 'cards',
-          background: 'white',
-          items: [
-            {
-              title: 'Spacious & Well-Ventilated Classrooms',
-              description: 'Bright, airy rooms designed for young learners.',
-              icon: 'classroom',
-            },
-            {
-              title: 'Secure & Child-Friendly Campus',
-              description: 'Monitored entry and child-safe infrastructure throughout.',
-              icon: 'security',
-            },
-            {
-              title: 'Safe Play & Activity Area',
-              description: 'Supervised space for games and structured play.',
-              icon: 'play',
-            },
-            {
-              title: 'Dedicated Activity Rooms',
-              description: 'Separate spaces for art, music and hands-on learning.',
-              icon: 'activity',
-            },
-            {
-              title: 'Pure Veg Canteen',
-              description: 'Hygienic, purely vegetarian food prepared on campus.',
-              icon: 'canteen',
-            },
-            {
-              title: 'Clean & Hygienic Washrooms',
-              description: 'Child-height fittings, cleaned and checked through the day.',
-              icon: 'hygiene',
-            },
-            {
-              title: 'Supportive & Trained School Staff',
-              description: 'Attentive staff experienced with early years children.',
-              icon: 'staff',
-            },
+            /*
+             * THE SMART BOARD AND THE DESK ROW CAME OFF TOO (2026-09-02), and
+             * for a harder reason: neither photograph is of this section. The
+             * child at the board and the boys at the desks wear a different
+             * uniform from the Kindergarten's yellow and green — they are older
+             * pupils from elsewhere in the school — and a row headed "Campus
+             * and Facilities" on the Kindergarten site is read as this
+             * section's own rooms and its own children.
+             *
+             * Both stay in the media library, and both are still on the Campus
+             * Gallery further down this file. The same objection applies there;
+             * it is raised with SIWS at the end of the run rather than acted on
+             * here, because this instruction was about the campus row.
+             */
+            /*
+             * Added 2026-09-01. The first two are the campus: the play
+             * equipment this row had no photograph of at all, and a full class
+             * at the curved tables the row already describes in words.
+             *
+             * THE LAST TWO ARE NOT FACILITIES, and are captioned so they
+             * cannot be read as any. One is an outing to a commercial play
+             * centre whose branding fills the frame, the other a prize day.
+             * Both were asked for by name, so both are here; but a parent
+             * scanning a row headed "Campus and Facilities" is reading it as a
+             * list of what the school HAS, and an indoor play centre the
+             * school visited is not something it has. The Student Life gallery
+             * and the achievements wall are where each of them says something
+             * true — see the note to SIWS at the end of this run.
+             */
+            ...shot(img.playSlide, 'A covered play area with slide and climbing frame'),
+            ...shot(img.classroomFullClass, 'Bright classrooms with child-height furniture'),
+            ...shot(img.outingPlaySpace, 'A class outing to an indoor play space'),
+            ...shot(img.sportsDayWinners, 'Prize day at the Kindergarten annual sports'),
+            /*
+             * Added 2026-09-02, in place of the two that came off. Both are
+             * this section's own children, which the two they replace were
+             * not — that was the point of the swap.
+             *
+             * Neither is a facility, and the captions say what each actually
+             * shows rather than dressing an occasion up as a room. With these
+             * two the row is nine facilities and four occasions, which is the
+             * heading's problem rather than the photographs' — see the note to
+             * SIWS at the end of the run.
+             */
+            ...shot(img.awardNatyaTarang, 'A group dance at the Natya Tarang inter-school competition'),
+            ...shot(img.sportsDayPodium, 'On the podium at the Kindergarten sports day'),
           ],
         },
         {
@@ -731,8 +784,8 @@ const main = async () => {
             /**
              * Rewritten against SIWS's own answers. The list previously offered
              * general claims from the landing page; these are the specifics the
-             * school actually gave — a KG-to-PG pathway, Educom, the ground and
-             * garden, and staff with 18 to 30 years behind them.
+             * school actually gave — a KG-to-PG pathway, the digital board, the
+             * ground and garden, and staff with 18 to 30 years behind them.
              */
             {
               title: 'A pathway from KG to PG',
@@ -841,34 +894,27 @@ const main = async () => {
             },
           ],
         },
-        {
-          /**
-           * REPLACED, not extended.
-           *
-           * This block previously carried three quotes from the approved
-           * landing page, each attributed only to "Parent". Nobody said them —
-           * they were written as design copy — and an unattributed testimonial
-           * on a school site is fabricated social proof about real families.
-           * SIWS has now supplied one genuine testimonial, so the invented
-           * three are gone and the real one stands alone.
-           */
-          blockType: 'testimonials',
-          heading: 'What parents say',
-          accentWord: 'parents',
-          headingLevel: 'h2',
-          background: 'white',
-          quotes: [
-            {
-              quote:
-                'The curriculum perfectly balances fun with learning. The Pre-Primary team lays a rock-solid foundation for future grades. I’m happy to have enrolled my child here.',
-              // The name is published as SIWS supplied it. A parent's full name
-              // is their personal data, so SIWS should hold their permission —
-              // flagged at the end of the run.
-              attribution: 'Kaveri Rajbhansi',
-              detail: 'Parent',
-            },
-          ],
-        },
+        /*
+         * NO TESTIMONIALS BLOCK ON THIS PAGE (removed 2026-09-02).
+         *
+         * It carried the single genuine quote SIWS supplied, attributed to a
+         * named parent. One quote is a thin section — a heading, a rule and a
+         * sentence, taking a full band of the page to say what one family
+         * thought — and the Parent Feedback page carries the fuller set, which
+         * is where a reader who wants opinions goes.
+         *
+         * Removing it also retires the open question about that parent's name:
+         * a full name is personal data, the run used to end by asking SIWS to
+         * confirm they held permission to publish it, and the page no longer
+         * publishes it.
+         *
+         * BE CLEAR ABOUT WHAT WENT. That quote was the ONE attributed
+         * testimonial SIWS had supplied, and it is not preserved anywhere else
+         * — `KG_PARENT_QUOTES`, which the Parent Feedback page uses, is a
+         * different set, all of it signed only "Parent". If SIWS wants a named
+         * testimonial back on this page, the wording has to come from them
+         * again; it is in this file's history, not in this file.
+         */
         {
           blockType: 'accordion',
           heading: 'Frequently Asked Questions',
@@ -1206,6 +1252,20 @@ const main = async () => {
             { title: 'Finger, thumb and palm painting', icon: 'activity' },
           ],
         },
+        /*
+         * A TRANSPORT CARD WAS HERE, and is gone at SIWS's instruction
+         * (2026-09-01) — the same page, for the same reason, that came off
+         * Primary. SIWS has supplied no operator, no route and no fare, so it
+         * never said anything a parent could act on; `institution.ts` carries
+         * the standing warning about it.
+         *
+         * The page is dropped from Kindergarten's menu by `UNIT_OMIT` in
+         * `seed/nav.ts` — which otherwise recreates it as a placeholder — and
+         * unpublished by `UNIT_UNPUBLISH` in the same file, so its address
+         * 404s and it leaves the quick-links panel. Removing this card is the
+         * third part of that: a signpost pointing at a page that is no longer
+         * there is worse than no signpost.
+         */
         {
           blockType: 'cardGrid',
           heading: 'More on school life',
@@ -1224,19 +1284,6 @@ const main = async () => {
                     label: 'See the photographs',
                     type: 'internal',
                     reference: LINK_TO('/kindergarten/gallery'),
-                  },
-                },
-              ],
-            },
-            {
-              title: 'Transport',
-              description: 'How children travel to and from the Wadala campus.',
-              cta: [
-                {
-                  link: {
-                    label: 'Transport details',
-                    type: 'internal',
-                    reference: LINK_TO('/kindergarten/transport'),
                   },
                 },
               ],
@@ -1264,22 +1311,34 @@ const main = async () => {
       slug: 'achievements',
       title: 'Achievements',
       intro:
-        'The competitions our four- and five-year-olds have entered, the prizes they have brought back, and the quieter milestones that never come with a trophy.',
+        'The competitions our Kindergarten children take part in, the prizes they bring home, and the everyday milestones we celebrate along the way.',
+      /*
+       * The one entry kept from the old Updates drop-down, and now a
+       * top-level link in its own right (2026-09-01). `seed/nav.ts` gives
+       * it the slot Updates held, just after Admissions; the order below
+       * only matters if this seed is the last one run.
+       */
       showInNav: true,
       navLabel: 'Achievements',
-      navOrder: 42,
+      navOrder: 35,
       metaDescription:
         'Prizes, competitions and prize days in the SIWS Kindergarten section in Wadala — and the early literacy, number and social milestones behind them.',
       layout: [
         {
+          /*
+           * NO HEADING AND NO INTRO ON THIS BLOCK.
+           *
+           * The page's own title and intro already say that this is the
+           * Achievements page and what is on it, and the wall is the first
+           * thing under them. A second heading immediately beneath, saying
+           * much the same in different words, was one line of furniture
+           * between the reader and the photographs.
+           *
+           * The field is optional and `SectionHeading` renders nothing when it
+           * is empty, so the wall simply starts at the top of its band.
+           */
           blockType: 'achievementWall',
-          heading: 'Competitions and prize days',
-          accentWord: 'prize days',
-          headingLevel: 'h2',
           background: 'white',
-          intro: richText([
-            'Kindergarten children enter interschool competitions alongside the older sections, and the section holds its own prize days through the year. Open any photograph to see it properly.',
-          ]),
           items: [
             /*
              * THE LARGE TILE. Chosen because it is the least ambiguous thing
@@ -1337,14 +1396,35 @@ const main = async () => {
               when: '2024–25',
             }),
             /*
-             * NO BADGE ON THIS ONE, deliberately. Six children entered and the
-             * photograph shows their numbered cards, not a prize — so the tile
-             * says they took part and stops there. The block leaves the badge
-             * off when no prize is named, which is the whole reason it is an
-             * optional field.
+             * THE BADGE NAMES THE ENTRY, NOT A PRIZE.
+             *
+             * This tile had no badge at all, which was honest but left it the
+             * odd one out in a row of nine — a gap where every neighbour has a
+             * yellow pill reads as a tile that failed to load rather than a
+             * deliberate silence. (The badges wait for hover now, so the gap is
+             * only ever seen on one tile at a time. It still reads as a fault
+             * when it is seen, which is why this stays.)
+             *
+             * So it gets a badge that says what the photograph actually shows.
+             * The children are wearing numbered entrant cards; there is no
+             * trophy and no certificate anywhere in the frame, and nothing in
+             * the library records a placing. "Participation" is therefore the
+             * strongest claim the evidence supports, and the tile now matches
+             * its neighbours without asserting a win nobody recorded.
+             *
+             * It reads as a badge because it is the ordinary word for one —
+             * every neighbour names a thing received, and this names the entry
+             * itself. An earlier draft counted the children instead ("Six
+             * entrants"), which stated a fact but did not sound like any label
+             * a school would print.
+             *
+             * No `when`: the year of this competition is not recorded against
+             * the photograph, and a guessed one on a prize wall is worse than
+             * none.
              */
             ...won(img.prizeFancyDressEntrants, {
               title: 'Interschool fancy dress',
+              award: 'Participation',
               detail:
                 'Six entrants and six costumes made at home — a fruit seller, a pilot, a beauty queen, a campaigner, Spider-Man and a bunch of grapes.',
             }),
@@ -1434,7 +1514,22 @@ const main = async () => {
       title: 'Updates',
       intro:
         'News, achievements and the documents you may need — the parts of the Kindergarten section that change through the year.',
-      showInNav: true,
+      /*
+       * OFF THE MENU, ON THE SITE (2026-09-01).
+       *
+       * SIWS asked for the Updates drop-down to come out of the
+       * Kindergarten bar and for Achievements to stand on its own there
+       * instead. This page is not deleted and not unpublished: it still
+       * answers at /kindergarten/updates and its card grid below is still
+       * the one place that gathers News, Achievements and the Download
+       * Centre, so anything linking here keeps working.
+       *
+       * The flag has to be false HERE as well as in `seed/nav.ts`, which
+       * clears it: whichever of the two seeds runs last wins, and with
+       * `showInNav: true` still written here a re-run of `npm run seed:kg`
+       * would put the drop-down straight back.
+       */
+      showInNav: false,
       navLabel: 'Updates',
       navOrder: 40,
       metaDescription:
@@ -1450,20 +1545,42 @@ const main = async () => {
           cards: [
             {
               title: 'News & Events',
-              description:
-                'What the section marks through the year, and anything coming up.',
-              cta: [{ link: { label: 'See news and events', type: 'internal', reference: LINK_TO('/kindergarten/news') } }],
+              description: 'What the section marks through the year, and anything coming up.',
+              cta: [
+                {
+                  link: {
+                    label: 'See news and events',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/news'),
+                  },
+                },
+              ],
             },
             {
               title: 'Achievements',
-              description:
-                'What the children are working towards, and what they have won.',
-              cta: [{ link: { label: 'See achievements', type: 'internal', reference: LINK_TO('/kindergarten/achievements') } }],
+              description: 'What the children are working towards, and what they have won.',
+              cta: [
+                {
+                  link: {
+                    label: 'See achievements',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/achievements'),
+                  },
+                },
+              ],
             },
             {
               title: 'Download Centre',
               description: 'Forms, circulars and the documents parents are asked for.',
-              cta: [{ link: { label: 'Go to downloads', type: 'internal', reference: LINK_TO('/kindergarten/download-centre') } }],
+              cta: [
+                {
+                  link: {
+                    label: 'Go to downloads',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/download-centre'),
+                  },
+                },
+              ],
             },
           ],
         },
@@ -1492,14 +1609,168 @@ const main = async () => {
 
     {
       slug: 'news',
-      title: 'News & Events',
+      title: 'News',
       intro:
-        'The Kindergarten year has a shape to it. These are the things that come round every year — dated notices appear here as they are announced.',
+        'What the Kindergarten section has been doing — the competitions it has entered, the days it has marked, and the rehearsals behind them.',
       showInNav: true,
-      navLabel: 'News & Events',
+      navLabel: 'News',
       navOrder: 41,
       metaDescription:
-        'Events and celebrations through the year at the SIWS Kindergarten section, Wadala.',
+        'Recent news from the SIWS Kindergarten section in Wadala — interschool competitions, sports day, outings and celebrations.',
+      layout: [
+        /*
+         * THE SAME EVENTS AS THE ACHIEVEMENTS PAGE, DELIBERATELY FRAMED THE
+         * OTHER WAY ROUND.
+         *
+         * The achievements wall answers "what has this section won": prize
+         * badges, certificates, trophies. Asked for a news page, the easy
+         * thing is to list those events again and end up with a second trophy
+         * cabinet, which is the one thing this page was asked not to be.
+         *
+         * So it leads on a REHEARSAL — no prize, no certificate, thirteen
+         * children barefoot on floor marks a week before they go on stage —
+         * and the entries that follow carry the story rather than the award.
+         * Two of them (Independence Day, the outing) were never achievements
+         * at all and have had nowhere to live until now.
+         *
+         * NOTHING HERE IS NEW COPY. Every sentence is the detail SIWS already
+         * supplied for the achievements page, re-cut; where no date was
+         * recorded, none is shown. A guessed date on a news page is read as
+         * fact, and the block's `date` field is optional for that reason.
+         */
+        {
+          blockType: 'newsGrid',
+          heading: 'Lately in the Kindergarten',
+          accentWord: 'Lately',
+          headingLevel: 'h2',
+          background: 'white',
+          intro: richText([
+            'The section enters interschool competitions through the year, and marks the days between them. Dated notices reach parents through the school diary.',
+          ]),
+          items: [
+            ...(img.danceRehearsal
+              ? [
+                  {
+                    photo: img.danceRehearsal,
+                    title: 'Rehearsing in the hall, the week before',
+                    summary:
+                      'The section takes part in interschool dance competitions through the year. This is the week before one of them — the hall cleared, floor marks down, and the class practising barefoot in school uniform.',
+                  },
+                ]
+              : []),
+            ...(img.prizeIgnitedMind
+              ? [
+                  {
+                    photo: img.prizeIgnitedMind,
+                    title: 'Ignited Mind Lab — Mental Maths Competition',
+                    date: '2025',
+                    summary:
+                      'Eleven children came back with a Certificate of Achievement and a gold medal each, having secured an A grade in the Jr. KG and Sr. KG rounds.',
+                  },
+                ]
+              : []),
+            ...(img.prizeFancyDress
+              ? [
+                  {
+                    photo: img.prizeFancyDress,
+                    title: 'Fancy dress at Our Lady’s Garden, Auxilium Convent',
+                    summary:
+                      'The interschool fancy dress competition. The costumes were made at home on an environmental theme — a painted globe, a model of the Earth, a windmill and a solar panel.',
+                  },
+                ]
+              : []),
+            ...(img.awardNatyaTarang
+              ? [
+                  {
+                    photo: img.awardNatyaTarang,
+                    title: 'A group dance at Natya Tarang',
+                    summary:
+                      'The section’s entry at the Natya Tarang inter-school competition — a group dance in regional costume, with the two teachers who taught the piece.',
+                  },
+                ]
+              : []),
+            ...(img.classroomFullClass
+              ? [
+                  {
+                    photo: img.classroomFullClass,
+                    title: 'Independence Day in the classroom',
+                    summary:
+                      'The whole class with the tricolour they made themselves, in painted handprints, pinned to the board behind them.',
+                  },
+                ]
+              : []),
+            ...(img.prizeSports
+              ? [
+                  {
+                    photo: img.prizeSports,
+                    title: 'The annual school sports',
+                    summary:
+                      'The Kindergarten section’s own sports day, and the prize distribution that closes it.',
+                  },
+                ]
+              : []),
+            ...(img.outingPlaySpace
+              ? [
+                  {
+                    photo: img.outingPlaySpace,
+                    title: 'A class outing to an indoor play space',
+                    summary:
+                      'The whole class out together for the afternoon — one of the outings the section makes through the year.',
+                  },
+                ]
+              : []),
+          ],
+        },
+        {
+          blockType: 'callToAction',
+          heading: 'Seeing it for yourself',
+          accentWord: 'yourself',
+          headingLevel: 'h2',
+          background: 'sea',
+          body: richText([
+            'Photographs from the celebrations, the classrooms and the play area are gathered on the Campus Gallery.',
+          ]),
+          links: [
+            {
+              link: {
+                label: 'Open the Campus Gallery',
+                type: 'internal',
+                reference: LINK_TO('/kindergarten/gallery'),
+                appearance: 'primary',
+              },
+            },
+          ],
+        },
+      ],
+    },
+
+    // ------------------------------------------------------------- EVENTS
+    /*
+     * News and Events are two pages, and this is the second of them.
+     *
+     * Splitting them is not a preference, it is what the two sets of content
+     * are: News is dated and has happened, Events is the shape of the year and
+     * happens again. They were on one page called "News & Events" — the
+     * recurring calendar sitting under a heading that promised recent news —
+     * which is why Primary split the same page in two, and this follows it.
+     *
+     * The whole of this page's content was ALREADY WRITTEN, on the News page,
+     * where it was the only thing on it. Nothing is invented here: the six
+     * activities are SIWS's own list and the note about the school diary is
+     * the sentence that always accompanied them. Events was an empty
+     * placeholder until now, which is why it was kept out of the menu; it has
+     * content, so it goes in.
+     */
+    {
+      slug: 'events',
+      title: 'Events',
+      intro:
+        'The shape of the Kindergarten year — what comes round every year, and where the dates are published.',
+      showInNav: true,
+      navLabel: 'Events',
+      navOrder: 42,
+      metaDescription:
+        'The Kindergarten calendar at SIWS Wadala — festival celebrations, fancy dress, dance, sports and activity days through the year.',
       layout: [
         {
           blockType: 'featureList',
@@ -1523,19 +1794,19 @@ const main = async () => {
         },
         {
           blockType: 'callToAction',
-          heading: 'Seeing it for yourself',
-          accentWord: 'yourself',
+          heading: 'What has happened lately',
+          accentWord: 'lately',
           headingLevel: 'h2',
           background: 'sea',
           body: richText([
-            'Photographs from the celebrations, the classrooms and the play area are gathered on the Campus Gallery.',
+            'The competitions the section has entered, the days it has marked and the rehearsals behind them are on the News page.',
           ]),
           links: [
             {
               link: {
-                label: 'Open the Campus Gallery',
+                label: 'Read the latest news',
                 type: 'internal',
-                reference: LINK_TO('/kindergarten/gallery'),
+                reference: LINK_TO('/kindergarten/news'),
                 appearance: 'primary',
               },
             },
@@ -1562,8 +1833,7 @@ const main = async () => {
     {
       slug: 'admissions-faq',
       title: 'Admissions FAQ',
-      intro:
-        'The questions the office is asked most often about joining the Kindergarten section.',
+      intro: 'The questions the office is asked most often about joining the Kindergarten section.',
       showInNav: true,
       navLabel: 'Admissions FAQ',
       navOrder: 2,
@@ -1877,6 +2147,156 @@ const main = async () => {
       ],
     },
 
+    /* ------------------------------------------------ RULES AND UNIFORM ---
+     *
+     * Written from the guidelines SIWS supplied, and split into the two things
+     * a parent actually comes here to do: find out what to buy, and find out
+     * what is expected of them.
+     *
+     * THE RULES ARE CARDS WITH TITLES, not the numbered sentences as supplied.
+     * Seven sentences of near-identical length set as a list is a wall — a
+     * parent looking for the attendance requirement has to read six other
+     * rules to find it. Giving each one a two- or three-word title puts the
+     * subject first, so the page can be scanned and the sentence read only
+     * once the right rule has been found. The wording of each rule is
+     * otherwise the school's own.
+     *
+     * "Pupil" is not used, here or anywhere else on the site, per SIWS's
+     * instruction of 2026-08-27. The supplied text says "pupils"; this says
+     * "children", which is what the rest of the Kindergarten section says.
+     */
+    {
+      slug: 'school-rules',
+      title: 'Rules, Discipline & Uniform',
+      intro:
+        'What children wear to school, and what we ask of families to keep the day running smoothly.',
+      showInNav: true,
+      navLabel: 'Rules & Uniform',
+      navOrder: 9,
+      metaDescription:
+        'The Kindergarten uniform at SIWS Wadala — girls, boys, P.T. days and footwear — and the general school rules on attendance, punctuality, recess food and safety.',
+      layout: [
+        /*
+         * A SPECIFICATION, which is what this is: four labels and what each
+         * one means. A parent arrives knowing whether they need the girls' row
+         * or the footwear row, so the labels hold their own column and the eye
+         * finds the right line without reading the other three.
+         *
+         * It was cards, then a ticked list, and both were the wrong shape.
+         * Cards set four one-sentence specifications side by side, which reads
+         * as four categories to compare rather than a table to consult, and
+         * gave each a 96px disc holding a tick. The list layout kept the tick
+         * and dropped the disc, which was smaller but no more meaningful —
+         * four identical ticks over a frock, a shirt, a P.T. kit and a pair of
+         * shoes say nothing about any of them, and there is nothing in the
+         * icon set to put there instead.
+         */
+        {
+          blockType: 'featureList',
+          heading: 'The uniform',
+          accentWord: 'uniform',
+          headingLevel: 'h2',
+          layout: 'spec',
+          background: 'white',
+          intro: richText([
+            'Terrycot, in lemon yellow and mehendi green. The same cloth for both, so a class photograph reads as one group.',
+          ]),
+          items: [
+            {
+              title: 'Girls',
+              description:
+                'A terrycot frock in lemon yellow and mehendi green, with checks and dots.',
+            },
+            {
+              title: 'Boys',
+              description:
+                'A lemon yellow terrycot shirt with dots, and mehendi green checked half pants.',
+            },
+            {
+              title: 'P.T. uniform',
+              description: 'Worn every Wednesday, in place of the regular uniform.',
+            },
+            {
+              title: 'Footwear',
+              description:
+                'All-season black shoes with a Velcro strap, and lemon yellow socks with stripes.',
+            },
+          ],
+        },
+        /*
+         * Cards on the tinted ground, so the two sections of this page do not
+         * read as one long run of white boxes. Seven falls as four then three,
+         * and the second row widens to fill the line.
+         *
+         * ICONS, NOT NUMBERS. These were numbered 1–7, which told a parent
+         * they were in an order — they are not; no rule here comes before
+         * another — and set the reader counting rather than reading. Each card
+         * also carried a tick below its text, seven of them, identical, saying
+         * nothing about which rule it sat under.
+         *
+         * An icon per rule does the job the numeral was pretending to: the
+         * clock is punctuality, the calendar is attendance, the rupee is fees.
+         * A parent looking for one rule can now find it without reading the
+         * other six, which is the whole reason these are cards with titles
+         * rather than the seven sentences as supplied.
+         */
+        {
+          blockType: 'featureList',
+          heading: 'General rules',
+          accentWord: 'rules',
+          headingLevel: 'h2',
+          layout: 'cards',
+          marker: 'icon',
+          background: 'tint',
+          intro: richText([
+            'These apply through the year. Anything you are unsure about, the school office will answer.',
+          ]),
+          items: [
+            {
+              title: 'Diary and identity card',
+              icon: 'diary',
+              description:
+                'Every child must carry the school diary and the identity card to school daily.',
+            },
+            {
+              title: 'Arriving on time',
+              icon: 'punctuality',
+              description: 'Parents must ensure that their child reaches school on time.',
+            },
+            {
+              title: 'Fees',
+              icon: 'fees',
+              description: 'Parents are advised to remit the fees for the whole year.',
+            },
+            {
+              title: 'Attendance',
+              icon: 'attendance',
+              description:
+                'A minimum attendance of 75% of the total number of working days is required of every child.',
+            },
+            {
+              title: 'No gold ornaments',
+              icon: 'valuables',
+              description:
+                'Children are requested not to wear any gold ornaments, for the sake of their personal safety.',
+            },
+            {
+              title: 'Food at recess',
+              icon: 'canteen',
+              description:
+                'Children should bring only dry food for recess. Please avoid oily and liquid food.',
+            },
+            {
+              title: 'School property',
+              icon: 'premises',
+              description:
+                'Any damage to school property — inside or outside the classrooms, or anywhere within the school premises — is to be made good by those responsible, or by their parents.',
+            },
+          ],
+        },
+      ],
+    },
+
     // ------------------------------------------------------------ ADMISSIONS
     {
       slug: 'admissions',
@@ -1923,9 +2343,9 @@ const main = async () => {
                 'Admissions for the next academic year begin in November. It is worth contacting us before then so we can tell you when forms are available.',
             },
             {
-              title: 'Collect and submit the form at the school',
+              title: 'Admission forms are handled in person at the school office, not online',
               description:
-                'Admission forms are handled in person at the school office, not online.',
+                'Admission forms are available at the school office and must be collected and submitted in person. Online submission is not available.',
             },
             {
               title: 'Send us an enquiry any time',
@@ -2014,7 +2434,6 @@ const main = async () => {
         },
       ],
     },
-
   ]
 
   // -- Faculty (FR-FAC-01) -------------------------------------------------
@@ -2077,14 +2496,20 @@ const main = async () => {
     }
     if (value && typeof value === 'object') {
       return Object.fromEntries(
-        Object.entries(value as Record<string, unknown>).map(([key, item]) => [key, stripMarkers(item)]),
+        Object.entries(value as Record<string, unknown>).map(([key, item]) => [
+          key,
+          stripMarkers(item),
+        ]),
       )
     }
     return value
   }
 
   for (const page of pages) {
-    const result = await upsertPage({ ...page, layout: stripMarkers(page.layout) as SeedPage['layout'] })
+    const result = await upsertPage({
+      ...page,
+      layout: stripMarkers(page.layout) as SeedPage['layout'],
+    })
     idBySlug.set(page.slug, result.id as number)
     if (result.created) created += 1
     else updated += 1
@@ -2148,7 +2573,8 @@ const main = async () => {
           if (!raw.includes('__linkTo')) return true
           const marker = raw.match(/"__linkTo":"([^"]+)"/)?.[1] ?? ''
           const parts = marker.split('/').filter(Boolean)
-          const slug = parts.length === 1 && parts[0] === 'gallery' ? '__portal-gallery' : (parts.pop() ?? '')
+          const slug =
+            parts.length === 1 && parts[0] === 'gallery' ? '__portal-gallery' : (parts.pop() ?? '')
           if (idBySlug.has(slug)) return true
           unresolved.push(marker)
           return false
@@ -2167,7 +2593,8 @@ const main = async () => {
          * the whole-group wall would quietly point at the section's own.
          */
         const parts = marker.split('/').filter(Boolean)
-        const slug = parts.length === 1 && parts[0] === 'gallery' ? '__portal-gallery' : (parts.pop() ?? '')
+        const slug =
+          parts.length === 1 && parts[0] === 'gallery' ? '__portal-gallery' : (parts.pop() ?? '')
         const id = idBySlug.get(slug)
         if (id === undefined) {
           unresolved.push(marker)
@@ -2176,7 +2603,10 @@ const main = async () => {
         return { relationTo: 'pages', value: id }
       }
       return Object.fromEntries(
-        Object.entries(value as Record<string, unknown>).map(([key, item]) => [key, resolveLinks(item)]),
+        Object.entries(value as Record<string, unknown>).map(([key, item]) => [
+          key,
+          resolveLinks(item),
+        ]),
       )
     }
     return value
@@ -2208,8 +2638,16 @@ const main = async () => {
   for (const question of [
     'FEE PERIOD — the fee is given as "Jr.KG & Sr.KG 65K" with no period. The page publishes ₹65,000 and asks families to confirm with the office, because a guessed "per year" is what a family plans around. Is it annual, per term, or something else? Does it include any other charge?',
     'CAMPUS — the endowment register names a K.G. Section at Wadala and one at Matunga, but this document does not say which campus these five teachers and these timings belong to. No campus is recorded against any of them. Does Matunga have its own KG team and timings?',
-    'TESTIMONIAL — the parent’s full name is published as supplied. Please confirm SIWS holds that parent’s permission to publish it (DPDPA 2023), or we will shorten it to an initial.',
+    /*
+     * The TESTIMONIAL question is gone with the block it was about. It asked
+     * SIWS to confirm they held the parent's permission to publish a full name
+     * (DPDPA 2023); the home page no longer publishes it, so the question no
+     * longer has an answer worth chasing. Put it back with the block if a named
+     * testimonial ever returns.
+     */
     'DAY CARE — left blank in the document. Wadala Primary answered "Not applicable". Does the KG section offer after-school care?',
+    'CAMPUS GALLERY — the smart-board photograph and the row of boys at desks were taken off the home page campus row on 2026-09-02 because the children in them are not from this section: the uniform is not the Kindergarten’s yellow and green. Both are still on the Campus Gallery page. Should they come off there too, or are they wanted as pictures of the wider school?',
+    'THE CAMPUS ROW NOW CARRIES FOUR OCCASIONS — an outing, a prize day, the Natya Tarang dance and the sports podium — alongside nine photographs of rooms and equipment. All four were asked for by name and each is captioned as what it is, but "Campus and Facilities" reads as a list of what the school HAS. Should the heading change to something that covers both, e.g. "Life in our Kindergarten"?',
   ]) {
     payload.logger.warn(`  • ${question}`)
   }

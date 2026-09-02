@@ -89,6 +89,14 @@ const SOCIAL_LABEL: Record<string, string> = {
  */
 export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
   const year = new Date().getFullYear()
+
+  /**
+   * Both office numbers, in the order the school gives them, with the
+   * blanks dropped so a section carrying one prints one.
+   */
+  const phones = [unit?.phone, unit?.phoneAlt].filter(
+    (value): value is string => typeof value === 'string' && value.length > 0,
+  )
   const social = (unit?.socialProfiles ?? []).filter(
     (profile) => typeof profile.url === 'string' && profile.url.length > 0,
   )
@@ -255,15 +263,29 @@ export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
                   </p>
                 ) : null}
 
-                {unit?.phone ? (
+                {/*
+                  ONE LINK PER NUMBER, rather than one link for a pair.
+
+                  A `tel:` href holds a single number: two in it dials
+                  neither, which is why the unit carries `phone` and
+                  `phoneAlt` as separate fields. They are printed on one
+                  line so the office reads as one contact with two lines
+                  into it, and each half is separately tappable.
+                */}
+                {phones.length > 0 ? (
                   <p>
-                    {/* Stripping spaces keeps the tel: target dialable. */}
-                    <a
-                      href={`tel:${unit.phone.replace(/[^\d+]/g, '')}`}
-                      className="underline-offset-4 hover:text-white hover:underline"
-                    >
-                      {unit.phone}
-                    </a>
+                    {phones.map((number, index) => (
+                      <span key={number}>
+                        {index > 0 ? ' or ' : ''}
+                        {/* Stripping spaces keeps the tel: target dialable. */}
+                        <a
+                          href={`tel:${number.replace(/[^\d+]/g, '')}`}
+                          className="underline-offset-4 hover:text-white hover:underline"
+                        >
+                          {number}
+                        </a>
+                      </span>
+                    ))}
                   </p>
                 ) : null}
               </address>

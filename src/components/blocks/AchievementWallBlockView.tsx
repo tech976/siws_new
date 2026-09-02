@@ -37,19 +37,33 @@ export const AchievementWallBlockView = ({ block }: { block: AchievementWallBloc
 
   if (items.length === 0) return null
 
+  /*
+   * Both are optional, and a wall is allowed to open straight onto the
+   * photographs — the Kindergarten one does, because the page title and intro
+   * directly above it already say what the wall is.
+   *
+   * This has to be decided HERE rather than in the wall. `SectionHeading`
+   * returns null when there is no heading, but the element itself is still a
+   * truthy child, so the wall could not tell an empty preamble from a real one
+   * and would keep spacing itself away from nothing.
+   */
+  const preamble = block.heading || block.intro ? (
+    <>
+      <SectionHeading
+        heading={block.heading}
+        accentWord={block.accentWord}
+        level={block.headingLevel}
+        className="mb-4"
+      />
+      {block.intro ? (
+        <RichText data={block.intro} className="siws-centre mx-auto max-w-3xl" />
+      ) : null}
+    </>
+  ) : null
+
   return (
     <Section background={block.background as BlockBackground}>
-      <AchievementWall items={items}>
-        <SectionHeading
-          heading={block.heading}
-          accentWord={block.accentWord}
-          level={block.headingLevel}
-          className="mb-4"
-        />
-        {block.intro ? (
-          <RichText data={block.intro} className="siws-centre mx-auto max-w-3xl" />
-        ) : null}
-      </AchievementWall>
+      <AchievementWall items={items}>{preamble}</AchievementWall>
     </Section>
   )
 }

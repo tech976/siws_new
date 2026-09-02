@@ -1,0 +1,3117 @@
+[
+  {
+    "id": 143,
+    "title": "Matunga campus",
+    "intro": "The Primary Section at Matunga — Grades 1 to 4, opened within two years of the school’s founding.",
+    "layout": [
+      {
+        "id": "6a757387a2995f4918d313de",
+        "eyebrow": "Maharashtra State Board | Standards I to IV",
+        "title": "SIWS Primary School, Matunga",
+        "accentWord": "Matunga",
+        "intro": "A journey of learning, growing and achieving — building tomorrow’s achievers through personalised learning, innovative teaching, strong values and a nurturing environment from the very first step.",
+        "image": null,
+        "background": "brand",
+        "blockName": null,
+        "highlights": [],
+        "links": [],
+        "blockType": "hero"
+      },
+      {
+        "id": "6a757387a2995f4918d313e3",
+        "heading": "A legacy parents trust",
+        "intro": null,
+        "image": null,
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "stats": [
+          {
+            "id": "6a757387a2995f4918d313df",
+            "value": "1934",
+            "label": "SIWS founded"
+          },
+          {
+            "id": "6a757387a2995f4918d313e0",
+            "value": "1936",
+            "label": "Matunga Primary opened"
+          },
+          {
+            "id": "6a757387a2995f4918d313e1",
+            "value": "A Grade",
+            "label": "Department of Education"
+          },
+          {
+            "id": "6a757387a2995f4918d313e2",
+            "value": "State Board",
+            "label": "Maharashtra"
+          }
+        ],
+        "blockType": "statistics"
+      },
+      {
+        "id": "6a757387a2995f4918d313e4",
+        "heading": "SIWS Primary School, Matunga",
+        "content": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "A journey of learning, growing and achieving. The school provides a seamless educational pathway from Standard I to Standard IV, with a strong focus on knowledge, values, creativity and confidence.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              },
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "Building tomorrow’s achievers through personalised learning, innovative teaching, strong values, and a nurturing environment from the very first step.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "backgroundImage": null,
+        "headingLevel": "h2",
+        "accentWord": "Matunga",
+        "width": "normal",
+        "background": "white",
+        "blockName": null,
+        "blockType": "richText"
+      },
+      {
+        "id": "6a757387a2995f4918d313e5",
+        "heading": "How Matunga began",
+        "content": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "SIWS School made a humble beginning in the year 1934 with just 4 students at Shivaji Park. Within the next two years the Primary Section was opened at Matunga, and in order to cope with the heavy demand for admission the Wadala School was opened.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              },
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "Years of dedication, learning and success have shaped our journey of nurturing confident and compassionate young minds.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "backgroundImage": null,
+        "headingLevel": "h2",
+        "accentWord": "Matunga",
+        "width": "narrow",
+        "background": "sea",
+        "blockName": null,
+        "blockType": "richText"
+      },
+      {
+        "id": "6a757387a2995f4918d313ed",
+        "heading": "Subjects taught at Matunga",
+        "intro": null,
+        "eyebrow": null,
+        "footnote": null,
+        "headingLevel": "h2",
+        "accentWord": "Subjects",
+        "layout": "list",
+        "marker": "tick",
+        "columns": "2",
+        "background": "white",
+        "blockName": null,
+        "items": [
+          {
+            "id": "6a757387a2995f4918d313e6",
+            "title": "English",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313e7",
+            "title": "Mathematics",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313e8",
+            "title": "Marathi",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313e9",
+            "title": "Environmental Studies",
+            "description": "Part 1 and Part 2.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313ea",
+            "title": "Art",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313eb",
+            "title": "Work Experience",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313ec",
+            "title": "Physical Training",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          }
+        ],
+        "blockType": "featureList"
+      },
+      {
+        "id": "6a757387a2995f4918d313f3",
+        "heading": "What the Matunga programme offers",
+        "intro": null,
+        "eyebrow": null,
+        "footnote": null,
+        "headingLevel": "h2",
+        "accentWord": "Matunga programme",
+        "layout": "list",
+        "marker": "tick",
+        "columns": "2",
+        "background": "tint",
+        "blockName": null,
+        "items": [
+          {
+            "id": "6a757387a2995f4918d313ee",
+            "title": "Strong academic foundation",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313ef",
+            "title": "Value-based education",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313f0",
+            "title": "Co-curricular activities",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313f1",
+            "title": "Sports",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313f2",
+            "title": "Holistic development",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          }
+        ],
+        "blockType": "featureList"
+      },
+      {
+        "id": "6a757387a2995f4918d313f4",
+        "heading": "Our curriculum",
+        "content": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "Our primary curriculum nurtures curiosity through activity-based, experiential learning that strengthens literacy, numeracy, creativity, critical thinking and life skills in a joyful classroom environment.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              },
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "Where learning extends beyond books — empowering young minds through creativity, expression, exploration and meaningful experiences every day, through festival and event celebrations.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "backgroundImage": null,
+        "headingLevel": "h2",
+        "accentWord": null,
+        "width": "narrow",
+        "background": "white",
+        "blockName": null,
+        "blockType": "richText"
+      },
+      {
+        "id": "6a757387a2995f4918d313f5",
+        "heading": "Teachers at Matunga",
+        "intro": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "With knowledge and passion, our teachers create a classroom where every child feels encouraged to explore and succeed.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "campus": "matunga",
+        "showQualifications": true,
+        "headingLevel": "h2",
+        "accentWord": "Matunga",
+        "background": "sea",
+        "blockName": null,
+        "blockType": "faculty"
+      },
+      {
+        "id": "6a757387a2995f4918d313f6",
+        "heading": "Admission to Matunga",
+        "content": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "Our admission process is simple, transparent and parent-friendly. Eligible students can apply by submitting the required documents, completing the admission formalities and interacting with the school as per the prescribed guidelines.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              },
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "Every pupil seeking admission for the first time must produce their Birth Certificate, Aadhaar card and Ration card issued by a competent authority.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "backgroundImage": null,
+        "headingLevel": "h2",
+        "accentWord": "Admission",
+        "width": "normal",
+        "background": "white",
+        "blockName": null,
+        "blockType": "richText"
+      },
+      {
+        "id": "6a757387a2995f4918d313f7",
+        "heading": "The academic year",
+        "content": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "An enriching year-round learning experience, with a balanced schedule that encourages academic excellence and holistic growth.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "backgroundImage": null,
+        "headingLevel": "h2",
+        "accentWord": null,
+        "width": "narrow",
+        "background": "sea",
+        "blockName": null,
+        "blockType": "richText"
+      },
+      {
+        "id": "6a757387a2995f4918d3140a",
+        "heading": "School rules — Matunga",
+        "intro": null,
+        "eyebrow": null,
+        "footnote": null,
+        "headingLevel": "h2",
+        "accentWord": "Matunga",
+        "layout": "list",
+        "marker": "number",
+        "columns": "1",
+        "background": "white",
+        "blockName": null,
+        "items": [
+          {
+            "id": "6a757387a2995f4918d313f8",
+            "title": "Bring the school calendar every day.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313f9",
+            "title": "Maintain at least 80% attendance.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313fa",
+            "title": "Wear proper school uniform.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313fb",
+            "title": "Take care of your books and belongings; don’t wear ornaments.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313fc",
+            "title": "Maintain discipline in school and during activities.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313fd",
+            "title": "Speak only in English in school.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313fe",
+            "title": "Avoid late coming, absenteeism, and indiscipline.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313ff",
+            "title": "Do not damage school property; compensation must be paid if damaged.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d31400",
+            "title": "Parents should meet teachers only with prior permission.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d31401",
+            "title": "Inform the school of any change in address or phone number.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d31402",
+            "title": "Do not give cash or gifts to teachers.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d31403",
+            "title": "Do not bring unnecessary books, magazines, or newspapers. Bring only dry snacks.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d31404",
+            "title": "Do not participate in political or communal activities.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d31405",
+            "title": "Parents should ensure regularity, homework, and discipline.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d31406",
+            "title": "Be regular, obedient and polite.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d31407",
+            "title": "No school office work on Saturdays, Sundays, or holidays.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d31408",
+            "title": "Certificates are issued only during the specified office hours.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d31409",
+            "title": "Follow the Library Rules.",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          }
+        ],
+        "blockType": "featureList"
+      },
+      {
+        "id": "6a757387a2995f4918d3140f",
+        "heading": "What sets Matunga apart",
+        "intro": null,
+        "eyebrow": null,
+        "footnote": null,
+        "headingLevel": "h2",
+        "accentWord": "Matunga",
+        "layout": "list",
+        "marker": "tick",
+        "columns": "2",
+        "background": "sea",
+        "blockName": null,
+        "items": [
+          {
+            "id": "6a757387a2995f4918d3140b",
+            "title": "A Grade recognition",
+            "description": "Granted A Grade status by the Department of Education following improvements in infrastructure, teaching and other parameters. Recognised by the Maharashtra State Board.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d3140c",
+            "title": "Experienced faculty",
+            "description": "With knowledge and passion, our teachers create a classroom where every child feels encouraged to explore and succeed.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d3140d",
+            "title": "Modern facilities",
+            "description": "Smart classrooms and well-equipped labs.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d3140e",
+            "title": "Personalised learning",
+            "description": "Building tomorrow’s achievers through personalised learning, innovative teaching and strong values.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          }
+        ],
+        "blockType": "featureList"
+      },
+      {
+        "id": "6a757387a2995f4918d31410",
+        "heading": "A safe and disciplined campus",
+        "content": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "A secure and caring environment where children learn with confidence, respect, responsibility and positive values.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "backgroundImage": null,
+        "headingLevel": "h2",
+        "accentWord": "safe",
+        "width": "narrow",
+        "background": "white",
+        "blockName": null,
+        "blockType": "richText"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756eed",
+        "heading": "Award and recognition",
+        "intro": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "Photographs from our Matunga campus.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756eeb",
+            "image": 159,
+            "caption": "Prize distribution at the Matunga campus"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756eec",
+            "image": 158,
+            "caption": "Congratulating a state and national drawing prize winner"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756ef1",
+        "heading": "Certification - affiliation",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756eee",
+            "image": 162,
+            "caption": "Certificates of honour"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756eef",
+            "image": 161,
+            "caption": "Ignited Mind Lab certificates"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ef0",
+            "image": 160,
+            "caption": "Annual Sports Meet 2025–26 certificates"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756ef6",
+        "heading": "Classroom and campus images",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756ef2",
+            "image": 107,
+            "caption": "The classroom corridor"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ef3",
+            "image": 106,
+            "caption": "Smart classroom in use"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ef4",
+            "image": 105,
+            "caption": "A class at work"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ef5",
+            "image": 104,
+            "caption": "International Yoga Day"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756efb",
+        "heading": "Facility images (labs,library,sports,play area)",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756ef7",
+            "image": 166,
+            "caption": "Sports practice on the ground"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ef8",
+            "image": 165,
+            "caption": "Running on the school ground"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ef9",
+            "image": 164,
+            "caption": "The science laboratory"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756efa",
+            "image": 163,
+            "caption": "The school library collection"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756efe",
+        "heading": "Modern facilities",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756efc",
+            "image": 109,
+            "caption": "The computer room"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756efd",
+            "image": 108,
+            "caption": "Staff training on the smart board"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756f01",
+        "heading": "Parents testimonials",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756eff",
+            "image": 168,
+            "caption": "Parents at a school meeting"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756f00",
+            "image": 167,
+            "caption": "A PTA and School Management Committee meeting"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756f03",
+        "heading": "Press mentions - features",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756f02",
+            "image": 169,
+            "caption": "The Matunga campus in the press"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756f07",
+        "heading": "Student life- event life",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756f04",
+            "image": 172,
+            "caption": "Dressed as Warkaris for Ashadhi Ekadashi"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756f05",
+            "image": 171,
+            "caption": "Grandparents' Day"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756f06",
+            "image": 170,
+            "caption": "A class at work"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756f0e",
+        "heading": "What makes your institution different from competitors",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756f08",
+            "image": 178,
+            "caption": "Dressed as India's national symbols"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756f09",
+            "image": 177,
+            "caption": "The Wari Palkhi procession"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756f0a",
+            "image": 176,
+            "caption": "An inter-class fancy dress competition on trees"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756f0b",
+            "image": 175,
+            "caption": "A shared meal for Ashadhi Ekadashi"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756f0c",
+            "image": 174,
+            "caption": "A fancy dress competition on digital life"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756f0d",
+            "image": 173,
+            "caption": "An environment day planting drive"
+          }
+        ],
+        "blockType": "gallery"
+      }
+    ],
+    "metaTitle": null,
+    "metaDescription": "SIWS Primary School, Matunga — Grades 1 to 4 on the Maharashtra State Board curriculum, with a nine-strong teaching team and a safe, disciplined campus.",
+    "ogImage": null,
+    "noIndex": false,
+    "unit": 2,
+    "slug": "matunga",
+    "showInNav": true,
+    "navLabel": "Matunga",
+    "navOrder": 12,
+    "navParent": null,
+    "reviewStatus": "approved",
+    "reviewNote": null,
+    "submittedBy": null,
+    "submittedAt": null,
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "publishAt": null,
+    "unpublishAt": null,
+    "updatedAt": "2026-08-25T11:54:29.976Z",
+    "createdAt": "2026-08-04T06:10:55.648Z",
+    "_status": "published"
+  },
+  {
+    "id": 142,
+    "title": "Wadala campus",
+    "intro": "The Primary Section at Wadala — Grades 1 to 4, on the same campus as the K.G. Section and the Secondary School.",
+    "layout": [
+      {
+        "id": "6a757387a2995f4918d31395",
+        "eyebrow": "Maharashtra State Board | Grades 1 to 4",
+        "title": "SIWS Primary School, Wadala",
+        "accentWord": "Wadala",
+        "intro": "A caring, inclusive and stimulating school where the focus extends beyond academic excellence to developing confident, responsible and compassionate individuals.",
+        "image": null,
+        "background": "brand",
+        "blockName": null,
+        "highlights": [],
+        "links": [],
+        "blockType": "hero"
+      },
+      {
+        "id": "6a757387a2995f4918d3139a",
+        "heading": "A legacy parents trust",
+        "intro": null,
+        "image": null,
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "stats": [
+          {
+            "id": "6a757387a2995f4918d31396",
+            "value": "1934",
+            "label": "Serving Mumbai since"
+          },
+          {
+            "id": "6a757387a2995f4918d31397",
+            "value": "90+",
+            "label": "Years of educational service"
+          },
+          {
+            "id": "6a757387a2995f4918d31398",
+            "value": "A Grade",
+            "label": "Department of Education"
+          },
+          {
+            "id": "6a757387a2995f4918d31399",
+            "value": "20+",
+            "label": "Years average teaching experience"
+          }
+        ],
+        "blockType": "statistics"
+      },
+      {
+        "id": "6a757387a2995f4918d3139b",
+        "heading": "On one campus, from K.G. to Standard X",
+        "content": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "The Wadala campus is the full SIWS school — a K.G. Section, Primary School and Secondary School on one site, so a child can move from Kindergarten to Standard X without ever changing schools.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "backgroundImage": null,
+        "headingLevel": "h2",
+        "accentWord": "K.G. to Standard X",
+        "width": "normal",
+        "background": "white",
+        "blockName": null,
+        "blockType": "richText"
+      },
+      {
+        "id": "6a757387a2995f4918d313a3",
+        "heading": "Subjects",
+        "intro": null,
+        "eyebrow": null,
+        "footnote": null,
+        "headingLevel": "h2",
+        "accentWord": "Subjects",
+        "layout": "list",
+        "marker": "tick",
+        "columns": "2",
+        "background": "sea",
+        "blockName": null,
+        "items": [
+          {
+            "id": "6a757387a2995f4918d3139c",
+            "title": "English",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d3139d",
+            "title": "Marathi",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d3139e",
+            "title": "Mathematics",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d3139f",
+            "title": "EVS",
+            "description": "Includes Science, History, Geography and Civics.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313a0",
+            "title": "Art",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313a1",
+            "title": "Work Experience",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313a2",
+            "title": "Physical Education",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          }
+        ],
+        "blockType": "featureList"
+      },
+      {
+        "id": "6a757387a2995f4918d313a8",
+        "heading": "Grade by grade",
+        "intro": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "Our Primary Section follows the Maharashtra State Board curriculum (SCERT Maharashtra / Balbharati), aligned with the National Education Policy 2020 and its competency-based approach (PARAKH).",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "eyebrow": null,
+        "footnote": null,
+        "headingLevel": "h2",
+        "accentWord": "Grade by grade",
+        "layout": "list",
+        "marker": "number",
+        "columns": "1",
+        "background": "white",
+        "blockName": null,
+        "items": [
+          {
+            "id": "6a757387a2995f4918d313a4",
+            "title": "Grade 1 — Building Strong Foundations",
+            "description": "The focus is on developing literacy, numeracy and communication skills through stories, songs, games, rhymes, hands-on activities and play-based learning. Children are encouraged to observe, explore, ask questions and express themselves confidently in a joyful learning environment.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313a5",
+            "title": "Grade 2 — Strengthening Concepts",
+            "description": "Students strengthen their reading, writing and mathematical skills while developing curiosity, creativity and independent thinking. Learning experiences are connected to real-life situations through activities, projects and collaborative tasks.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313a6",
+            "title": "Grade 3 — Expanding Knowledge",
+            "description": "The curriculum encourages deeper conceptual understanding across languages, Mathematics and Environmental Studies. Students participate in experiments, discussions, projects and creative assignments that promote analytical thinking, communication and problem-solving skills.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313a7",
+            "title": "Grade 4 — Preparing for Higher Learning",
+            "description": "Students are guided towards independent learning by strengthening conceptual understanding, critical thinking and application-based learning. They develop confidence through presentations, teamwork, research-based activities and experiential learning, preparing them for the next stage of schooling.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          }
+        ],
+        "blockType": "featureList"
+      },
+      {
+        "id": "6a757387a2995f4918d313b3",
+        "heading": "How we teach",
+        "intro": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "Every child learns differently. Our classrooms are interactive, inclusive and learner-centred, with teachers acting as facilitators who encourage children to think, explore and discover.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "eyebrow": null,
+        "footnote": null,
+        "headingLevel": "h2",
+        "accentWord": "teach",
+        "layout": "list",
+        "marker": "tick",
+        "columns": "2",
+        "background": "sea",
+        "blockName": null,
+        "items": [
+          {
+            "id": "6a757387a2995f4918d313a9",
+            "title": "Activity-based and experiential learning",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313aa",
+            "title": "Competency-based teaching with focus on learning outcomes",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313ab",
+            "title": "Storytelling, role play, music and art-integrated learning",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313ac",
+            "title": "Project-based and collaborative learning",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313ad",
+            "title": "Smart Classroom and digital learning resources",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313ae",
+            "title": "Inquiry-based learning that encourages questioning and exploration",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313af",
+            "title": "Real-life applications to make learning meaningful",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313b0",
+            "title": "Continuous formative assessment and constructive feedback",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313b1",
+            "title": "Individual attention and remedial support wherever required",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313b2",
+            "title": "Value education, environmental awareness and life-skill development",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          }
+        ],
+        "blockType": "featureList"
+      },
+      {
+        "id": "6a757387a2995f4918d313bb",
+        "heading": "Beyond academics",
+        "intro": null,
+        "eyebrow": null,
+        "footnote": null,
+        "headingLevel": "h2",
+        "accentWord": "Beyond academics",
+        "layout": "list",
+        "marker": "tick",
+        "columns": "2",
+        "background": "white",
+        "blockName": null,
+        "items": [
+          {
+            "id": "6a757387a2995f4918d313b4",
+            "title": "Literary and language activities",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313b5",
+            "title": "Mathematics and EVS enrichment programmes",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313b6",
+            "title": "Art, Craft, Music and Dance",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313b7",
+            "title": "Sports and Physical Education",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313b8",
+            "title": "Cultural celebrations and festivals",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313b9",
+            "title": "Environmental awareness initiatives",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313ba",
+            "title": "Leadership opportunities and value-based activities",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          }
+        ],
+        "blockType": "featureList"
+      },
+      {
+        "id": "6a757387a2995f4918d313c3",
+        "heading": "What the Wadala programme offers",
+        "intro": null,
+        "eyebrow": null,
+        "footnote": null,
+        "headingLevel": "h2",
+        "accentWord": "Wadala programme",
+        "layout": "list",
+        "marker": "tick",
+        "columns": "2",
+        "background": "sea",
+        "blockName": null,
+        "items": [
+          {
+            "id": "6a757387a2995f4918d313bc",
+            "title": "Strong academic foundation",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313bd",
+            "title": "Interactive and technology-enabled learning",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313be",
+            "title": "Safe and secure campus with CCTV surveillance",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313bf",
+            "title": "Development of communication, creativity and critical thinking",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313c0",
+            "title": "Sports, arts and cultural exposure",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313c1",
+            "title": "Value education and life skills",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313c2",
+            "title": "Seamless progression to higher classes within the SIWS Group of Institutions",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          }
+        ],
+        "blockType": "featureList"
+      },
+      {
+        "id": "6a757387a2995f4918d313ce",
+        "heading": "Why parents choose SIWS Wadala",
+        "intro": null,
+        "eyebrow": null,
+        "footnote": null,
+        "headingLevel": "h2",
+        "accentWord": "SIWS Wadala",
+        "layout": "list",
+        "marker": "tick",
+        "columns": "2",
+        "background": "white",
+        "blockName": null,
+        "items": [
+          {
+            "id": "6a757387a2995f4918d313c4",
+            "title": "Academic Excellence",
+            "description": "A strong academic foundation based on the Maharashtra State Board curriculum, supported by innovative teaching methods, continuous assessment and individual attention to every child.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313c5",
+            "title": "Experienced & Dedicated Faculty",
+            "description": "Our qualified and experienced teachers use child-centred, activity-based and competency-driven teaching strategies to make learning meaningful and enjoyable.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313c6",
+            "title": "Smart Classrooms",
+            "description": "Technology-enabled classrooms with interactive smart panels enhance teaching and learning through multimedia content, interactive lessons and digital resources.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313c7",
+            "title": "Holistic Development",
+            "description": "Students are encouraged to participate in sports, cultural activities, art, music, dance, competitions, leadership programmes and value-based initiatives, ensuring all-round personality development.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313c8",
+            "title": "Individual Care & Inclusive Education",
+            "description": "We recognise that every child is unique. Personal attention, remedial support and encouragement help each learner achieve their fullest potential.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313c9",
+            "title": "Values & Character Building",
+            "description": "Along with academic learning, we instil values such as honesty, empathy, responsibility, respect, teamwork and environmental consciousness.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313ca",
+            "title": "Strong School–Parent Partnership",
+            "description": "Regular communication, parent interactions and collaborative initiatives ensure that parents remain active partners in their child’s educational journey.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313cb",
+            "title": "Seamless Academic Progression",
+            "description": "As part of the SIWS Group of Institutions, students benefit from a smooth transition from the Primary Section to higher classes within the institution.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313cc",
+            "title": "Co-curricular & Experiential Learning",
+            "description": "Field visits, celebrations, projects, language enrichment programmes and hands-on experiences make learning practical, enjoyable and relevant.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313cd",
+            "title": "Focus on Future-Ready Skills",
+            "description": "We nurture creativity, communication, collaboration, critical thinking, problem-solving and digital literacy, preparing students to thrive in an ever-changing world.",
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          }
+        ],
+        "blockType": "featureList"
+      },
+      {
+        "id": "6a757387a2995f4918d313cf",
+        "heading": "Teachers at Wadala",
+        "intro": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "Our teachers are well trained, with over 20 years of teaching experience.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "campus": "wadala",
+        "showQualifications": true,
+        "headingLevel": "h2",
+        "accentWord": "Wadala",
+        "background": "sea",
+        "blockName": null,
+        "blockType": "faculty"
+      },
+      {
+        "id": "6a757387a2995f4918d313dc",
+        "heading": "Competitions and prizes",
+        "intro": null,
+        "eyebrow": null,
+        "footnote": null,
+        "headingLevel": "h2",
+        "accentWord": "Competitions",
+        "layout": "list",
+        "marker": "tick",
+        "columns": "2",
+        "background": "white",
+        "blockName": null,
+        "items": [
+          {
+            "id": "6a757387a2995f4918d313d0",
+            "title": "Recitation",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313d1",
+            "title": "Fancy Dress",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313d2",
+            "title": "Elocution",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313d3",
+            "title": "Drawing & Painting",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313d4",
+            "title": "Story Telling",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313d5",
+            "title": "Group Singing (Patriotic Songs)",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313d6",
+            "title": "Handwriting",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313d7",
+            "title": "Work Experience",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313d8",
+            "title": "Clay Work",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313d9",
+            "title": "Rangoli",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313da",
+            "title": "Best out of Waste",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          },
+          {
+            "id": "6a757387a2995f4918d313db",
+            "title": "Sports & Games",
+            "description": null,
+            "icon": null,
+            "illustration": null,
+            "photo": null
+          }
+        ],
+        "blockType": "featureList"
+      },
+      {
+        "id": "6a757387a2995f4918d313dd",
+        "heading": "Safe, secure and disciplined",
+        "content": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "The entire campus — classrooms, corridors, entrances and common areas — is monitored by CCTV. Well-defined safety protocols, disciplined practices and vigilant supervision give parents confidence that their children are learning in a safe, caring and protected atmosphere.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "backgroundImage": null,
+        "headingLevel": "h2",
+        "accentWord": "Safe",
+        "width": "narrow",
+        "background": "sea",
+        "blockName": null,
+        "blockType": "richText"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756e35",
+        "heading": "Beyond Academics",
+        "intro": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "Photographs from our Wadala campus.",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr",
+                "textFormat": 0
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756e23",
+            "image": 236,
+            "caption": "Annual Sports Day winners"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e24",
+            "image": 235,
+            "caption": "Podium finish"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e25",
+            "image": 234,
+            "caption": "Race winners"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e26",
+            "image": 233,
+            "caption": "Sports day podium"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e27",
+            "image": 232,
+            "caption": "Track event winners"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e28",
+            "image": 231,
+            "caption": "On the podium"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e29",
+            "image": 230,
+            "caption": "Handing out gifts in class"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e2a",
+            "image": 229,
+            "caption": "Race winners"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e2b",
+            "image": 228,
+            "caption": "The rabies education campaign"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e2c",
+            "image": 227,
+            "caption": "The outdoor obstacle course"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e2d",
+            "image": 226,
+            "caption": "A class handprint promise"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e2e",
+            "image": 225,
+            "caption": "A pupil's Constitution Day poster"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e2f",
+            "image": 224,
+            "caption": "The National Constitution Day display"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e30",
+            "image": 223,
+            "caption": "A Mission Rabies awareness session"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e31",
+            "image": 222,
+            "caption": "Sports day winners"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e32",
+            "image": 221,
+            "caption": "First, second and third"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e33",
+            "image": 220,
+            "caption": "Cheering the winners"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e34",
+            "image": 219,
+            "caption": "Annual Sports Day 2025–26"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756e49",
+        "heading": "Classrooms and Campus Images",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756e36",
+            "image": 255,
+            "caption": "A yoga session in the hall"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e37",
+            "image": 254,
+            "caption": "A full classroom"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e38",
+            "image": 253,
+            "caption": "A maths lesson"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e39",
+            "image": 252,
+            "caption": "A classroom at work"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e3a",
+            "image": 251,
+            "caption": "Reading along"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e3b",
+            "image": 250,
+            "caption": "Following the lesson"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e3c",
+            "image": 249,
+            "caption": "A Marathi lesson"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e3d",
+            "image": 248,
+            "caption": "A moment before the lesson"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e3e",
+            "image": 247,
+            "caption": "Gathering round the teacher's desk"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e3f",
+            "image": 246,
+            "caption": "An art lesson"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e40",
+            "image": 245,
+            "caption": "A class at work"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e41",
+            "image": 244,
+            "caption": "A writing lesson"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e42",
+            "image": 243,
+            "caption": "Working in the classroom"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e43",
+            "image": 242,
+            "caption": "The Guru Purnima board"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e44",
+            "image": 241,
+            "caption": "Benches and display boards"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e45",
+            "image": 240,
+            "caption": "Outside the school office"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e46",
+            "image": 239,
+            "caption": "The main corridor"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e47",
+            "image": 238,
+            "caption": "A school corridor"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e48",
+            "image": 237,
+            "caption": "A drawing lesson at the smartboard"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756e6b",
+        "heading": "Cultural and Festivals",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756e4a",
+            "image": 288,
+            "caption": "A mass drill in the hall"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e4b",
+            "image": 287,
+            "caption": "Independence Day drill"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e4c",
+            "image": 286,
+            "caption": "An Independence Day formation display"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e4d",
+            "image": 285,
+            "caption": "Independence Day craft"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e4e",
+            "image": 284,
+            "caption": "Staff and pupils at the Ashadi Ekadashi celebration"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e4f",
+            "image": 283,
+            "caption": "Ashadi Ekadashi"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e50",
+            "image": 282,
+            "caption": "Santa's rounds"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e51",
+            "image": 281,
+            "caption": "Christmas in the classroom"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e52",
+            "image": 280,
+            "caption": "Christmas and National Mathematics Day"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e53",
+            "image": 279,
+            "caption": "The dance troupe before going on stage"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e54",
+            "image": 278,
+            "caption": "The Wari Palkhi procession"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e55",
+            "image": 277,
+            "caption": "World No Tobacco Day"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e56",
+            "image": 276,
+            "caption": "Eco Club World No Tobacco Day display"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e57",
+            "image": 275,
+            "caption": "Navratri decoration"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e58",
+            "image": 274,
+            "caption": "The whole school on the ground"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e59",
+            "image": 273,
+            "caption": "Dahi Handi"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e5a",
+            "image": 272,
+            "caption": "Janmashtami on the school ground"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e5b",
+            "image": 271,
+            "caption": "The human pyramid"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e5c",
+            "image": 270,
+            "caption": "Dressed as Krishna for Janmashtami"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e5d",
+            "image": 269,
+            "caption": "The dahi handi hung above the ground"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e5e",
+            "image": 268,
+            "caption": "Dahi Handi"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e5f",
+            "image": 267,
+            "caption": "Vitthal and Rukmini for Ashadi Ekadashi"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e60",
+            "image": 266,
+            "caption": "House teams on Dahi Handi"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e61",
+            "image": 265,
+            "caption": "Building the pyramid at Dahi Handi"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e62",
+            "image": 264,
+            "caption": "Vitthal and Rukmini"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e63",
+            "image": 263,
+            "caption": "Navratri decoration"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e64",
+            "image": 262,
+            "caption": "Education against social evils"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e65",
+            "image": 261,
+            "caption": "A fancy dress walk"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e66",
+            "image": 260,
+            "caption": "Independence Day dance"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e67",
+            "image": 259,
+            "caption": "An Independence Day dance"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e68",
+            "image": 258,
+            "caption": "Singing for Independence Day"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e69",
+            "image": 257,
+            "caption": "The 77th Republic Day display"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e6a",
+            "image": 256,
+            "caption": "A cultural dance in the lobby"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756e6f",
+        "heading": "Development of Communication",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756e6c",
+            "image": 291,
+            "caption": "Acting out a rhyme"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e6d",
+            "image": 290,
+            "caption": "Speaking at the fancy dress competition"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e6e",
+            "image": 289,
+            "caption": "Model-making and presentation"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756e78",
+        "heading": "Environmental Awareness",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756e70",
+            "image": 299,
+            "caption": "A waste-collection drive"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e71",
+            "image": 298,
+            "caption": "The Eco Club Plantation Day board"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e72",
+            "image": 297,
+            "caption": "A composting display"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e73",
+            "image": 296,
+            "caption": "Dressed for Plantation Day"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e74",
+            "image": 295,
+            "caption": "Eco Club Plantation Day"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e75",
+            "image": 294,
+            "caption": "Planting a sapling"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e76",
+            "image": 293,
+            "caption": "The Swachh Bharat Abhiyan drive"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e77",
+            "image": 292,
+            "caption": "A Plantation Day play"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756e83",
+        "heading": "Event Activities videos",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756e79",
+            "image": 309,
+            "caption": "Guru Purnima"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e7a",
+            "image": 308,
+            "caption": "Vitthal and Rukmini"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e7b",
+            "image": 307,
+            "caption": "The Wari Palkhi procession"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e7c",
+            "image": 306,
+            "caption": "A garlanded tribute"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e7d",
+            "image": 305,
+            "caption": "International Yoga Day"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e7e",
+            "image": 304,
+            "caption": "Meeting the mascot on the first day"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e7f",
+            "image": 303,
+            "caption": "Receiving a trophy"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e80",
+            "image": 302,
+            "caption": "The Annual Sports Day group photograph"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e81",
+            "image": 301,
+            "caption": "The Guru Purnima display"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e82",
+            "image": 300,
+            "caption": "Education against social evils"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756e87",
+        "heading": "Experienced and Dedicated Teachers",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756e84",
+            "image": 312,
+            "caption": "A PE warm-up on the ground"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e85",
+            "image": 311,
+            "caption": "Staff on a function day"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e86",
+            "image": 310,
+            "caption": "The teaching team"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756e8a",
+        "heading": "Facility Images",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756e88",
+            "image": 314,
+            "caption": "The covered play area"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e89",
+            "image": 313,
+            "caption": "The artificial-turf ground"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756e8c",
+        "heading": "Grade 1 Building Story Foundation",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756e8b",
+            "image": 315,
+            "caption": "Learning addition with beads"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756e91",
+        "heading": "Grade 2 Strengthening Concepts",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756e8d",
+            "image": 319,
+            "caption": "Making a chart"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e8e",
+            "image": 318,
+            "caption": "A craft activity at the desk"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e8f",
+            "image": 317,
+            "caption": "Practising courtesy words"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e90",
+            "image": 316,
+            "caption": "Reading a word list"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756e96",
+        "heading": "Grade 4 Prepare for higher learning",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756e92",
+            "image": 323,
+            "caption": "Reading aloud at the board"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e93",
+            "image": 322,
+            "caption": "An English baseline test"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e94",
+            "image": 321,
+            "caption": "Making paper photo frames"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e95",
+            "image": 320,
+            "caption": "In the computer room"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756ea9",
+        "heading": "Handson Experience",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756e97",
+            "image": 341,
+            "caption": "A craft session in the corridor"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e98",
+            "image": 340,
+            "caption": "Threading the sunbursts"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e99",
+            "image": 339,
+            "caption": "Making paper sunbursts"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e9a",
+            "image": 338,
+            "caption": "At the potter's wheel"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e9b",
+            "image": 337,
+            "caption": "An embroidery session on the floor"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e9c",
+            "image": 336,
+            "caption": "A finished pouch"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e9d",
+            "image": 335,
+            "caption": "The class's finished pouches"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e9e",
+            "image": 334,
+            "caption": "Stitch by stitch"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756e9f",
+            "image": 333,
+            "caption": "An embroidered pencil case"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ea0",
+            "image": 332,
+            "caption": "A finished sampler"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ea1",
+            "image": 331,
+            "caption": "Two finished samplers"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ea2",
+            "image": 330,
+            "caption": "Showing off the finished work"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ea3",
+            "image": 329,
+            "caption": "Making fruit skewers"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ea4",
+            "image": 328,
+            "caption": "No-fire cookery"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ea5",
+            "image": 327,
+            "caption": "Embroidery samplers"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ea6",
+            "image": 326,
+            "caption": "Guiding a colouring lesson"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ea7",
+            "image": 325,
+            "caption": "A finished embroidery sampler"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ea8",
+            "image": 324,
+            "caption": "Learning the vowels in clay"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756eb2",
+        "heading": "Inter School Dance Competition",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756eaa",
+            "image": 212,
+            "caption": "The winning performance"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756eab",
+            "image": 211,
+            "caption": "The winning troupe"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756eac",
+            "image": 210,
+            "caption": "The first-prize trophy"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ead",
+            "image": 209,
+            "caption": "On stage at Natya Tarang"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756eae",
+            "image": 208,
+            "caption": "Natya Tarang prize-giving"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756eaf",
+            "image": 207,
+            "caption": "Category A winners"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756eb0",
+            "image": 206,
+            "caption": "First prize at Natya Tarang 2026"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756eb1",
+            "image": 205,
+            "caption": "Backstage with the trophy"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756eb5",
+        "heading": "Modern facilities",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756eb3",
+            "image": 343,
+            "caption": "Working at the smartboard"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756eb4",
+            "image": 342,
+            "caption": "A maths lesson on the smartboard"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756eb7",
+        "heading": "Remedial Support",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756eb6",
+            "image": 344,
+            "caption": "Small-group and one-to-one support"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756eba",
+        "heading": "Safe and Secure Campus",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756eb8",
+            "image": 346,
+            "caption": "Class on the lobby floor"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756eb9",
+            "image": 345,
+            "caption": "A running race in the lobby"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756ebc",
+        "heading": "Social Awareness",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756ebb",
+            "image": 347,
+            "caption": "A police safety awareness session"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756ec9",
+        "heading": "Story telling and Art Integrated learning",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756ebd",
+            "image": 359,
+            "caption": "Working through a mind map"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ebe",
+            "image": 358,
+            "caption": "A quiet drawing session"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ebf",
+            "image": 357,
+            "caption": "The whole class at work"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ec0",
+            "image": 356,
+            "caption": "Portrait drawing"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ec1",
+            "image": 355,
+            "caption": "Drawing outside the presentation room"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ec2",
+            "image": 354,
+            "caption": "A floor drawing session"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ec3",
+            "image": 353,
+            "caption": "Following a drawing tutorial"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ec4",
+            "image": 352,
+            "caption": "A guided drawing lesson on the smartboard"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ec5",
+            "image": 351,
+            "caption": "Drawing a village scene"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ec6",
+            "image": 350,
+            "caption": "One-to-one guidance"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ec7",
+            "image": 349,
+            "caption": "Learning to shade with oil pastels"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ec8",
+            "image": 348,
+            "caption": "A drawing lesson"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756ecc",
+        "heading": "Strong School Parents Participation",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756eca",
+            "image": 361,
+            "caption": "A parent–child craft session"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ecb",
+            "image": 360,
+            "caption": "A puja in the school lobby"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756ee3",
+        "heading": "Student Activities",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "sea",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756ecd",
+            "image": 383,
+            "caption": "An action rhyme in class"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ece",
+            "image": 382,
+            "caption": "Best out of waste"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ecf",
+            "image": 381,
+            "caption": "Lunch break"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ed0",
+            "image": 380,
+            "caption": "Bunting made in class"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ed1",
+            "image": 379,
+            "caption": "Counting with sweets"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ed2",
+            "image": 378,
+            "caption": "The winning group"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ed3",
+            "image": 377,
+            "caption": "Solving a puzzle together"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ed4",
+            "image": 376,
+            "caption": "Working as a group"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ed5",
+            "image": 375,
+            "caption": "A group letter game"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ed6",
+            "image": 374,
+            "caption": "Winners of a classroom word game"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ed7",
+            "image": 373,
+            "caption": "Explaining the welcome display"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ed8",
+            "image": 372,
+            "caption": "The first-day welcome display"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ed9",
+            "image": 371,
+            "caption": "First-day welcome"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756eda",
+            "image": 370,
+            "caption": "Choosing a sweet"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756edb",
+            "image": 369,
+            "caption": "A blessing on the first day"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756edc",
+            "image": 368,
+            "caption": "Handing out sweets"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756edd",
+            "image": 367,
+            "caption": "First-day sweets"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ede",
+            "image": 366,
+            "caption": "A welcome treat"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756edf",
+            "image": 365,
+            "caption": "Sweets on the first day"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ee0",
+            "image": 364,
+            "caption": "Welcoming new families"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ee1",
+            "image": 363,
+            "caption": "First day of school"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ee2",
+            "image": 362,
+            "caption": "First day of school"
+          }
+        ],
+        "blockType": "gallery"
+      },
+      {
+        "id": "6a8d8275cd2f8c9fb8756eea",
+        "heading": "Teachers Achievements",
+        "intro": null,
+        "perPage": "12",
+        "layout": "grid",
+        "headingLevel": "h2",
+        "accentWord": null,
+        "background": "white",
+        "blockName": null,
+        "images": [
+          {
+            "id": "6a8d8275cd2f8c9fb8756ee4",
+            "image": 218,
+            "caption": "Receiving a memento"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ee5",
+            "image": 217,
+            "caption": "Annual Sports Meet certificates"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ee6",
+            "image": 216,
+            "caption": "A certificate of achievement"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ee7",
+            "image": 215,
+            "caption": "Annual Sports Day podium"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ee8",
+            "image": 214,
+            "caption": "A national chanting competition certificate"
+          },
+          {
+            "id": "6a8d8275cd2f8c9fb8756ee9",
+            "image": 213,
+            "caption": "A teacher receives an award"
+          }
+        ],
+        "blockType": "gallery"
+      }
+    ],
+    "metaTitle": null,
+    "metaDescription": "SIWS Primary School, Wadala — Grades 1 to 4 on the Maharashtra State Board curriculum, with smart classrooms, experienced teachers and a CCTV-monitored campus.",
+    "ogImage": null,
+    "noIndex": false,
+    "unit": 2,
+    "slug": "wadala",
+    "showInNav": true,
+    "navLabel": "Wadala",
+    "navOrder": 11,
+    "navParent": null,
+    "reviewStatus": "approved",
+    "reviewNote": null,
+    "submittedBy": null,
+    "submittedAt": null,
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "publishAt": null,
+    "unpublishAt": null,
+    "updatedAt": "2026-08-25T11:54:29.612Z",
+    "createdAt": "2026-08-04T06:10:55.485Z",
+    "_status": "published"
+  }
+]

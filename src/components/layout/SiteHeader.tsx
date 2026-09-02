@@ -49,6 +49,14 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
 
   const place = [unit?.addressLine2, unit?.city, unit?.postalCode].filter(Boolean).join(', ')
 
+  /**
+   * Both office numbers, in the order the school gives them, with the
+   * blanks dropped so a section carrying one prints one.
+   */
+  const phones = [unit?.phone, unit?.phoneAlt].filter(
+    (value): value is string => typeof value === 'string' && value.length > 0,
+  )
+
   return (
     <>
       {/*
@@ -99,7 +107,14 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
           {place ? (
             <p className="mt-0.5 text-xs text-ink-muted sm:text-sm">
               {place}
-              {unit?.phone ? ` | ${unit.phone}` : ''}
+              {/*
+                BOTH numbers, not the first one. A section with two office
+                lines was printing half of what a parent needs, because the
+                unit used to carry a single `phone`. Joined with "or" —
+                the same wording the section's own contact page uses, so
+                the pair reads the same wherever it is met.
+              */}
+              {phones.length > 0 ? ` | ${phones.join(' or ')}` : ''}
             </p>
           ) : null}
         </div>

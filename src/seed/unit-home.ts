@@ -40,6 +40,7 @@ const run = async () => {
 
   const { docs: media } = await payload.find({
     collection: 'media',
+    sort: 'id',
     limit: 300,
     depth: 0,
     overrideAccess: true,
@@ -72,9 +73,7 @@ const run = async () => {
     const priorGallery = (b: Record<string, unknown>) =>
       b.blockType === 'gallery' && String(b.heading ?? '').startsWith('Life at')
     const cleaned =
-      layout[0]?.blockType === 'hero'
-        ? layout.slice(1).filter((b) => !priorGallery(b))
-        : layout
+      layout[0]?.blockType === 'hero' ? layout.slice(1).filter((b) => !priorGallery(b)) : layout
 
     /*
      * The banner photograph: the unit's own hero if it has one, otherwise the
@@ -98,8 +97,7 @@ const run = async () => {
      * into the banner exactly as the portal does. Nothing new is asserted.
      */
     const stats = cleaned.find((b) => b.blockType === 'statistics') as
-      | { stats?: { value?: string; label?: string }[] }
-      | undefined
+      { stats?: { value?: string; label?: string }[] } | undefined
     const highlights = (stats?.stats ?? [])
       .slice(0, 3)
       .filter((s) => s.value?.trim())

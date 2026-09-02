@@ -76,41 +76,41 @@ export const sectionOptions = (
     ...(options.headingControls === false
       ? []
       : ([
-    {
-      name: 'headingLevel',
-      type: 'select',
-      defaultValue: 'h2',
-      label: 'Heading size',
-      options: [
-        { label: 'Normal', value: 'h2' },
-        { label: 'Smaller', value: 'h3' },
-        { label: 'The page heading', value: 'h1' },
-      ],
-      admin: {
-        description:
-          'Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.',
-        condition: (_data, siblingData) => Boolean(siblingData?.heading),
-      },
-    },
-    {
-      name: 'accentWord',
-      type: 'text',
-      label: 'Highlight a word',
-      admin: {
-        description: 'Type a word from the heading to show it in SIWS accent.',
-        condition: (_data, siblingData) => Boolean(siblingData?.heading),
-      },
-      validate: (value: unknown, { siblingData }: { siblingData?: { heading?: string } }) => {
-        if (!value || typeof value !== 'string') return true
-        const heading = siblingData?.heading
-        if (typeof heading !== 'string' || !heading.includes(value)) {
-          // Highlighting text that is not in the heading silently does nothing,
-          // which is far more confusing than being told at the point of entry.
-          return 'That word is not in the heading above. Check the spelling and capital letters.'
-        }
-        return true
-      },
-    },
+          {
+            name: 'headingLevel',
+            type: 'select',
+            defaultValue: 'h2',
+            label: 'Heading size',
+            options: [
+              { label: 'Normal', value: 'h2' },
+              { label: 'Smaller', value: 'h3' },
+              { label: 'The page heading', value: 'h1' },
+            ],
+            admin: {
+              description:
+                'Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.',
+              condition: (_data, siblingData) => Boolean(siblingData?.heading),
+            },
+          },
+          {
+            name: 'accentWord',
+            type: 'text',
+            label: 'Highlight a word',
+            admin: {
+              description: 'Type a word from the heading to show it in SIWS accent.',
+              condition: (_data, siblingData) => Boolean(siblingData?.heading),
+            },
+            validate: (value: unknown, { siblingData }: { siblingData?: { heading?: string } }) => {
+              if (!value || typeof value !== 'string') return true
+              const heading = siblingData?.heading
+              if (typeof heading !== 'string' || !heading.includes(value)) {
+                // Highlighting text that is not in the heading silently does nothing,
+                // which is far more confusing than being told at the point of entry.
+                return 'That word is not in the heading above. Check the spelling and capital letters.'
+              }
+              return true
+            },
+          },
         ] as Field[])),
     ...extraFields,
     { ...backgroundField, defaultValue: backgroundDefault },

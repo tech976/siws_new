@@ -1,4 +1,5 @@
 import { loadEnv } from '@/utilities/load-env'
+import { baseName } from '@/utilities/media-lookup'
 
 loadEnv()
 
@@ -30,6 +31,9 @@ const { richText } = await import('./lexical')
  * Run with:  npm run seed:pages
  */
 
+/** The gallery block's own `maxRows`. Kept in step with GalleryBlock.ts. */
+const GALLERY_MAX = 40
+
 interface Recipe {
   /** Small label above the page title. */
   eyebrow: string
@@ -39,6 +43,20 @@ interface Recipe {
   points: { title: string; description: string }[]
   /** Closing paragraph. Guidance only, never a claim. */
   outro?: string
+  /**
+   * Photographs to show, named by the category the importer tagged them with.
+   *
+   * For the handful of pages whose subject the school HAS photographed. Most
+   * pages here are waiting on content and correctly stay bare — but a page like
+   * the Student Wall, whose whole purpose is to show the children's work, sat as a
+   * banner and a single sentence while the library held sixty photographs of
+   * exactly that. Naming a category rather than filenames means the page picks
+   * up whatever the next import adds to it.
+   *
+   * Each unit shows its OWN photographs in that category, so one recipe serves
+   * all four sites without any of them borrowing another's pictures.
+   */
+  gallery?: { heading: string; accentWord?: string; categories: string[] }
 }
 
 /*
@@ -300,8 +318,23 @@ const RECIPES: Record<string, Recipe> = {
       { title: 'Art and design', description: 'Drawing, painting and craft.' },
       { title: 'Projects', description: 'Work from across subjects.' },
     ],
-    outro:
-      "Work is published with the student's name only where the school holds permission from a parent or guardian.",
+    /*
+     * No outro. It read "Work is published with the child's name only where the
+     * school holds permission from a parent or guardian" — true, and enforced in
+     * code by the consent hook, but as the ONLY thing under the banner it made
+     * the page look like a policy notice rather than a wall of the children's work.
+     * The rule has not gone anywhere; it simply stopped being the page.
+     */
+    gallery: {
+      heading: 'Work from our children',
+      accentWord: 'our children',
+      categories: [
+        'Student Activities',
+        'Handson Experience',
+        'Story telling and Art Integrated learning',
+        'Beyond Academics',
+      ],
+    },
   },
   'value-based-stories': {
     eyebrow: 'Values',
@@ -472,13 +505,34 @@ const RECIPES: Record<string, Recipe> = {
 const run = async () => {
   const payload = await getPayload({ config })
 
+  /*
+   * The whole library, not the first hundred rows.
+   *
+   * This asked for 100 and searched them in JavaScript. That worked while the
+   * library was small and stopped working silently at 361: the photographs
+   * these pages name are among the oldest, the default sort returns the newest
+   * first, so every lookup fell off the end of the page and the banners
+   * disappeared with no error to show for it.
+   */
   const { docs: media } = await payload.find({
     collection: 'media',
-    limit: 100,
+    limit: 2000,
+    sort: 'id',
     depth: 0,
     overrideAccess: true,
   })
+
   const usable = media.filter((m) => m.withdrawn?.isWithdrawn !== true)
+
+  /*
+   * Publishable: withdrawn out, and any photograph of a recognisable child
+   * without a permission record out too. A page carrying one of those cannot
+   * be saved — the consent hook rejects it — so including it here would fail
+   * the whole run rather than the one picture.
+   */
+  const publishable = usable.filter(
+    (m) => !m.depictsChildren || m.parentalConsent?.obtained === true,
+  )
 
   /*
    * Fetched and filtered here rather than with a `like` in the query. The
@@ -574,7 +628,44 @@ const run = async () => {
       'student-wall': 'kg-classroom-seated.jpg',
     }
     const wanted = RELEVANT[page.slug]
-    const banner = wanted ? (usable.find((m) => m.filename === wanted)?.id ?? null) : null
+    /*
+     * Matched on the base name, not the exact one. `media/` is committed, so
+     * Payload's collision counter means the row is very often stored as
+     * `kg-play-area-1.jpg` where this map asks for `kg-play-area.jpg`.
+     */
+    const banner = wanted
+      ? (publishable.find((m) => baseName(String(m.filename)) === wanted)?.id ?? null)
+      : null
+
+    /*
+     * The photographs for this page, if its recipe names any categories — and
+     * only this unit's. The portal has no unit, so it shows none: a picture of
+     * a Primary classroom on the group's own Student Wall would be claiming
+     * something nobody said.
+     */
+    const matching = recipe.gallery
+      ? publishable.filter(
+          (m) =>
+            m.showInGallery !== false &&
+            page.unit &&
+            String(m.unit) === String(page.unit) &&
+            recipe.gallery!.categories.includes(String(m.category ?? '')),
+        )
+      : []
+
+    /*
+     * The block takes at most forty photographs, and Primary's four categories
+     * come to seventy. Cut here rather than letting the save fail — but SAY SO,
+     * because a page silently showing the first forty of seventy looks complete
+     * and is not. The gallery paginates at twelve a page, so forty is five
+     * pages of it; the rest are still in the section's own Gallery.
+     */
+    const shots = matching.slice(0, GALLERY_MAX)
+    if (matching.length > shots.length) {
+      payload.logger.info(
+        `${page.slug}${page.unit ? ` (unit ${String(page.unit)})` : ''} — showing ${shots.length} of ${matching.length} photographs; the block holds ${GALLERY_MAX}.`,
+      )
+    }
 
     try {
       await payload.update({
@@ -621,7 +712,30 @@ const run = async () => {
              * read as filler — and a list promising Fees, Routes and Term
              * dates that appear nowhere is worse than an empty page, because
              * it looks like the content failed to load. Empty is honest.
+             *
+             * A gallery is the exception, and not a contradiction of that: it
+             * is not a promise of content to come, it IS the content. Only the
+             * few pages whose subject the school has actually photographed name
+             * one, and a page whose categories turn up nothing stays bare
+             * rather than printing an empty heading.
              */
+            ...(shots.length > 0 && recipe.gallery
+              ? [
+                  {
+                    blockType: 'gallery',
+                    heading: recipe.gallery.heading,
+                    ...(recipe.gallery.accentWord ? { accentWord: recipe.gallery.accentWord } : {}),
+                    headingLevel: 'h2',
+                    layout: 'grid',
+                    perPage: '12',
+                    background: 'sea',
+                    images: shots.map((m) => ({
+                      image: m.id,
+                      caption: m.caption || undefined,
+                    })),
+                  },
+                ]
+              : []),
             ...(recipe.outro
               ? [
                   {

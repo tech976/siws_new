@@ -3,6 +3,7 @@ import type { Page, Unit } from '@/payload-types'
 import { AccordionBlockView } from './AccordionBlockView'
 import { AchievementWallBlockView } from './AchievementWallBlockView'
 import { AnnouncementsBlockView } from './AnnouncementsBlockView'
+import { NewsGridBlockView } from './NewsGridBlockView'
 import { CallToActionBlockView } from './CallToActionBlockView'
 import { BentoBlockView } from './BentoBlockView'
 import { CardGridBlockView } from './CardGridBlockView'
@@ -91,6 +92,8 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
             return <QuickNavBlockView key={key} block={block} />
           case 'announcements':
             return <AnnouncementsBlockView key={key} block={block} />
+          case 'newsGrid':
+            return <NewsGridBlockView key={key} block={block} />
           case 'logoStrip':
             return <LogoStripBlockView key={key} block={block} />
           case 'featureList':

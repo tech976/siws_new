@@ -40,6 +40,13 @@ export const FEATURE_ICON_OPTIONS = [
   { label: 'Medal — a strong result', value: 'medal' },
   { label: 'Rosette — merit', value: 'merit' },
   { label: 'Badge — a pass', value: 'pass' },
+  // For rules and notices, where the rest of this list has nothing to offer.
+  { label: 'Diary and identity card', value: 'diary' },
+  { label: 'Punctuality and timings', value: 'punctuality' },
+  { label: 'Fees and payments', value: 'fees' },
+  { label: 'Attendance', value: 'attendance' },
+  { label: 'Valuables and ornaments', value: 'valuables' },
+  { label: 'School building and property', value: 'premises' },
 ]
 
 /**
@@ -75,8 +82,12 @@ export const FeatureListBlock: Block = {
        * The original figures were a guess at what "reads well", which is not a
        * limit worth enforcing against real content a school needs to publish.
        * These are now a guard against runaway input, not an editorial opinion.
+       *
+       * Raised again, 30 → 60, when the Primary Section merged its two campuses:
+       * the combined house rules come to more than 30 points, and splitting one
+       * numbered list across two blocks would restart it at 1 halfway down.
        */
-      maxRows: 30,
+      maxRows: 60,
       labels: { singular: 'Point', plural: 'Points' },
       admin: { initCollapsed: false },
       fields: [
@@ -169,10 +180,14 @@ export const FeatureListBlock: Block = {
             label: 'Panels — rounded cards that lift as you point at them',
             value: 'panel',
           },
+          {
+            label: 'Specification — a label and its detail, in ruled rows',
+            value: 'spec',
+          },
         ],
         admin: {
           description:
-            'Cards suit a handful of facilities a parent should be able to scan. A list suits rules, curricula and anything long. Compact suits a set of short labels — a subject list, a set of methods — where a full card per item is mostly empty space. Showcase is for a few items that each have a photograph worth showing: prizes, events, achievements. Panels suit three to twelve points a visitor scans rather than studies — they arrive one after another and answer the pointer. Use at most two panel sections on a page: the movement stops meaning anything when everything moves. See docs/MASTER-LAYOUT.md.',
+            'Cards suit a handful of facilities a parent should be able to scan. A list suits rules, curricula and anything long. Compact suits a set of short labels — a subject list, a set of methods — where a full card per item is mostly empty space. Showcase is for a few items that each have a photograph worth showing: prizes, events, achievements. Panels suit three to twelve points a visitor scans rather than studies — they arrive one after another and answer the pointer. Use at most two panel sections on a page: the movement stops meaning anything when everything moves. Specification is for a short set where each title NAMES something and the text describes it — a uniform, a set of timings, a fee table: the titles line up in their own column so a parent can find their row without reading the others. See docs/MASTER-LAYOUT.md.',
         },
       },
       {
@@ -183,10 +198,13 @@ export const FeatureListBlock: Block = {
         options: [
           { label: 'A tick', value: 'tick' },
           { label: 'A number', value: 'number' },
+          { label: 'Its own icon, beside the heading', value: 'icon' },
         ],
         admin: {
           description:
-            'Choose numbers when the order matters, otherwise ticks. On cards, numbers add a coloured badge and rule to each one.',
+            'Choose numbers when the order matters, otherwise ticks. On cards, numbers add a coloured badge and rule to each one. “Its own icon” is for cards whose points are unordered but each about a different thing — a set of rules, say: it puts the icon chosen on each item next to its heading, instead of the large disc above it.',
+          // The specification layout has no marker: the label IS the marker.
+          condition: (_data, siblingData) => siblingData?.layout !== 'spec',
         },
       },
       {
@@ -203,9 +221,11 @@ export const FeatureListBlock: Block = {
         admin: {
           description:
             'Always a single column on phones. “Kept together” narrows the two columns and centres them under the heading — for a SHORT list, where columns spread across the full width leave each one with a long empty tail and the section stops looking composed.',
-          // Cards size their own grid from how many there are, so the choice
+          // Cards size their own grid from how many there are, and a
+          // specification is always one stack of ruled rows, so the choice
           // would do nothing — hiding it is kinder than leaving a dead control.
-          condition: (_data, siblingData) => siblingData?.layout !== 'cards',
+          condition: (_data, siblingData) =>
+            siblingData?.layout !== 'cards' && siblingData?.layout !== 'spec',
         },
       },
     ]),

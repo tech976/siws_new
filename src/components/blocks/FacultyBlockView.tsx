@@ -35,12 +35,25 @@ export const FacultyBlockView = async ({
    * when nobody has said so would be a guess presented as fact.
    */
   const grouped = block.layout === 'teams'
+
+  /*
+   * Where the monogram sits, which is a separate question from whether the
+   * roster is grouped.
+   *
+   * Unset means beside the name, because that is how every block saved before
+   * the field existed was rendered — a new default would silently restyle the
+   * Secondary and Junior College rosters, which nobody asked for.
+   *
+   * It applies to the flat grid only. In the grouped columns each team already
+   * leads with a larger head-teacher card, and centring the text under it as
+   * well left the column with two competing centres.
+   */
+  const centred = block.cardLayout === 'centred'
   /*
    * Grouping needs everybody: it splits the roster into teams itself, so a
    * campus filter would hand it one team and nothing to compare it with.
    */
-  const campus =
-    grouped || !block.campus || block.campus === 'all' ? null : block.campus
+  const campus = grouped || !block.campus || block.campus === 'all' ? null : block.campus
 
   const { docs: teachers } = await payload
     .find({
@@ -91,13 +104,16 @@ export const FacultyBlockView = async ({
         }))
     : []
 
-  /** The monogram or photograph. Bigger for a head teacher. */
-  const face = (teacher: (typeof teachers)[number], lead: boolean) =>
+  /** The monogram or photograph. Bigger for a head teacher, bigger again when stacked. */
+  const face = (teacher: (typeof teachers)[number], lead: boolean, stacked = false) =>
     teacher.photo ? (
       <Media
         resource={teacher.photo}
-        sizes="96px"
-        className={(lead ? "size-20" : "size-16") + " shrink-0 rounded-full object-cover"}
+        sizes={stacked ? '104px' : '96px'}
+        className={
+          (stacked ? 'size-24' : lead ? 'size-20' : 'size-16') +
+          ' shrink-0 rounded-full object-cover'
+        }
       />
     ) : (
       /* A neutral monogram rather than a stock silhouette — most of the
@@ -106,8 +122,12 @@ export const FacultyBlockView = async ({
       <span
         aria-hidden="true"
         className={
-          (lead ? "size-20 bg-white text-lg" : "size-16 bg-brand-tint text-base") +
-          " grid shrink-0 place-items-center rounded-full font-bold text-brand"
+          (stacked
+            ? 'size-24 bg-brand-tint text-xl'
+            : lead
+              ? 'size-20 bg-white text-lg'
+              : 'size-16 bg-brand-tint text-base') +
+          ' grid shrink-0 place-items-center rounded-full font-bold text-brand'
         }
       >
         {initials(teacher.name)}
@@ -115,8 +135,13 @@ export const FacultyBlockView = async ({
     )
 
   /** Name, role and qualifications. */
-  const details = (teacher: (typeof teachers)[number]) => (
-    <span className="min-w-0">
+  const details = (teacher: (typeof teachers)[number], stacked = false) => (
+    /*
+     * `min-w-0` only in the row layout, where the text shares its line with
+     * the monogram and has to be allowed to shrink. Stacked, the text owns the
+     * full card width and needs no such permission.
+     */
+    <span className={stacked ? 'mt-4' : 'min-w-0'}>
       <strong className="block t-body leading-snug text-brand">{teacher.name}</strong>
 
       {teacher.designation ? (
@@ -150,7 +175,9 @@ export const FacultyBlockView = async ({
         className="mb-4"
       />
 
-      {block.intro ? <RichText data={block.intro} className="mb-9 siws-centre mx-auto max-w-3xl" /> : null}
+      {block.intro ? (
+        <RichText data={block.intro} className="mb-9 siws-centre mx-auto max-w-3xl" />
+      ) : null}
 
       {/*
         One person, in the shape used everywhere on this page. Pulled out so
@@ -189,10 +216,14 @@ export const FacultyBlockView = async ({
           {teachers.map((teacher) => (
             <li
               key={teacher.id}
-              className="flex items-start gap-4 rounded-2xl border border-line bg-white p-5 shadow-card"
+              className={
+                centred
+                  ? 'flex flex-col items-center rounded-2xl border border-line bg-white p-6 text-center shadow-card'
+                  : 'flex items-start gap-4 rounded-2xl border border-line bg-white p-5 shadow-card'
+              }
             >
-              {face(teacher, false)}
-              {details(teacher)}
+              {face(teacher, false, centred)}
+              {details(teacher, centred)}
             </li>
           ))}
         </ul>

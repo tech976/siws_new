@@ -240,7 +240,7 @@ export interface Media {
    */
   category?: string | null;
   /**
-   * Turn this off for posters, notices and video thumbnails — anything that is part of a page rather than a photograph of the school.
+   * Turn this off for posters, invitations, notices and video thumbnails — anything that announces an event or belongs to a page, rather than a photograph of the school. It still works anywhere a page points at it by name.
    */
   showInGallery?: boolean | null;
   /**
@@ -368,6 +368,10 @@ export interface Unit {
   city?: string | null;
   postalCode?: string | null;
   phone?: string | null;
+  /**
+   * Optional. Printed beside the first wherever the number appears, with a dialling link of its own.
+   */
+  phoneAlt?: string | null;
   /**
    * The email address shown publicly on the website.
    */
@@ -584,6 +588,7 @@ export interface Page {
         | MapBlock
         | AccordionBlock
         | AnnouncementsBlock
+        | NewsGridBlock
         | QuickNavBlock
         | LogoStripBlock
         | TestimonialsBlock
@@ -723,6 +728,10 @@ export interface HeroBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+           */
+          anchor?: string | null;
           url?: string | null;
           /**
            * How the link is styled.
@@ -781,6 +790,10 @@ export interface HeroCarouselBlock {
                   relationTo: 'pages';
                   value: number | Page;
                 } | null;
+                /**
+                 * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+                 */
+                anchor?: string | null;
                 url?: string | null;
               };
               id?: string | null;
@@ -860,6 +873,10 @@ export interface HeroMarqueeBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+           */
+          anchor?: string | null;
           url?: string | null;
           /**
            * How the link is styled.
@@ -994,6 +1011,10 @@ export interface MediaTextBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+           */
+          anchor?: string | null;
           url?: string | null;
           /**
            * How the link is styled.
@@ -1050,6 +1071,10 @@ export interface CardGridBlock {
    * On phones the cards always stack into a single column, whichever setting is chosen.
    */
   columns?: ('2' | '3' | '4') | null;
+  /**
+   * Choose “Poster” for invitations and event notices, so no text is cut off.
+   */
+  imageFrame?: ('photo' | 'poster') | null;
   cards?:
     | {
         title: string;
@@ -1087,6 +1112,10 @@ export interface CardGridBlock {
                   relationTo: 'pages';
                   value: number | Page;
                 } | null;
+                /**
+                 * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+                 */
+                anchor?: string | null;
                 url?: string | null;
               };
               id?: string | null;
@@ -1224,6 +1253,10 @@ export interface ProgramCardsBlock {
                   relationTo: 'pages';
                   value: number | Page;
                 } | null;
+                /**
+                 * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+                 */
+                anchor?: string | null;
                 url?: string | null;
               };
               id?: string | null;
@@ -1314,6 +1347,12 @@ export interface FeatureListBlock {
               | 'medal'
               | 'merit'
               | 'pass'
+              | 'diary'
+              | 'punctuality'
+              | 'fees'
+              | 'attendance'
+              | 'valuables'
+              | 'premises'
             )
           | null;
         /**
@@ -1344,13 +1383,13 @@ export interface FeatureListBlock {
    */
   accentWord?: string | null;
   /**
-   * Cards suit a handful of facilities a parent should be able to scan. A list suits rules, curricula and anything long. Compact suits a set of short labels — a subject list, a set of methods — where a full card per item is mostly empty space. Showcase is for a few items that each have a photograph worth showing: prizes, events, achievements. Panels suit three to twelve points a visitor scans rather than studies — they arrive one after another and answer the pointer. Use at most two panel sections on a page: the movement stops meaning anything when everything moves. See docs/MASTER-LAYOUT.md.
+   * Cards suit a handful of facilities a parent should be able to scan. A list suits rules, curricula and anything long. Compact suits a set of short labels — a subject list, a set of methods — where a full card per item is mostly empty space. Showcase is for a few items that each have a photograph worth showing: prizes, events, achievements. Panels suit three to twelve points a visitor scans rather than studies — they arrive one after another and answer the pointer. Use at most two panel sections on a page: the movement stops meaning anything when everything moves. Specification is for a short set where each title NAMES something and the text describes it — a uniform, a set of timings, a fee table: the titles line up in their own column so a parent can find their row without reading the others. See docs/MASTER-LAYOUT.md.
    */
-  layout?: ('list' | 'cards' | 'compact' | 'showcase' | 'panel') | null;
+  layout?: ('list' | 'cards' | 'compact' | 'showcase' | 'panel' | 'spec') | null;
   /**
-   * Choose numbers when the order matters, otherwise ticks. On cards, numbers add a coloured badge and rule to each one.
+   * Choose numbers when the order matters, otherwise ticks. On cards, numbers add a coloured badge and rule to each one. “Its own icon” is for cards whose points are unordered but each about a different thing — a set of rules, say: it puts the icon chosen on each item next to its heading, instead of the large disc above it.
    */
-  marker?: ('tick' | 'number') | null;
+  marker?: ('tick' | 'number' | 'icon') | null;
   /**
    * Always a single column on phones. “Kept together” narrows the two columns and centres them under the heading — for a SHORT list, where columns spread across the full width leave each one with a long empty tail and the section stops looking composed.
    */
@@ -1398,6 +1437,7 @@ export interface FacultyBlock {
    * Grouping puts each head teacher at the top of her own column with her teachers beneath, side by side. It reads the groups off the roster itself and ignores the campus setting above.
    */
   layout?: ('grid' | 'teams') | null;
+  cardLayout?: ('beside' | 'centred') | null;
   showQualifications?: boolean | null;
   /**
    * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
@@ -1633,7 +1673,7 @@ export interface AchievementWallBlock {
          */
         title: string;
         /**
-         * Shown as a badge on the tile — “First prize”, “Four prizes”, “Certificates and medals”. Leave empty if nothing was won, and the badge is simply not shown.
+         * A badge — “First prize”, “Four prizes”, “Certificates and medals”. It appears on the tile when a visitor hovers or tabs to it, and again when they open the photograph. Leave empty if nothing was won, and there is simply no badge.
          */
         award?: string | null;
         /**
@@ -1820,6 +1860,10 @@ export interface AnnouncementsBlock {
                       relationTo: 'media';
                       value: number | Media;
                     } | null);
+                /**
+                 * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+                 */
+                anchor?: string | null;
                 url?: string | null;
               };
               id?: string | null;
@@ -1850,6 +1894,73 @@ export interface AnnouncementsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NewsGridBlock".
+ */
+export interface NewsGridBlock {
+  /**
+   * Optional.
+   */
+  heading?: string | null;
+  /**
+   * A line or two under the heading, above the stories.
+   */
+  intro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Newest first. The first one is shown large, across the width — so put the story you want read first at the top.
+   */
+  items?:
+    | {
+        /**
+         * Every story needs one. A news page without photographs is a notice board, and there is already one of those.
+         */
+        photo: number | Media;
+        /**
+         * What happened, in a few words.
+         */
+        title: string;
+        /**
+         * A month and year, or just a year — “August 2024”, “2025”. Leave it EMPTY if the date is not recorded; a guessed date on a news page is worse than none, because a parent takes it as fact.
+         */
+        date?: string | null;
+        /**
+         * Two or three sentences. What happened, and who took part.
+         */
+        summary?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
+  /**
+   * Type a word from the heading to show it in SIWS accent.
+   */
+  accentWord?: string | null;
+  /**
+   * Text colour adjusts automatically so it stays readable.
+   */
+  background?: ('white' | 'sea' | 'tint' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'newsGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "QuickNavBlock".
  */
 export interface QuickNavBlock {
@@ -1877,6 +1988,10 @@ export interface QuickNavBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+           */
+          anchor?: string | null;
           url?: string | null;
         };
         id?: string | null;
@@ -2216,6 +2331,10 @@ export interface CallToActionBlock {
             relationTo: 'pages';
             value: number | Page;
           } | null;
+          /**
+           * Leave blank to land at the top. Otherwise the section heading, e.g. “Onam Event”.
+           */
+          anchor?: string | null;
           url?: string | null;
           /**
            * How the link is styled.
@@ -2645,6 +2764,7 @@ export interface PagesSelect<T extends boolean = true> {
         map?: T | MapBlockSelect<T>;
         accordion?: T | AccordionBlockSelect<T>;
         announcements?: T | AnnouncementsBlockSelect<T>;
+        newsGrid?: T | NewsGridBlockSelect<T>;
         quickNav?: T | QuickNavBlockSelect<T>;
         logoStrip?: T | LogoStripBlockSelect<T>;
         testimonials?: T | TestimonialsBlockSelect<T>;
@@ -2705,6 +2825,7 @@ export interface HeroBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               appearance?: T;
             };
@@ -2735,6 +2856,7 @@ export interface HeroCarouselBlockSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    anchor?: T;
                     url?: T;
                   };
               id?: T;
@@ -2775,6 +2897,7 @@ export interface HeroMarqueeBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               appearance?: T;
             };
@@ -2827,6 +2950,7 @@ export interface MediaTextBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               appearance?: T;
             };
@@ -2846,6 +2970,7 @@ export interface CardGridBlockSelect<T extends boolean = true> {
   heading?: T;
   intro?: T;
   columns?: T;
+  imageFrame?: T;
   cards?:
     | T
     | {
@@ -2863,6 +2988,7 @@ export interface CardGridBlockSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    anchor?: T;
                     url?: T;
                   };
               id?: T;
@@ -2923,6 +3049,7 @@ export interface ProgramCardsBlockSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    anchor?: T;
                     url?: T;
                   };
               id?: T;
@@ -2973,6 +3100,7 @@ export interface FacultyBlockSelect<T extends boolean = true> {
   intro?: T;
   campus?: T;
   layout?: T;
+  cardLayout?: T;
   showQualifications?: T;
   headingLevel?: T;
   accentWord?: T;
@@ -3144,6 +3272,7 @@ export interface AnnouncementsBlockSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    anchor?: T;
                     url?: T;
                   };
               id?: T;
@@ -3151,6 +3280,28 @@ export interface AnnouncementsBlockSelect<T extends boolean = true> {
         id?: T;
       };
   maxHeight?: T;
+  headingLevel?: T;
+  accentWord?: T;
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NewsGridBlock_select".
+ */
+export interface NewsGridBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  items?:
+    | T
+    | {
+        photo?: T;
+        title?: T;
+        date?: T;
+        summary?: T;
+        id?: T;
+      };
   headingLevel?: T;
   accentWord?: T;
   background?: T;
@@ -3174,6 +3325,7 @@ export interface QuickNavBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
             };
         id?: T;
@@ -3319,6 +3471,7 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               appearance?: T;
             };
@@ -3543,6 +3696,7 @@ export interface UnitsSelect<T extends boolean = true> {
   city?: T;
   postalCode?: T;
   phone?: T;
+  phoneAlt?: T;
   email?: T;
   mapEmbedUrl?: T;
   admissionsEmail?: T;

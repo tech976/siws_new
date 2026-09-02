@@ -43,8 +43,7 @@ export const GalleryBlock: Block = {
           name: 'caption',
           type: 'text',
           admin: {
-            description:
-              'Optional. Leave blank to use the caption already saved with the picture.',
+            description: 'Optional. Leave blank to use the caption already saved with the picture.',
           },
         },
       ],
@@ -61,8 +60,7 @@ export const GalleryBlock: Block = {
         { label: 'Show them all', value: '0' },
       ],
       admin: {
-        description:
-          'Only applies to the grid. Large galleries load far faster in pages.',
+        description: 'Only applies to the grid. Large galleries load far faster in pages.',
       },
     },
     {

@@ -85,10 +85,7 @@ export const orderedList = (entries: ListEntry[]) =>
       type: 'listitem',
       value: index + 1,
       ...common,
-      children: [
-        text(entry.term, true),
-        ...(entry.detail ? [text(` — ${entry.detail}`)] : []),
-      ],
+      children: [text(entry.term, true), ...(entry.detail ? [text(` — ${entry.detail}`)] : [])],
     })),
   }) as unknown
 
