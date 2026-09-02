@@ -236,14 +236,30 @@ const UNIT_OMIT: Record<string, string[]> = {
    * with its parent and comes straight back as a top-level entry in
    * `UNIT_EXTRA` below.
    */
+  /*
+   * UPDATES IS BACK (2026-09-02), carrying News and Events.
+   *
+   * It came off on 2026-09-01 because there was nothing behind it: News was
+   * the evergreen "what we mark through the year" list, and Events and
+   * Download Centre were the placeholder the menu template created. Two of
+   * those three now have content — News is the section's recent stories and
+   * Events is the calendar that used to sit on News — so the drop-down has
+   * something to lead to.
+   *
+   * `download-centre` stays omitted: it is still the placeholder.
+   *
+   * `achievements` stays omitted too, and that is not a contradiction. It
+   * leaves the drop-down here only so `UNIT_EXTRA` can put it back as a
+   * TOP-LEVEL entry, where SIWS asked for it. Omissions are applied to the
+   * template before extras are added, so the two do not fight; without this
+   * line it would appear twice.
+   */
   kindergarten: [
     'annual-calendar',
     'faq',
     'student-wall',
     'transport',
-    'updates',
-    'news',
-    'events',
+    'achievements',
     'download-centre',
   ],
   /*
@@ -413,6 +429,8 @@ const UNIT_UNPUBLISH: Record<string, string[]> = {
 const UNIT_RELABEL: Record<string, Record<string, string>> = {
   // With Events beside it, "News & Events" would name both of them.
   primary: { news: 'News' },
+  // Kindergarten split the same page the same way, for the same reason.
+  kindergarten: { news: 'News' },
   /*
    * The front page reads "About" in the menu, not its own title.
    *

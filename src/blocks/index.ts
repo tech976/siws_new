@@ -19,6 +19,7 @@ import { HeroEnquiryBlock } from './HeroEnquiryBlock'
 import { LogoStripBlock } from './LogoStripBlock'
 import { MapBlock } from './MapBlock'
 import { MediaTextBlock } from './MediaTextBlock'
+import { NewsGridBlock } from './NewsGridBlock'
 import { ProgramCardsBlock } from './ProgramCardsBlock'
 import { QuickNavBlock } from './QuickNavBlock'
 import { RichTextBlock } from './RichTextBlock'
@@ -55,6 +56,7 @@ export const contentBlocks: Block[] = [
   MapBlock,
   AccordionBlock,
   AnnouncementsBlock,
+  NewsGridBlock,
   QuickNavBlock,
   LogoStripBlock,
   TestimonialsBlock,
@@ -68,6 +70,7 @@ export {
   AccordionBlock,
   AchievementWallBlock,
   AnnouncementsBlock,
+  NewsGridBlock,
   QuickNavBlock,
   LogoStripBlock,
   FacultyBlock,

@@ -588,6 +588,7 @@ export interface Page {
         | MapBlock
         | AccordionBlock
         | AnnouncementsBlock
+        | NewsGridBlock
         | QuickNavBlock
         | LogoStripBlock
         | TestimonialsBlock
@@ -1884,6 +1885,73 @@ export interface AnnouncementsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NewsGridBlock".
+ */
+export interface NewsGridBlock {
+  /**
+   * Optional.
+   */
+  heading?: string | null;
+  /**
+   * A line or two under the heading, above the stories.
+   */
+  intro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Newest first. The first one is shown large, across the width — so put the story you want read first at the top.
+   */
+  items?:
+    | {
+        /**
+         * Every story needs one. A news page without photographs is a notice board, and there is already one of those.
+         */
+        photo: number | Media;
+        /**
+         * What happened, in a few words.
+         */
+        title: string;
+        /**
+         * A month and year, or just a year — “August 2024”, “2025”. Leave it EMPTY if the date is not recorded; a guessed date on a news page is worse than none, because a parent takes it as fact.
+         */
+        date?: string | null;
+        /**
+         * Two or three sentences. What happened, and who took part.
+         */
+        summary?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
+  /**
+   * Type a word from the heading to show it in SIWS accent.
+   */
+  accentWord?: string | null;
+  /**
+   * Text colour adjusts automatically so it stays readable.
+   */
+  background?: ('white' | 'sea' | 'tint' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'newsGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "QuickNavBlock".
  */
 export interface QuickNavBlock {
@@ -2621,6 +2689,7 @@ export interface PagesSelect<T extends boolean = true> {
         map?: T | MapBlockSelect<T>;
         accordion?: T | AccordionBlockSelect<T>;
         announcements?: T | AnnouncementsBlockSelect<T>;
+        newsGrid?: T | NewsGridBlockSelect<T>;
         quickNav?: T | QuickNavBlockSelect<T>;
         logoStrip?: T | LogoStripBlockSelect<T>;
         testimonials?: T | TestimonialsBlockSelect<T>;
@@ -3133,6 +3202,28 @@ export interface AnnouncementsBlockSelect<T extends boolean = true> {
         id?: T;
       };
   maxHeight?: T;
+  headingLevel?: T;
+  accentWord?: T;
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NewsGridBlock_select".
+ */
+export interface NewsGridBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  items?:
+    | T
+    | {
+        photo?: T;
+        title?: T;
+        date?: T;
+        summary?: T;
+        id?: T;
+      };
   headingLevel?: T;
   accentWord?: T;
   background?: T;

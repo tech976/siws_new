@@ -470,7 +470,13 @@ const IMAGES: ImageSeed[] = [
     filename: 'kg-dance-rehearsal.jpg',
     unit: 'kindergarten',
     category: 'Achievements',
-    alt: 'Kindergarten children in costume rehearsing a dance in the school hall, spread across the floor mid-step.',
+    /*
+     * "In costume" was wrong — they are in ordinary school uniform, barefoot,
+     * on floor marks. Checked against the photograph on 2026-09-02, because
+     * alt text is the whole of what a blind reader gets and a detail nobody
+     * verified is a detail invented.
+     */
+    alt: 'Kindergarten children rehearsing a dance in the school hall, barefoot and in school uniform with yellow headbands, spread across floor markings mid-step.',
     caption: 'Rehearsing in the hall, the week before',
     depictsChildren: true,
   },

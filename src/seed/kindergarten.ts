@@ -244,6 +244,8 @@ const main = async () => {
     outingPlaySpace: await mediaByFilename(payload, 'kg-outing-play-space.jpg'),
     sportsDayWinners: await mediaByFilename(payload, 'kg-sports-day-winners.jpg'),
     sportsDayPodium: await mediaByFilename(payload, 'kg-sports-day-podium.jpg'),
+    // The News page leads on this one — the preparation rather than the prize.
+    danceRehearsal: await mediaByFilename(payload, 'kg-dance-rehearsal.jpg'),
     activityLiteracy: await mediaByFilename(payload, 'kg-activity-literacy.jpg'),
     activityCreative: await mediaByFilename(payload, 'kg-activity-creative.jpg'),
     activityMotor: await mediaByFilename(payload, 'kg-activity-motor.jpg'),
@@ -1598,17 +1600,168 @@ const main = async () => {
 
     {
       slug: 'news',
-      title: 'News & Events',
+      title: 'News',
       intro:
-        'The Kindergarten year has a shape to it. These are the things that come round every year — dated notices appear here as they are announced.',
-      // Out of the menu with its parent — see the note on the Updates page
-      // above. The page stays published, and the Updates card grid and the
-      // home page still link to it.
-      showInNav: false,
-      navLabel: 'News & Events',
+        'What the Kindergarten section has been doing — the competitions it has entered, the days it has marked, and the rehearsals behind them.',
+      showInNav: true,
+      navLabel: 'News',
       navOrder: 41,
       metaDescription:
-        'Events and celebrations through the year at the SIWS Kindergarten section, Wadala.',
+        'Recent news from the SIWS Kindergarten section in Wadala — interschool competitions, sports day, outings and celebrations.',
+      layout: [
+        /*
+         * THE SAME EVENTS AS THE ACHIEVEMENTS PAGE, DELIBERATELY FRAMED THE
+         * OTHER WAY ROUND.
+         *
+         * The achievements wall answers "what has this section won": prize
+         * badges, certificates, trophies. Asked for a news page, the easy
+         * thing is to list those events again and end up with a second trophy
+         * cabinet, which is the one thing this page was asked not to be.
+         *
+         * So it leads on a REHEARSAL — no prize, no certificate, thirteen
+         * children barefoot on floor marks a week before they go on stage —
+         * and the entries that follow carry the story rather than the award.
+         * Two of them (Independence Day, the outing) were never achievements
+         * at all and have had nowhere to live until now.
+         *
+         * NOTHING HERE IS NEW COPY. Every sentence is the detail SIWS already
+         * supplied for the achievements page, re-cut; where no date was
+         * recorded, none is shown. A guessed date on a news page is read as
+         * fact, and the block's `date` field is optional for that reason.
+         */
+        {
+          blockType: 'newsGrid',
+          heading: 'Lately in the Kindergarten',
+          accentWord: 'Lately',
+          headingLevel: 'h2',
+          background: 'white',
+          intro: richText([
+            'The section enters interschool competitions through the year, and marks the days between them. Dated notices reach parents through the school diary.',
+          ]),
+          items: [
+            ...(img.danceRehearsal
+              ? [
+                  {
+                    photo: img.danceRehearsal,
+                    title: 'Rehearsing in the hall, the week before',
+                    summary:
+                      'The section takes part in interschool dance competitions through the year. This is the week before one of them — the hall cleared, floor marks down, and the class practising barefoot in school uniform.',
+                  },
+                ]
+              : []),
+            ...(img.prizeIgnitedMind
+              ? [
+                  {
+                    photo: img.prizeIgnitedMind,
+                    title: 'Ignited Mind Lab — Mental Maths Competition',
+                    date: '2025',
+                    summary:
+                      'Eleven children came back with a Certificate of Achievement and a gold medal each, having secured an A grade in the Jr. KG and Sr. KG rounds.',
+                  },
+                ]
+              : []),
+            ...(img.prizeFancyDress
+              ? [
+                  {
+                    photo: img.prizeFancyDress,
+                    title: 'Fancy dress at Our Lady’s Garden, Auxilium Convent',
+                    summary:
+                      'The interschool fancy dress competition. The costumes were made at home on an environmental theme — a painted globe, a model of the Earth, a windmill and a solar panel.',
+                  },
+                ]
+              : []),
+            ...(img.awardNatyaTarang
+              ? [
+                  {
+                    photo: img.awardNatyaTarang,
+                    title: 'A group dance at Natya Tarang',
+                    summary:
+                      'The section’s entry at the Natya Tarang inter-school competition — a group dance in regional costume, with the two teachers who taught the piece.',
+                  },
+                ]
+              : []),
+            ...(img.classroomFullClass
+              ? [
+                  {
+                    photo: img.classroomFullClass,
+                    title: 'Independence Day in the classroom',
+                    summary:
+                      'The whole class with the tricolour they made themselves, in painted handprints, pinned to the board behind them.',
+                  },
+                ]
+              : []),
+            ...(img.prizeSports
+              ? [
+                  {
+                    photo: img.prizeSports,
+                    title: 'The annual school sports',
+                    summary:
+                      'The Kindergarten section’s own sports day, and the prize distribution that closes it.',
+                  },
+                ]
+              : []),
+            ...(img.outingPlaySpace
+              ? [
+                  {
+                    photo: img.outingPlaySpace,
+                    title: 'A class outing to an indoor play space',
+                    summary:
+                      'The whole class out together for the afternoon — one of the outings the section makes through the year.',
+                  },
+                ]
+              : []),
+          ],
+        },
+        {
+          blockType: 'callToAction',
+          heading: 'Seeing it for yourself',
+          accentWord: 'yourself',
+          headingLevel: 'h2',
+          background: 'sea',
+          body: richText([
+            'Photographs from the celebrations, the classrooms and the play area are gathered on the Campus Gallery.',
+          ]),
+          links: [
+            {
+              link: {
+                label: 'Open the Campus Gallery',
+                type: 'internal',
+                reference: LINK_TO('/kindergarten/gallery'),
+                appearance: 'primary',
+              },
+            },
+          ],
+        },
+      ],
+    },
+
+    // ------------------------------------------------------------- EVENTS
+    /*
+     * News and Events are two pages, and this is the second of them.
+     *
+     * Splitting them is not a preference, it is what the two sets of content
+     * are: News is dated and has happened, Events is the shape of the year and
+     * happens again. They were on one page called "News & Events" — the
+     * recurring calendar sitting under a heading that promised recent news —
+     * which is why Primary split the same page in two, and this follows it.
+     *
+     * The whole of this page's content was ALREADY WRITTEN, on the News page,
+     * where it was the only thing on it. Nothing is invented here: the six
+     * activities are SIWS's own list and the note about the school diary is
+     * the sentence that always accompanied them. Events was an empty
+     * placeholder until now, which is why it was kept out of the menu; it has
+     * content, so it goes in.
+     */
+    {
+      slug: 'events',
+      title: 'Events',
+      intro:
+        'The shape of the Kindergarten year — what comes round every year, and where the dates are published.',
+      showInNav: true,
+      navLabel: 'Events',
+      navOrder: 42,
+      metaDescription:
+        'The Kindergarten calendar at SIWS Wadala — festival celebrations, fancy dress, dance, sports and activity days through the year.',
       layout: [
         {
           blockType: 'featureList',
@@ -1632,19 +1785,19 @@ const main = async () => {
         },
         {
           blockType: 'callToAction',
-          heading: 'Seeing it for yourself',
-          accentWord: 'yourself',
+          heading: 'What has happened lately',
+          accentWord: 'lately',
           headingLevel: 'h2',
           background: 'sea',
           body: richText([
-            'Photographs from the celebrations, the classrooms and the play area are gathered on the Campus Gallery.',
+            'The competitions the section has entered, the days it has marked and the rehearsals behind them are on the News page.',
           ]),
           links: [
             {
               link: {
-                label: 'Open the Campus Gallery',
+                label: 'Read the latest news',
                 type: 'internal',
-                reference: LINK_TO('/kindergarten/gallery'),
+                reference: LINK_TO('/kindergarten/news'),
                 appearance: 'primary',
               },
             },
