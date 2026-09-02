@@ -25,7 +25,41 @@ So the only supported route is an **access token**.
 
 ---
 
-## Which route to use
+## The simple way (start here)
+
+**No token. No Meta developer app. No access to the school's Instagram.**
+About two minutes.
+
+Instagram lets anyone embed a *public post* by its address. The site uses that
+directly, so Instagram serves the picture, caption and like count itself.
+
+1. Open <https://www.instagram.com/siws_wadala/> in a browser.
+2. Click a post you want to show. The address bar now reads something like
+   `https://www.instagram.com/p/DclQoBbiEV-/`. Copy it.
+3. In the admin panel, open the front page, find the **Instagram feed** section,
+   and paste it under **Instagram post links**.
+4. Repeat for six posts. Save.
+
+Done — the grid is live.
+
+**What stays automatic:** each post's picture, caption and likes come from
+Instagram every time someone opens the page, so nothing goes stale, and editing
+a caption on Instagram updates the website.
+
+**What does not:** the *choice* of which six posts is yours. When the school
+posts something new and you want it featured, paste the new link and remove the
+oldest. Worth doing once a month.
+
+If that trade is fine — and for most school sites it is — **you can stop
+reading here.** The rest of this document is only for making the six posts
+update themselves.
+
+---
+
+## Making it fully automatic
+
+Only needed if you want the latest posts to appear with nobody pasting links.
+Both routes below need a Meta developer app.
 
 **Route A — Business Discovery. You do NOT need the school's Instagram login.**
 

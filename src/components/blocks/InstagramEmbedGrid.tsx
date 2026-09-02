@@ -62,10 +62,9 @@ export const InstagramEmbedGrid = ({
             title={`Instagram post ${index + 1} from @${account}`}
             loading="lazy"
             className="block h-[min(560px,120vw)] w-full border-0 sm:h-[520px]"
-            // Instagram's own embed code sets these; without them the frame
+            // Instagram's own embed code sets this; without it the frame
             // shows its own scrollbars over the card.
             scrolling="no"
-            allowTransparency
           />
         </li>
       ))}
