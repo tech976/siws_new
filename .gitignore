@@ -49,11 +49,21 @@ yarn-error.log*
 # A personal copy of the SRS. The current spec is committed; this is not.
 SIWS_School_Website_SRS_v2_ORIGINAL_backup.pdf
 
-# Large video working files — kept on disk, never committed (they stay in
-# git history forever once added, and bloat every future clone).
+# Editing masters — the multi-gigabyte exports a video comes out of. These
+# never belong in git: they stay in history forever once added, and nobody
+# cloning the site needs the source of a film they can already play.
 Sequence*.mp4
-public/hero/*.mp4
-public/reels/*.mp4
+
+# THE DEPLOYED FILMS ARE COMMITTED, and were not until 2026-09-02.
+#
+# `public/hero/*.mp4` and `public/reels/*.mp4` were ignored alongside the
+# masters, which meant a clone had every page of the site and none of its
+# video: the banner fell back to a still and both reel sections rendered
+# nothing. A deployment built from this repository was not the site.
+#
+# They are 44 MB in total, compressed for the web — the hero film at 13 MB and
+# seven reels between 1.8 and 10 MB. That is a real cost to a clone, paid once,
+# against a production site that is missing its opening film.
 
 # Records which commit this machine last built its database from, written by
 # `seed:refresh` and read by `seed:verify`. Local state — it describes THIS
