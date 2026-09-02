@@ -4,6 +4,7 @@ import { ROLES, adminFieldOnly, adminOnly, hasRole, isAdmin, unitIdsOf } from '@
 import type { AccessUser } from '@/access'
 import { hiddenFromHod } from '@/access/admin-nav'
 import { auditChange, auditDelete } from '@/hooks/audit'
+import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 import { slugField } from '@/fields/slug'
 import { UNIT_ACCENTS } from '@/theme/tokens'
 
@@ -73,8 +74,8 @@ export const Units: CollectionConfig = {
 
   // BR-LOG-01 — school details are content too.
   hooks: {
-    afterChange: [auditChange('units')],
-    afterDelete: [auditDelete('units')],
+    afterChange: [auditChange('units'), revalidateAfterChange],
+    afterDelete: [auditDelete('units'), revalidateAfterDelete],
   },
 
   fields: [

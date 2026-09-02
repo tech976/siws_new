@@ -11,6 +11,7 @@ import { campusField } from '@/fields/campus'
 import { schedulingFields, workflowFields } from '@/fields/publishing'
 import { richTextField } from '@/fields/richText'
 import { auditChange, auditDelete } from '@/hooks/audit'
+import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 import { hiddenFromHod } from '@/access/admin-nav'
 import {
   constrainUnitToScope,
@@ -70,8 +71,8 @@ export const Faculty: CollectionConfig = {
 
   hooks: {
     beforeChange: [constrainUnitToScope, enforcePublishPermission, stampWorkflowTransitions],
-    afterChange: [notifyWorkflowParticipants, auditChange('faculty')],
-    afterDelete: [auditDelete('faculty')],
+    afterChange: [notifyWorkflowParticipants, auditChange('faculty'), revalidateAfterChange],
+    afterDelete: [auditDelete('faculty'), revalidateAfterDelete],
   },
 
   fields: [

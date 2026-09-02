@@ -8,6 +8,7 @@ import { ROLES, hasRole, isActiveUser, isAdmin, unitIdsOf } from '@/access'
 import type { AccessUser } from '@/access'
 import { campusField } from '@/fields/campus'
 import { auditChange, auditDelete } from '@/hooks/audit'
+import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 import { IMAGE_AND_DOCUMENT_TYPES, validateFileContent } from '@/utilities/file-signature'
 import { describeMediaUsage } from '@/utilities/media-usage'
 
@@ -214,8 +215,8 @@ export const Media: CollectionConfig = {
       },
     ],
 
-    afterChange: [auditChange('media')],
-    afterDelete: [auditDelete('media')],
+    afterChange: [auditChange('media'), revalidateAfterChange],
+    afterDelete: [auditDelete('media'), revalidateAfterDelete],
 
     beforeDelete: [
       /**

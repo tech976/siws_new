@@ -183,6 +183,29 @@ const UnitPlaceholder = ({ unit }: { unit: Unit }) => (
   </section>
 )
 
+/*
+ * HOW OFTEN THIS PAGE GOES BACK TO THE DATABASE.
+ *
+ * Every page outside the home page is rendered here, and until this was set
+ * there was nothing to re-render them: the content is read through Payload's
+ * LOCAL API — a direct database call, not `fetch` — so Next has no request to
+ * attach a cache lifetime to and treats the result as static for the life of
+ * the build.
+ *
+ * The symptom was not a page that never updated, which somebody would have
+ * questioned immediately. It was a page that updated when it was hard-reloaded
+ * and reverted on the way back to it, because a soft navigation is served from
+ * the router cache while a reload is not. That reads as "the changes keep
+ * coming back", and it sent us looking at the database and the seeds — neither
+ * of which was wrong.
+ *
+ * Sixty seconds, matching the home page. Content here is edited in a CMS and
+ * read by parents; a minute is far below the threshold at which anybody
+ * notices a stale page, and it keeps the database out of the path of every
+ * request.
+ */
+export const revalidate = 60
+
 export const generateMetadata = async ({ params }: RouteProps): Promise<Metadata> => {
   const { segments } = await params
   const resolved = await resolveRoute(segments)

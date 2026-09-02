@@ -14,6 +14,7 @@ import { contentBlocks } from '@/blocks'
 import { schedulingFields, workflowFields } from '@/fields/publishing'
 import { slugField } from '@/fields/slug'
 import { auditChange, auditDelete } from '@/hooks/audit'
+import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 import { blockUnconsentedChildImages } from '@/hooks/child-consent'
 import type { Page } from '@/payload-types'
 import { ensureUniqueSlugPerUnit } from '@/hooks/unique-slug'
@@ -111,8 +112,8 @@ export const Pages: CollectionConfig = {
       blockUnconsentedChildImages,
       stampWorkflowTransitions,
     ],
-    afterChange: [notifyWorkflowParticipants, auditChange('pages')],
-    afterDelete: [auditDelete('pages')],
+    afterChange: [notifyWorkflowParticipants, auditChange('pages'), revalidateAfterChange],
+    afterDelete: [auditDelete('pages'), revalidateAfterDelete],
   },
 
   fields: [
