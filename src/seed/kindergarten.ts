@@ -2668,3 +2668,5 @@ main()
     console.error('Kindergarten seed failed:', error)
     process.exit(1)
   })
+
+// staleness check probe
