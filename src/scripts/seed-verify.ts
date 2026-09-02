@@ -111,6 +111,48 @@ const main = async () => {
     }
   }
 
+  /* ------------------------------------------- 1b. is the DUMP stale? */
+  /*
+   * THE FAILURE THIS CATCHES IS "MY CHANGES CAME BACK".
+   *
+   * `db/siws-content.sql.gz` is a build product: generated FROM the seeds,
+   * never edited beside them. The README's setup line restores it —
+   *
+   *     gunzip -c db/siws-content.sql.gz | psql "$DATABASE_URI"
+   *
+   * — and that REPLACES the whole database. Run after a seed, it silently
+   * puts back whatever snapshot the file holds and the seeded content is
+   * gone. Nothing errors. The file is a binary blob, so `git diff` cannot
+   * show it has drifted, and a merge resolves it by picking one side whole —
+   * which is how it ends up older than the seeds that are supposed to have
+   * produced it.
+   *
+   * Checked against the seeds rather than against HEAD: a commit touching
+   * only components leaves the dump perfectly valid, and warning then would
+   * teach everyone to ignore this.
+   */
+  const DUMP = 'db/siws-content.sql.gz'
+  if (head && existsSync(path.resolve(process.cwd(), DUMP))) {
+    const dumpCommit = git(`git log -1 --format=%H -- ${DUMP}`)
+    if (dumpCommit) {
+      const seedsSince = (git(`git diff --name-only ${dumpCommit} ${head}`) ?? '')
+        .split('\n')
+        .filter((line) => CONTENT_PATHS.test(line))
+
+      if (seedsSince.length > 0) {
+        problems.push({
+          title: `The committed dump is older than the seeds — ${seedsSince.length} content file(s) newer`,
+          detail:
+            `${DUMP} was last written at ${dumpCommit.slice(0, 7)}, and content has\n` +
+            '    changed since. Restoring it — which is how a teammate sets up, and how\n' +
+            '    a database gets reset — would put that older content back and discard\n' +
+            '    what the seeds now produce.',
+          fix: 'npm run seed:refresh && npm run db:dump   # then commit the dump',
+        })
+      }
+    }
+  }
+
   /* ------------------------------------- 2. pages pointing at nothing */
   /*
    * Found by walking the foreign keys rather than a list of block tables, so a
