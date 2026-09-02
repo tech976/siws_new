@@ -534,6 +534,25 @@ const run = async () => {
     (m) => !m.depictsChildren || m.parentalConsent?.obtained === true,
   )
 
+  /**
+   * Whether a photograph and a page belong to the same section.
+   *
+   * Both `unit` fields come back as a bare id at `depth: 0` and as an object
+   * when something has populated them, so each is reduced to its id first. The
+   * portal has no unit at all: `null` on either side is never a match, which
+   * is what keeps a picture of one school's children off the group's own pages.
+   */
+  const unitId = (value: unknown): number | string | null =>
+    value && typeof value === 'object'
+      ? (((value as { id?: number | string }).id ?? null) as number | string | null)
+      : ((value ?? null) as number | string | null)
+
+  const sameUnit = (a: unknown, b: unknown): boolean => {
+    const left = unitId(a)
+    const right = unitId(b)
+    return left !== null && right !== null && String(left) === String(right)
+  }
+
   /*
    * Fetched and filtered here rather than with a `like` in the query. The
    * adapter's `like` returned nothing against this column, and a silent empty
@@ -618,6 +637,22 @@ const run = async () => {
      * Pages with no matching photograph open on type alone, which the banner
      * already supports.
      */
+    /*
+     * KEYED BY SLUG, AND EVERY VALUE IS A KINDERGARTEN PHOTOGRAPH — which is
+     * why the match below also insists the picture belong to the page's OWN
+     * unit. This map was written when every photograph SIWS had sent was a
+     * Kindergarten scene, so naming one per slug was the same thing as naming
+     * one per page. It stopped being the same thing the moment the other
+     * sections sent their own: `/secondary/about` opened on a room of
+     * four-year-olds under the heading of a Standards V to X school, which
+     * tells a family something untrue about the page in the one place they
+     * look first.
+     *
+     * Adding this section's own filename per slug would only move the problem
+     * to the next unit. A picture is used where it is genuinely OF the page's
+     * school, and the page opens on type alone otherwise — which the banner
+     * already supports, and which is what the note above always intended.
+     */
     const RELEVANT: Record<string, string> = {
       about: 'kg-classroom-group.jpg',
       academics: 'kg-classroom-activity.jpg',
@@ -634,7 +669,9 @@ const run = async () => {
      * `kg-play-area-1.jpg` where this map asks for `kg-play-area.jpg`.
      */
     const banner = wanted
-      ? (publishable.find((m) => baseName(String(m.filename)) === wanted)?.id ?? null)
+      ? (publishable.find(
+          (m) => baseName(String(m.filename)) === wanted && sameUnit(m.unit, page.unit),
+        )?.id ?? null)
       : null
 
     /*

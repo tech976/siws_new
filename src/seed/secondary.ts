@@ -442,7 +442,17 @@ const main = async () => {
     data: {
       name: 'SIWS High School, Wadala',
       shortName: 'Secondary School',
-      tagline: 'Maharashtra State Board | Standards V to X',
+      /*
+       * NO LINE UNDER THE NAME. This read "Maharashtra State Board | Standards
+       * V to X" until SIWS asked on 2026-09-02 to have it taken off.
+       *
+       * `null`, not omitted: this is a `payload.update`, which leaves a field
+       * it is not given alone, so dropping the key would keep the old line in
+       * a database that has already been seeded. The board and the range are
+       * still on the page — the home hero carries both as its eyebrow, and
+       * `description` below repeats them for search results.
+       */
+      tagline: null,
       description:
         'Standards V to X following the Maharashtra State Board curriculum, aligned with NEP 2020 — a learner-centred, competency-based approach at our Wadala campus.',
       /*
@@ -794,41 +804,17 @@ const main = async () => {
         items: SUBJECTS,
       },
 
-      {
-        /*
-         * PANEL 2 OF 2 on this page — see docs/MASTER-LAYOUT.md §4. "A holistic
-         * approach" above is the first. Nine peers, each a claim a parent
-         * weighs rather than reference material, which is the test the handbook
-         * sets; the subject list keeps the compact tile because ten one-word
-         * labels are exactly what that layout exists for.
-         */
-        blockType: 'featureList',
-        heading: 'How we teach',
-        accentWord: 'teach',
-        headingLevel: 'h2',
-        layout: 'panel',
-        marker: 'tick',
-        background: 'white',
-        /*
-         * Three paragraphs rather than one, so the claim, the scope and the
-         * reason each get a line of their own instead of running together.
-         */
-        intro: richText([
-          'We don’t teach for exams. We teach for life.',
-          'Across Standards V to X, our methods help students understand concepts deeply — so learning stays with them.',
-          'Aligned with NEP 2020, we prioritize conceptual understanding over rote learning, fostering critical thinking and real-world application.',
-        ]),
-        items: METHODOLOGY,
-      },
-
       /*
        * The same holistic approach as on Academics, in the same panels, on the
        * page a parent actually lands on.
        *
-       * It follows "How we teach" rather than replacing it: that block lists
-       * the METHODS, this one says what they are FOR. Reusing one array across
-       * both pages is how SUBJECTS and METHODOLOGY already work in this file,
-       * and it means the school revises this claim in one place.
+       * It used to follow a "How we teach" block, which listed the METHODS
+       * while this one says what they are FOR. That block has been dropped
+       * from the front page — the methods are on Academics, where a reader who
+       * wants them goes — so this is now the ONLY panel section here, well
+       * inside the "two at the outside" limit in docs/MASTER-LAYOUT.md §4.
+       * Reusing HOLISTIC across both pages is how SUBJECTS already works in
+       * this file, and it means the school revises this claim in one place.
        */
       {
         blockType: 'featureList',
@@ -836,7 +822,7 @@ const main = async () => {
         accentWord: 'holistic',
         headingLevel: 'h2',
         layout: 'panel',
-        background: 'tint',
+        background: 'white',
         intro: richText([
           'We focus on nurturing academic excellence, communication skills, values, leadership qualities and holistic development, enabling every learner to become a confident, responsible and lifelong learner.',
         ]),
@@ -853,7 +839,7 @@ const main = async () => {
         heading: 'Beyond the classroom',
         accentWord: 'Beyond',
         headingLevel: 'h2',
-        background: 'white',
+        background: 'tint',
         imagePosition: 'right',
         imageShape: 'rounded',
         ...(classroomActivity ? { image: classroomActivity } : {}),
@@ -874,7 +860,7 @@ const main = async () => {
         heading: 'Recognised by the State',
         accentWord: 'Recognised',
         headingLevel: 'h2',
-        background: 'tint',
+        background: 'white',
         imagePosition: 'left',
         imageShape: 'rounded',
         ...(recognition ? { image: recognition } : {}),
@@ -890,7 +876,7 @@ const main = async () => {
         headingLevel: 'h2',
         layout: 'cards',
         marker: 'tick',
-        background: 'white',
+        background: 'tint',
         items: [
           {
             title: 'Experienced faculty',
@@ -1023,13 +1009,27 @@ const main = async () => {
         background: 'sea',
         items: SUBJECTS,
       },
+      /*
+       * COMPACT, not the two-column tick list it used to be, and not the panel
+       * layout the front page used to carry either.
+       *
+       * The front-page copy of this block has been removed, so this is now the
+       * only place the nine methods are published — which makes it worth the
+       * layout that suits them. Every one is a bare label with no sentence
+       * under it, and `FeatureCompact` exists for exactly that: an icon disc
+       * beside the words, three across, tiles of equal height so the ragged
+       * last row of nine-over-three stops showing.
+       *
+       * `marker` and `columns` are gone with it: compact draws its own icon
+       * (a tick where an item has none) and sets its own flow, so both were
+       * dead controls here.
+       */
       {
         blockType: 'featureList',
         heading: 'How we teach',
         accentWord: 'teach',
         headingLevel: 'h2',
-        marker: 'tick',
-        columns: '2-centre',
+        layout: 'compact',
         background: 'white',
         items: METHODOLOGY,
       },
@@ -1989,6 +1989,159 @@ const main = async () => {
     ],
   })
 
+  // ------------------------------------------------------------------ SPORTS
+  /*
+   * SPORT, ON ITS OWN PAGE, at SIWS's instruction (2026-09-02) to give every
+   * section a Sports entry in its menu.
+   *
+   * The two photographs are the reason this page can say anything specific at
+   * all. They were in `media/` and in no seed — carried in by a
+   * `photos:import` whose inbox is not in version control — and the banner in
+   * the first of them is the only record on this site of the SIWS Sports
+   * Academy or of the league it runs: "S.I.W.S. Sports Academy — South Indian
+   * Welfare School presents the Inter School Football League 2023-24, age
+   * categories U14 and U17 (Boys & Girls)."
+   *
+   * The page states that and no more of it. It does not say how many schools
+   * entered, who won, or whether the league has run since — none of which is
+   * legible in the photograph, and all of which would be invention. Those
+   * questions go to SIWS in the warnings at the foot of this seed.
+   *
+   * NOT USED HERE, deliberately: the Swachhta Monitor certificate is awarded
+   * by the "School Education and SPORTS Department, Government of
+   * Maharashtra". It is a cleanliness award from a department with sport in
+   * its name, and putting it on a sports page would read as a sporting
+   * honour. It stays on Achievements, where it is described for what it is.
+   */
+  const footballShots = {
+    teams: await photo('secondary-football-league-teams.jpg'),
+    kickoff: await photo('secondary-football-league-kickoff.jpg'),
+  }
+
+  await upsert({
+    slug: 'sports',
+    title: 'Sports',
+    intro:
+      'P.T. and mass drill on the timetable for every standard, sports events through the year on the Wadala grounds, and the inter-school football league the SIWS Sports Academy runs.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back INSIDE the Student Life
+     * drop-down. Sports is a child entry in the shared unit template, and
+     * `show_in_nav` set from a page seed makes it a TOP-LEVEL item — so on a
+     * machine where this seed ran last, the section would carry Sports twice:
+     * once in the bar and once under Student Life.
+     */
+    showInNav: false,
+    navLabel: 'Sports',
+    navOrder: 71,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Sport at SIWS High School, Wadala — Physical Training timetabled for every standard from V to X, sports events on the Wadala grounds, and the SIWS Sports Academy inter-school football league.',
+    layout: [
+      {
+        blockType: 'featureList',
+        heading: 'What sport looks like here',
+        accentWord: 'sport',
+        headingLevel: 'h2',
+        marker: 'number',
+        columns: '1',
+        background: 'white',
+        items: [
+          {
+            title: 'P.T. is a timetabled subject, not a free period',
+            description:
+              'Physical Training is on the timetable for every standard from V to X, alongside mass drill — which is to say the school treats it as teaching rather than as the gap between two lessons.',
+          },
+          {
+            title: 'Sports events run through the year',
+            description:
+              'On the Wadala grounds, alongside the cultural performances, debates and competitions the rest of the co-curricular year is made of.',
+          },
+          {
+            title: 'The turf pitch, and the hall behind it',
+            description:
+              'A netted turf pitch for games and matches, with the school hall — where assemblies, mass drill, meditation and prize-giving all happen — a few steps away.',
+          },
+          {
+            title: 'The SIWS Sports Academy’s inter-school football league',
+            description:
+              'The Society runs an Inter School Football League in age categories U14 and U17, for boys and girls, played on the school’s own pitch.',
+          },
+        ],
+      },
+      ...(footballShots.teams
+        ? [
+            {
+              /*
+               * The teams lined up under the banner, set as a picture-and-text
+               * band rather than dropped into a gallery of two. Two photographs
+               * in a grid read as the remains of a set; one photograph beside
+               * the paragraph it illustrates reads as a choice.
+               */
+              blockType: 'mediaText',
+              heading: 'The Inter School Football League',
+              accentWord: 'Football League',
+              headingLevel: 'h2',
+              background: 'sea',
+              imagePosition: 'right',
+              imageShape: 'rounded',
+              image: footballShots.teams,
+              content: richText([
+                'The SIWS Sports Academy runs an Inter School Football League on the school’s own turf pitch, in two age categories — under-14 and under-17 — for boys and girls.',
+                'The teams line up on the pitch to be greeted before play starts, in front of the league banner, in kit. It is the one fixture in the school year that brings other schools onto this campus to compete.',
+              ]),
+            },
+          ]
+        : []),
+      ...(footballShots.kickoff
+        ? [
+            {
+              /*
+               * The second band alternates to the left, so the two photographs
+               * read as a sequence rather than as a column. A gallery was the
+               * obvious block for a lone picture and the wrong one: a grid
+               * holding one tile looks like a grid that failed to load the
+               * other eight.
+               */
+              blockType: 'mediaText',
+              heading: 'Kick-off',
+              headingLevel: 'h2',
+              background: 'white',
+              imagePosition: 'left',
+              imageShape: 'rounded',
+              image: footballShots.kickoff,
+              content: richText([
+                'The league is started on the school’s own pitch, with the ball placed at the centre spot and the staff who organised it standing over it.',
+                'It is a small ceremony and it is the point of the thing: the fixture is hosted here, so the students playing in it are on their own ground.',
+              ]),
+            },
+          ]
+        : []),
+      ...(galleryPageId
+        ? [
+            {
+              blockType: 'callToAction',
+              heading: 'See a year of it',
+              background: 'sea',
+              text: richText([
+                'The classrooms, the hall, the veranda and the prizes — filed by subject, and any of them opens full size.',
+              ]),
+              links: [
+                {
+                  link: {
+                    label: 'Open the gallery',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: galleryPageId },
+                    appearance: 'primary',
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  })
+
   // -------------------------------------------------------------------- NEWS
   const newsPageId = await upsert({
     slug: 'news',
@@ -2355,6 +2508,246 @@ const main = async () => {
     ],
   })
 
+  // ---------------------------------------------------------------- ABOUT
+  /*
+   * THE SECTION'S OWN ABOUT PAGE, WHICH IT DID NOT HAVE.
+   *
+   * Until now `/secondary/about` was the generic recipe in `pages-general.ts`
+   * — a banner, four headings naming what "should" go on an About page
+   * ("Overview", "Approach", "Head of school", "Campus"), and a closing line
+   * telling the reader to ring the office. It described the page instead of
+   * being it.
+   *
+   * Worse, it opened on `kg-classroom-group.jpg`. That map of "a photograph
+   * only where one genuinely relates to the page" was written when every
+   * picture SIWS had sent was a Kindergarten scene, and it is keyed by SLUG
+   * rather than by unit — so a family reading about a Standard V to X school
+   * met a photograph of four-year-olds. This section has its own photographs
+   * now, and uses one.
+   *
+   * NOTHING HERE IS NEW. Every fact below is already published somewhere in
+   * this section — the 1934 date and the curriculum from the home banner, the
+   * approach from "A learner-centred secondary school", the result from the
+   * SSC_2026 figures, the recognition from its own block, the English rule and
+   * the attendance figure from the FAQ. An About page is where a reader who
+   * has not clicked through six pages meets them in one place, which is what
+   * "add what is already on the site" means. It states no fee, no admission
+   * step, no head of school and no teacher count: the first three SIWS has
+   * never supplied, and the fourth is recorded in two places in this file that
+   * disagree with each other.
+   *
+   * LAST IN THE FILE on purpose, so `pageId` below resolves the four pages the
+   * closing cards point at — all of them are created above.
+   */
+  const academicsPageId = await pageId('academics')
+  const teachersPageId = await pageId('teachers')
+
+  await upsert({
+    slug: 'about',
+    title: 'About',
+    intro:
+      'Standards V to X on the Maharashtra State Board curriculum, on a Wadala campus SIWS has run since 1934.',
+    showInNav: true,
+    navLabel: 'About',
+    navOrder: 1,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'About SIWS High School, Wadala — Standards V to X on the Maharashtra State Board curriculum, aligned with NEP 2020, on a campus the Society has run since 1934.',
+    layout: [
+      {
+        blockType: 'statistics',
+        heading: 'The section at a glance',
+        accentWord: 'a glance',
+        headingLevel: 'h2',
+        background: 'sea',
+        stats: [
+          { value: 'V to X', label: 'Standards taught' },
+          { value: '1934', label: 'On this campus since' },
+          { value: SSC_2026.percentage, label: 'S.S.C. Examination 2026' },
+          { value: 'SSC', label: 'Maharashtra State Board' },
+        ],
+      },
+
+      /*
+       * THE PHOTOGRAPH THAT REPLACES THE KINDERGARTEN ONE — a Standard V to X
+       * room, in this section's own library, beside the paragraphs that say
+       * what the room is for. `mediaText` rather than a banner: a picture
+       * carries more here next to the claim it illustrates than washed out
+       * behind a page title.
+       */
+      {
+        blockType: 'mediaText',
+        heading: 'What the school sets out to do',
+        accentWord: 'sets out to do',
+        headingLevel: 'h2',
+        background: 'white',
+        imagePosition: 'left',
+        imageShape: 'rounded',
+        ...(classroomActivity ? { image: classroomActivity } : {}),
+        content: richText([
+          'Standards V to X follow the Maharashtra State Board curriculum, taught in alignment with the National Education Policy 2020 and in English medium. The approach is competency-based: lessons are built to develop conceptual understanding rather than recall, and to give every student regular practice in critical thinking, creativity and problem-solving.',
+          'Continuous assessment, project work and hands-on activity connect what happens in the classroom to life outside it — so a student leaves Standard X able to think, to explain their thinking, and to apply it.',
+        ]),
+      },
+
+      {
+        blockType: 'richText',
+        heading: 'Ninety years in Wadala',
+        accentWord: 'Ninety years',
+        headingLevel: 'h2',
+        width: 'normal',
+        background: 'tint',
+        content: richText([
+          'The South Indians’ Welfare Society has taught in this city since 1934, and the High School has run on the Wadala campus for the whole of that time — 90+ years of trust and excellence.',
+          'The section sits inside the SIWS Group of Institutions. A child can arrive in Kindergarten and stay through the Primary Section, these six years, and the Junior College without changing school in between — after the S.S.C. examination students move into the Science and Commerce streams according to their interests, and from there to degree colleges, professional courses and the careers that follow.',
+        ]),
+      },
+
+      {
+        blockType: 'featureList',
+        heading: 'What the section expects',
+        accentWord: 'expects',
+        headingLevel: 'h2',
+        layout: 'spec',
+        background: 'white',
+        /*
+         * SPECIFICATION, not a list: each title NAMES the thing and the text
+         * is its detail, which is the case docs/MASTER-LAYOUT.md gives for
+         * that layout. All four are the school's own rules, published in full
+         * on the FAQ and the school-rules page; an About page is where a
+         * family reads them BEFORE deciding, not after.
+         */
+        items: [
+          {
+            title: 'English, at all times',
+            description:
+              'A school rule rather than a preference, and one of the reasons the section is confident about how its students speak by Standard X.',
+          },
+          {
+            title: 'Attendance of 75%',
+            description:
+              'A minimum of 75% of the working days in the year. Irregular attendance and late coming are treated seriously.',
+          },
+          {
+            title: 'The school calendar, daily',
+            description:
+              'Every student must have a copy and bring it in each day. It is how the school and the family write to each other.',
+          },
+          {
+            title: 'Uniform, clean and ironed',
+            description:
+              'Set out in full on the school rules page, with hair and nails kept short, hair uncoloured, and no mehendi or nail polish.',
+          },
+        ],
+      },
+
+      /*
+       * The state's own recognition, photographed — the same certificate the
+       * home page carries, because it is the one external judgement of this
+       * campus anybody has published and an About page that omitted it would
+       * be the poorer for it.
+       */
+      {
+        blockType: 'mediaText',
+        heading: 'Recognised by the State',
+        accentWord: 'Recognised',
+        headingLevel: 'h2',
+        background: 'tint',
+        imagePosition: 'right',
+        imageShape: 'rounded',
+        ...(recognition ? { image: recognition } : {}),
+        content: richText([
+          'S.I.W.S. High School was certified amongst the 100 Best Schools in Maharashtra under #SwachhtaMonitor 2023, awarded by the School Education and Sports Department, Government of Maharashtra — an award for how the campus is kept.',
+        ]),
+      },
+
+      {
+        blockType: 'cardGrid',
+        heading: 'Where to go next',
+        accentWord: 'next',
+        headingLevel: 'h2',
+        background: 'white',
+        columns: '2',
+        placedBySeed: true,
+        cards: [
+          {
+            title: 'Academics',
+            description:
+              'The ten subjects, how they are taught, and how the school year is organised into its two terms.',
+            ...(academicsPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'See what is taught',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: academicsPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+          {
+            title: 'Our teachers',
+            description:
+              'Every teacher and member of the support staff in the section, with their qualifications.',
+            ...(teachersPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'Meet the team',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: teachersPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+          {
+            title: 'Our results and achievements',
+            description:
+              'The 2026 grade distribution in full, and the students who qualified in the State scholarship examinations.',
+            ...(achievementsPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'See the results',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: achievementsPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+          {
+            title: 'Facilities & Campus',
+            description:
+              'The classrooms, the laboratories and library, the CCTV arrangements, and what the campus offers.',
+            ...(facilitiesPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'See the campus',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: facilitiesPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+        ],
+      },
+    ],
+  })
+
   payload.logger.info('Secondary content seeded.')
 
   if (!CHILD_NAMES_CONSENTED) {
@@ -2376,6 +2769,10 @@ const main = async () => {
       'PARENT FEEDBACK: no quotes have been supplied, so the page carries only the "how to send us your feedback" section. Add real ones to PARENT_QUOTES in this file — or in the admin panel — and the drifting rows appear. Four or more are needed before they drift rather than sit in a grid.',
     )
   }
+
+  payload.logger.warn(
+    'SPORTS — the new page stands on two photographs and the banner in one of them, which is the only record on this site of the S.I.W.S. Sports Academy: "the Inter School Football League 2023-24, age categories U14 and U17 (Boys & Girls)". NEEDED before it can say more: whether the league has run since 2023-24, which schools take part and how SIWS placed; what else the section plays besides football; whether there is an annual sports day, and photographs of it. Two frames of a kick-off is the whole photographic record of sport in this section.',
+  )
 
   payload.logger.warn('LEFT BLANK by SIWS in the Secondary document:')
   for (const gap of [

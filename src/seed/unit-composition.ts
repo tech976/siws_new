@@ -44,7 +44,23 @@ const { default: config } = await import('@payload-config')
  */
 const COMPOSITION = [
   { band: 'hero', source: 'keep', blockType: 'hero' },
-  { band: 'divider', source: 'photos', role: 'atmospheric' },
+  /*
+   * NO BAND BETWEEN THE BANNER AND "ABOUT". There used to be a `divider` here
+   * — a wide photograph under a solid brand wash — and SIWS asked on
+   * 2026-09-02 for it to come off both the sections this file composes.
+   *
+   * It was the SECOND blue-washed photograph in a row. The banner above it is
+   * already type over a picture behind a brand gradient, so the page opened on
+   * one wash, then another slimmer wash of a different picture, before saying
+   * anything at all. The two read as one long blue block with a seam in it,
+   * and the first thing a visitor actually had to read was pushed a screen
+   * further down.
+   *
+   * `divider2` further down is kept: by then the page has had a figures band,
+   * a list and a stretch of prose, which is the "long stretch that needs
+   * breaking" the pattern was written for — and it carries the lighter `sea`
+   * wash rather than a second `brand` one.
+   */
   { band: 'about', source: 'unit', field: 'description', image: 'right' },
   { band: 'figures', source: 'keep', blockType: 'statistics', image: 'background' },
   { band: 'sections', source: 'keep', blockType: 'featureList' },
@@ -336,6 +352,12 @@ const run = async () => {
         out.push({
           blockType: 'divider',
           image: img.id,
+          /*
+           * `divider2` is the only atmospheric band left, so this is always
+           * 'sea'. Written as the same conditional rather than collapsed to a
+           * constant: put a `divider` back in COMPOSITION above and it gets
+           * the brand wash again without anyone having to notice this line.
+           */
           overlay: step.band === 'divider2' ? 'sea' : 'brand',
           placedBySeed: true,
           height: 'slim',

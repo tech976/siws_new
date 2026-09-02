@@ -1502,18 +1502,18 @@ const main = async () => {
               ]
             : []),
           ...(shots.fieldVisit
-            ? [{ image: shots.fieldVisit, caption: 'Environmental studies, on the trail.' }]
+            ? [{ image: shots.fieldVisit, caption: 'An environmental studies field visit' }]
             : []),
           ...(shots.laboratory
             ? [
                 {
                   image: shots.laboratory,
-                  caption: 'An experiment set up in the physics laboratory.',
+                  caption: 'The Physics laboratory',
                 },
               ]
             : []),
           ...(shots.library
-            ? [{ image: shots.library, caption: 'An afternoon in the library.' }]
+            ? [{ image: shots.library, caption: 'The college library' }]
             : []),
         ],
       },

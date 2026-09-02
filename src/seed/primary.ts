@@ -864,7 +864,7 @@ const main = async () => {
     },
     {
       file: 'ignited-mind-lab-2026.jpg',
-      caption: 'Certificates of achievement from the Ignited Mind Lab programme.',
+      caption: 'Ignited Mind Lab certificates',
     },
     {
       file: 'natya-tarang-2026-company.jpg',
@@ -1561,6 +1561,145 @@ const main = async () => {
               background: 'sea',
               text: richText([
                 'The classrooms, the costumes and the prizes, photographed as they happened.',
+              ]),
+              links: [
+                {
+                  link: {
+                    label: 'Open the gallery',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: galleryPageId },
+                    appearance: 'primary',
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  })
+
+  // ------------------------------------------------------------------ SPORTS
+  /*
+   * SPORT, ON ITS OWN PAGE, at SIWS's instruction (2026-09-02) to give every
+   * section a Sports entry in its menu.
+   *
+   * Until now the subject had one card on Student Life and one line on
+   * Facilities, and the eleven photographs of the section's own sports day
+   * were in `media/` and in no seed at all — carried in by a `photos:import`
+   * whose inbox is not in version control, so every rebuild dropped them.
+   * `media.ts` names them now; this page is where they are shown.
+   *
+   * Nothing here is a new claim. Physical Education is the fourth strand of
+   * `HOLISTIC` at the top of this file, Sports & Games is the twelfth entry in
+   * `COMPETITIONS`, and the Annual Sports Day 2025–26 is written on the
+   * chalkboard in the photographs themselves.
+   */
+  const sportsShots = (
+    await Promise.all(
+      /*
+       * Letters, not numbers, and `media.ts` explains why at length: a
+       * trailing `-1` is Payload's collision counter as far as
+       * `utilities/media-lookup` is concerned, so eleven numbered names would
+       * collapse onto one row.
+       */
+      ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k'].map((letter) =>
+        photo(`primary-sports-day-podium-${letter}.jpg`),
+      ),
+    )
+  ).filter((id): id is number => typeof id === 'number')
+
+  if (sportsShots.length === 0) {
+    payload.logger.warn(
+      'Sports: none of the Annual Sports Day photographs are in the library, so the page is published as words only. Run `npm run seed:media` first.',
+    )
+  }
+
+  await upsert({
+    slug: 'sports',
+    title: 'Sports',
+    intro:
+      'Physical education on the timetable, sports and games among the year’s competitions, and the section’s own Annual Sports Day.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back INSIDE the Student Life
+     * drop-down. Sports is a child entry in the shared unit template, and
+     * `show_in_nav` set from a page seed makes it a TOP-LEVEL item — so on a
+     * machine where this seed ran last, the section would carry Sports twice:
+     * once in the bar and once under Student Life.
+     */
+    showInNav: false,
+    navLabel: 'Sports',
+    navOrder: 71,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Sport at SIWS Primary School, Wadala — physical education for Grades 1 to 4, sports and games among the year’s twelve competitions, and the Annual Sports Day prize ceremonies.',
+    layout: [
+      {
+        blockType: 'featureList',
+        heading: 'How sport runs through the year',
+        accentWord: 'the year',
+        headingLevel: 'h2',
+        marker: 'number',
+        columns: '1',
+        background: 'white',
+        items: [
+          {
+            title: 'A subject, not a free period',
+            description:
+              'Sports and Physical Education is one of the seven strands the section teaches alongside the academic timetable, and it is taught as a subject in its own right rather than as whatever is left of an afternoon.',
+          },
+          {
+            title: 'Sports and games among the year’s competitions',
+            description:
+              'Twelve competitions run through the year — recitation, fancy dress, elocution, drawing and painting, story telling, group singing, handwriting, work experience, clay work, rangoli, best out of waste, and sports and games. Every child in Grades 1 to 4 has a dozen chances to find the one they are good at.',
+          },
+          {
+            title: 'Room for it on the campus',
+            description:
+              'The section has space for the sports, drawing, clay work, rangoli and group singing it competes in — a netted turf pitch, used through the school day and for the sports day itself.',
+          },
+          {
+            title: 'The Annual Sports Day, and a podium',
+            description:
+              'The section holds its own Annual Sports Day. Results are read out at a numbered podium on the pitch, first, second and third, with the rest of the year group watching from the touchline.',
+          },
+        ],
+      },
+      ...(sportsShots.length > 0
+        ? [
+            {
+              /*
+               * ALL ELEVEN, and it is deliberate rather than lazy.
+               *
+               * They are eleven near-identical frames of one podium, which is
+               * an argument for choosing three — until you notice that what
+               * changes between them is the children. The parent of the child
+               * on the third block is who this page is for, and cropping the
+               * set to a tidy three would remove eight families from it. The
+               * gallery paginates at twelve, so all eleven fit on one page.
+               */
+              blockType: 'gallery',
+              heading: 'Annual Sports Day 2025–26',
+              accentWord: 'Sports Day',
+              headingLevel: 'h2',
+              layout: 'grid',
+              perPage: '12',
+              background: 'sea',
+              intro: richText([
+                'The prize ceremonies, photographed at the podium on the day. Every event has its own first, second and third.',
+              ]),
+              images: sportsShots.map((image) => ({ image })),
+            },
+          ]
+        : []),
+      ...(galleryPageId
+        ? [
+            {
+              blockType: 'callToAction',
+              heading: 'The rest of the year',
+              background: 'white',
+              text: richText([
+                'The classrooms, the costumes, the festivals and the prizes — the whole section, photographed as it happened.',
               ]),
               links: [
                 {

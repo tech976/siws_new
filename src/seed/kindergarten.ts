@@ -239,7 +239,10 @@ const main = async () => {
     childrenTogether: await mediaByFilename(payload, 'kg-children-together.jpg'),
     canteen: await mediaByFilename(payload, 'kg-canteen-meal.jpg'),
     handwashing: await mediaByFilename(payload, 'kg-handwashing.jpg'),
-    smartBoard: await mediaByFilename(payload, 'kg-smart-board.jpg'),
+    /*
+     * `smartBoard` came out on 2026-09-02 with the Facilities card it was the
+     * picture for. Nothing on this site names it now; the library row stays.
+     */
     drawingClass: await mediaByFilename(payload, 'kg-drawing-class.jpg'),
     // Supplied by SIWS on 2026-09-01, for the campus row.
     playSlide: await mediaByFilename(payload, 'kg-play-slide.jpg'),
@@ -247,6 +250,18 @@ const main = async () => {
     outingPlaySpace: await mediaByFilename(payload, 'kg-outing-play-space.jpg'),
     sportsDayWinners: await mediaByFilename(payload, 'kg-sports-day-winners.jpg'),
     sportsDayPodium: await mediaByFilename(payload, 'kg-sports-day-podium.jpg'),
+    /*
+     * The rest of the sports day, for the Sports page added on 2026-09-02.
+     * Five of these six were already in `media/` and in no seed — carried in
+     * by a `photos:import` whose inbox is not in version control — so a
+     * rebuild had been dropping them. `media.ts` now names them.
+     */
+    sportsRace: await mediaByFilename(payload, 'kg-sports-race.jpg'),
+    sportsTrophyTable: await mediaByFilename(payload, 'kg-sports-day-trophy-table.jpg'),
+    sportsTrophyPresented: await mediaByFilename(payload, 'kg-sports-trophy-presented.jpg'),
+    sportsWinnersTurf: await mediaByFilename(payload, 'kg-sports-winners-turf.jpg'),
+    sportsPrizeDayStaff: await mediaByFilename(payload, 'kg-sports-prize-day-staff.jpg'),
+    sportsPrizeDayHall: await mediaByFilename(payload, 'kg-sports-prize-day-hall.jpg'),
     // The News page leads on this one — the preparation rather than the prize.
     danceRehearsal: await mediaByFilename(payload, 'kg-dance-rehearsal.jpg'),
     activityLiteracy: await mediaByFilename(payload, 'kg-activity-literacy.jpg'),
@@ -658,8 +673,8 @@ const main = async () => {
              * loop a longer run before a visitor sees the first one come round
              * again.
              */
-            ...shot(img.activityTable, 'Low tables and chairs sized for small children'),
-            ...shot(img.childrenTogether, 'Room to play together between lessons'),
+            ...shot(img.activityTable, 'Furniture sized for small children'),
+            ...shot(img.childrenTogether, 'The play area between lessons'),
             /*
              * The canteen tray and the washroom tap came off this row at the
              * school's request (2026-08-25). Both are also the two the media
@@ -1001,6 +1016,177 @@ const main = async () => {
       ],
     },
 
+    // ----------------------------------------------------------------- ABOUT
+    /*
+     * THE ABOUT PAGE, WRITTEN (2026-09-02).
+     *
+     * It has existed all along and said nothing. `nav.ts` creates it as the
+     * heading of the About drop-down, and `pages-general.ts` then filled it
+     * with its generic recipe: a banner, four ticked promises — Overview,
+     * Approach, Head of school, Campus — and a closing line telling the reader
+     * to ring the office. Every one of those four named a section that was not
+     * on the page. The first entry in the section's menu was a list of
+     * headings for content that did not exist.
+     *
+     * SIWS asked for an overview section here, and that is what leads the page
+     * now. Nothing below is new information: the founding date and the legacy
+     * figures are the home page's, the classes and timings are the admissions
+     * page's, the curriculum is the academics page's, and the head teacher is
+     * the first row of `FACULTY` at the top of this file. An About page's job
+     * is to gather what the section already says in one place a parent can
+     * read in a minute — not to make a fresh claim nobody has checked.
+     *
+     * Authoring it here also takes it off `pages-general`'s list: that script
+     * only rewrites pages whose intro is the "We are preparing this page"
+     * placeholder or whose banner carries one of its own recipe intros, and
+     * this page will have neither once this seed has run.
+     */
+    {
+      slug: 'about',
+      title: 'About',
+      intro:
+        'The Kindergarten section of the South Indians’ Welfare Society — two years, Jr. KG and Sr. KG, on the Wadala campus.',
+      showInNav: true,
+      navLabel: 'About',
+      navOrder: 1,
+      metaDescription:
+        'About the SIWS Kindergarten section in Wadala — a kindergarten run by the South Indians’ Welfare Society since 1934, teaching Jr. KG and Sr. KG on the State Board curriculum.',
+      layout: [
+        {
+          /*
+           * THE OVERVIEW, and it is a picture-and-text band rather than a
+           * ticked list on purpose. Three paragraphs answer the three
+           * questions a parent opens an About page with — who runs this, what
+           * happens in the two years, and what comes after them — and a list
+           * cannot hold a sentence long enough to answer any of them.
+           *
+           * `mediaText` REQUIRES an image, so a library without
+           * `kg-classroom-group.jpg` in it would fail the save rather than
+           * losing a picture. The same words go out as prose instead — the
+           * pattern `unit-composition.ts` uses for a section with no
+           * photograph of its own.
+           */
+          ...(img.classroomGroup
+            ? {
+                blockType: 'mediaText',
+                imagePosition: 'right',
+                imageShape: 'rounded',
+                image: img.classroomGroup,
+              }
+            : { blockType: 'richText', width: 'normal' }),
+          heading: 'Overview',
+          headingLevel: 'h2',
+          background: 'white',
+          content: richText([
+            'The Kindergarten section is the youngest part of the South Indians’ Welfare Society, founded in 1934 and teaching in Wadala ever since. It takes children through two years — Jr. KG from the age of four and Sr. KG from the age of five — on the same campus as the Society’s Primary School, High School and Junior College.',
+            'The two years are built around play rather than around a desk. Children work in small groups at child-height tables, and the day is short by design: two hours for Jr. KG and three for Sr. KG, long enough to settle into a routine and short enough that a four-year-old is still enjoying it at the end. English, Mathematics, EVS, General Knowledge and Arts run alongside dance, movement, sport and something made most days.',
+            'What the section is preparing children for is the twelve years that follow it. The curriculum is the State Board’s, and a child who finishes Sr. KG here moves up into Grade 1 in the Primary School without changing campus, uniform or the people who know them.',
+          ]),
+        },
+        {
+          /*
+           * The specification layout, because every row here NAMES something
+           * and the text is its value — which is what that layout is for. A
+           * parent checking whether the section fits their family reads down
+           * the left column and stops at their row.
+           */
+          blockType: 'featureList',
+          heading: 'At a glance',
+          accentWord: 'glance',
+          headingLevel: 'h2',
+          layout: 'spec',
+          background: 'sea',
+          items: [
+            {
+              title: 'Classes',
+              description: 'Jr. KG, from the age of four. Sr. KG, from the age of five.',
+            },
+            {
+              title: 'Timings',
+              description: 'Jr. KG, 11.00 a.m. to 1.00 p.m. Sr. KG, 2.00 p.m. to 5.00 p.m.',
+            },
+            {
+              title: 'Curriculum',
+              description:
+                'The State Board (SSC) curriculum — English, Mathematics, EVS, General Knowledge and Arts, taught through play.',
+            },
+            {
+              title: 'Campus',
+              description:
+                'Sion–Wadala Estate Road, Wadala, Mumbai 400031 — shared with the Society’s Primary School, High School and Junior College.',
+            },
+            /*
+             * Named because SIWS's own requirement document names her, and
+             * because "who is in charge of my four-year-old" is a question an
+             * About page ought to answer. The other four teachers are on the
+             * Our Teachers page rather than here.
+             */
+            {
+              title: 'Head Teacher',
+              description: `${FACULTY[0]!.name} — ${FACULTY[0]!.qualifications}.`,
+            },
+            {
+              title: 'Admissions',
+              description:
+                'Forms open in November and are collected and submitted at the school office in person.',
+            },
+          ],
+        },
+        {
+          blockType: 'cardGrid',
+          heading: 'More about the section',
+          accentWord: 'section',
+          headingLevel: 'h2',
+          columns: '3',
+          background: 'white',
+          cards: [
+            {
+              title: 'Facilities & Campus',
+              description:
+                'The rooms, the play area, the canteen and the people who look after them.',
+              cta: [
+                {
+                  link: {
+                    label: 'See the campus',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/facilities'),
+                  },
+                },
+              ],
+            },
+            {
+              title: 'Campus Gallery',
+              description:
+                'Every photograph the section has, at a size worth looking at.',
+              cta: [
+                {
+                  link: {
+                    label: 'See the photographs',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/gallery'),
+                  },
+                },
+              ],
+            },
+            {
+              title: 'Our Teachers',
+              description:
+                'The five teachers who take the Jr. KG and Sr. KG classes, and what they are qualified in.',
+              cta: [
+                {
+                  link: {
+                    label: 'Meet the teachers',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/teachers'),
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+
     // ------------------------------------------------------------- ACADEMICS
     {
       slug: 'academics',
@@ -1286,6 +1472,28 @@ const main = async () => {
           columns: '2',
           background: 'white',
           cards: [
+            /*
+             * The Sports page, added with it on 2026-09-02. This grid is set
+             * to two columns and had one card in it, so the second slot was
+             * already there waiting; more to the point, Sports is the part of
+             * "the shape of the day" above that has a page of its own now, and
+             * a reader who has just finished the timetable is the reader for
+             * it.
+             */
+            {
+              title: 'Sports',
+              description:
+                'Movement in the play area every day, and the section’s own sports day, podium and prize distribution once a year.',
+              cta: [
+                {
+                  link: {
+                    label: 'See the sports day',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/sports'),
+                  },
+                },
+              ],
+            },
             {
               title: 'Campus Gallery',
               description:
@@ -1296,6 +1504,142 @@ const main = async () => {
                     label: 'See the photographs',
                     type: 'internal',
                     reference: LINK_TO('/kindergarten/gallery'),
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+
+    // ---------------------------------------------------------------- SPORTS
+    /*
+     * SPORT AT FOUR AND FIVE, at SIWS's instruction (2026-09-02) to give every
+     * section a Sports entry in its menu.
+     *
+     * The temptation on a page like this is to write about teams, fixtures and
+     * coaching, none of which a kindergarten has. What this section actually
+     * runs is movement inside the day and one sports day a year that ends in a
+     * prize distribution — and it has photographed both, which is why the
+     * gallery carries most of the page's weight.
+     *
+     * Every claim below is already made somewhere on this site: the daily
+     * movement is the Student Life page's, the supervised play area is
+     * Facilities & Campus's, and the sports day and its trophies are the
+     * Achievements page's. The one thing added is what the trophies say on
+     * them — First Prize, Second Prize and Consolation — which is legible in
+     * `kg-sports-day-trophy-table.jpg` and nowhere else.
+     */
+    {
+      slug: 'sports',
+      title: 'Sports',
+      intro:
+        'Movement every day in the play area, and the section’s own sports day once a year — with a podium, trophies and a prize distribution to close it.',
+      /*
+       * OFF the menu here, and `seed:nav` puts it back INSIDE the Student Life
+       * drop-down. Sports is a child entry in the shared unit template, and
+       * `show_in_nav` set from a page seed makes it a TOP-LEVEL item — so on a
+       * machine where this seed ran last, the section would carry Sports twice:
+       * once in the bar and once under Student Life.
+       */
+      showInNav: false,
+      navLabel: 'Sports',
+      navOrder: 68,
+      metaDescription:
+        'Sport at the SIWS Kindergarten section, Wadala — daily movement and games in the play area, and the section’s own annual sports day, podium and prize distribution.',
+      layout: [
+        {
+          blockType: 'featureList',
+          heading: 'What sport looks like at this age',
+          accentWord: 'this age',
+          headingLevel: 'h2',
+          marker: 'number',
+          columns: '1',
+          background: 'white',
+          items: [
+            {
+              title: 'Time to move, every day',
+              description:
+                'Dance, movement and sports in the play area break up the day. At this age sitting still is a skill being learned, not one to be assumed, so the timetable is built to interrupt it rather than to extend it.',
+            },
+            {
+              title: 'A supervised space to play in',
+              description:
+                'The play and activity area is a supervised space for games and structured play — turf underfoot, netted at the sides, and a member of staff with the group throughout.',
+            },
+            {
+              title: 'One sports day a year, for the whole section',
+              description:
+                'The section holds its own annual sports day on the pitch. Every child is in kit for it, the events are run through the morning, and the results go up on a numbered podium.',
+            },
+            {
+              title: 'Prizes, and a prize day to give them out at',
+              description:
+                'First Prize, Second Prize and Consolation — trophies and certificates, handed out at a prize distribution afterwards rather than in passing on the pitch, so the children collect them in front of the section.',
+            },
+          ],
+        },
+        {
+          /*
+           * NINE TILES, and the number is chosen rather than incidental: the
+           * grid is three across from `lg`, so nine ends on a complete row.
+           * The order is the order of the day — the prizes laid out before it
+           * starts, the section on the pitch, the podium, and the presentation
+           * indoors afterwards — so a parent scrolling it reads the event
+           * rather than a pile of photographs of trophies.
+           */
+          blockType: 'gallery',
+          heading: 'The Kindergarten sports day',
+          accentWord: 'sports day',
+          headingLevel: 'h2',
+          layout: 'grid',
+          perPage: '12',
+          background: 'sea',
+          images: [
+            ...shot(img.sportsTrophyTable, 'Annual sports day'),
+            ...shot(img.sportsRace, 'The Kindergarten annual sports'),
+            ...shot(img.sportsDayPodium, 'The winners’ podium'),
+            ...shot(img.sportsTrophyPresented, 'First prize at the inter-school competition'),
+            ...shot(img.sportsWinnersTurf, 'Annual sports day'),
+            ...shot(img.sportsPrizeDayHall, 'Annual prize day'),
+            ...shot(img.sportsPrizeDayStaff, 'Prizewinners at the annual sports'),
+            ...shot(img.sportsDayWinners, 'Inter-school competition honours'),
+            ...shot(img.prizeSports, 'Annual prize distribution'),
+          ],
+        },
+        {
+          blockType: 'cardGrid',
+          heading: 'Elsewhere on the site',
+          accentWord: 'site',
+          headingLevel: 'h2',
+          columns: '2',
+          background: 'white',
+          cards: [
+            {
+              title: 'Student Life',
+              description:
+                'The shape of a Kindergarten day, and everything else the children do inside it.',
+              cta: [
+                {
+                  link: {
+                    label: 'See the day',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/student-life'),
+                  },
+                },
+              ],
+            },
+            {
+              title: 'Achievements',
+              description:
+                'The competitions the section enters and the prizes its children bring home.',
+              cta: [
+                {
+                  link: {
+                    label: 'See the prizes',
+                    type: 'internal',
+                    reference: LINK_TO('/kindergarten/achievements'),
                   },
                 },
               ],
@@ -1967,7 +2311,7 @@ const main = async () => {
       navLabel: 'Facilities & Campus',
       navOrder: 2,
       metaDescription:
-        'The SIWS Kindergarten campus in Wadala — classrooms, smart boards, the play area, activity rooms and trained staff.',
+        'The SIWS Kindergarten campus in Wadala — classrooms, the play area, activity rooms and trained staff.',
       layout: [
         {
           blockType: 'featureList',
@@ -1985,11 +2329,23 @@ const main = async () => {
               description: 'Bright, airy rooms with group seating and room to move.',
               ...(img.classroomActivity ? { photo: img.classroomActivity } : { icon: 'classroom' }),
             },
-            {
-              title: 'Interactive smart boards',
-              description: 'A smart board in every classroom, used from the earliest years.',
-              ...(img.smartBoard ? { photo: img.smartBoard } : { icon: 'computers' }),
-            },
+            /*
+             * "INTERACTIVE SMART BOARDS" WAS HERE, with the smart-board
+             * photograph, and both are gone at SIWS's instruction
+             * (2026-09-02).
+             *
+             * The picture goes with the claim rather than being reassigned to
+             * another card: it is the one photograph on this page that shows
+             * a child at the board, so leaving it in place under a different
+             * heading would have gone on illustrating the point the section
+             * has just taken off the page. It stays in the media library —
+             * `kg-smart-board.jpg` is untouched — and `seed/galleries.ts`
+             * already keeps it off the Kindergarten wall for its own reason,
+             * which is that the uniform in it is not this section's.
+             *
+             * The row is five cards now rather than six. The grid reflows, so
+             * nothing is left ragged.
+             */
             {
               title: 'Safe play and activity area',
               description: 'A supervised space for games and structured play.',
@@ -2063,7 +2419,7 @@ const main = async () => {
             ...shot(img.activityCreative, 'Finger painting and activity-based learning'),
             ...shot(img.activityMotor, 'Hands-on work the whole class makes together'),
             ...shot(img.childrenTogether, 'Friendships that start in the earliest years'),
-            ...shot(img.activityTable, 'A Kindergarten class at the activity table'),
+            ...shot(img.activityTable, 'Activity-based learning in the early years'),
           ],
         },
       ],

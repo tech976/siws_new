@@ -24,7 +24,13 @@ interface UnitSeed {
   slug: string
   name: string
   shortName: string
-  tagline: string
+  /**
+   * The line printed under the school name in the header of every page of
+   * that section's site. `null` where a section prints no line at all — see
+   * Junior College below; the header hides the paragraph rather than falling
+   * back to the institution motto.
+   */
+  tagline: string | null
   description: string
   accent: UnitAccent
   order: number
@@ -61,7 +67,13 @@ const UNITS: UnitSeed[] = [
     slug: 'secondary',
     name: 'SIWS Secondary School',
     shortName: 'Secondary School',
-    tagline: 'Preparing confident, capable students',
+    /*
+     * NO LINE UNDER THE NAME, as for Junior College below — SIWS asked on
+     * 2026-09-02 to have it taken off. `secondary.ts` runs AFTER this file and
+     * overwrites the whole unit record, so it has to be null there too; null
+     * here stops a run of `npm run seed` on its own putting a line back.
+     */
+    tagline: null,
     description:
       'Academic rigour, board preparation and all-round development in the years leading up to the SSC examination.',
     accent: 'accentDeep',
@@ -71,7 +83,17 @@ const UNITS: UnitSeed[] = [
     slug: 'junior-college',
     name: 'SIWS Junior College',
     shortName: 'Junior College',
-    tagline: 'Choosing your stream with confidence',
+    /*
+     * NO LINE UNDER THE NAME. This used to read "Choosing your stream with
+     * confidence", which SIWS asked to have taken off on 2026-09-02.
+     *
+     * `null`, not omitted: `payload.update` leaves a field it is not given
+     * alone, so dropping the key would keep the old line in a database that
+     * has already been seeded. The same portal card still carries "Choosing
+     * the right path with confidence" from institution.ts, so the sentiment
+     * survives where it belongs — on the page that compares the sections.
+     */
+    tagline: null,
     description:
       'Standards XI and XII, with guidance on streams and courses for students moving up from Secondary School.',
     accent: 'brandInk',

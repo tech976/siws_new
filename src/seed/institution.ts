@@ -211,7 +211,7 @@ const main = async () => {
   const FEATURED: { filename: string; caption: string }[] = [
     {
       filename: 'portal-vision-background.jpg',
-      caption: 'Fostering collaboration and hands-on learning every day.',
+      caption: 'Collaboration and hands-on learning',
     },
     {
       filename: 'siws-fancy-dress-environment.jpg',
@@ -219,11 +219,11 @@ const main = async () => {
     },
     {
       filename: 'siws-yoga-meditation.jpg',
-      caption: 'Practicing mindfulness and focus together.',
+      caption: 'Yoga and meditation',
     },
     {
       filename: 'siws-green-skills.jpg',
-      caption: 'Nurturing nature and building green skills together.',
+      caption: 'Building green skills together',
     },
   ]
 

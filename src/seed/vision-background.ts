@@ -34,7 +34,7 @@ const { default: config } = await import('@payload-config')
 
 const MAX_WIDTH = 1800
 const FILENAME = 'portal-vision-background.jpg'
-const CAPTION = 'Fostering collaboration and hands-on learning every day.'
+const CAPTION = 'Collaboration and hands-on learning'
 const ALT =
   'Secondary School students and their teacher around a laboratory bench, cutting coloured paper into a decoration.'
 

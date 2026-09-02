@@ -122,7 +122,7 @@ const IMAGES: ImageSeed[] = [
      * both of which it has, and neither of which depends on a single face.
      */
     alt: 'A full kindergarten class in yellow and green SIWS uniform, seated around two large curved white tables and turning to face the camera.',
-    caption: 'A full class around the curved group tables',
+    caption: 'Group seating in every classroom',
     /*
      * The faces run in a band from roughly a third of the way down to just
      * past the middle. Left at 50 the banner crop cut through the back row;
@@ -144,7 +144,7 @@ const IMAGES: ImageSeed[] = [
     // rather than being sliced through the chin.
     focalY: 64,
     alt: 'A kindergarten class seated around a large curved table, smiling towards the camera.',
-    caption: 'Small groups and plenty of room to move',
+    caption: 'Small groups, and room to move',
     depictsChildren: true,
   },
   {
@@ -348,7 +348,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Recognition',
     showInGallery: false,
     alt: 'A Government of Maharashtra certificate naming S.I.W.S. High School amongst the 100 Best Schools in Maharashtra under #SwachhtaMonitor 2023, signed by the Department of School Education and Sports.',
-    caption: 'Amongst the 100 Best Schools in Maharashtra — #SwachhtaMonitor 2023',
+    caption: 'Swachhta Monitor 2023 — amongst the 100 best schools in Maharashtra',
     // A framed certificate on a wall. There is nobody in it.
     depictsChildren: false,
   },
@@ -381,7 +381,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Recognition',
     // 250 characters is the ceiling the Media collection enforces on alt text.
     alt: 'A framed Government of Maharashtra certificate on a wall, awarded to S.I.W.S. High School as amongst the 100 Best Schools in Maharashtra under #SwachhtaMonitor, signed by the Department of School Education and Sports.',
-    caption: 'Amongst the 100 Best Schools in Maharashtra — #SwachhtaMonitor 2023',
+    caption: 'Swachhta Monitor 2023 — amongst the 100 best schools in Maharashtra',
     // A framed certificate on a wall. There is nobody in it.
     depictsChildren: false,
   },
@@ -391,7 +391,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'secondary',
     category: 'In the classroom',
     alt: 'A full Secondary classroom of students in house-colour shirts working with coloured paper and scissors at wooden desks.',
-    caption: 'Craft work in a Secondary classroom',
+    caption: 'Craft in the Secondary classroom',
     depictsChildren: true,
   },
   {
@@ -400,7 +400,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'secondary',
     category: 'In the classroom',
     alt: 'Secondary students at their desks during an activity session, writing and cutting coloured paper.',
-    caption: 'An activity session in progress',
+    caption: 'Activity-based learning',
     depictsChildren: true,
   },
   {
@@ -459,7 +459,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Achievements',
     alt: 'The same group of Kindergarten dancers in tricolour costume holding a trophy and a certificate from The Andhra Education Society’s Pre-Primary School, in a corridor decorated with paper peacocks.',
-    caption: 'The trophy and certificate that came back with them',
+    caption: 'Inter-school competition honours',
     depictsChildren: true,
   },
   {
@@ -479,7 +479,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Events and outings',
     alt: 'Six Kindergarten children in fancy dress with numbered cards pinned to them — a fruit seller, a pilot, a beauty queen, a campaigner, Spider-Man and a bunch of grapes — with three teachers behind and a cardboard aeroplane at their feet.',
-    caption: 'Six entrants, six costumes made at home',
+    caption: 'The fancy dress competition',
     depictsChildren: true,
   },
   {
@@ -518,7 +518,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Events and outings',
     alt: 'A long line of Kindergarten children in green and pink Maharashtrian costume standing across a stage at the end of a performance.',
-    caption: 'The whole line, at the end of the dance',
+    caption: 'Inter-school dance competition',
     depictsChildren: true,
   },
   {
@@ -533,7 +533,7 @@ const IMAGES: ImageSeed[] = [
      * verified is a detail invented.
      */
     alt: 'Kindergarten children rehearsing a dance in the school hall, barefoot and in school uniform with yellow headbands, spread across floor markings mid-step.',
-    caption: 'Rehearsing in the hall, the week before',
+    caption: 'Rehearsals for the annual programme',
     depictsChildren: true,
   },
   {
@@ -574,7 +574,7 @@ const IMAGES: ImageSeed[] = [
     file: 'drawing-class.jpg',
     filename: 'kg-drawing-class.jpg',
     alt: 'Students at wooden desks in a classroom, each colouring a drawing with crayons.',
-    caption: 'Quiet, focused work at every desk',
+    caption: 'Focused work in the early years',
     depictsChildren: true,
   },
   {
@@ -583,7 +583,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'secondary',
     category: 'Beyond the classroom',
     alt: 'Sixteen Secondary School students in two rows on a school veranda, each holding a potted plant or sapling they have grown.',
-    caption: 'Nurturing nature and building green skills together.',
+    caption: 'Building green skills together',
     depictsChildren: true,
   },
   {
@@ -601,7 +601,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'secondary',
     category: 'Beyond the classroom',
     alt: 'Rows of Secondary students in house-colour sports shirts seated cross-legged on mats in the school hall, eyes closed, during a guided meditation session.',
-    caption: 'Practicing mindfulness and focus together.',
+    caption: 'Yoga and meditation',
     depictsChildren: true,
   },
   /*
@@ -620,7 +620,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'junior-college',
     category: 'Occasions',
     alt: 'Students in ceremonial white uniform and maroon berets kneeling and standing in rows on the college ground beneath an unfurled national flag, with staff and families behind them.',
-    caption: 'Independence Day on the college ground, 15 August 2026',
+    caption: 'Independence Day, 15 August 2026',
     /*
      * CROPPED, and then anchored.
      *
@@ -644,7 +644,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'junior-college',
     category: 'Occasions',
     alt: 'The college hall filled with seated students listening to a speaker addressing them with a microphone, with staff standing along the sides.',
-    caption: 'The orientation programme for new students, 15 July 2026',
+    caption: 'Orientation for the incoming Standard XI year',
     depictsChildren: true,
   },
   {
@@ -662,7 +662,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'junior-college',
     category: 'Occasions',
     alt: 'Students in white kurtas with tricolour sashes standing in formation in the college hall during a patriotic performance, one of them holding up a picture of an Indian Navy fleet.',
-    caption: 'A patriotic performance in the hall, Independence Day 2025',
+    caption: 'Independence Day, 2025',
     depictsChildren: true,
   },
   {
@@ -676,7 +676,7 @@ const IMAGES: ImageSeed[] = [
      * 2:1 loses somebody off one end. Best used at full width.
      */
     alt: 'Staff of the college standing in a long line across the hall in bright silk sarees, beneath Tamil banners and bunting, with sugarcane framing a Pongal Thiruvizha backdrop.',
-    caption: 'Pongal Thiruvizha in the college hall',
+    caption: 'Pongal at the college',
     // Staff, not students.
     depictsChildren: false,
   },
@@ -704,7 +704,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'junior-college',
     category: 'Learning',
     alt: 'A member of the physics department at a laboratory bench setting up a measuring cylinder and apparatus, with a resistance box and a case of instruments laid out beside him.',
-    caption: 'Setting up an experiment in the physics laboratory',
+    caption: 'The Physics laboratory',
     depictsChildren: false,
   },
   {
@@ -713,7 +713,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'junior-college',
     category: 'Learning',
     alt: 'A hand-made physics chart on units and physical quantities, with coloured panels on errors, dimensions and measurement around a table of formulae and SI units.',
-    caption: 'Units and physical quantities — a chart made by students',
+    caption: 'Physics charts in the laboratory',
     // Written work, no one in the frame.
     depictsChildren: false,
     // Read rather than admired: never cropped.
@@ -745,7 +745,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'In the classroom',
     alt: 'A full kindergarten class in yellow and green SIWS uniform standing all the way around a large curved white table, with a child at the back holding up a handmade Indian flag made from painted handprints.',
-    caption: 'A full class around the curved group table',
+    caption: 'Spacious classrooms with group seating',
     depictsChildren: true,
   },
   {
@@ -901,7 +901,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'junior-college',
     category: 'Laboratories and library',
     alt: 'The college library, its shelves stocked for the Commerce and Science streams.',
-    caption: 'The library',
+    caption: 'The college library',
     depictsChildren: false,
   },
   {
@@ -1272,7 +1272,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'primary',
     category: 'In the classroom',
     alt: 'A full Primary class in striped uniform at their bench desks, turning towards the camera with their teacher’s room around them.',
-    caption: 'A full class at work',
+    caption: 'A Primary class at work',
     depictsChildren: true,
   },
   {
@@ -1353,7 +1353,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'primary',
     category: 'In the classroom',
     alt: 'A full Primary class at their bench desks, writing in exercise books, with subject charts on the wall behind them.',
-    caption: 'A full class at work',
+    caption: 'A Primary class at work',
     depictsChildren: true,
   },
   {
@@ -1528,7 +1528,7 @@ const IMAGES: ImageSeed[] = [
      * words a reader gets are corrected.
      */
     alt: 'Around thirty Kindergarten children in red and navy sports kit standing in rows on the turf pitch in front of the goal, behind a table holding six gold trophies.',
-    caption: 'The whole section, at the Kindergarten sports day',
+    caption: 'The Kindergarten annual sports',
     depictsChildren: true,
   },
   {
@@ -1567,7 +1567,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Sports',
     alt: 'A man in a white shirt and tie handing a gold trophy to a girl standing on the number 1 block of the winners’ podium, with two more Kindergarten children on the second and third blocks, on the green turf pitch.',
-    caption: 'The first prize, handed over on the podium',
+    caption: 'First prize at the inter-school competition',
     depictsChildren: true,
   },
   {
@@ -1576,7 +1576,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Sports',
     alt: 'Five Kindergarten children in red and navy sports kit standing in a line on the turf pitch, each holding a gold trophy.',
-    caption: 'Trophies on the pitch',
+    caption: 'Annual sports day',
     depictsChildren: true,
   },
   {
@@ -1590,7 +1590,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Sports',
     alt: 'A table covered with rows of gold trophies labelled First Prize, Second Prize and Consolation, beneath a printed banner reading “Welcome To SIWS KG SECTION Sport’s Day”.',
-    caption: 'The prizes, before they are given out',
+    caption: 'Annual prize distribution',
     depictsChildren: false,
   },
   {
@@ -1599,7 +1599,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Sports',
     alt: 'Seven Kindergarten staff standing behind a draped table of trophies beneath the sports day banner, with children in yellow and green uniform seated on benches to either side holding certificates.',
-    caption: 'Staff and prizewinners at the Kindergarten sports day',
+    caption: 'Prizewinners at the annual sports',
     depictsChildren: true,
   },
   {
@@ -1608,7 +1608,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Sports',
     alt: 'Kindergarten children in yellow and green uniform seated on benches along both sides of a draped table of trophies, beneath the sports day banner outside the presentation room.',
-    caption: 'Waiting for the prizes',
+    caption: 'Annual prize day',
     depictsChildren: true,
   },
 
@@ -1733,7 +1733,7 @@ const IMAGES: ImageSeed[] = [
     unit: 'secondary',
     category: 'Sports',
     alt: 'Two men and a woman in a sari standing over a football on the turf pitch beside a draped table, about to start the inter-school football league.',
-    caption: 'The kick-off',
+    caption: 'The inter-school football league',
     depictsChildren: false,
   },
 ]

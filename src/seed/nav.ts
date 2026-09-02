@@ -154,6 +154,23 @@ const UNIT: Entry[] = [
     label: 'Student Life',
     srs: '5.5',
     children: [
+      /*
+       * SPORTS, in every section's drop-down (2026-09-02).
+       *
+       * It sits under Student Life rather than on the top row because that is
+       * what it is — the part of the day that is not the timetable — and
+       * because the top row is already seven or eight entries wide on three of
+       * the four sections.
+       *
+       * In the shared template rather than four `UNIT_EXTRA` lines, so all
+       * four sections carry it in the same place and a later change moves them
+       * together. Each section writes its OWN page: `seed/kindergarten.ts`,
+       * `seed/primary.ts`, `seed/secondary.ts` and `seed/junior-college.ts`
+       * each author a `sports` slug from what that section actually runs, and
+       * all four run before `seed:nav`, so `ensure()` below finds a written
+       * page and never falls back to creating the placeholder.
+       */
+      { slug: 'sports', label: 'Sports', srs: '5.5' },
       { slug: 'student-wall', label: 'Student Wall', srs: '5.5' },
       { slug: 'transport', label: 'Transport', srs: '5.11' },
     ],
@@ -254,6 +271,16 @@ const UNIT_OMIT: Record<string, string[]> = {
    * template before extras are added, so the two do not fight; without this
    * line it would appear twice.
    */
+  /*
+   * PARENT FEEDBACK LEAVES THE CONTACT DROP-DOWN (2026-09-02), at SIWS's
+   * instruction: it is to be a page of its own rather than something reached
+   * through Contact.
+   *
+   * Named here for the same reason `achievements` is — this is the first half
+   * of a MOVE, not a removal. `UNIT_EXTRA` below puts it straight back as a
+   * top-level entry; omissions are applied before extras, so without this line
+   * it would appear twice, once in the drop-down and once in the bar.
+   */
   kindergarten: [
     'annual-calendar',
     'faq',
@@ -261,6 +288,7 @@ const UNIT_OMIT: Record<string, string[]> = {
     'transport',
     'achievements',
     'download-centre',
+    'parent-feedback',
   ],
   /*
    * Student Wall and Transport come off at SIWS's instruction (2026-09-01),
@@ -369,6 +397,18 @@ const UNIT_EXTRA: Record<
    */
   kindergarten: [
     { parent: null, after: 'admissions', item: { slug: 'achievements', label: 'Achievements' } },
+    /*
+     * The other half of the move recorded in `UNIT_OMIT` above. Placed after
+     * Contact, so the bar ends "…Student Life, Contact, Parent Feedback" —
+     * the page is about what families tell the section, and it reads next to
+     * the page that tells them how to get in touch rather than three entries
+     * away from it.
+     */
+    {
+      parent: null,
+      after: 'contact',
+      item: { slug: 'parent-feedback', label: 'Parent Feedback', srs: '5.23' },
+    },
   ],
 }
 
@@ -411,9 +451,21 @@ const UNIT_REPLACE: Record<string, { slug: string; with: string }[]> = {
  * and why it should stay rare.
  */
 const UNIT_MIRROR: Record<string, { slug: string; under: string }[]> = {
-  // The Campus Gallery is a record of the place (About) and it is what school
-  // life looks like (Student Life). SIWS asked for it in both.
-  kindergarten: [{ slug: 'gallery', under: 'student-life' }],
+  /*
+   * EMPTY, and deliberately kept rather than deleted.
+   *
+   * Kindergarten's Campus Gallery used to be repeated here under Student Life
+   * as well as under About, because SIWS had asked for it in both. That came
+   * off on 2026-09-02 at SIWS's instruction: the gallery is to appear under
+   * About ONLY. It has not moved and it has not been unpublished — it keeps
+   * its place in the About drop-down and its own address — it simply stops
+   * being listed twice.
+   *
+   * Nothing else is needed to undo it: `applyScope` clears
+   * `nav_mirror_parent_id` for every page in the scope before writing the few
+   * this map names, so an entry removed from here is removed from the menu on
+   * the next run rather than lingering the way an append-only flag would.
+   */
 }
 
 /**
