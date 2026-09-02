@@ -58,3 +58,10 @@ public/hero/*.mp4
 # `seed:refresh` and read by `seed:verify`. Local state — it describes THIS
 # database, not the project.
 .seed-state.json
+
+# The working folders SIWS sends photographs in. The pictures themselves are
+# committed under assets/images once they have a name, a section and alt text;
+# the folders are a delivery, not a source.
+/Jr Clg Images *
+/siws primary images
+/siws kindergarten

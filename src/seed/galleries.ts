@@ -186,6 +186,20 @@ const main = async () => {
   const SECTION_FIRST = [
     'In the classroom',
     'Classrooms',
+    /*
+     * The Junior College's three, sitting where they do for the same reason
+     * the rooms come before the prizes: a family reading a college gallery is
+     * looking for where the teaching happens. The laboratories and the library
+     * are the evidence, the departments' work is what goes on in them, and the
+     * guidance is what a Standard XII family asks about next.
+     *
+     * Naming them here does not reorder any other section. Rank is by position
+     * in this list, and no other section files a photograph under any of the
+     * three.
+     */
+    'Laboratories and library',
+    'Learning',
+    'Careers and guidance',
     'Play and activity',
     'Events and outings',
     'Occasions',
@@ -451,8 +465,24 @@ const main = async () => {
            * Ties fall back to the label, so two categories of the same size
            * keep a stable, predictable order between re-runs.
            */
+          /*
+           * THE SAME CURATED ORDER THE STACKED WALLS USE.
+           *
+           * These were sorted by how many photographs each held, smallest
+           * first. That is a fact about the library rather than about the
+           * college: it opened the Junior College's wall on Wellbeing, four
+           * pictures of a health camp, and put the classrooms fifth and the
+           * laboratories fourth — the two things a family opens a college
+           * gallery to see.
+           *
+           * `rank` is the list the banded galleries are already ordered by, so
+           * both presentations now agree about what comes first. Size still
+           * breaks a tie between two categories the list does not name, which
+           * keeps the old behaviour for anything uncurated.
+           */
           const tabs = [...groups.entries()].sort(
-            ([labelA, a], [labelB, b]) => a.length - b.length || labelA.localeCompare(labelB),
+            ([labelA, a], [labelB, b]) =>
+              rank(labelA) - rank(labelB) || a.length - b.length || labelA.localeCompare(labelB),
           )
           return [
             {

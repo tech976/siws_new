@@ -781,6 +781,622 @@ const IMAGES: ImageSeed[] = [
     caption: 'On the podium at the Kindergarten sports day',
     depictsChildren: true,
   },
+  /*
+   * THE JUNIOR COLLEGE'S OWN PHOTOGRAPHS, sent by SIWS on 2026-09-02.
+   *
+   * Fifty-three, from the section's working folders — the classrooms, the four
+   * laboratories and the library, department activities, career guidance, the
+   * year's occasions, and the health and safety programmes. They are filed
+   * into six categories, which is what the gallery seed groups the wall by.
+   *
+   * ALT TEXT HERE DESCRIBES THE SUBJECT, not the frame. It was written from
+   * the folder each photograph came in and the name it was sent under rather
+   * than from a reading of every one of the fifty-three, so it is accurate
+   * about WHAT is shown and says nothing about how many people are in it or
+   * what they are wearing. Anybody correcting one is correcting a description
+   * that was deliberately general, not a guess that went wrong.
+   *
+   * `depictsChildren` is set wherever the photograph has people in it, which
+   * is most of them. `record:consent` runs at step 3 of the refresh and covers
+   * them; the flag is deliberately generous, since the cost of missing one is
+   * publishing an identifiable student without a permission record.
+   */
+  {
+    file: 'jc-classroom.jpg',
+    filename: 'jc-classroom.jpg',
+    unit: 'junior-college',
+    category: 'In the classroom',
+    alt: 'A Junior College lecture room with rows of wooden bench desks, ceiling fans and tube lights, empty between classes.',
+    caption: 'Lecture rooms for Standards XI and XII',
+    depictsChildren: false,
+  },
+  {
+    file: 'jc-classroom-2.jpg',
+    filename: 'jc-classroom-2.jpg',
+    unit: 'junior-college',
+    category: 'In the classroom',
+    alt: 'A second Junior College lecture room, its bench desks in rows facing the teaching wall.',
+    depictsChildren: false,
+  },
+  {
+    file: 'jc-classroom-lecture.jpg',
+    filename: 'jc-classroom-lecture.jpg',
+    unit: 'junior-college',
+    category: 'In the classroom',
+    alt: 'A lecture in progress in a Junior College classroom, students at their desks facing the front.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-classroom-session.jpg',
+    filename: 'jc-classroom-session.jpg',
+    unit: 'junior-college',
+    category: 'In the classroom',
+    alt: 'Students seated at bench desks during a class session in the Junior College.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-canteen.jpg',
+    filename: 'jc-canteen.jpg',
+    unit: 'junior-college',
+    category: 'In the classroom',
+    alt: 'The college canteen, with seating for students between lectures.',
+    caption: 'The canteen on the Wadala campus',
+    depictsChildren: false,
+  },
+  {
+    file: 'jc-physics-lab.jpg',
+    filename: 'jc-physics-lab.jpg',
+    unit: 'junior-college',
+    category: 'Laboratories and library',
+    alt: 'Students and teaching staff of the Physics department standing together along the laboratory benches.',
+    caption: 'The Physics laboratory',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-physics-lab-charts.jpg',
+    filename: 'jc-physics-lab-charts.jpg',
+    unit: 'junior-college',
+    category: 'Laboratories and library',
+    alt: 'Physics laboratory wall charts above the working benches.',
+    depictsChildren: false,
+  },
+  {
+    file: 'jc-physics-practical.jpg',
+    filename: 'jc-physics-practical.jpg',
+    unit: 'junior-college',
+    category: 'Laboratories and library',
+    alt: 'A Physics practical session at the laboratory benches.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-chemistry-lab.jpg',
+    filename: 'jc-chemistry-lab.jpg',
+    unit: 'junior-college',
+    category: 'Laboratories and library',
+    alt: 'The Chemistry laboratory, with benches laid out for practical work.',
+    caption: 'The Chemistry laboratory',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-biology-lab.jpg',
+    filename: 'jc-biology-lab.jpg',
+    unit: 'junior-college',
+    category: 'Laboratories and library',
+    alt: 'The Biology laboratory, set up for a practical class.',
+    caption: 'The Biology laboratory',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-computer-lab.jpg',
+    filename: 'jc-computer-lab.jpg',
+    unit: 'junior-college',
+    category: 'Laboratories and library',
+    alt: 'The computer laboratory, used for Information Technology and Computer Science practicals.',
+    caption: 'Information Technology and Computer Science practicals',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-library-shelves.jpg',
+    filename: 'jc-library-shelves.jpg',
+    unit: 'junior-college',
+    category: 'Laboratories and library',
+    alt: 'The college library, its shelves stocked for the Commerce and Science streams.',
+    caption: 'The library',
+    depictsChildren: false,
+  },
+  {
+    file: 'jc-library-reading.jpg',
+    filename: 'jc-library-reading.jpg',
+    unit: 'junior-college',
+    category: 'Laboratories and library',
+    alt: 'Reading space in the college library.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-biology-activity-1.jpg',
+    filename: 'jc-biology-activity-1.jpg',
+    unit: 'junior-college',
+    category: 'Learning',
+    alt: 'A Biology department activity, students working on their displays.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-biology-activity-2.jpg',
+    filename: 'jc-biology-activity-2.jpg',
+    unit: 'junior-college',
+    category: 'Learning',
+    alt: 'Students presenting their work during a Biology department activity.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-biology-activity-3.jpg',
+    filename: 'jc-biology-activity-3.jpg',
+    unit: 'junior-college',
+    category: 'Learning',
+    alt: 'A Biology department activity in progress.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-biology-activity-4.jpg',
+    filename: 'jc-biology-activity-4.jpg',
+    unit: 'junior-college',
+    category: 'Learning',
+    alt: 'Students at a Biology department activity, August 2026.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-biology-activity-display.jpg',
+    filename: 'jc-biology-activity-display.jpg',
+    unit: 'junior-college',
+    category: 'Learning',
+    alt: 'A Biology activity display prepared by students.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-maths-activity.jpg',
+    filename: 'jc-maths-activity.jpg',
+    unit: 'junior-college',
+    category: 'Learning',
+    alt: 'A Mathematics activity, students working through it together.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-evs-activity.jpg',
+    filename: 'jc-evs-activity.jpg',
+    unit: 'junior-college',
+    category: 'Learning',
+    alt: 'An Environmental Science activity session.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-career-guidance-it.jpg',
+    filename: 'jc-career-guidance-it.jpg',
+    unit: 'junior-college',
+    category: 'Careers and guidance',
+    alt: 'A career guidance session on Information Technology, students seated for the talk.',
+    caption: 'Career guidance for the Information Technology stream',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-career-guidance-commerce.jpg',
+    filename: 'jc-career-guidance-commerce.jpg',
+    unit: 'junior-college',
+    category: 'Careers and guidance',
+    alt: 'A career guidance session run by the Economics and Commerce departments.',
+    caption: 'Career guidance from the Economics and Commerce departments',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-career-counselling-1.jpg',
+    filename: 'jc-career-counselling-1.jpg',
+    unit: 'junior-college',
+    category: 'Careers and guidance',
+    alt: 'A career counselling session for Commerce students.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-career-counselling-2.jpg',
+    filename: 'jc-career-counselling-2.jpg',
+    unit: 'junior-college',
+    category: 'Careers and guidance',
+    alt: 'Students at a career counselling session, September 2026.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-orientation-programme.jpg',
+    filename: 'jc-orientation-programme.jpg',
+    unit: 'junior-college',
+    category: 'Careers and guidance',
+    alt: 'The orientation programme for new students entering Standard XI.',
+    caption: 'Orientation for the incoming Standard XI year',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-pta-meeting.jpg',
+    filename: 'jc-pta-meeting.jpg',
+    unit: 'junior-college',
+    category: 'Careers and guidance',
+    alt: 'A parent-teacher association meeting at the college.',
+    caption: 'Parents and teachers meeting',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-staff-meeting.jpg',
+    filename: 'jc-staff-meeting.jpg',
+    unit: 'junior-college',
+    category: 'Careers and guidance',
+    alt: 'A staff meeting of the Junior College teaching team.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-teachers-training-nep.jpg',
+    filename: 'jc-teachers-training-nep.jpg',
+    unit: 'junior-college',
+    category: 'Careers and guidance',
+    alt: 'A teacher training programme on the National Education Policy.',
+    caption: 'Teacher training on the National Education Policy',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-independence-day-2025-flag.jpg',
+    filename: 'jc-independence-day-2025-flag.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'Independence Day at the college in 2025, students assembled beneath the national flag.',
+    caption: 'Independence Day, 2025',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-independence-day-2025-2.jpg',
+    filename: 'jc-independence-day-2025-2.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'Students at the Independence Day assembly, 2025.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-independence-day-2025-3.jpg',
+    filename: 'jc-independence-day-2025-3.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'The Independence Day programme on the college ground, 2025.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-independence-day-2026-assembly.jpg',
+    filename: 'jc-independence-day-2026-assembly.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'The Independence Day assembly on 15 August 2026.',
+    caption: 'Independence Day, 15 August 2026',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-pongal-stage.jpg',
+    filename: 'jc-pongal-stage.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'The Pongal day celebration at the college.',
+    caption: 'Pongal at the college',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-pongal-day.jpg',
+    filename: 'jc-pongal-day.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'Students taking part in the Pongal day programme.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-pongal-rangoli.jpg',
+    filename: 'jc-pongal-rangoli.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'A rangoli laid for the Pongal celebration.',
+    depictsChildren: false,
+  },
+  {
+    file: 'jc-pongal-pot.jpg',
+    filename: 'jc-pongal-pot.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'The traditional Pongal pot prepared for the celebration.',
+    depictsChildren: false,
+  },
+  {
+    file: 'jc-rangoli.jpg',
+    filename: 'jc-rangoli.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'A rangoli made by students on the college floor.',
+    caption: 'Rangoli by the students',
+    depictsChildren: false,
+  },
+  {
+    file: 'jc-rangoli-2.jpg',
+    filename: 'jc-rangoli-2.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'A second rangoli design laid by students.',
+    depictsChildren: false,
+  },
+  {
+    file: 'jc-mehendi-competition.jpg',
+    filename: 'jc-mehendi-competition.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'The mehendi competition, students at work on their designs.',
+    caption: 'The mehendi competition',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-cultural-day.jpg',
+    filename: 'jc-cultural-day.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'The college cultural day programme.',
+    caption: 'Cultural day',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-cultural-performance.jpg',
+    filename: 'jc-cultural-performance.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'A student performance on cultural day.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-cultural-performance-2.jpg',
+    filename: 'jc-cultural-performance-2.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'Students performing at the cultural programme.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-cultural-performance-3.jpg',
+    filename: 'jc-cultural-performance-3.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'A group performance at the college cultural programme.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-guru-poornima.jpg',
+    filename: 'jc-guru-poornima.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'The Guru Poornima observance at the college.',
+    caption: 'Guru Poornima',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-guru-poornima-2.jpg',
+    filename: 'jc-guru-poornima-2.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'Students and staff at the Guru Poornima programme.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-ashadhi-ekadashi.jpg',
+    filename: 'jc-ashadhi-ekadashi.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'The Ashadhi Ekadashi observance at the college.',
+    caption: 'Ashadhi Ekadashi',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-samvidhan-day.jpg',
+    filename: 'jc-samvidhan-day.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'Samvidhan Day, marking the adoption of the Constitution.',
+    caption: 'Samvidhan Day',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-saurya-day.jpg',
+    filename: 'jc-saurya-day.jpg',
+    unit: 'junior-college',
+    category: 'Occasions',
+    alt: 'The Saurya day programme at the college.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-vision-health-camp.jpg',
+    filename: 'jc-vision-health-camp.jpg',
+    unit: 'junior-college',
+    category: 'Wellbeing',
+    alt: 'A vision and health camp held at the college for students.',
+    caption: 'A vision and health camp for students',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-rabies-awareness.jpg',
+    filename: 'jc-rabies-awareness.jpg',
+    unit: 'junior-college',
+    category: 'Wellbeing',
+    alt: 'A rabies awareness session for students.',
+    caption: 'Rabies awareness session',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-fire-safety-training.jpg',
+    filename: 'jc-fire-safety-training.jpg',
+    unit: 'junior-college',
+    category: 'Wellbeing',
+    alt: 'A fire management and safety training programme on the campus.',
+    caption: 'Fire safety training',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-student-activity.jpg',
+    filename: 'jc-student-activity.jpg',
+    unit: 'junior-college',
+    category: 'Learning',
+    alt: 'Students taking part in a college activity session.',
+    depictsChildren: true,
+  },
+  {
+    file: 'jc-student-activity-2.jpg',
+    filename: 'jc-student-activity-2.jpg',
+    unit: 'junior-college',
+    category: 'Learning',
+    alt: 'A second view of students at a college activity session.',
+    depictsChildren: true,
+  },
+  /*
+   * THE PRIMARY SECTION'S OWN PHOTOGRAPHS, sent by SIWS on 2026-09-02.
+   *
+   * Thirteen, from the section's working folders. Two pairs in those folders
+   * were the same file under two names — one smart-board picture filed under
+   * both "around the campus" and "why parents choose", and one classroom
+   * picture filed as both "individual care" and "experienced teachers" — so
+   * fifteen files are thirteen photographs here.
+   *
+   * THE CAMPUS NAMES ARE GONE FROM THE FILENAMES. Four arrived as "wadala
+   * banner" and "matunga banner"; the Primary Section has since merged into
+   * one school, so a library name carrying a campus would outlive the thing it
+   * names. They are numbered instead.
+   *
+   * `campus under cctv.heif` was converted to JPEG on the way in — nothing in
+   * the pipeline reads HEIF.
+   */
+  {
+    file: 'primary-classroom-full.jpg',
+    filename: 'primary-classroom-full.jpg',
+    unit: 'primary',
+    category: 'In the classroom',
+    alt: 'A full Primary class in striped uniform at their bench desks, turning towards the camera with their teacher’s room around them.',
+    caption: 'A full class at work',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-classroom-group-1.jpg',
+    filename: 'primary-classroom-group-1.jpg',
+    unit: 'primary',
+    category: 'In the classroom',
+    alt: 'Primary children at their desks during a lesson.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-classroom-group-2.jpg',
+    filename: 'primary-classroom-group-2.jpg',
+    unit: 'primary',
+    category: 'In the classroom',
+    alt: 'A Primary classroom mid-lesson, children at bench desks with their bags beside them.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-classroom-desks.jpg',
+    filename: 'primary-classroom-desks.jpg',
+    unit: 'primary',
+    category: 'In the classroom',
+    alt: 'Primary pupils seated at their desks in class.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-smart-board.jpg',
+    filename: 'primary-smart-board.jpg',
+    unit: 'primary',
+    category: 'In the classroom',
+    alt: 'A Primary pupil at the interactive smart board, writing on it with a stylus.',
+    caption: 'Smart boards in every classroom',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-academics.jpg',
+    filename: 'primary-academics.jpg',
+    unit: 'primary',
+    category: 'In the classroom',
+    alt: 'A Primary academic session in progress.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-individual-care.jpg',
+    filename: 'primary-individual-care.jpg',
+    unit: 'primary',
+    category: 'In the classroom',
+    alt: 'A teacher working with a pupil one to one.',
+    caption: 'Individual attention for every child',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-teachers-dedicated.jpg',
+    filename: 'primary-teachers-dedicated.jpg',
+    unit: 'primary',
+    category: 'In the classroom',
+    alt: 'A Primary teacher with her class.',
+    caption: 'Teachers of twenty years’ standing and more',
+    depictsChildren: true,
+  },
+  {
+    /*
+     * SENT AS "campus under cctv.heif" AND IT IS NEITHER.
+     *
+     * It is a full class writing at their desks — no camera in the frame, and
+     * nothing of the campus outside the room. Filed by what it shows rather
+     * than by the name it arrived under, which would have put a classroom
+     * alone under "Around the campus" and left it as a category of one at the
+     * foot of the wall.
+     *
+     * It also arrived on its side. HEIF records rotation as metadata and the
+     * conversion to JPEG dropped it, so the photograph was ninety degrees out
+     * until it was turned and written back upright.
+     */
+    file: 'primary-classroom-writing.jpg',
+    filename: 'primary-classroom-writing.jpg',
+    unit: 'primary',
+    category: 'In the classroom',
+    alt: 'A full Primary class at their bench desks, writing in exercise books, with subject charts on the wall behind them.',
+    caption: 'A full class at work',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-holistic-development.jpg',
+    filename: 'primary-holistic-development.jpg',
+    unit: 'primary',
+    category: 'Beyond the classroom',
+    alt: 'Primary children taking part in an activity beyond the timetable.',
+    caption: 'Learning beyond the syllabus',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-moving-up.jpg',
+    filename: 'primary-moving-up.jpg',
+    unit: 'primary',
+    category: 'Beyond the classroom',
+    alt: 'Primary pupils on the path up through the SIWS Group, from Grade 1 onwards.',
+    caption: 'A pathway from Kindergarten to Junior College',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-student-life.jpg',
+    filename: 'primary-student-life.jpg',
+    unit: 'primary',
+    category: 'Beyond the classroom',
+    alt: 'Primary children during a school activity.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-cultural-dress.jpg',
+    filename: 'primary-cultural-dress.jpg',
+    unit: 'primary',
+    /*
+     * With the other things that happen outside a lesson, rather than alone
+     * under 'Occasions'. Primary has one photograph of an occasion, and a
+     * category of one is folded into "More photographs" at the foot of the
+     * wall — which is a worse place for it than beside the activities.
+     */
+    category: 'Beyond the classroom',
+    alt: 'Primary children in traditional Maharashtrian dress holding saffron flags on the school ground, with their teacher beside them.',
+    caption: 'In traditional dress for the occasion',
+    depictsChildren: true,
+  },
 ]
 
 /*
