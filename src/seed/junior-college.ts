@@ -1430,8 +1430,8 @@ const main = async () => {
         ? [
             {
               blockType: 'mediaText',
-              heading: 'Drawn by hand, not printed',
-              accentWord: 'by hand',
+              heading: 'Charts made by students',
+              accentWord: 'made by students',
               headingLevel: 'h2',
               background: 'white',
               imagePosition: 'left',
@@ -1486,8 +1486,8 @@ const main = async () => {
        */
       {
         blockType: 'gallery',
-        heading: 'This year, photographed',
-        accentWord: 'photographed',
+        heading: 'The year in photographs',
+        accentWord: 'photographs',
         headingLevel: 'h2',
         background: 'white',
         layout: 'bento',

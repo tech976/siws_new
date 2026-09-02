@@ -1509,8 +1509,8 @@ const main = async () => {
         ? [
             {
               blockType: 'mediaText',
-              heading: 'The hall, on an ordinary morning',
-              accentWord: 'The hall',
+              heading: 'The school hall',
+              accentWord: 'hall',
               headingLevel: 'h2',
               background: 'white',
               imagePosition: 'left',
@@ -1525,7 +1525,7 @@ const main = async () => {
         : []),
       {
         blockType: 'featureList',
-        heading: 'What the campus has',
+        heading: 'Around the campus',
         accentWord: 'campus',
         headingLevel: 'h2',
         layout: 'cards',
@@ -1567,8 +1567,8 @@ const main = async () => {
         ? [
             {
               blockType: 'mediaText',
-              heading: 'Green skills, grown on the veranda',
-              accentWord: 'Green skills',
+              heading: 'The school garden',
+              accentWord: 'garden',
               headingLevel: 'h2',
               background: 'white',
               imagePosition: 'right',
@@ -1582,8 +1582,8 @@ const main = async () => {
         : []),
       {
         blockType: 'richText',
-        heading: 'Kept to a standard the State has certified',
-        accentWord: 'certified',
+        heading: 'Cleanliness and upkeep',
+        accentWord: 'Cleanliness',
         headingLevel: 'h2',
         width: 'normal',
         background: 'sea',
@@ -1797,8 +1797,8 @@ const main = async () => {
         ? [
             {
               blockType: 'mediaText',
-              heading: 'Made, not marked',
-              accentWord: 'Made',
+              heading: 'Work made by students',
+              accentWord: 'made by students',
               headingLevel: 'h2',
               background: 'white',
               imagePosition: 'left',
