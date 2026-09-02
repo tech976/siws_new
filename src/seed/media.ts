@@ -106,7 +106,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'In the classroom',
     alt: 'Kindergarten children in SIWS uniform sitting at curved group tables, colouring in activity books with crayons.',
-    caption: 'Spacious, well-ventilated classrooms with group seating',
     depictsChildren: true,
   },
   {
@@ -144,7 +143,6 @@ const IMAGES: ImageSeed[] = [
     // rather than being sliced through the chin.
     focalY: 64,
     alt: 'A kindergarten class seated around a large curved table, smiling towards the camera.',
-    caption: 'Small groups, and room to move',
     depictsChildren: true,
   },
   {
@@ -153,7 +151,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'In the classroom',
     alt: 'Young children in SIWS uniform seated at classroom tables, listening to their teacher.',
-    caption: 'Bright, child-height classroom furniture',
     depictsChildren: true,
   },
   {
@@ -166,7 +163,6 @@ const IMAGES: ImageSeed[] = [
     // it lands on the empty wall behind, lower and it is all artificial turf.
     focalY: 49,
     alt: 'Kindergarten children in sports uniform standing in rows on the green artificial-turf play area during a physical activity session.',
-    caption: 'Safe play and activity area',
     depictsChildren: true,
   },
   {
@@ -175,7 +171,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'In the classroom',
     alt: 'A SIWS teacher surrounded by a group of kindergarten children hugging her on the school play area.',
-    caption: 'Supportive and trained school staff',
     depictsChildren: true,
   },
   {
@@ -184,7 +179,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Play and activity',
     alt: 'A close group of kindergarten girls in SIWS sports uniform with red headbands, arms around each other, smiling.',
-    caption: 'Friendships that start in the earliest years',
     depictsChildren: true,
   },
   {
@@ -241,7 +235,6 @@ const IMAGES: ImageSeed[] = [
     focalY: 62,
     category: 'Events and outings',
     alt: 'Two young students in a fancy-dress competition, one wearing a painted globe costume and the other holding a model of the Earth.',
-    caption: 'Showcasing creativity and environmental awareness',
     depictsChildren: true,
   },
   /*
@@ -400,7 +393,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'secondary',
     category: 'In the classroom',
     alt: 'Secondary students at their desks during an activity session, writing and cutting coloured paper.',
-    caption: 'Activity-based learning',
     depictsChildren: true,
   },
   {
@@ -425,7 +417,6 @@ const IMAGES: ImageSeed[] = [
     focalY: 56,
     category: 'Achievements',
     alt: 'A kindergarten student in costume being handed a certificate on stage by a teacher, with three staff members alongside and a sunflower backdrop behind.',
-    caption: 'Receiving a prize at an interschool competition',
     depictsChildren: true,
   },
   /*
@@ -459,7 +450,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Achievements',
     alt: 'The same group of Kindergarten dancers in tricolour costume holding a trophy and a certificate from The Andhra Education Society’s Pre-Primary School, in a corridor decorated with paper peacocks.',
-    caption: 'Inter-school competition honours',
     depictsChildren: true,
   },
   {
@@ -560,7 +550,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'In the classroom',
     alt: 'A full kindergarten class standing around a curved table, one child holding up a handprint flag they have made together.',
-    caption: 'Hands-on work the whole class makes together',
     depictsChildren: true,
   },
   {
@@ -574,7 +563,6 @@ const IMAGES: ImageSeed[] = [
     file: 'drawing-class.jpg',
     filename: 'kg-drawing-class.jpg',
     alt: 'Students at wooden desks in a classroom, each colouring a drawing with crayons.',
-    caption: 'Focused work in the early years',
     depictsChildren: true,
   },
   {
@@ -1272,7 +1260,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'primary',
     category: 'In the classroom',
     alt: 'A full Primary class in striped uniform at their bench desks, turning towards the camera with their teacher’s room around them.',
-    caption: 'A Primary class at work',
     depictsChildren: true,
   },
   {
@@ -1322,7 +1309,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'primary',
     category: 'In the classroom',
     alt: 'A teacher working with a pupil one to one.',
-    caption: 'Individual attention for every child',
     depictsChildren: true,
   },
   {
@@ -1353,7 +1339,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'primary',
     category: 'In the classroom',
     alt: 'A full Primary class at their bench desks, writing in exercise books, with subject charts on the wall behind them.',
-    caption: 'A Primary class at work',
     depictsChildren: true,
   },
   {
@@ -1362,7 +1347,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'primary',
     category: 'Beyond the classroom',
     alt: 'Primary children taking part in an activity beyond the timetable.',
-    caption: 'Learning beyond the syllabus',
     depictsChildren: true,
   },
   {
@@ -1394,7 +1378,6 @@ const IMAGES: ImageSeed[] = [
      */
     category: 'Beyond the classroom',
     alt: 'Primary children in traditional Maharashtrian dress holding saffron flags on the school ground, with their teacher beside them.',
-    caption: 'In traditional dress for the occasion',
     depictsChildren: true,
   },
   /*
@@ -1419,7 +1402,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Events and outings',
     alt: 'Kindergarten children on stage in traditional Maharashtrian dress, lined up after their performance.',
-    caption: 'On stage in traditional dress',
     depictsChildren: true,
   },
   {
@@ -1501,7 +1483,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Events and outings',
     alt: 'Kindergarten children dancing at a school performance.',
-    caption: 'A dance performance',
     depictsChildren: true,
   },
   {
@@ -1528,7 +1509,6 @@ const IMAGES: ImageSeed[] = [
      * words a reader gets are corrected.
      */
     alt: 'Around thirty Kindergarten children in red and navy sports kit standing in rows on the turf pitch in front of the goal, behind a table holding six gold trophies.',
-    caption: 'The Kindergarten annual sports',
     depictsChildren: true,
   },
   {
@@ -1576,7 +1556,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Sports',
     alt: 'Five Kindergarten children in red and navy sports kit standing in a line on the turf pitch, each holding a gold trophy.',
-    caption: 'Annual sports day',
     depictsChildren: true,
   },
   {
@@ -1590,7 +1569,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Sports',
     alt: 'A table covered with rows of gold trophies labelled First Prize, Second Prize and Consolation, beneath a printed banner reading “Welcome To SIWS KG SECTION Sport’s Day”.',
-    caption: 'Annual prize distribution',
     depictsChildren: false,
   },
   {
@@ -1599,7 +1577,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Sports',
     alt: 'Seven Kindergarten staff standing behind a draped table of trophies beneath the sports day banner, with children in yellow and green uniform seated on benches to either side holding certificates.',
-    caption: 'Prizewinners at the annual sports',
     depictsChildren: true,
   },
   {
@@ -1608,7 +1585,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Sports',
     alt: 'Kindergarten children in yellow and green uniform seated on benches along both sides of a draped table of trophies, beneath the sports day banner outside the presentation room.',
-    caption: 'Annual prize day',
     depictsChildren: true,
   },
 
@@ -1630,6 +1606,18 @@ const IMAGES: ImageSeed[] = [
     alt: 'Three Primary girls on the winners’ podium — second in a yellow house shirt, first in red, third in red — beside a chalkboard reading “SIWS Primary School Wadala, Annual Sports Day 2025-26”.',
     depictsChildren: true,
   },
+  /*
+   * ELEVEN PODIUMS, THREE ON THE WALL.
+   *
+   * These are eleven different races and eleven different sets of winners, so
+   * nothing here is a duplicate. On a gallery wall they read as one photograph
+   * repeated: the same podium, the same board behind it, the same framing,
+   * eleven times in a row — and "Sports" was made of nothing else.
+   *
+   * Three stay — a girls' podium, a boys' and a mixed one — and the other
+   * eight come off the wall rather than out of the library, because every
+   * child on them is a prizewinner and the record is the school's to keep.
+   */
   {
     file: 'primary-sports-day-podium-b.jpg',
     filename: 'primary-sports-day-podium-b.jpg',
@@ -1637,6 +1625,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Sports',
     alt: 'Three Primary boys on the winners’ podium — second in a cream shirt, first in green, third in red — beside the Annual Sports Day 2025-26 chalkboard.',
     depictsChildren: true,
+    showInGallery: false,
   },
   {
     file: 'primary-sports-day-podium-c.jpg',
@@ -1645,6 +1634,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Sports',
     alt: 'Three Primary boys on the winners’ podium — second in blue, first in a cream shirt, third in red — beside the Annual Sports Day 2025-26 chalkboard.',
     depictsChildren: true,
+    showInGallery: false,
   },
   {
     file: 'primary-sports-day-podium-d.jpg',
@@ -1653,6 +1643,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Sports',
     alt: 'Three Primary boys on the winners’ podium — second in blue, first in a cream shirt, third in red — with the sports day chalkboard and the netting of the turf pitch behind them.',
     depictsChildren: true,
+    showInGallery: false,
   },
   {
     file: 'primary-sports-day-podium-e.jpg',
@@ -1669,6 +1660,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Sports',
     alt: 'Three Primary boys on the winners’ podium — second in yellow, first in blue, third in a cream shirt and tie — beside the Annual Sports Day 2025-26 chalkboard.',
     depictsChildren: true,
+    showInGallery: false,
   },
   {
     file: 'primary-sports-day-podium-g.jpg',
@@ -1677,6 +1669,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Sports',
     alt: 'Three Primary girls on the winners’ podium — second in red, first in a cream pinafore with a red headband, third in yellow — beside the Annual Sports Day 2025-26 chalkboard.',
     depictsChildren: true,
+    showInGallery: false,
   },
   {
     file: 'primary-sports-day-podium-h.jpg',
@@ -1693,6 +1686,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Sports',
     alt: 'Three Primary girls on the winners’ podium — second in red with a red headband, first in blue, third in a cream pinafore — with classmates waiting at the edge of the turf pitch.',
     depictsChildren: true,
+    showInGallery: false,
   },
   {
     file: 'primary-sports-day-podium-j.jpg',
@@ -1701,6 +1695,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Sports',
     alt: 'Three Primary children on the winners’ podium — second in a cream shirt, first in red, third in yellow — beside the Annual Sports Day 2025-26 chalkboard.',
     depictsChildren: true,
+    showInGallery: false,
   },
   {
     file: 'primary-sports-day-podium-k.jpg',
@@ -1709,6 +1704,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Sports',
     alt: 'Three Primary girls on the winners’ podium — second in yellow, first in blue, third in blue — beside the Annual Sports Day 2025-26 chalkboard.',
     depictsChildren: true,
+    showInGallery: false,
   },
 
   /*
@@ -1813,7 +1809,16 @@ const main = async () => {
 
       const data = {
         alt: image.alt,
-        caption: image.caption,
+        /*
+         * `null`, not `undefined`, when a row has no caption.
+         *
+         * `undefined` reads to Payload as "not supplied", so the column keeps
+         * whatever is already in it. Taking a `caption:` line out of the table
+         * above therefore changed nothing at all on a database that had once
+         * been seeded with it — the words stayed on the wall, and the only
+         * machine that agreed with the seed was one starting from empty.
+         */
+        caption: image.caption ?? null,
         unit: unitFor(image),
         ...(image.category === undefined ? {} : { category: image.category }),
         ...(image.showInGallery === undefined ? {} : { showInGallery: image.showInGallery }),
