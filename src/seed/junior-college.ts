@@ -519,7 +519,16 @@ const main = async () => {
         heading: 'What a Science student leaves with',
         accentWord: 'Science',
         headingLevel: 'h2',
-        layout: 'list',
+        /*
+         * PANEL, not a fourth ticked list. Seven peers with no sequence
+         * between them, each a short claim a visitor scans rather than
+         * studies — docs/MASTER-LAYOUT.md §4's case for this layout, almost
+         * word for word.
+         *
+         * These two are the page's only panels, which is the cap that section
+         * sets: the lift stops meaning anything when everything lifts.
+         */
+        layout: 'panel',
         marker: 'tick',
         columns: '2',
         background: 'tint',
@@ -541,7 +550,16 @@ const main = async () => {
         heading: 'What a Commerce student leaves with',
         accentWord: 'Commerce',
         headingLevel: 'h2',
-        layout: 'list',
+        /*
+         * PANEL, not a fourth ticked list. Seven peers with no sequence
+         * between them, each a short claim a visitor scans rather than
+         * studies — docs/MASTER-LAYOUT.md §4's case for this layout, almost
+         * word for word.
+         *
+         * These two are the page's only panels, which is the cap that section
+         * sets: the lift stops meaning anything when everything lifts.
+         */
+        layout: 'panel',
         marker: 'tick',
         columns: '2',
         background: 'white',
@@ -1502,6 +1520,129 @@ const main = async () => {
     ],
   })
 
+  // ------------------------------------------------------------------ SPORTS
+  /*
+   * SPORT AT THE JUNIOR COLLEGE, at SIWS's instruction (2026-09-02) to give
+   * every section a Sports entry in its menu — and the one of the four that
+   * had to be written around a gap rather than around a photograph.
+   *
+   * WHAT THE COLLEGE HAS SUPPLIED: Physical Education, which is on the subject
+   * list for all four stream-and-year combinations — Commerce XI and XII,
+   * Science XI and XII — and the yoga and meditation sessions held on the open
+   * ground, of which there is one photograph.
+   *
+   * WHAT IT HAS NOT: a single sports photograph, and no record of a team, a
+   * fixture, a sports day or an inter-collegiate entry. The delivery folder
+   * `FacilityImages(LABS, LIBRARY, SPORTS, PLAY AREA)` names sport in its own
+   * title and contains laboratories and the library.
+   *
+   * So this page is written the way `transport` above is: it says what is
+   * known, it does not dress the ground up as a programme, and it sends the
+   * one real question to the office. The Kindergarten, Primary and Secondary
+   * sports pages each open on photographs of their own event; this one opens
+   * on type, and it should — a page borrowing the Secondary's football to
+   * illustrate a college that has not said it plays any would be telling a
+   * family something nobody has claimed.
+   *
+   * The warning at the foot of this seed names what is needed to finish it.
+   */
+  await upsert({
+    slug: 'sports',
+    title: 'Sports',
+    intro:
+      'Physical Education on the subject list for both years and both streams, and an hour on the ground learning to settle.',
+    /*
+     * OFF the menu here, and `seed:nav` puts it back INSIDE the Student Life
+     * drop-down. Sports is a child entry in the shared unit template, and
+     * `show_in_nav` set from a page seed makes it a TOP-LEVEL item — so on a
+     * machine where this seed ran last, the section would carry Sports twice:
+     * once in the bar and once under Student Life.
+     */
+    showInNav: false,
+    navLabel: 'Sports',
+    navOrder: 71,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Sport and physical activity at SIWS Junior College, Wadala — Physical Education for Standards XI and XII in both Commerce and Science, and yoga and meditation on the college ground.',
+    layout: [
+      {
+        blockType: 'featureList',
+        heading: 'What the college runs',
+        accentWord: 'the college',
+        headingLevel: 'h2',
+        layout: 'cards',
+        background: 'sea',
+        items: [
+          {
+            title: 'Physical Education, in every stream and both years',
+            icon: 'sport',
+            description:
+              'It is on the subject list for Commerce XI and XII and for Science XI and XII alike — two years with a public examination at the end of them, and physical education is not the thing that gets dropped for them.',
+          },
+          {
+            title: 'Yoga and meditation on the ground',
+            icon: 'health',
+            description:
+              'Guided sessions in the open air, taken by the whole year group together. An hour spent learning to settle is not an hour lost when two public examinations sit two years apart.',
+          },
+          {
+            title: 'The ground itself',
+            icon: 'play',
+            description:
+              'The Wadala campus is shared with the Kindergarten, Primary and Secondary sections, and its ground and turf pitch are used by the college as well — most visibly for the Independence Day contingent.',
+          },
+          {
+            title: 'Anything more than that — ask the office',
+            icon: 'communication',
+            description:
+              'Teams, fixtures and inter-collegiate entries are not published here, because the college has not sent them. Somebody who knows this year’s arrangements will answer better than a page that guessed.',
+          },
+        ],
+      },
+      ...(shots.yoga
+        ? [
+            {
+              blockType: 'mediaText',
+              heading: 'An hour on the ground',
+              accentWord: 'the ground',
+              headingLevel: 'h2',
+              background: 'white',
+              imagePosition: 'right',
+              imageShape: 'rounded',
+              image: shots.yoga,
+              content: richText([
+                'Rows of students seated on the open ground, eyes closed, hands on their knees, taken through a guided meditation together. It is the college’s own photograph of its own year group, and it is the only one it has sent of anything happening outdoors that is not a parade.',
+                'Wellbeing has a place on the timetable here rather than a mention in a prospectus. The Student Life page sets out the rest of what the two years hold beyond the syllabus.',
+              ]),
+            },
+          ]
+        : []),
+      ...(contactPageId
+        ? [
+            {
+              blockType: 'callToAction',
+              heading: 'Ask what the college plays',
+              background: 'brand',
+              text: richText([
+                'If you would like to know what sport your son or daughter can take part in this year, the office will tell you what is running.',
+              ]),
+              links: [
+                {
+                  link: {
+                    label: 'Contact the college',
+                    type: 'internal',
+                    reference: { relationTo: 'pages', value: contactPageId },
+                    appearance: 'primary',
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  })
+
   await upsert({
     slug: 'transport',
     title: 'Transport',
@@ -1648,6 +1789,10 @@ const main = async () => {
 
   payload.logger.warn(
     'STILL TO COME from SIWS for the Junior College: eligibility marks, the document list, fees, the annual calendar, college rules and uniform, and results. The streams, subjects, curriculum, teaching methodology, roster, admission process and term dates arrived on 2026-09-02 and are published. Rules & Uniform is still a DRAFT — the heading was supplied with nothing under it, and school rules are not something to guess at.',
+  )
+
+  payload.logger.warn(
+    'SPORTS — the Junior College is the ONE section with no sports photograph of any kind. Kindergarten has nine of its sports day, Primary eleven of its Annual Sports Day podium, Secondary two of the Sports Academy football league; this college has none, and the delivery folder that names SPORTS and PLAY AREA in its own title holds laboratories and the library. The page therefore stands on Physical Education being on the subject list and on the yoga session, and says so. NEEDED: photographs of college sport, and whether the college enters teams, holds a sports day, or takes part in the SIWS Sports Academy football league the Secondary section plays in.',
   )
 
   process.exit(0)

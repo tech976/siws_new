@@ -1518,8 +1518,17 @@ const IMAGES: ImageSeed[] = [
     filename: 'kg-sports-race.jpg',
     unit: 'kindergarten',
     category: 'Sports',
-    alt: 'Kindergarten children taking part in a race on sports day.',
-    caption: 'On sports day',
+    /*
+     * NOT A RACE, which is what this said until 2026-09-02. The photograph is
+     * the whole section standing still, in kit, behind a table of trophies —
+     * the moment after the events rather than during one. Wrong alt text is
+     * worse than none here: a screen-reader user is told the school has a
+     * picture of children running and has no way to find out it has not. The
+     * filename keeps the word so the library row is not duplicated; only the
+     * words a reader gets are corrected.
+     */
+    alt: 'Around thirty Kindergarten children in red and navy sports kit standing in rows on the turf pitch in front of the goal, behind a table holding six gold trophies.',
+    caption: 'The whole section, at the Kindergarten sports day',
     depictsChildren: true,
   },
   {
@@ -1530,6 +1539,202 @@ const IMAGES: ImageSeed[] = [
     alt: 'A Kindergarten child making a thumb painting.',
     caption: 'Thumb painting',
     depictsChildren: true,
+  },
+  /*
+   * THE SPORTS PHOTOGRAPHS, added 2026-09-02.
+   *
+   * "Sports" was a category with four Kindergarten pictures in it and nothing
+   * for the other three sections, which is why every unit's Sports page but
+   * one would have opened on type alone. These are the school's own — the KG
+   * section's sports day, the Primary annual sports day, and the football
+   * league the SIWS Sports Academy runs — and they were already in `media/`,
+   * carried in by a `photos:import` whose inbox is not in version control.
+   * That made them invisible to a fresh clone: the files were committed, the
+   * rows that pointed at them were not, so a rebuild dropped every one.
+   *
+   * Copying them into `assets/images` and naming them here is what puts them
+   * back into the recipe rather than into one person's database.
+   *
+   * NO NUMERIC SUFFIXES on the Primary set, and that is not a style choice:
+   * `baseName()` in `utilities/media-lookup` strips a trailing `-N` as
+   * Payload's collision counter, so `…-podium-1.jpg` and `…-podium-2.jpg`
+   * would both answer to `…-podium.jpg` and the eleven would collapse onto
+   * whichever row was written first. Letters cannot be mistaken for a counter.
+   */
+  {
+    file: 'kg-sports-trophy-presented.jpg',
+    filename: 'kg-sports-trophy-presented.jpg',
+    unit: 'kindergarten',
+    category: 'Sports',
+    alt: 'A man in a white shirt and tie handing a gold trophy to a girl standing on the number 1 block of the winners’ podium, with two more Kindergarten children on the second and third blocks, on the green turf pitch.',
+    caption: 'The first prize, handed over on the podium',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-sports-winners-turf.jpg',
+    filename: 'kg-sports-winners-turf.jpg',
+    unit: 'kindergarten',
+    category: 'Sports',
+    alt: 'Five Kindergarten children in red and navy sports kit standing in a line on the turf pitch, each holding a gold trophy.',
+    caption: 'Trophies on the pitch',
+    depictsChildren: true,
+  },
+  {
+    /*
+     * The one photograph in this set with no child in it, and the only reason
+     * that matters: it is therefore the one the Sports page can open on
+     * without waiting on a consent record.
+     */
+    file: 'kg-sports-day-trophy-table.jpg',
+    filename: 'kg-sports-day-trophy-table.jpg',
+    unit: 'kindergarten',
+    category: 'Sports',
+    alt: 'A table covered with rows of gold trophies labelled First Prize, Second Prize and Consolation, beneath a printed banner reading “Welcome To SIWS KG SECTION Sport’s Day”.',
+    caption: 'The prizes, before they are given out',
+    depictsChildren: false,
+  },
+  {
+    file: 'kg-sports-prize-day-staff.jpg',
+    filename: 'kg-sports-prize-day-staff.jpg',
+    unit: 'kindergarten',
+    category: 'Sports',
+    alt: 'Seven Kindergarten staff standing behind a draped table of trophies beneath the sports day banner, with children in yellow and green uniform seated on benches to either side holding certificates.',
+    caption: 'Staff and prizewinners at the Kindergarten sports day',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-sports-prize-day-hall.jpg',
+    filename: 'kg-sports-prize-day-hall.jpg',
+    unit: 'kindergarten',
+    category: 'Sports',
+    alt: 'Kindergarten children in yellow and green uniform seated on benches along both sides of a draped table of trophies, beneath the sports day banner outside the presentation room.',
+    caption: 'Waiting for the prizes',
+    depictsChildren: true,
+  },
+
+  /*
+   * PRIMARY'S ANNUAL SPORTS DAY 2025–26 — eleven prize ceremonies.
+   *
+   * Every one is the same podium in front of the same chalkboard, which is
+   * exactly why they are all here rather than a chosen three: they are not
+   * eleven views of an event, they are eleven different sets of children, and
+   * the parent of the child on the third block is the reader this page is for.
+   * The alt text therefore names the house colours rather than repeating one
+   * sentence, so a screen-reader user can tell the pictures apart too.
+   */
+  {
+    file: 'primary-sports-day-podium-a.jpg',
+    filename: 'primary-sports-day-podium-a.jpg',
+    unit: 'primary',
+    category: 'Sports',
+    alt: 'Three Primary girls on the winners’ podium — second in a yellow house shirt, first in red, third in red — beside a chalkboard reading “SIWS Primary School Wadala, Annual Sports Day 2025-26”.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-sports-day-podium-b.jpg',
+    filename: 'primary-sports-day-podium-b.jpg',
+    unit: 'primary',
+    category: 'Sports',
+    alt: 'Three Primary boys on the winners’ podium — second in a cream shirt, first in green, third in red — beside the Annual Sports Day 2025-26 chalkboard.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-sports-day-podium-c.jpg',
+    filename: 'primary-sports-day-podium-c.jpg',
+    unit: 'primary',
+    category: 'Sports',
+    alt: 'Three Primary boys on the winners’ podium — second in blue, first in a cream shirt, third in red — beside the Annual Sports Day 2025-26 chalkboard.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-sports-day-podium-d.jpg',
+    filename: 'primary-sports-day-podium-d.jpg',
+    unit: 'primary',
+    category: 'Sports',
+    alt: 'Three Primary boys on the winners’ podium — second in blue, first in a cream shirt, third in red — with the sports day chalkboard and the netting of the turf pitch behind them.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-sports-day-podium-e.jpg',
+    filename: 'primary-sports-day-podium-e.jpg',
+    unit: 'primary',
+    category: 'Sports',
+    alt: 'Three Primary children on the winners’ podium — second in yellow, first in blue, third in a cream pinafore with a red headband — beside the Annual Sports Day 2025-26 chalkboard.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-sports-day-podium-f.jpg',
+    filename: 'primary-sports-day-podium-f.jpg',
+    unit: 'primary',
+    category: 'Sports',
+    alt: 'Three Primary boys on the winners’ podium — second in yellow, first in blue, third in a cream shirt and tie — beside the Annual Sports Day 2025-26 chalkboard.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-sports-day-podium-g.jpg',
+    filename: 'primary-sports-day-podium-g.jpg',
+    unit: 'primary',
+    category: 'Sports',
+    alt: 'Three Primary girls on the winners’ podium — second in red, first in a cream pinafore with a red headband, third in yellow — beside the Annual Sports Day 2025-26 chalkboard.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-sports-day-podium-h.jpg',
+    filename: 'primary-sports-day-podium-h.jpg',
+    unit: 'primary',
+    category: 'Sports',
+    alt: 'Three Primary boys on the winners’ podium — second in a cream shirt, first in green, third in blue — beside the Annual Sports Day 2025-26 chalkboard.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-sports-day-podium-i.jpg',
+    filename: 'primary-sports-day-podium-i.jpg',
+    unit: 'primary',
+    category: 'Sports',
+    alt: 'Three Primary girls on the winners’ podium — second in red with a red headband, first in blue, third in a cream pinafore — with classmates waiting at the edge of the turf pitch.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-sports-day-podium-j.jpg',
+    filename: 'primary-sports-day-podium-j.jpg',
+    unit: 'primary',
+    category: 'Sports',
+    alt: 'Three Primary children on the winners’ podium — second in a cream shirt, first in red, third in yellow — beside the Annual Sports Day 2025-26 chalkboard.',
+    depictsChildren: true,
+  },
+  {
+    file: 'primary-sports-day-podium-k.jpg',
+    filename: 'primary-sports-day-podium-k.jpg',
+    unit: 'primary',
+    category: 'Sports',
+    alt: 'Three Primary girls on the winners’ podium — second in yellow, first in blue, third in blue — beside the Annual Sports Day 2025-26 chalkboard.',
+    depictsChildren: true,
+  },
+
+  /*
+   * SECONDARY'S FOOTBALL LEAGUE, and the banner in the first of the two is
+   * where the Sports page's facts come from: "S.I.W.S. Sports Academy — South
+   * Indian Welfare School presents the Inter School Football League 2023-24,
+   * age categories U14 and U17, boys and girls". Nothing on that page claims
+   * anything this photograph does not show.
+   */
+  {
+    file: 'secondary-football-league-teams.jpg',
+    filename: 'secondary-football-league-teams.jpg',
+    unit: 'secondary',
+    category: 'Sports',
+    alt: 'A line of boys in navy and yellow football kit standing on the turf pitch as a guest in a waistcoat greets them, in front of a banner for the S.I.W.S. Sports Academy Inter School Football League 2023-24, under-14 and under-17.',
+    caption: 'Teams line up for the inter-school football league',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-football-league-kickoff.jpg',
+    filename: 'secondary-football-league-kickoff.jpg',
+    unit: 'secondary',
+    category: 'Sports',
+    alt: 'Two men and a woman in a sari standing over a football on the turf pitch beside a draped table, about to start the inter-school football league.',
+    caption: 'The kick-off',
+    depictsChildren: false,
   },
 ]
 
