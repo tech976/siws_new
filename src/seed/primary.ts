@@ -1135,11 +1135,27 @@ const main = async () => {
         ]),
       },
       {
+        /*
+         * REBUILT ON docs/MASTER-LAYOUT.md.
+         *
+         * This page ran eight sections, five of them ticked lists one after
+         * the next — subjects, practices, holistic, competitions, all the same
+         * device. It is the exact fault the handbook was written for: by the
+         * third the reader has stopped seeing the ticks, and the two lists that
+         * genuinely matter are indistinguishable from the two that are
+         * reference material.
+         *
+         * Now every list takes the layout its CONTENT asks for, and the panel
+         * cap in §4 is held at two for the page: the practices and the holistic
+         * programme, which are the claims a parent is actually weighing.
+         */
         blockType: 'featureList',
         heading: 'Subjects taught',
+        accentWord: 'Subjects',
         headingLevel: 'h2',
+        /* Seven one-line labels — §4's case for the compact tile exactly. */
+        layout: 'compact',
         marker: 'tick',
-        columns: '2-centre',
         background: 'sea',
         items: SUBJECTS,
       },
@@ -1164,30 +1180,42 @@ const main = async () => {
         ]),
       },
       {
+        /* PANEL 1 OF 2. Ten peers, no sequence, each a short claim a parent
+           scans rather than studies — §4's test, met on every clause. */
         blockType: 'featureList',
         heading: 'Our teaching practices',
+        accentWord: 'practices',
         headingLevel: 'h2',
+        layout: 'panel',
         marker: 'tick',
-        columns: '2',
         background: 'white',
         items: TEACHING_PRACTICES,
       },
       {
+        /* PANEL 2 OF 2 — the cap. Everything below reverts to quieter
+           devices so these two keep meaning something. */
         blockType: 'featureList',
         heading: 'Holistic Development',
         accentWord: 'Holistic',
         headingLevel: 'h2',
+        layout: 'panel',
         marker: 'tick',
-        columns: '2',
         background: 'sea',
         items: HOLISTIC,
       },
       {
+        /*
+         * Twelve short labels. A panel set would read well and would be the
+         * page's THIRD, so it takes the compact tile instead — the cap is not
+         * a suggestion, and reference material is exactly what should give way
+         * when something has to.
+         */
         blockType: 'featureList',
         heading: 'Competitions held through the year',
+        accentWord: 'Competitions',
         headingLevel: 'h2',
+        layout: 'compact',
         marker: 'tick',
-        columns: '2-centre',
         background: 'white',
         items: COMPETITIONS,
       },

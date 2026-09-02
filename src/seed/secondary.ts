@@ -774,11 +774,18 @@ const main = async () => {
       },
 
       {
+        /*
+         * PANEL 2 OF 2 on this page — see docs/MASTER-LAYOUT.md §4. "A holistic
+         * approach" above is the first. Nine peers, each a claim a parent
+         * weighs rather than reference material, which is the test the handbook
+         * sets; the subject list keeps the compact tile because ten one-word
+         * labels are exactly what that layout exists for.
+         */
         blockType: 'featureList',
         heading: 'How we teach',
         accentWord: 'teach',
         headingLevel: 'h2',
-        layout: 'compact',
+        layout: 'panel',
         marker: 'tick',
         background: 'white',
         /*

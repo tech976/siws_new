@@ -948,11 +948,12 @@ const main = async () => {
       layout: [
         {
           blockType: 'featureList',
+          /* Five one-line labels — the compact tile's own case, §4. */
           heading: 'Subjects',
           accentWord: 'Subjects',
           headingLevel: 'h2',
+          layout: 'compact',
           marker: 'tick',
-          columns: '2-centre',
           background: 'white',
           items: [
             { title: 'English' },
@@ -1021,11 +1022,19 @@ const main = async () => {
         },
         {
           blockType: 'featureList',
+          /*
+           * PANEL 1 OF 1 on this page — docs/MASTER-LAYOUT.md §4.
+           *
+           * Six peers a parent scans. The Jr. KG and Sr. KG lists above keep
+           * their numbered list: those two ARE a sequence, and §4 is explicit
+           * that numbering is information rather than decoration only when the
+           * order carries something the reader needs. It does here.
+           */
           heading: 'Activities through the year',
           accentWord: 'Activities',
           headingLevel: 'h2',
+          layout: 'panel',
           marker: 'tick',
-          columns: '2-centre',
           background: 'tint',
           items: ACTIVITIES,
         },
@@ -1908,11 +1917,13 @@ const main = async () => {
         },
         {
           blockType: 'featureList',
+          /* PANEL 1 OF 1 on the admissions page. "How admission works" below
+             stays numbered — it is a real sequence. */
           heading: 'Timings and attendance',
           accentWord: 'Timings',
           headingLevel: 'h2',
+          layout: 'panel',
           marker: 'tick',
-          columns: '2-centre',
           background: 'white',
           items: [
             { title: 'Jr. KG', description: '11.00 a.m. to 1.00 p.m.' },
