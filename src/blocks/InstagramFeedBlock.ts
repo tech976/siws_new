@@ -53,6 +53,21 @@ export const InstagramFeedBlock: Block = {
       admin: { description: 'Shown under the heading, e.g. @siws_wadala' },
     },
     {
+      name: 'mode',
+      type: 'select',
+      defaultValue: 'profile',
+      label: 'Where the posts come from',
+      options: [
+        { label: 'Automatic — Instagram’s own profile feed', value: 'profile' },
+        { label: 'Chosen posts — paste a link per post', value: 'links' },
+        { label: 'Pictures uploaded here', value: 'manual' },
+      ],
+      admin: {
+        description:
+          '“Automatic” shows the account’s latest posts and updates itself — nothing to maintain. Choose one of the others only if you want to control exactly which posts appear.',
+      },
+    },
+    {
       name: 'postUrls',
       type: 'array',
       maxRows: 12,
@@ -60,8 +75,9 @@ export const InstagramFeedBlock: Block = {
       labels: { singular: 'Post link', plural: 'Post links' },
       admin: {
         initCollapsed: false,
+        condition: (_data, siblingData) => siblingData?.mode === 'links',
         description:
-          'THE EASY OPTION. Paste the address of each post — open it on Instagram and copy the address bar. Instagram itself supplies the picture, caption and likes, and keeps them up to date. Nothing else to set up.',
+          'Paste the address of each post — open it on Instagram and copy the address bar. Instagram supplies the picture, caption and likes, and keeps them current.',
       },
       fields: [
         {
@@ -91,8 +107,9 @@ export const InstagramFeedBlock: Block = {
       labels: { singular: 'Post', plural: 'Posts' },
       admin: {
         initCollapsed: true,
+        condition: (_data, siblingData) => siblingData?.mode === 'manual',
         description:
-          'Only needed if you are NOT using the post links above and NOT using the API connection. Pictures uploaded here are shown as a plain grid.',
+          'Pictures uploaded here are shown as a plain grid that links to Instagram.',
       },
       fields: [
         {
@@ -119,9 +136,28 @@ export const InstagramFeedBlock: Block = {
     },
     sectionOptions([
       {
+        name: 'display',
+        type: 'select',
+        defaultValue: 'grid',
+        label: 'How to show them',
+        options: [
+          { label: 'Grid — photographs, three across', value: 'grid' },
+          { label: 'Reels — the films, playing silently', value: 'reels' },
+        ],
+        admin: {
+          description:
+            'Reels plays the videos in place, muted, with a button on each to turn the sound on. It needs INSTAGRAM_ACCESS_TOKEN set: the film itself is only available through Instagram’s Graph API, and without a token the section can show a reel’s cover picture but cannot play it. See docs/INSTAGRAM.md.',
+        },
+      },
+      {
         name: 'count',
         type: 'select',
-        defaultValue: '6',
+        /*
+         * Nine, because the grid is three across and nine fills it exactly.
+         * Six leaves a half-empty third row, which reads as posts that failed
+         * to load rather than as a deliberate stop.
+         */
+        defaultValue: '9',
         label: 'How many posts to show',
         options: [
           { label: '3', value: '3' },

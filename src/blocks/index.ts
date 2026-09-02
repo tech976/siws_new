@@ -14,6 +14,7 @@ import { PhotoLibraryBlock } from './PhotoLibraryBlock'
 import { VideoGalleryBlock } from './VideoGalleryBlock'
 import { HeroBlock } from './HeroBlock'
 import { InstagramFeedBlock } from './InstagramFeedBlock'
+import { ReelShowcaseBlock } from './ReelShowcaseBlock'
 import { HeroCarouselBlock } from './HeroCarouselBlock'
 import { HeroMarqueeBlock } from './HeroMarqueeBlock'
 import { HeroEnquiryBlock } from './HeroEnquiryBlock'
@@ -63,6 +64,7 @@ export const contentBlocks: Block[] = [
   TestimonialsBlock,
   StatisticsBlock,
   InstagramFeedBlock,
+  ReelShowcaseBlock,
   UnitLinksBlock,
   CallToActionBlock,
   HeroEnquiryBlock,
@@ -88,6 +90,7 @@ export {
   HeroBlock,
   HeroEnquiryBlock,
   InstagramFeedBlock,
+  ReelShowcaseBlock,
   MapBlock,
   MediaTextBlock,
   RichTextBlock,

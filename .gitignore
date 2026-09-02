@@ -53,6 +53,7 @@ SIWS_School_Website_SRS_v2_ORIGINAL_backup.pdf
 # git history forever once added, and bloat every future clone).
 Sequence*.mp4
 public/hero/*.mp4
+public/reels/*.mp4
 
 # Records which commit this machine last built its database from, written by
 # `seed:refresh` and read by `seed:verify`. Local state — it describes THIS

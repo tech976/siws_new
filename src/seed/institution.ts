@@ -623,6 +623,43 @@ const main = async () => {
           },
         ],
       },
+      /*
+       * THE FILMS, DIRECTLY UNDER THE BANNER.
+       *
+       * The banner says the Society teaches from Kindergarten to postgraduate
+       * and asks the reader to read our story. This is the shortest possible
+       * answer to "what is it actually like" — three occasions, playing, before
+       * the page asks anybody to read anything.
+       *
+       * They live in `public/reels/` rather than the media library: the library
+       * builds a ladder of resized copies for every upload, which means nothing
+       * for a video and would write several more copies of a file this size.
+       * Same arrangement as the banner's own film.
+       */
+      {
+        blockType: 'reelShowcase',
+        heading: 'A year at SIWS, in motion',
+        accentWord: 'in motion',
+        headingLevel: 'h2',
+        background: 'tint',
+        reels: [
+          {
+            src: '/reels/commerce-day.mp4',
+            poster: '/reels/commerce-day.jpg',
+            label: 'Commerce Day at the Junior College',
+          },
+          {
+            src: '/reels/maths-activity.mp4',
+            poster: '/reels/maths-activity.jpg',
+            label: 'The Mathematics activity',
+          },
+          {
+            src: '/reels/ashadhi-ekadashi.mp4',
+            poster: '/reels/ashadhi-ekadashi.jpg',
+            label: 'Ashadhi Ekadashi on the campus',
+          },
+        ],
+      },
       schoolsSection('A seamless learning journey under one trusted institution.'),
       /*
        * Overview and History run as picture-beside-text, on alternating sides.
@@ -774,7 +811,32 @@ const main = async () => {
         background: 'tint',
         profileUrl: 'https://www.instagram.com/siws_wadala/',
         handle: '@siws_wadala',
+        /* Nine fills the three-across grid exactly; six leaves a gap. */
+        count: '9',
+        display: 'grid',
+      },
+      /*
+       * The reels, below the photographs.
+       *
+       * A separate section rather than a mode on the one above, because the
+       * two are different things to look at: the grid is what the school looks
+       * like and the rail is what it sounds like. Five, because they play at
+       * 9:16 and five portrait films is already a full band.
+       *
+       * It needs INSTAGRAM_ACCESS_TOKEN. Without one the films are not
+       * reachable — the public page gives covers only — and the section falls
+       * back to Instagram's own profile embed rather than an empty heading.
+       */
+      {
+        blockType: 'instagramFeed',
+        heading: 'SIWS in motion',
+        accentWord: 'motion',
+        headingLevel: 'h2',
+        background: 'white',
+        profileUrl: 'https://www.instagram.com/siws_wadala/',
+        handle: '@siws_wadala',
         count: '6',
+        display: 'reels',
       },
       {
         blockType: 'map',

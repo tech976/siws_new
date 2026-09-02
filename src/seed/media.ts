@@ -1397,6 +1397,140 @@ const IMAGES: ImageSeed[] = [
     caption: 'In traditional dress for the occasion',
     depictsChildren: true,
   },
+  /*
+   * THE KINDERGARTEN'S OWN PHOTOGRAPHS, sent by SIWS on 2026-09-02.
+   *
+   * Fourteen, from three working folders. They join the five sections the
+   * Kindergarten wall already has rather than adding new ones — twelve are the
+   * year's occasions, one is sports day and one is an activity, so they land
+   * in "Events and outings", "Sports" and "Play and activity".
+   *
+   * TWO ARRIVED UNDER NAMES THAT DESCRIBE SOMETHING ELSE. "arts.jpg" is the
+   * children dressed as Krishna for Janmashtami, not an art lesson; the three
+   * "banner" files are stage performances rather than anything to do with a
+   * page banner. Filed by what is in the frame, since a name is what somebody
+   * typed and the photograph is the evidence.
+   *
+   * Every one has children in it, so every one carries the consent flag.
+   */
+  {
+    file: 'kg-stage-performance.jpg',
+    filename: 'kg-stage-performance.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'Kindergarten children on stage in traditional Maharashtrian dress, lined up after their performance.',
+    caption: 'On stage in traditional dress',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-stage-performance-2.jpg',
+    filename: 'kg-stage-performance-2.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'Kindergarten children performing on stage at a school programme.',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-stage-performance-3.jpg',
+    filename: 'kg-stage-performance-3.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'A Kindergarten stage performance, the children in costume.',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-janmashtami-costumes.jpg',
+    filename: 'kg-janmashtami-costumes.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'Kindergarten children dressed as Krishna and Radha at their classroom tables for Janmashtami, several holding flutes.',
+    caption: 'Janmashtami in the Kindergarten',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-festival-1.jpg',
+    filename: 'kg-festival-1.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'A festival celebration in the Kindergarten.',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-festival-2.jpg',
+    filename: 'kg-festival-2.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'Kindergarten children at a festival celebration.',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-festival-3.jpg',
+    filename: 'kg-festival-3.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'A festival day in the Kindergarten section.',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-festival-4.jpg',
+    filename: 'kg-festival-4.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'Kindergarten children marking a festival together.',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-festival-5.jpg',
+    filename: 'kg-festival-5.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'A Kindergarten festival celebration.',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-festival-6.jpg',
+    filename: 'kg-festival-6.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'Kindergarten children at a festival programme.',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-dance-performance.jpg',
+    filename: 'kg-dance-performance.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'Kindergarten children dancing at a school performance.',
+    caption: 'A dance performance',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-fancy-dress.jpg',
+    filename: 'kg-fancy-dress.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'Kindergarten children in fancy dress for the competition.',
+    caption: 'The fancy dress competition',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-sports-race.jpg',
+    filename: 'kg-sports-race.jpg',
+    unit: 'kindergarten',
+    category: 'Sports',
+    alt: 'Kindergarten children taking part in a race on sports day.',
+    caption: 'On sports day',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-thumb-painting.jpg',
+    filename: 'kg-thumb-painting.jpg',
+    unit: 'kindergarten',
+    category: 'Play and activity',
+    alt: 'A Kindergarten child making a thumb painting.',
+    caption: 'Thumb painting',
+    depictsChildren: true,
+  },
 ]
 
 /*

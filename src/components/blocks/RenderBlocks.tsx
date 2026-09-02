@@ -18,6 +18,7 @@ import { HeroCarouselBlockView } from './HeroCarouselBlockView'
 import { HeroMarqueeBlockView } from './HeroMarqueeBlockView'
 import { HeroEnquiryBlockView } from './HeroEnquiryBlockView'
 import { InstagramFeedBlockView } from './InstagramFeedBlockView'
+import { ReelShowcaseBlockView } from './ReelShowcaseBlockView'
 import { LogoStripBlockView } from './LogoStripBlockView'
 import { MapBlockView } from './MapBlockView'
 import { MediaTextBlockView } from './MediaTextBlockView'
@@ -116,6 +117,8 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
             return <TestimonialsBlockView key={key} block={block} />
           case 'instagramFeed':
             return <InstagramFeedBlockView key={key} block={block} />
+          case 'reelShowcase':
+            return <ReelShowcaseBlockView key={key} block={block} />
           case 'statistics':
             return <StatisticsBlockView key={key} block={block} />
           case 'callToAction':

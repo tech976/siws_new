@@ -594,6 +594,7 @@ export interface Page {
         | TestimonialsBlock
         | StatisticsBlock
         | InstagramFeedBlock
+        | ReelShowcaseBlock
         | UnitLinksBlock
         | CallToActionBlock
         | HeroEnquiryBlock
@@ -2168,7 +2169,11 @@ export interface InstagramFeedBlock {
    */
   handle?: string | null;
   /**
-   * THE EASY OPTION. Paste the address of each post — open it on Instagram and copy the address bar. Instagram itself supplies the picture, caption and likes, and keeps them up to date. Nothing else to set up.
+   * “Automatic” shows the account’s latest posts and updates itself — nothing to maintain. Choose one of the others only if you want to control exactly which posts appear.
+   */
+  mode?: ('profile' | 'links' | 'manual') | null;
+  /**
+   * Paste the address of each post — open it on Instagram and copy the address bar. Instagram supplies the picture, caption and likes, and keeps them current.
    */
   postUrls?:
     | {
@@ -2180,7 +2185,7 @@ export interface InstagramFeedBlock {
       }[]
     | null;
   /**
-   * Only needed if you are NOT using the post links above and NOT using the API connection. Pictures uploaded here are shown as a plain grid.
+   * Pictures uploaded here are shown as a plain grid that links to Instagram.
    */
   posts?:
     | {
@@ -2207,6 +2212,10 @@ export interface InstagramFeedBlock {
    * Type a word from the heading to show it in SIWS accent.
    */
   accentWord?: string | null;
+  /**
+   * Reels plays the videos in place, muted, with a button on each to turn the sound on. It needs INSTAGRAM_ACCESS_TOKEN set: the film itself is only available through Instagram’s Graph API, and without a token the section can show a reel’s cover picture but cannot play it. See docs/INSTAGRAM.md.
+   */
+  display?: ('grid' | 'reels') | null;
   count?: ('3' | '6' | '9' | '12') | null;
   /**
    * Text colour adjusts automatically so it stays readable.
@@ -2215,6 +2224,51 @@ export interface InstagramFeedBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'instagramFeed';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ReelShowcaseBlock".
+ */
+export interface ReelShowcaseBlock {
+  /**
+   * Optional.
+   */
+  heading?: string | null;
+  /**
+   * Each film plays on its own, without sound, when it scrolls into view. A button on it turns the sound on, and turning one on turns the others off.
+   */
+  reels?:
+    | {
+        /**
+         * The path to an MP4 under public/, beginning with a slash — for example /reels/commerce-day.mp4. Compress it for the web first; these play on phones.
+         */
+        src: string;
+        /**
+         * The picture shown before the film starts, as a path under public/ — for example /reels/commerce-day.jpg. Without one the tile is blank until the film has loaded.
+         */
+        poster?: string | null;
+        /**
+         * A short line, read out to anyone who cannot see the film and printed under it. "Commerce Day", "The Mathematics activity".
+         */
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
+  /**
+   * Type a word from the heading to show it in SIWS accent.
+   */
+  accentWord?: string | null;
+  /**
+   * Text colour adjusts automatically so it stays readable.
+   */
+  background?: ('white' | 'sea' | 'tint' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'reelShowcase';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2770,6 +2824,7 @@ export interface PagesSelect<T extends boolean = true> {
         testimonials?: T | TestimonialsBlockSelect<T>;
         statistics?: T | StatisticsBlockSelect<T>;
         instagramFeed?: T | InstagramFeedBlockSelect<T>;
+        reelShowcase?: T | ReelShowcaseBlockSelect<T>;
         unitLinks?: T | UnitLinksBlockSelect<T>;
         callToAction?: T | CallToActionBlockSelect<T>;
         heroEnquiry?: T | HeroEnquiryBlockSelect<T>;
@@ -3406,6 +3461,7 @@ export interface InstagramFeedBlockSelect<T extends boolean = true> {
   heading?: T;
   profileUrl?: T;
   handle?: T;
+  mode?: T;
   postUrls?:
     | T
     | {
@@ -3422,7 +3478,28 @@ export interface InstagramFeedBlockSelect<T extends boolean = true> {
       };
   headingLevel?: T;
   accentWord?: T;
+  display?: T;
   count?: T;
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ReelShowcaseBlock_select".
+ */
+export interface ReelShowcaseBlockSelect<T extends boolean = true> {
+  heading?: T;
+  reels?:
+    | T
+    | {
+        src?: T;
+        poster?: T;
+        label?: T;
+        id?: T;
+      };
+  headingLevel?: T;
+  accentWord?: T;
   background?: T;
   id?: T;
   blockName?: T;
