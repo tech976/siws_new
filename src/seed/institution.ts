@@ -696,6 +696,30 @@ const main = async () => {
             },
           ]
         : []),
+      /*
+       * The Instagram grid.
+       *
+       * Sits after the gallery and before the map: it is the same kind of
+       * looking-at-pictures as the gallery above it, and putting the two
+       * together keeps 'Find us' as the last thing on the page, which is where
+       * a visitor expects an address.
+       *
+       * No `posts` are seeded. The block shows live posts once
+       * INSTAGRAM_ACCESS_TOKEN is set, and renders nothing at all until then —
+       * which is the right empty state here, because seeding stand-in
+       * photographs would put pictures on the front page that claim to be
+       * recent Instagram posts and are not.
+       */
+      {
+        blockType: 'instagramFeed',
+        heading: 'Life at SIWS',
+        accentWord: 'SIWS',
+        headingLevel: 'h2',
+        background: 'tint',
+        profileUrl: 'https://www.instagram.com/siws_wadala/',
+        handle: '@siws_wadala',
+        count: '6',
+      },
       {
         blockType: 'map',
         heading: 'Find us',

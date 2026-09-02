@@ -1010,3 +1010,75 @@ Before a page is considered done:
 - [ ] No horizontal overflow at 390px.
 - [ ] At most **two** panel sections; at most **one** CTA banner.
 
+---
+
+## 22. The type scale — the parent that governs the site
+
+Added 2026-09-02, after an audit found **33 different text sizes** across
+`src/components`, 22 of them arbitrary one-offs (`text-[0.9375rem]`,
+`text-[1.02rem]`, `text-[2.9rem]`). That is not a scale; it is 33 separate
+decisions taken at 33 moments, and it was the whole reason the site read as
+inconsistent page to page.
+
+### The rule
+
+> **A component picks a ROLE, never a size.**
+> `.t-body`, never `text-[0.95rem]`.
+
+One edit in `globals.css` now changes the whole website. It is also what makes
+the accessibility bar's text-size control work uniformly — anything hardcoded
+was previously immune to it.
+
+### The roles
+
+| Role | Size | For |
+|---|---|---|
+| `.t-display` | clamp 40 → 64 | Page and banner titles |
+| `.t-h1` | clamp 34 → 48 | Page heading |
+| `.t-h2` | clamp 28 → 36 | Section heading |
+| `.t-h3` | clamp 20 → 24 | Sub-heading |
+| `.t-h4` | 18 | Card title |
+| `.t-lead` | clamp 17 → 20 | Standfirst |
+| `.t-body` | 16 | Body copy |
+| `.t-small` | 14 | Secondary text |
+| `.t-caption` | 13 | Captions |
+| `.t-label` | 12, tracked, uppercase | Eyebrows, chips |
+| `.t-figure` | clamp 40 → 60, tabular | Statistics |
+| `.t-index` | 13, tabular | Step numbers |
+
+Every size is `rem` and clamped, so it scales with the viewport without a media
+query and honours the reader's own font setting (WCAG 2.1 SC 1.4.4).
+
+### Alignment: centred headings, justified body
+
+The brief asked for both. **They cannot apply to the same element** —
+justification stretches word-spacing until both edges are flush; centring
+deliberately leaves both ragged. So the rule splits by role:
+
+| | Alignment |
+|---|---|
+| Headings | Centred, `text-wrap: balance`, never justified |
+| Body (`.t-prose`) | Justified with `hyphens: auto`, capped at 68ch |
+| Body below 640px | Falls back to ranged left |
+
+**Justification without hyphenation is the failure to avoid.** On a narrow
+measure the justifier stretches three words across the full width and opens
+rivers of white down the paragraph, so the two are always set together. Below
+640px justification is switched off entirely — the measure is too narrow for
+good break points and the result is worse than a ragged edge.
+
+### Migration record
+
+| | Before | After |
+|---|---|---|
+| Distinct sizes in components | 33 | **0 arbitrary** |
+| Sizes per rendered page | ~20 | **8–11, all from the scale** |
+| Files converted | — | 19 |
+
+**One automated attempt was reverted.** A regex sweep stripped the sizes but
+did not insert the replacement roles, leaving 18 files rendering at browser
+default. It was caught in verification and rolled back. The conversion has to
+place the role inside the right `className` — it cannot be done by deletion
+alone. Anyone repeating this work should convert file by file and check the
+computed `font-size` in the browser afterwards, not just that the build passes.
+

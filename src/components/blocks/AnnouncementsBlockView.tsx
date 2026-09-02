@@ -93,12 +93,12 @@ export const AnnouncementsBlockView = ({ block }: { block: AnnouncementsBlock })
                       <CMSLink
                         link={link}
                         overrideClassName
-                        className="text-[0.98rem] leading-relaxed font-medium text-brand underline decoration-accent-deep decoration-2 underline-offset-4 hover:text-brand-deep"
+                        className="t-small leading-relaxed font-medium text-brand underline decoration-accent-deep decoration-2 underline-offset-4 hover:text-brand-deep"
                       >
                         {item.title}
                       </CMSLink>
                     ) : (
-                      <p className="text-[0.98rem] leading-relaxed font-medium text-brand">
+                      <p className="t-small leading-relaxed font-medium text-brand">
                         {item.title}
                       </p>
                     )}

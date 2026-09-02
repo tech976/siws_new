@@ -120,7 +120,7 @@ export const BentoCard = ({
           {photo.category}
         </span>
         {photo.caption ? (
-          <span className="mt-1 block text-[0.9375rem] leading-snug font-medium text-balance text-white">
+          <span className="mt-1 block t-small leading-snug font-medium text-balance text-white">
             {photo.caption}
           </span>
         ) : null}

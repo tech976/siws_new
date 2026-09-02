@@ -100,13 +100,13 @@ export const HeroMarqueeBlockView = ({ block }: { block: HeroMarqueeBlock }) => 
             onto white.
           */}
           {block.subtitle ? (
-            <p className="mx-auto mt-5 max-w-3xl text-center text-xl leading-snug font-semibold text-balance sm:text-[1.625rem]">
+            <p className="mx-auto mt-5 max-w-3xl text-center text-xl leading-snug font-semibold text-balance">
               {block.subtitle}
             </p>
           ) : null}
 
           {block.intro ? (
-            <p className="mx-auto mt-4 max-w-2xl text-center text-[0.9375rem] leading-relaxed text-balance text-ink-muted sm:text-[1.0625rem]">
+            <p className="mx-auto mt-4 max-w-2xl text-center t-small leading-relaxed text-balance text-ink-muted">
               {block.intro}
             </p>
           ) : null}
@@ -158,7 +158,7 @@ export const HeroMarqueeBlockView = ({ block }: { block: HeroMarqueeBlock }) => 
         */}
         {block.subtitle ? (
           <p
-            className="siws-hero-rise mx-auto mt-5 max-w-3xl text-xl leading-snug font-semibold text-balance text-white sm:text-[1.625rem]"
+            className="siws-hero-rise mx-auto mt-5 max-w-3xl text-xl leading-snug font-semibold text-balance text-white"
             style={{ animationDelay: '150ms' }}
           >
             {block.subtitle}
@@ -167,7 +167,7 @@ export const HeroMarqueeBlockView = ({ block }: { block: HeroMarqueeBlock }) => 
 
         {block.intro ? (
           <p
-            className="siws-hero-rise mx-auto mt-4 max-w-2xl text-[0.9375rem] leading-relaxed font-normal text-balance text-white/75 sm:text-[1.0625rem]"
+            className="siws-hero-rise mx-auto mt-4 max-w-2xl t-small leading-relaxed font-normal text-balance text-white/75"
             style={{ animationDelay: '230ms' }}
           >
             {block.intro}

@@ -1172,3 +1172,140 @@ main > header + section[data-ground]:not([data-ground='white']) {
     animation: none;
   }
 }
+
+/* ==========================================================================
+   THE TYPE SCALE  —  the one place a font size is decided
+   See docs/MASTER-LAYOUT.md.
+
+   WHY THIS EXISTS. An audit on 2026-09-02 found THIRTY-THREE different text
+   sizes across src/components, twenty-two of them arbitrary one-offs:
+   text-[0.9375rem], text-[1.0625rem], text-[1.02rem], text-[0.92rem],
+   text-[2.9rem]. That is not a type scale, it is thirty-three separate
+   decisions taken at thirty-three different moments, and it is the whole
+   reason the site reads as inconsistent from page to page. Six components
+   were also carrying raw hex — #c9832f, #b02330, #8fc2ea — colours that are
+   not in the SIWS palette at all.
+
+   HOW TO USE IT. A component picks a ROLE, never a size. `.t-body` not
+   `text-[0.95rem]`. When the school wants everything a notch larger, that is
+   one edit here rather than thirty-three across the codebase — which is the
+   entire point, and is also what makes the accessibility bar's text-size
+   control work uniformly instead of missing whatever was hardcoded.
+
+   Sizes use clamp() so they scale with the viewport without a media query,
+   and every one is expressed in rem so the reader's own font-size setting is
+   honoured (WCAG 2.1 SC 1.4.4).
+   ========================================================================== */
+
+@layer components {
+  /* --- Display: page and banner titles ------------------------------- */
+  .t-display {
+    font-family: var(--font-display), 'Montserrat', system-ui, sans-serif;
+    font-size: clamp(2.5rem, 1.8rem + 3vw, 4rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+
+  /* --- Headings ------------------------------------------------------- */
+  .t-h1 { font-size: clamp(2.125rem, 1.55rem + 2.4vw, 3rem); line-height: 1.08; letter-spacing: -0.015em; }
+  .t-h2 { font-size: clamp(1.75rem, 1.5rem + 1vw, 2.25rem);  line-height: 1.15; letter-spacing: -0.01em; }
+  .t-h3 { font-size: clamp(1.25rem, 1.15rem + 0.4vw, 1.5rem); line-height: 1.25; }
+  .t-h4 { font-size: 1.125rem; line-height: 1.35; font-weight: 600; }
+
+  /* --- Body ----------------------------------------------------------- */
+  .t-lead  { font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem); line-height: 1.6; }
+  .t-body  { font-size: 1rem;     line-height: 1.65; }
+  .t-small { font-size: 0.875rem; line-height: 1.55; }
+
+  /* --- Utility: labels, chips, captions -------------------------------- */
+  .t-label {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .t-caption { font-size: 0.8125rem; line-height: 1.5; }
+
+  /* --- Numerals: figures, step numbers --------------------------------
+     Tabular so a column of numbers aligns on its digits, and tight so a
+     four-figure year does not sprawl. */
+  .t-figure {
+    font-size: clamp(2.5rem, 2rem + 2vw, 3.75rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .t-index {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ==========================================================================
+   ALIGNMENT  —  centred headings, justified body
+   See docs/MASTER-LAYOUT.md §12.
+
+   THE TWO CANNOT BE THE SAME THING, which is worth stating because the brief
+   asked for both. `text-align: justify` works by stretching the spaces between
+   words until both edges are flush; centring deliberately leaves both edges
+   ragged. Applied to one element the second cancels the first. So the rule is
+   split by ROLE, which is what was actually wanted:
+
+     headings   centred, balanced, never justified
+     body       justified with hyphenation, ranged from a fixed left edge
+
+   Justification without hyphenation is the failure mode to avoid: on a narrow
+   measure the justifier stretches three words across the full width and opens
+   rivers of white straight down the paragraph. `hyphens: auto` lets it break
+   words instead, which is why the two are always set together here.
+   ========================================================================== */
+
+@layer components {
+  /* Every section heading, whatever block drew it. */
+  :is(h1, h2, h3) :where(.t-display, .t-h1, .t-h2, .t-h3),
+  .t-display, .t-h1, .t-h2, .t-h3 {
+    text-wrap: balance;
+  }
+
+  /* The section-heading shell centres; `mx-auto` matters as much as the
+     alignment, or the element still fills the row and only its glyphs move. */
+  .siws-section-heading {
+    margin-inline: auto;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  /*
+    Body copy: justified, hyphenated, and capped at a comfortable measure.
+    Applied through a class rather than to `p` so a caption, a chip or a table
+    cell is not dragged into it — justifying a two-word label does nothing but
+    stretch it.
+  */
+  .t-prose {
+    text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    max-width: 68ch;
+  }
+
+  /* A justified column still centres as a BLOCK under a centred heading. */
+  .t-prose-centred {
+    margin-inline: auto;
+  }
+
+  /*
+    Justification is switched off below the point where it stops working.
+    On a phone the measure is too narrow for the justifier to find good break
+    points, and the result is worse than a ragged edge.
+  */
+  @media (max-width: 40rem) {
+    .t-prose {
+      text-align: left;
+    }
+  }
+}
+

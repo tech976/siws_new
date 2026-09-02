@@ -176,12 +176,12 @@ export const UnitLinksBlockView = ({
               */}
               <span
                 aria-hidden="true"
-                className="mb-3 block text-[2rem] leading-none font-bold tabular-nums text-brand/15 lg:mb-4 lg:text-[2.75rem]"
+                className="t-figure mb-3 block font-bold text-brand/15 lg:mb-4"
               >
                 {String(index + 1).padStart(2, '0')}
               </span>
 
-              <h3 className="text-[1.4rem] leading-tight font-bold tracking-tight text-brand lg:text-[1.55rem]">
+              <h3 className="t-h3 font-bold text-brand">
                 {/*
                   The overlay makes the whole stage clickable while keeping the
                   accessible name to just the school.
@@ -195,7 +195,7 @@ export const UnitLinksBlockView = ({
               </h3>
 
               {stage?.gradeRange ? (
-                <p className="mt-1.5 text-[0.9375rem] font-semibold text-ink-muted">
+                <p className="t-small mt-1.5 font-semibold text-ink-muted">
                   {stage.gradeRange}
                 </p>
               ) : null}
@@ -205,7 +205,7 @@ export const UnitLinksBlockView = ({
                 written one yet.
               */}
               {stage?.blurb || unit.tagline ? (
-                <p className="mt-4 text-[1.02rem] leading-relaxed text-ink-soft">
+                <p className="t-body mt-4 text-ink-soft">
                   {stage?.blurb ?? unit.tagline}
                 </p>
               ) : null}
@@ -230,7 +230,7 @@ export const UnitLinksBlockView = ({
                         They take the school's own colour at a tenth instead,
                         so they still read as set into the card.
                       */
-                      className="rounded-pill px-3 py-1.5 text-[0.78rem] font-semibold text-ink-soft"
+                      className="t-caption rounded-pill px-3 py-1.5 font-semibold text-ink-soft"
                       style={{ backgroundColor: pastel(colour, 0.12) }}
                     >
                       {tag}
@@ -241,7 +241,7 @@ export const UnitLinksBlockView = ({
 
               <span
                 aria-hidden="true"
-                className="mt-auto inline-flex items-center gap-1.5 pt-7 text-[0.9375rem] font-semibold"
+                className="t-small mt-auto inline-flex items-center gap-1.5 pt-7 font-semibold"
                 style={{ color: colour }}
               >
                 Visit site

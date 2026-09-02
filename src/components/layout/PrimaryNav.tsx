@@ -54,6 +54,16 @@ interface PrimaryNavProps {
 export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => {
   const [open, setOpen] = useState(false)
   const [openMenu, setOpenMenu] = useState<string | null>(null)
+  /*
+    Which side the open drop-down hangs from. Empty means the default,
+    left-aligned under its trigger.
+
+    Needed only because the menu wraps now. On one line every trigger sat well
+    left of the container's right edge and a `left-0` panel always fitted; on
+    a second row an item can sit hard against that edge, and its 17rem panel
+    then ran off the viewport and took the horizontal scrollbar with it.
+  */
+  const [flipped, setFlipped] = useState(false)
   const [expanded, setExpanded] = useState<string | null>(null)
   const pathname = usePathname()
   const panelRef = useRef<HTMLDivElement>(null)
@@ -93,6 +103,26 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
       document.removeEventListener('pointerdown', onPointerDown)
     }
   }, [open])
+
+  /*
+    Decide which edge the panel hangs from, once, as it opens.
+
+    Measured rather than guessed from the item's index: the menu wraps, so
+    which trigger ends a row depends on the viewport width and on how long
+    that section's labels happen to be. `min-w-68` is 17rem, and if the
+    trigger's left edge leaves less than that before the viewport's right
+    edge, the panel is anchored right instead.
+  */
+  useEffect(() => {
+    if (!openMenu) return
+    const trigger = navRef.current?.querySelector<HTMLElement>(
+      `[data-menu="${CSS.escape(openMenu)}"]`,
+    )
+    if (trigger) {
+      const PANEL_WIDTH = 17 * 16
+      setFlipped(trigger.getBoundingClientRect().left + PANEL_WIDTH > window.innerWidth - 16)
+    }
+  }, [openMenu])
 
   useEffect(() => {
     if (!openMenu) return
@@ -141,8 +171,59 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
    */
   return (
     <>
+      {/*
+        WRAPS ONTO A SECOND ROW RATHER THAN OVERFLOWING.
+
+        This was `flex` with no wrap, which is fine for the seven-item menus
+        and wrong for the long ones. Kindergarten publishes thirteen top-level
+        pages — Admissions FAQ, Facilities & Campus, Campus Gallery, Academics,
+        Teachers, About, Admissions, Updates, Contact, News & Events,
+        Achievements, Student Life, Parent Feedback — and on one line they
+        measure well past the 1160px container, so the row grew until the
+        header was taller than the content beneath it and the page scrolled
+        sideways.
+
+        The menu FLOWS AROUND the enquiry cluster rather than sitting in a
+        narrow column beside it. `float` on a sibling spacer is what does it.
+
+        Three approaches, in the order they were tried:
+
+        `basis-full` put the menu on its own full-width line — but that pushed
+        Quick links and the enquiry button onto a row of their own well beneath
+        the links, and the call to action read as an afterthought. That is the
+        arrangement SIWS objected to on 2026-09-02.
+
+        `flex-1` fixed the alignment and cost width: confined to the ~55% left
+        of the cluster, thirteen items needed THREE rows and stranded "Parent
+        Feedback" alone on the last, with the space under the buttons unusable.
+
+        So the nav spans the full width as a block, and a floated spacer of the
+        cluster's exact size reserves its corner. Inline-block items wrap
+        around that float: row one stops short at the buttons, row two onward
+        runs the full container. Thirteen items fit in two rows again AND the
+        cluster stays level with the first line of links.
+
+        The spacer floats rather than the cluster itself because the cluster
+        has to stay after the nav in source order — the mobile drawer is its
+        sibling and depends on that.
+      */}
       {items.length > 0 ? (
-        <nav ref={navRef} aria-label="Main" className="hidden items-center gap-0.5 min-[1200px]:flex">
+        <nav
+          ref={navRef}
+          aria-label="Main"
+          className="hidden gap-x-0.5 gap-y-1 min-[1200px]:block min-[1200px]:basis-full [&>*]:align-middle min-[1200px]:[&>*]:inline-block"
+        >
+          {/*
+            Reserves the top-right corner for Quick links + the enquiry
+            button. Width is generous enough for the longest CTA label
+            ("Enquire about admission") plus Quick links and their gap;
+            height matches the 48px control row so only the first line of
+            links is shortened.
+          */}
+          <div
+            aria-hidden="true"
+            className="float-right h-12 w-[19.5rem] min-[1200px]:block"
+          />
           {items.map((item) => {
             const hasChildren = (item.children?.length ?? 0) > 0
 
@@ -225,7 +306,9 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
                 {isOpen ? (
                   <div
                     id={`menu-${item.href}`}
-                    className="absolute left-0 top-full z-50 min-w-68 rounded-b-xl border-t-4 border-accent bg-white py-2 shadow-raised"
+                    className={`absolute top-full z-50 min-w-68 rounded-b-xl border-t-4 border-accent bg-white py-2 shadow-raised ${
+                      flipped ? 'right-0' : 'left-0'
+                    }`}
                   >
                     <ul>
                       {/*
@@ -263,13 +346,23 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
       ) : null}
 
       {/*
-        `shrink-0` on this cluster is what pushed the header past the viewport
-        below 1400px: the enquiry button alone is 233px and could not give any
-        of it back, so the row simply grew and the whole page scrolled
-        sideways. It may shrink now, and the CTA truncates rather than forcing
-        the overflow.
+        THE CLUSTER HOLDS THE FIRST LINE, at its natural width.
+
+        `self-start` is what puts it level with row one of the menu. Without
+        it a two-row menu stretches this band and `items-center` floats the
+        cluster against the middle of both rows, which is what made the
+        enquiry button look like it was sitting too far down.
+
+        `shrink-0` is back, and it is safe now in a way it was not before.
+        The note that used to be here was right that an unshrinkable 233px
+        button pushed the header past the viewport below 1400px — but that was
+        when the menu could not wrap and the two fought over one line. The nav
+        beside it is now `flex-1 min-w-0`, so it yields the width instead and
+        wraps its own items. That makes the cluster the fixed element and the
+        menu the flexible one, which is the right way round: the CTA keeps its
+        full label rather than truncating mid-word, and the links reflow.
       */}
-      <div className="ml-auto flex min-w-0 items-center gap-2 sm:gap-3">
+      <div className="ml-auto flex min-w-0 shrink-0 items-center gap-2 self-start sm:gap-3 min-[1200px]:absolute min-[1200px]:top-2.5 min-[1200px]:right-5">
         <QuickLinks links={quickLinks} />
 
         {cta ? (

@@ -152,13 +152,13 @@ export const LightboxModal = ({
             </div>
 
             {photo.caption ? (
-              <p className="mt-5 text-[1.05rem] leading-relaxed font-medium text-brand">
+              <p className="mt-5 t-body leading-relaxed font-medium text-brand">
                 {photo.caption}
               </p>
             ) : null}
 
             {photo.detail ? (
-              <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-soft">{photo.detail}</p>
+              <p className="mt-3 t-small leading-relaxed text-ink-soft">{photo.detail}</p>
             ) : null}
 
             {/*
@@ -168,7 +168,7 @@ export const LightboxModal = ({
               part that says what is actually happening.
             */}
             {photo.media.alt && photo.media.alt !== photo.caption ? (
-              <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-soft">
+              <p className="mt-3 t-small leading-relaxed text-ink-soft">
                 {photo.media.alt}
               </p>
             ) : null}

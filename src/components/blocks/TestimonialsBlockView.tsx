@@ -25,7 +25,7 @@ const Card = ({ entry, showAttribution }: { entry: Entry; showAttribution: boole
       added by the `“”` below rather than being typed into the CMS — so an
       editor cannot end up with doubled quotes.
     */}
-    <blockquote className="mt-3 flex-1 text-[1.02rem] leading-relaxed text-ink-soft">
+    <blockquote className="mt-3 flex-1 t-body leading-relaxed text-ink-soft">
       &ldquo;{entry.quote}&rdquo;
     </blockquote>
 

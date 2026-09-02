@@ -205,7 +205,7 @@ const FeatureShowcase = ({ block }: { block: FeatureListBlock }) => {
               ) : null}
 
               <div className="flex flex-1 flex-col items-center justify-center gap-2 px-5 py-6 text-center">
-                <CardTitle className="text-[1.125rem] leading-snug font-bold text-balance text-brand">
+                <CardTitle className="t-h4 font-bold text-balance text-brand">
                   {item.title}
                 </CardTitle>
                 {item.description ? (
@@ -358,7 +358,7 @@ const FeaturePanel = ({ block }: { block: FeatureListBlock }) => {
   return (
     <Section background={block.background as BlockBackground}>
       {block.eyebrow ? (
-        <p className="mx-auto mb-5 flex w-fit items-center gap-2.5 rounded-full bg-white px-5 py-2 text-[0.8rem] font-semibold tracking-[0.12em] text-brand uppercase ring-1 ring-line">
+        <p className="mx-auto mb-5 flex w-fit items-center gap-2.5 rounded-full bg-white px-5 py-2 t-label text-brand uppercase ring-1 ring-line">
           <Heart aria-hidden="true" size={15} strokeWidth={2.4} fill="currentColor" />
           {block.eyebrow}
         </p>
@@ -421,7 +421,7 @@ const FeaturePanel = ({ block }: { block: FeatureListBlock }) => {
                     {item.title}
                   </ItemTitle>
                   {item.chip ? (
-                    <span className="rounded-full border border-line px-2.5 py-0.5 text-[0.65rem] font-semibold tracking-[0.12em] text-ink-muted uppercase">
+                    <span className="rounded-full border border-line px-2.5 py-0.5 t-label text-ink-muted uppercase">
                       {item.chip}
                     </span>
                   ) : null}
@@ -466,7 +466,7 @@ const FeatureCompact = ({ block }: { block: FeatureListBlock }) => {
   return (
     <Section background={block.background as BlockBackground}>
       {block.eyebrow ? (
-        <p className="mx-auto mb-5 flex w-fit items-center gap-2.5 rounded-full bg-white px-5 py-2 text-[0.8rem] font-semibold uppercase tracking-[0.12em] text-brand ring-1 ring-line">
+        <p className="mx-auto mb-5 flex w-fit items-center gap-2.5 rounded-full bg-white px-5 py-2 t-label text-brand ring-1 ring-line">
           <Heart aria-hidden="true" size={15} strokeWidth={2.4} fill="currentColor" />
           {block.eyebrow}
         </p>
@@ -586,7 +586,7 @@ const FeatureCards = ({ block }: { block: FeatureListBlock }) => {
   return (
     <Section background={block.background as BlockBackground}>
       {block.eyebrow ? (
-        <p className="mx-auto mb-5 flex w-fit items-center gap-2.5 rounded-full bg-white px-5 py-2 text-[0.8rem] font-semibold uppercase tracking-[0.12em] text-brand ring-1 ring-line">
+        <p className="mx-auto mb-5 flex w-fit items-center gap-2.5 rounded-full bg-white px-5 py-2 t-label text-brand ring-1 ring-line">
           <Heart aria-hidden="true" size={15} strokeWidth={2.4} fill="currentColor" />
           {block.eyebrow}
         </p>
@@ -689,7 +689,7 @@ const FeatureCards = ({ block }: { block: FeatureListBlock }) => {
                     <div className="flex items-start gap-3">
                       <span
                         aria-hidden="true"
-                        className={`grid size-9 shrink-0 place-items-center rounded-full text-[0.92rem] font-bold leading-none text-white tabular-nums ${tint.accent}`}
+                        className={`grid size-9 shrink-0 place-items-center rounded-full t-index font-bold text-white tabular-nums ${tint.accent}`}
                       >
                         {index + 1}
                       </span>
@@ -704,7 +704,7 @@ const FeatureCards = ({ block }: { block: FeatureListBlock }) => {
                     />
 
                     {item.description ? (
-                      <p className="ml-12 mt-2.5 text-[0.92rem] leading-relaxed text-ink-soft">
+                      <p className="ml-12 mt-2.5 t-small text-ink-soft">
                         {item.description}
                       </p>
                     ) : null}
@@ -788,7 +788,7 @@ const FeatureCards = ({ block }: { block: FeatureListBlock }) => {
                     />
 
                     {item.description ? (
-                      <p className="mt-3 text-[0.92rem] leading-relaxed text-ink-soft">
+                      <p className="mt-3 t-small text-ink-soft">
                         {item.description}
                       </p>
                     ) : null}
@@ -859,7 +859,7 @@ const FeatureCards = ({ block }: { block: FeatureListBlock }) => {
                    * centred card, where ranging left would instead leave the
                    * text visibly hanging off the icon above it.
                    */
-                  <p className="mt-2.5 text-pretty text-[0.95rem] leading-relaxed text-ink-soft">
+                  <p className="mt-2.5 text-pretty t-small text-ink-soft">
                     {item.description}
                   </p>
                 ) : null}
@@ -870,7 +870,7 @@ const FeatureCards = ({ block }: { block: FeatureListBlock }) => {
       </List>
 
       {block.footnote ? (
-        <p className="mx-auto mt-8 flex w-fit items-center gap-3 rounded-full bg-white px-6 py-3 text-center text-[0.95rem] text-ink-soft ring-1 ring-line">
+        <p className="mx-auto mt-8 flex w-fit items-center gap-3 rounded-full bg-white px-6 py-3 text-center t-small text-ink-soft ring-1 ring-line">
           <span
             aria-hidden="true"
             className="grid size-8 shrink-0 place-items-center rounded-full bg-brand text-white"
@@ -940,7 +940,7 @@ const Item = ({
       {numbered ? index + 1 : Icon ? <Icon size={16} strokeWidth={2.1} /> : <Check size={16} strokeWidth={3} />}
     </span>
     <span>
-      <strong className="block text-[1.05rem] leading-7 text-brand">{item.title}</strong>
+      <strong className="block t-body text-brand">{item.title}</strong>
       {/*
         8px, not 4. A title and its explanation were nearly touching, which
         made each point read as one run-on line instead of a heading and a

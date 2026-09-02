@@ -194,7 +194,7 @@ export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
               <h2 className="text-lg font-bold text-white [font-family:var(--font-body)]">
                 {column.heading}
               </h2>
-              <ul className="mt-4 space-y-2.5 text-[0.95rem]">
+              <ul className="mt-4 space-y-2.5 t-small">
                 {column.links.map((link) => (
                   <li key={link.href}>
                     <Link
@@ -233,7 +233,7 @@ export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
               <h2 className="text-lg font-bold text-white [font-family:var(--font-body)]">
                 Contact us
               </h2>
-              <address className="mt-4 space-y-3 text-[0.95rem] not-italic text-white/90">
+              <address className="mt-4 space-y-3 t-small not-italic text-white/90">
                 {addressLines.length > 0 ? (
                   <p>
                     {addressLines.map((line) => (
@@ -274,7 +274,7 @@ export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
             <h2 className="text-lg font-bold text-white [font-family:var(--font-body)]">
               About SIWS
             </h2>
-            <p className="mt-4 text-[0.95rem] leading-relaxed text-white/90">
+            <p className="mt-4 t-small leading-relaxed text-white/90">
               South Indians&rsquo; Welfare Society is a trusted educational institution in Wadala
               since 1934, committed to value-based, disciplined and structured learning.
             </p>

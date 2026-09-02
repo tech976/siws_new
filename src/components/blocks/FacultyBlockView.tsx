@@ -117,7 +117,7 @@ export const FacultyBlockView = async ({
   /** Name, role and qualifications. */
   const details = (teacher: (typeof teachers)[number]) => (
     <span className="min-w-0">
-      <strong className="block text-[1.02rem] leading-snug text-brand">{teacher.name}</strong>
+      <strong className="block t-body leading-snug text-brand">{teacher.name}</strong>
 
       {teacher.designation ? (
         <span className="mt-0.5 block text-sm font-semibold text-ink-soft">

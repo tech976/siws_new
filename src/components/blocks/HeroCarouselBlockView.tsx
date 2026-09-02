@@ -101,7 +101,7 @@ export const HeroCarouselBlockView = ({ block }: { block: HeroCarouselBlock }) =
 
                     {slide.caption ? (
                       <p
-                        className={`text-sm leading-relaxed text-ink-soft sm:text-[0.95rem] ${
+                        className={`text-sm leading-relaxed text-ink-soft  ${
                           slide.title ? 'mt-2' : ''
                         }`}
                       >

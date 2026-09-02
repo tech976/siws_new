@@ -66,7 +66,7 @@ export const VideoGalleryBlockView = ({ block }: { block: VideoGalleryBlock }) =
               <div className="flex flex-1 flex-col p-5">
                 <h3 className="card-title font-semibold text-brand">{item.title}</h3>
                 {item.description ? (
-                  <p className="mt-1.5 text-[0.9375rem] leading-snug text-ink-soft">
+                  <p className="mt-1.5 t-small leading-snug text-ink-soft">
                     {item.description}
                   </p>
                 ) : null}

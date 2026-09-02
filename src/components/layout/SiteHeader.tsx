@@ -111,12 +111,22 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
           {/*
             WRAPS RATHER THAN SQUASHES. A unit with nine top-level items
             (Primary) left the enquiry button 83px wide, truncated mid-word,
-            while a unit with seven (Kindergarten) gave it 224px. The row now
+            while a unit with seven (Kindergarten) gave it 224px. The row
             drops the controls to a second line when the menu is long, so the
             call to action is readable on every section instead of only the
             short ones.
+
+            Since 2026-09-02 the menu itself also wraps internally — see
+            `PrimaryNav` — because Kindergarten now publishes thirteen
+            top-level pages and no single line holds them.
+
+            `items-start` at every width, so the enquiry cluster sits level
+            with the FIRST row of links. It was `items-center` up to 1200px,
+            which centred that cluster against the full height of a two-row
+            menu and left the enquiry button floating well below the links it
+            belongs beside — the thing SIWS flagged on 2026-09-02.
           */}
-          <div className="siws-container flex flex-wrap items-center gap-x-4 gap-y-2 py-2.5">
+          <div className="siws-container flex flex-wrap items-start gap-x-4 gap-y-2 py-2.5">
             <PrimaryNav items={navItems} quickLinks={quickLinks} cta={cta} />
           </div>
         </div>

@@ -78,7 +78,7 @@ export const GalleryHeader = ({
               tabIndex={selected ? 0 : -1}
               onClick={() => onChange(tab.key)}
               className={[
-                'inline-flex min-h-11 items-center gap-2 rounded-pill px-5 py-2.5 text-[0.9375rem] font-semibold transition-colors duration-200',
+                'inline-flex min-h-11 items-center gap-2 rounded-pill px-5 py-2.5 t-small font-semibold transition-colors duration-200',
                 selected
                   ? // Brand yellow for the one in force. It is the only place on
                     // the page the accent is used as a fill, so the eye finds

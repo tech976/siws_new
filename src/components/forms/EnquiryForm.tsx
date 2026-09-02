@@ -124,7 +124,7 @@ export const EnquiryForm = ({
       {state.status === 'error' && state.message ? (
         <p
           role="alert"
-          className="rounded-2xl bg-[#ffe8ea] px-5 py-3.5 text-[0.95rem] font-medium text-[#b02330]"
+          className="rounded-2xl bg-[#ffe8ea] px-5 py-3.5 t-small font-medium text-[#b02330]"
         >
           {state.message}
         </p>
@@ -248,7 +248,7 @@ export const EnquiryForm = ({
         behind a link, so the parent reads it before they consent rather than
         after.
       */}
-      <details className="rounded-2xl bg-sea-soft px-5 py-3.5 text-[0.9rem]">
+      <details className="rounded-2xl bg-sea-soft px-5 py-3.5 t-small">
         <summary className="cursor-pointer font-semibold text-brand">
           How we will use your details
         </summary>
@@ -338,7 +338,7 @@ const Field = ({
   className,
 }: FieldProps) => (
   <div>
-    <label htmlFor={name} className="mb-2 block text-[0.9rem] font-semibold text-brand">
+    <label htmlFor={name} className="mb-2 block t-small font-semibold text-brand">
       {label} {required ? <Required /> : null}
     </label>
     <input

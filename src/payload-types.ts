@@ -588,6 +588,7 @@ export interface Page {
         | LogoStripBlock
         | TestimonialsBlock
         | StatisticsBlock
+        | InstagramFeedBlock
         | UnitLinksBlock
         | CallToActionBlock
         | HeroEnquiryBlock
@@ -2036,6 +2037,60 @@ export interface StatisticsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InstagramFeedBlock".
+ */
+export interface InstagramFeedBlock {
+  /**
+   * Optional.
+   */
+  heading?: string | null;
+  /**
+   * The full address of the account, e.g. https://www.instagram.com/siws_wadala/
+   */
+  profileUrl: string;
+  /**
+   * Shown under the heading, e.g. @siws_wadala
+   */
+  handle?: string | null;
+  /**
+   * Used when the automatic Instagram connection is not set up, or while it is unavailable. Add the six most recent posts here to keep the section looking current.
+   */
+  posts?:
+    | {
+        /**
+         * A square picture works best.
+         */
+        image: number | Media;
+        /**
+         * Optional. The first line of the post, used as the picture’s description for screen readers.
+         */
+        caption?: string | null;
+        /**
+         * Optional. The address of this individual post.
+         */
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
+  /**
+   * Type a word from the heading to show it in SIWS accent.
+   */
+  accentWord?: string | null;
+  count?: ('3' | '6' | '9' | '12') | null;
+  /**
+   * Text colour adjusts automatically so it stays readable.
+   */
+  background?: ('white' | 'sea' | 'tint' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'instagramFeed';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "UnitLinksBlock".
  */
 export interface UnitLinksBlock {
@@ -2582,6 +2637,7 @@ export interface PagesSelect<T extends boolean = true> {
         logoStrip?: T | LogoStripBlockSelect<T>;
         testimonials?: T | TestimonialsBlockSelect<T>;
         statistics?: T | StatisticsBlockSelect<T>;
+        instagramFeed?: T | InstagramFeedBlockSelect<T>;
         unitLinks?: T | UnitLinksBlockSelect<T>;
         callToAction?: T | CallToActionBlockSelect<T>;
         heroEnquiry?: T | HeroEnquiryBlockSelect<T>;
@@ -3174,6 +3230,29 @@ export interface StatisticsBlockSelect<T extends boolean = true> {
       };
   headingLevel?: T;
   accentWord?: T;
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InstagramFeedBlock_select".
+ */
+export interface InstagramFeedBlockSelect<T extends boolean = true> {
+  heading?: T;
+  profileUrl?: T;
+  handle?: T;
+  posts?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        url?: T;
+        id?: T;
+      };
+  headingLevel?: T;
+  accentWord?: T;
+  count?: T;
   background?: T;
   id?: T;
   blockName?: T;

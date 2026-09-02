@@ -138,7 +138,7 @@ const BentoGallery = ({
 
           {caption ? (
             <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-deep/85 via-brand-deep/45 to-transparent p-4 pt-10">
-              <p className="text-[0.9375rem] leading-snug font-medium text-balance text-white">
+              <p className="t-small leading-snug font-medium text-balance text-white">
                 {caption}
               </p>
             </div>
@@ -216,7 +216,7 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
         </div>
 
         {caption ? (
-          <p className="flex-1 px-5 py-4 text-[0.9375rem] leading-snug font-medium text-balance text-ink-soft">
+          <p className="flex-1 px-5 py-4 t-small leading-snug font-medium text-balance text-ink-soft">
             {caption}
           </p>
         ) : null}

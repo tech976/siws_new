@@ -124,12 +124,12 @@ const AchievementTile = ({
       {item.category || item.when ? (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
           {item.category ? (
-            <span className="inline-block rounded-pill bg-accent px-3 py-1 text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-brand-deep">
+            <span className="inline-block rounded-pill bg-accent px-3 py-1 t-label font-bold uppercase tracking-[0.12em] text-brand-deep">
               {item.category}
             </span>
           ) : null}
           {item.when ? (
-            <span className="text-[0.8125rem] font-semibold text-white/80">{item.when}</span>
+            <span className="t-caption font-semibold text-white/80">{item.when}</span>
           ) : null}
         </div>
       ) : null}
@@ -142,7 +142,7 @@ const AchievementTile = ({
            * size. Without that the large tile reads as a small tile that has
            * been stretched, which is the usual way a bento grid goes wrong.
            */
-          item.feature ? 'text-[1.125rem] sm:text-[1.375rem]' : 'text-[1.0625rem]',
+          item.feature ? 't-h4 ' : 't-body',
         ].join(' ')}
       >
         {item.caption}

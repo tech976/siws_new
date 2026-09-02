@@ -91,7 +91,7 @@ export const HeroEnquiryBlockView = ({
             accent is spent on the one line below it, so the two read in order
             instead of competing.
           */}
-          <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-[2.9rem] lg:leading-[1.1]">
+          <h1 className="t-h1 font-bold text-white">
             {block.title}
           </h1>
 
@@ -161,7 +161,7 @@ export const HeroEnquiryBlockView = ({
             means it.
           */}
           {block.form?.subtitle ? (
-            <p className="mt-1.5 mb-5 text-[0.95rem] leading-relaxed text-ink-soft">
+            <p className="mt-1.5 mb-5 t-small leading-relaxed text-ink-soft">
               {block.form.subtitle}
             </p>
           ) : null}

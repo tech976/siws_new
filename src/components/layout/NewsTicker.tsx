@@ -66,11 +66,11 @@ export const NewsTicker = ({ items }: NewsTickerProps) => {
       const body = (
         <>
           <span
-            className={`rounded-full px-2.5 py-0.5 text-[0.7rem] font-bold uppercase tracking-wider ${tone.chip}`}
+            className={`rounded-full px-2.5 py-0.5 t-label font-bold uppercase tracking-wider ${tone.chip}`}
           >
             {tone.label}
           </span>
-          <span className="text-[0.95rem] text-ink">{item.message}</span>
+          <span className="t-small text-ink">{item.message}</span>
         </>
       )
 
