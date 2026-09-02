@@ -3,13 +3,13 @@
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 
+import { submitFeedback } from '@/app/(frontend)/actions/feedback'
+import { FEEDBACK_NOTICE } from '@/lib/consent-notices'
 import {
   FEEDBACK_RELATIONSHIPS,
   FEEDBACK_SUBJECTS,
   initialFeedbackState,
-  submitFeedback,
-} from '@/app/(frontend)/actions/feedback'
-import { FEEDBACK_NOTICE } from '@/lib/consent-notices'
+} from '@/lib/feedback-options'
 import { HONEYPOT_FIELD } from '@/lib/form-guard'
 
 import {

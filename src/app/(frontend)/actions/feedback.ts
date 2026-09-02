@@ -6,6 +6,11 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 import { FEEDBACK_NOTICE } from '@/lib/consent-notices'
+import {
+  FEEDBACK_RELATIONSHIPS,
+  FEEDBACK_SUBJECTS,
+  type FeedbackState,
+} from '@/lib/feedback-options'
 import { HONEYPOT_FIELD, guardSubmission } from '@/lib/form-guard'
 
 /**
@@ -20,16 +25,6 @@ import { HONEYPOT_FIELD, guardSubmission } from '@/lib/form-guard'
  * the visitor; they are not a control, because anything can post to this action.
  */
 
-export interface FeedbackState {
-  status: 'idle' | 'success' | 'error'
-  message?: string
-  errors?: Record<string, string>
-  /** Echoed back so a failed submission does not wipe what was typed. */
-  values?: Record<string, string>
-}
-
-export const initialFeedbackState: FeedbackState = { status: 'idle' }
-
 const text = (data: FormData, key: string): string => {
   const value = data.get(key)
   return typeof value === 'string' ? value.trim() : ''
@@ -37,36 +32,13 @@ const text = (data: FormData, key: string): string => {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
-/**
- * What the sender says they are, offered as a short list.
- *
- * Free text would be more welcoming and is not worth it: this is the field the
- * office sorts by, and "parent"/"Parent"/"a parent"/"mother" are four rows to
- * a computer and one thing to a person. Anything not on this list is stored as
- * "Someone else" rather than rejected — nobody should be turned away from a
- * feedback box over a dropdown.
+/*
+ * THE OPTION LISTS AND THE STATE TYPE LIVE IN `lib/feedback-options`, and they
+ * have to. A `'use server'` module may only export async functions — anything
+ * else is rewritten into a reference the client calls over the network — so
+ * declaring the two `<select>` lists here compiled and then failed at render
+ * with "options.map is not a function". Both files import them from there.
  */
-export const FEEDBACK_RELATIONSHIPS = [
-  'Parent',
-  'Student',
-  'Staff member',
-  'Alumnus',
-  'Someone else',
-] as const
-
-/**
- * What the message is about. Also a fixed list, and for the same reason: the
- * subject line is what decides who in the office reads it first.
- */
-export const FEEDBACK_SUBJECTS = [
-  'Compliment',
-  'Suggestion',
-  'Concern or complaint',
-  'Facilities',
-  'Teaching and learning',
-  'Transport',
-  'Something else',
-] as const
 
 export const submitFeedback = async (
   _previous: FeedbackState,
