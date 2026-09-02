@@ -72,8 +72,29 @@ const run = async () => {
      */
     const priorGallery = (b: Record<string, unknown>) =>
       b.blockType === 'gallery' && String(b.heading ?? '').startsWith('Life at')
+    const existingHero =
+      layout[0]?.blockType === 'hero' ? (layout[0] as Record<string, unknown>) : null
     const cleaned =
       layout[0]?.blockType === 'hero' ? layout.slice(1).filter((b) => !priorGallery(b)) : layout
+
+    /*
+     * THE SECTION'S OWN HEADLINE SURVIVES THIS.
+     *
+     * This step re-cuts every unit home page into the portal's shape, and it
+     * used to title the banner `unit.name` unconditionally. That is the name
+     * of the school, not the line the section wrote to open with: the
+     * Kindergarten's own seed opens on "Wadala's Most Trusted Kindergarten
+     * Since 1934", and this replaced it with "SIWS Kindergarten" on every
+     * single run.
+     *
+     * The failure was invisible in exactly the way that costs a day. This runs
+     * at step 18 and the section seed at step 9, so the headline was written
+     * correctly, sat correctly in the database for nine steps, and was
+     * overwritten before the run finished. Re-seeding to fix it re-broke it.
+     *
+     * So a headline the section has already written is carried forward, and
+     * `unit.name` is only the fallback for a page that has never had one.
+     */
 
     /*
      * The banner photograph: the unit's own hero if it has one, otherwise the
@@ -151,7 +172,10 @@ const run = async () => {
 
     const banner: Record<string, unknown> = {
       blockType: 'hero',
-      title: unit.name,
+      title: (existingHero?.title as string) || unit.name,
+      ...(existingHero?.accentWord ? { accentWord: existingHero.accentWord } : {}),
+      ...(existingHero?.eyebrow ? { eyebrow: existingHero.eyebrow } : {}),
+      ...(existingHero?.subtitle ? { subtitle: existingHero.subtitle } : {}),
       background: 'brand',
       ...(unit.tagline ? { intro: unit.tagline } : {}),
       ...(heroImage ? { image: heroImage } : {}),
