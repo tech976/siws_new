@@ -404,7 +404,7 @@ const GENERAL_RULES: string[] = [
   'The school observes the “Principles of Discipline” set out in Rule 53 of the Grant-In-Aid Code: regularity and implicit obedience; politeness and courtesy of speech and conduct together with cleanliness of dress and person; and students’ responsibility to the school for their conduct both inside and outside it.',
   'No school business will be transacted on Saturdays, Sundays and holidays.',
   'Any student who is persistently non-co-operative, repeatedly or wilfully mischievous, guilty of gross malpractice in connection with examinations, or has committed an act of serious indiscipline or misbehaviour, or who in the opinion of the Head of the School has an undesirable influence on fellow students, is liable to be expelled permanently or removed for a specific period, with the reasons recorded in writing.',
-  'Railway concession forms and other certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — will be issued between 1.00 p.m. and 2.30 p.m. only.',
+  'Certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — will be issued between 1.00 p.m. and 2.30 p.m. only.',
 ]
 
 /**
@@ -413,8 +413,8 @@ const GENERAL_RULES: string[] = [
  * These were published as two numbered lists — one per campus — precisely
  * because they are not the same document. The second list sets an 80%
  * attendance requirement and an English-only rule the first does not contain,
- * and the first covers infectious illness, identity cards and railway
- * concession hours the second does not.
+ * and the first covers infectious illness, identity cards and the office
+ * hours for certificates the second does not.
  *
  * The section is one school now, so it gets one list, and the union is the only
  * safe way to build it: dropping either document's rules would quietly release
@@ -1447,7 +1447,7 @@ const main = async () => {
   const OFFICE_NOTICES = [
     {
       title:
-        'Railway concession forms and other certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
+        'Certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
     },
     { title: 'No school business is transacted on Saturdays, Sundays and holidays.' },
   ]
@@ -1950,7 +1950,7 @@ const main = async () => {
             ]),
           },
           {
-            question: 'When can I get a bonafide or railway concession certificate?',
+            question: 'When can I get a bonafide certificate?',
             answer: richText([
               'From the school office between 1.00 p.m. and 2.30 p.m. only. The same window covers date of birth, first attempt and leaving certificates. No school business is transacted on Saturdays, Sundays or holidays.',
             ]),
@@ -2171,7 +2171,7 @@ const main = async () => {
               'Space for the sports, drawing, clay work, rangoli and group singing the section competes in through the year.',
           },
           {
-            title: 'Teachers who stay for years',
+            title: 'Years of dedication',
             icon: 'staff',
             description:
               'Twenty-two teachers, many of them more than twenty years in this section — the most important thing on any campus.',
@@ -2198,7 +2198,7 @@ const main = async () => {
         width: 'normal',
         background: 'sea',
         content: richText([
-          'Railway concession forms and other certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
+          'Certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
         ]),
       },
       ...(galleryPageId

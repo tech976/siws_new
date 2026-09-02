@@ -1005,7 +1005,7 @@ const main = async () => {
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'Getting to SIWS Junior College, Wadala — railway concession forms, arriving and being collected, and who to ask about travel arrangements.',
+      'Getting to SIWS Junior College, Wadala — arriving and being collected, and who to ask about travel arrangements.',
     layout: [
       /*
        * THIS PAGE DOES NOT LIST A BUS ROUTE, AND THAT IS THE POINT.
@@ -1024,12 +1024,6 @@ const main = async () => {
         layout: 'cards',
         background: 'sea',
         items: [
-          {
-            title: 'Railway concession forms',
-            icon: 'transport',
-            description:
-              'Issued by the college office. Ask when you enquire, and bring your identity card.',
-          },
           {
             title: 'A supervised campus',
             icon: 'security',
