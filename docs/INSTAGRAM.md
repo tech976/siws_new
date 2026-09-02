@@ -3,63 +3,92 @@
 The front page has a six-post Instagram grid ("Life at SIWS"). This is how to
 make it show real posts from [@siws_wadala](https://www.instagram.com/siws_wadala/).
 
-Roughly 30 minutes, done once. **Nothing here is urgent** — until it is done
-the grid shows whatever posts staff add in the admin panel, and the site works
-normally either way.
+**The feed is already working and needs nothing from you.** This document
+explains how, and what the alternatives are if you ever want more control.
 
 ---
 
-## Why this is not just a URL
+## Background
 
-There is no public Instagram feed to read any more. Meta shut the **Basic
-Display API** down on **4 December 2024**, and the older unauthenticated tricks
-(`?__a=1`, the public oEmbed endpoint) went with it — they now return errors or
-a login wall.
+Meta shut the **Basic Display API** down on **4 December 2024**, so there is no
+longer an API that returns a public account's posts without credentials. That is
+why most guides on this subject send you to a developer app and an access token.
 
-Scraping the profile page is not a workaround. Instagram rate-limits by IP,
-blocks datacentre address ranges outright, and forbids it in their terms. It
-would work on a laptop and fail on the server, which is the worst possible way
-for something to break.
+Scraping the profile page is not a workaround either: Instagram rate-limits by
+IP, blocks datacentre address ranges, and forbids it in their terms — it would
+work on a laptop and fail on the server.
 
-So the only supported route is an **access token**.
-
----
-
-## The simple way (start here)
-
-**No token. No Meta developer app. No access to the school's Instagram.**
-About two minutes.
-
-Instagram lets anyone embed a *public post* by its address. The site uses that
-directly, so Instagram serves the picture, caption and like count itself.
-
-1. Open <https://www.instagram.com/siws_wadala/> in a browser.
-2. Click a post you want to show. The address bar now reads something like
-   `https://www.instagram.com/p/DclQoBbiEV-/`. Copy it.
-3. In the admin panel, open the front page, find the **Instagram feed** section,
-   and paste it under **Instagram post links**.
-4. Repeat for six posts. Save.
-
-Done — the grid is live.
-
-**What stays automatic:** each post's picture, caption and likes come from
-Instagram every time someone opens the page, so nothing goes stale, and editing
-a caption on Instagram updates the website.
-
-**What does not:** the *choice* of which six posts is yours. When the school
-posts something new and you want it featured, paste the new link and remove the
-oldest. Worth doing once a month.
-
-If that trade is fine — and for most school sites it is — **you can stop
-reading here.** The rest of this document is only for making the six posts
-update themselves.
+What still works, and what this site uses, is Instagram's own **profile embed**.
+It is a supported, public feature intended for exactly this, needs no
+credentials, and is what makes the section below maintenance-free.
 
 ---
 
-## Making it fully automatic
+## It already works — nothing to set up
 
-Only needed if you want the latest posts to appear with nobody pasting links.
-Both routes below need a Meta developer app.
+The section is **already live and updating itself**. No token, no Meta developer
+app, no access to the school's Instagram account, and no third-party service.
+
+It reads the latest six posts from the account's own public embed page and
+renders them in SIWS styling: 4:5 portrait tiles, six across on a desktop and
+three on a phone. When SIWS posts something new it appears here on its own,
+within fifteen minutes.
+
+**There is nothing to maintain.** No links to paste, no token to refresh, no
+subscription.
+
+### If Instagram changes something
+
+The post data is read from an undocumented part of that page, so Meta could
+change it without notice. The section is built for that: if the read returns
+nothing, it falls back automatically to Instagram's own profile embed — a
+supported, stable feature that keeps working.
+
+The worst realistic outcome is therefore that the tiles revert to Instagram's
+square grid in Instagram's styling. The section cannot break the page, and it
+cannot show an empty frame. If you ever see square tiles with Instagram's own
+header, that is what has happened, and it is worth telling a developer.
+
+To point the section at a different account, change **Account name** in the
+admin panel.
+
+---
+
+## The other two modes
+
+Set under **Where the posts come from** on the section.
+
+**Chosen posts** — paste a link per post, when you want to control exactly which
+six appear (say, to keep an exam-results post at the top). Each embedded post
+still pulls its picture, caption and likes live from Instagram; only the choice
+of posts is yours. Open a post on Instagram, copy the address bar, paste.
+
+**Pictures uploaded here** — an ordinary picture grid that links to Instagram.
+For when you want a fixed, hand-designed row that does not change.
+
+---
+
+## A note on paid widgets
+
+Elfsight, RSS.app, Tagembed and similar services do offer auto-updating feeds
+from a public username without account access, from about $5/month.
+
+**They are not needed here** — the profile embed above does the same job for
+free — and they are worth actively avoiding for a school site. None of them can
+use an official Meta API for arbitrary public profiles, so they scrape, which
+breaches Meta's terms and can break without warning. Elfsight also caches for up
+to 48 hours, so a new post can take two days to appear; the profile embed is
+immediate.
+
+---
+
+## The API routes
+
+**Not needed for a working feed** — the profile embed above already updates
+itself. These exist only if you want the posts rendered in the site's own design
+rather than inside Instagram's frame, which requires reading the posts as data.
+
+Both need a Meta developer app.
 
 **Route A — Business Discovery. You do NOT need the school's Instagram login.**
 

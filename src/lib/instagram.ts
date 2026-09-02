@@ -42,6 +42,16 @@ export interface InstagramPost {
   permalink: string
   /** Videos and reels carry a poster image; carousels use their first frame. */
   isVideo: boolean
+  /**
+   * The MP4 itself, for a reel that is to be played rather than linked to.
+   *
+   * Only Graph returns this: on a VIDEO, `media_url` IS the file, which is why
+   * the poster above has to come from `thumbnail_url` instead. The public
+   * reader has no equivalent — it can see that a post is a video and show its
+   * poster frame, and cannot reach the video — so this is null whenever the
+   * section is running without a token.
+   */
+  videoUrl: string | null
 }
 
 /** Shape of the fields we request back from Graph. */
@@ -92,7 +102,16 @@ const toPost = (media: GraphMedia): InstagramPost | null => {
 
   if (!imageUrl) return null
 
-  return { id, imageUrl, caption: asString(media.caption), permalink, isVideo }
+  return {
+    id,
+    imageUrl,
+    caption: asString(media.caption),
+    permalink,
+    isVideo,
+    // On a VIDEO this is the MP4. It was being read only as a fallback poster
+    // and then thrown away, which is why nothing could play a reel.
+    videoUrl: isVideo ? asString(media.media_url) : null,
+  }
 }
 
 /**
