@@ -88,14 +88,30 @@ const main = async () => {
     payload.logger.info('No campus pages left to delete.')
   }
 
-  /* ------------------------------------------------- teachers and photographs */
-  for (const collection of ['faculty', 'media'] as const) {
+  /* --------------------------------------------------------- photographs */
+  /*
+   * FACULTY IS NO LONGER UNTAGGED HERE, and that is the point of this note.
+   *
+   * `campus` on a teacher stopped meaning a campus. SIWS supplies the Primary
+   * staff as two lists, each under its own head teacher, and asked for the
+   * page to show them that way; `campus` is the only field on a faculty record
+   * that can say which of the two somebody is on, so `primary.ts` now SETS it
+   * — 'matunga' for Mrs. Bagayatkar's team, 'wadala' for Mrs. Raja's — and the
+   * block's `teams` layout groups by it and prints no heading, so no campus is
+   * named anywhere on the page.
+   *
+   * Clearing it here erased both teams on every run. `seed:primary` is step 10
+   * and this is step 11, so the roster was tagged correctly and untagged one
+   * step later, leaving a single ungrouped list. Running `seed:primary` by hand
+   * showed the two teams, which is why this survived being tested.
+   *
+   * Photographs still lose the tag: on a media record `campus` really does mean
+   * the campus a picture was taken at, and that split is what this retires.
+   */
+  for (const collection of ['media'] as const) {
     const { docs } = await payload.find({
       collection,
-      where:
-        collection === 'faculty'
-          ? { and: [{ unit: { equals: primary.id } }, { campus: { exists: true } }] }
-          : { and: [{ unit: { equals: primary.id } }, { campus: { exists: true } }] },
+      where: { and: [{ unit: { equals: primary.id } }, { campus: { exists: true } }] },
       limit: 1000,
       depth: 0,
       overrideAccess: true,
