@@ -234,14 +234,14 @@ const MATUNGA_FACULTY = [
     designation: 'Head Teacher',
     qualifications: 'S.S.C., D.Ed.',
   },
-  { name: 'Mrs. Vinaya Haridas Kamath', qualifications: 'S.S.C., D.Ed.' },
-  { name: 'Mrs. Malathi Premnath Shankar', qualifications: 'S.S.C., D.Ed.' },
-  { name: 'Mrs. Parameshwari Perumal Raj', qualifications: 'B.A., D.Ed.' },
-  { name: 'Mrs. Thangamani Belvintony', qualifications: 'B.A., D.Ed.' },
-  { name: 'Mrs. Usha Raju', qualifications: 'B.A., D.Ed.' },
-  { name: 'Ms. Payal Sandeep Shukla', qualifications: 'H.S.C., D.Ed.' },
-  { name: 'Mrs. Mary Dolours Richard', qualifications: 'B.A., D.Ed.' },
-  { name: 'Ms. Prema Keshwan Devendra', qualifications: 'B.A., D.Ed.' },
+  { name: 'Mrs. Vinaya Haridas Kamath', designation: 'Asst. Teacher', qualifications: 'S.S.C., D.Ed.' },
+  { name: 'Mrs. Malathi Premnath Shankar', designation: 'Asst. Teacher', qualifications: 'S.S.C., D.Ed.' },
+  { name: 'Mrs. Parameshwari Perumal Raj', designation: 'Asst. Teacher', qualifications: 'B.A., D.Ed.' },
+  { name: 'Mrs. Thangamani Belvintony', designation: 'Asst. Teacher', qualifications: 'B.A., D.Ed.' },
+  { name: 'Mrs. Usha Raju', designation: 'Asst. Teacher', qualifications: 'B.A., D.Ed.' },
+  { name: 'Ms. Payal Sandeep Shukla', designation: 'Asst. Teacher', qualifications: 'H.S.C., D.Ed.' },
+  { name: 'Mrs. Mary Dolours Richard', designation: 'Asst. Teacher', qualifications: 'B.A., D.Ed.' },
+  { name: 'Ms. Prema Keshwan Devendra', designation: 'Asst. Teacher', qualifications: 'B.A., D.Ed.' },
   /*
    * KEPT ACROSS THE MERGE, DELIBERATELY. The other side of this merge had
    * dropped this teacher from the list — not in any commit of its own, but
@@ -254,7 +254,7 @@ const MATUNGA_FACULTY = [
    * arrives in is the one that supplies her qualifications. Nobody fills in
    * the qualifications of a teacher they are removing.
    */
-  { name: 'Ms. Vaishali Baghat', qualifications: 'M.A., D.T.Ed., NET' },
+  { name: 'Ms. Vaishali Baghat', designation: 'Asst. Teacher', qualifications: 'H.S.C., A.T.D.' },
 ]
 
 /** The 18 rules Matunga supplied, verbatim. */
@@ -308,11 +308,8 @@ const FACULTY = [
   { name: 'Gurjit Kaur Matta', qualifications: 'B.A., D.Ed.' },
   { name: 'Shruti Sampat Gaware', qualifications: 'B.A., D.Ed.' },
   { name: 'Deepika Naidu', qualifications: 'H.S.C., D.Ed.' },
-  {
-    name: 'Deepika Boricha',
-    designation: 'Arts Teacher',
-    qualifications: 'H.S.C., A.T.D.',
-  },
+  // Listed by SIWS with a subject and no qualification of her own.
+  { name: 'Deepika Boricha', designation: 'Arts Teacher' },
 ]
 
 /**
@@ -516,45 +513,27 @@ const main = async () => {
   let facultyUpdated = 0
 
   /**
-   * UNTAG, and it must run before the upsert loop.
+   * ONE ROSTER, TWO TEAMS.
    *
-   * Every Primary teacher already in the database carries `campus: wadala` or
-   * `campus: matunga` from when the section was published as two schools. The
-   * Teachers page is now a single list with no campus filter, so the tag has
-   * nothing left to select on — and leaving it set would keep the old split
-   * alive anywhere a block or report still groups by it. Clearing it is what
-   * actually merges the two rosters, rather than merely hiding the seam.
-   */
-  const { docs: tagged } = await payload.find({
-    collection: 'faculty',
-    where: { and: [{ unit: { equals: primary.id } }, { campus: { exists: true } }] },
-    limit: 200,
-    depth: 0,
-    overrideAccess: true,
-  })
-
-  for (const teacher of tagged) {
-    await payload.update({
-      collection: 'faculty',
-      id: teacher.id,
-      data: { campus: null } as never,
-      overrideAccess: true,
-    })
-  }
-
-  if (tagged.length > 0) {
-    payload.logger.info(`Untagged ${tagged.length} teachers — the Primary roster is now one list.`)
-  }
-
-  /**
-   * ONE ROSTER.
+   * SIWS supplies the staff as two lists, each under its own head teacher,
+   * and asked for the page to show them that way. The faculty block's
+   * `teams` layout does the grouping, and `campus` is the only field on a
+   * faculty record that says which team somebody belongs to — so the tag is
+   * set here rather than cleared, which is what this seed used to do.
    *
-   * Both teaching teams in a single sequence, so `order` runs 1..n across the
-   * whole school rather than restarting per campus. The head teacher of the
-   * merged school sits at 1; the second team follows in its own order behind
-   * the first. No entry carries a campus.
+   * IT IS NOT A CAMPUS LABEL. Nothing renders the value: the block groups
+   * by it and prints no heading for it, so the section is still published as
+   * one school. The word is the field's, not the page's.
+   *
+   * Teams are ordered by that key, and 'matunga' sorts before 'wadala' —
+   * which is the order SIWS listed them in, Mrs. Bagayatkar's team first.
+   * `order` still runs 1..n across the whole roster so the sequence inside
+   * each team is stable.
    */
-  const roster = [...FACULTY, ...MATUNGA_FACULTY].map((teacher, index) => ({
+  const roster = [
+    ...FACULTY.map((teacher) => ({ ...teacher, campus: 'wadala' })),
+    ...MATUNGA_FACULTY.map((teacher) => ({ ...teacher, campus: 'matunga' })),
+  ].map((teacher, index) => ({
     ...teacher,
     order: index + 1,
   }))
@@ -579,6 +558,16 @@ const main = async () => {
     const data = {
       ...teacher,
       designation: teacher.designation ?? 'Teacher',
+      /*
+       * SPELLED OUT, because omitting it does not clear it.
+       *
+       * `payload.update` leaves a field it is not given exactly as it was, so
+       * dropping `qualifications` from a roster entry left the old value on
+       * the record and the page went on printing it. Deepika Boricha is the
+       * case: SIWS lists her with a subject and no qualification, and she
+       * kept "H.S.C., A.T.D." through a clean re-seed until this line.
+       */
+      qualifications: 'qualifications' in teacher ? teacher.qualifications : null,
       unit: primary.id,
       _status: 'published',
       reviewStatus: 'approved',
@@ -1288,25 +1277,32 @@ const main = async () => {
       'Meet the teaching team at SIWS Primary School — experienced, qualified staff for Grades 1 to 4.',
     layout: [
       /**
-       * ONE LIST.
+       * TWO LISTS, ONE BLOCK.
        *
-       * This was two faculty blocks, one per campus, on the reasoning that a
-       * parent had already chosen a location and needed to know which half of
-       * the roster taught their child. That reasoning is spent: the section is
-       * one school now, so a split list would ask a parent to pick between two
-       * things that no longer exist. No `campus` key, so the block takes the
-       * whole Primary roster in `order`.
+       * SIWS supplies the staff as two lists, each under its own head
+       * teacher, and asked for the page to show them that way.
+       *
+       * It is NOT the old campus split coming back. That was two separate
+       * blocks with a campus filter each, which asked a parent to choose a
+       * location before reading a name. This is one block in `teams` layout:
+       * it takes the whole roster, groups it, finds each team's head from the
+       * designation, and prints no label for the group — so the page says
+       * "here are the two teaching teams", not "pick a campus".
        */
       {
         blockType: 'faculty',
         heading: 'Our teachers',
         accentWord: 'teachers',
         headingLevel: 'h2',
+        layout: 'teams',
         /*
-         * Monogram above the name rather than beside it. Beside it, the text
-         * column on a three-across grid is narrow enough that the longer names
-         * on this roster — "Nadar Alagumathi Selvaganeshan" — wrap to two lines
-         * while the monogram sits alone against the space underneath.
+         * Kept for the grid, which is what this block falls back to if the
+         * teams layout is ever switched off: the monogram goes above the name
+         * there because a three-across grid leaves the text column narrow
+         * enough that "Nadar Alagumathi Selvaganeshan" wraps beside it.
+         *
+         * The teams layout sets the monogram beside the name itself, so this
+         * has no effect while `layout` is 'teams'.
          */
         cardLayout: 'centred',
         showQualifications: true,
