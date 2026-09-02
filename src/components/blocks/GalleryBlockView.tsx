@@ -196,7 +196,26 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
           and height attributes — so a grid of mixed portrait and landscape
           uploads came out ragged, every tile a different height.
         */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden">
+        {/*
+          SQUARE, NOT 4:3.
+          
+          A single ratio has to hold both orientations, because the wall is one
+          grid and a row of ragged heights is what the wrapper exists to
+          prevent. 4:3 was the wrong one to pick: a phone photograph is 9:16,
+          and forcing that into a landscape frame keeps two-fifths of its
+          height and takes the crop out of the middle — which is where the
+          faces are. Heads were being cut off across the top of the wall.
+
+          A square keeps roughly three-quarters of a landscape photograph's
+          width and well over half a portrait one's height, and it is wrong by
+          the same amount in both directions rather than badly wrong in one.
+          The grid, the gutters and the columns are unchanged.
+
+          The real fix for any single photograph is its focal point, which
+          `Media` already honours — fifteen carry one. This is what the other
+          hundred and fifty-five get for free.
+        */}
+        <div className="relative aspect-square w-full overflow-hidden">
           <Media
             resource={media}
             sizes={
@@ -294,7 +313,7 @@ export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
         images.length > perPage ? (
           <GalleryPager items={gridCards} perPage={perPage} />
         ) : (
-          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{gridCards}</ul>
+          <ul className="siws-flow siws-flow-3 [--flow-gap:1.25rem]">{gridCards}</ul>
         )
       ) : images.length > 2 ? (
         <GalleryCarousel items={loopCards} label={block.heading ?? 'gallery'} />

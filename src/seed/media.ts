@@ -99,6 +99,19 @@ interface ImageSeed {
   focalY?: number
 }
 
+/*
+ * WHERE THE CROP WINDOW SITS ON A TALL PHOTOGRAPH.
+ *
+ * The gallery is one grid, so every tile is the same shape and a portrait
+ * photograph loses height to it. Payload stores 50/50 on upload, so the window
+ * takes the middle — and on a picture of people standing, the middle is their
+ * waists. Heads were coming off across the top of the wall.
+ *
+ * `focalY: 38` on the photographs where people are standing, and 62 on the two
+ * rangoli, where the subject is on the floor and the middle is the wall behind
+ * it. Everything else keeps 50: a laboratory, a canteen and a library really
+ * are centred, and moving those would be guessing.
+ */
 const IMAGES: ImageSeed[] = [
   {
     file: 'g1.jpeg',
@@ -121,7 +134,6 @@ const IMAGES: ImageSeed[] = [
      * both of which it has, and neither of which depends on a single face.
      */
     alt: 'A full kindergarten class in yellow and green SIWS uniform, seated around two large curved white tables and turning to face the camera.',
-    caption: 'Group seating in every classroom',
     /*
      * The faces run in a band from roughly a third of the way down to just
      * past the middle. Left at 50 the banner crop cut through the back row;
@@ -726,6 +738,7 @@ const IMAGES: ImageSeed[] = [
     alt: 'Kindergarten children playing on a red slide and climbing frame under a canopy, on the green artificial-turf play area, one child mid-slide and others waiting their turn on the platform above.',
     caption: 'The covered play area',
     depictsChildren: true,
+    focalY: 38,
   },
   {
     file: 'kg-classroom-full-class.jpg',
@@ -733,7 +746,6 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'In the classroom',
     alt: 'A full kindergarten class in yellow and green SIWS uniform standing all the way around a large curved white table, with a child at the back holding up a handmade Indian flag made from painted handprints.',
-    caption: 'Spacious classrooms with group seating',
     depictsChildren: true,
   },
   {
@@ -757,8 +769,8 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Sports',
     alt: 'Thirteen kindergarten children holding certificates and trophies, seated and standing in two rows beneath a banner reading “Welcome to SIWS KG Section Sport’s Day”.',
-    caption: 'Prize day at the Kindergarten annual sports',
     depictsChildren: true,
+    focalY: 38,
   },
   {
     file: 'kg-sports-day-podium.jpg',
@@ -766,8 +778,8 @@ const IMAGES: ImageSeed[] = [
     unit: 'kindergarten',
     category: 'Sports',
     alt: 'Four kindergarten children in red and navy sports kit on a winners’ podium numbered 1, 2 and 3, each holding a gold trophy, with a table of further trophies behind them on the turf pitch.',
-    caption: 'On the podium at the Kindergarten sports day',
     depictsChildren: true,
+    focalY: 38,
   },
   /*
    * THE JUNIOR COLLEGE'S OWN PHOTOGRAPHS, sent by SIWS on 2026-09-02.
@@ -907,6 +919,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Learning',
     alt: 'A Biology department activity, students working on their displays.',
     depictsChildren: true,
+    focalY: 38,
   },
   {
     file: 'jc-biology-activity-2.jpg',
@@ -973,6 +986,7 @@ const IMAGES: ImageSeed[] = [
     alt: 'A career guidance session run by the Economics and Commerce departments.',
     caption: 'Career guidance from the Economics and Commerce departments',
     depictsChildren: true,
+    focalY: 38,
   },
   {
     file: 'jc-career-counselling-1.jpg',
@@ -1049,6 +1063,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Occasions',
     alt: 'The Independence Day programme on the college ground, 2025.',
     depictsChildren: true,
+    focalY: 38,
   },
   {
     file: 'jc-independence-day-2026-assembly.jpg',
@@ -1100,6 +1115,7 @@ const IMAGES: ImageSeed[] = [
     alt: 'A rangoli made by students on the college floor.',
     caption: 'Rangoli by the students',
     depictsChildren: false,
+    focalY: 62,
   },
   {
     file: 'jc-rangoli-2.jpg',
@@ -1108,6 +1124,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Occasions',
     alt: 'A second rangoli design laid by students.',
     depictsChildren: false,
+    focalY: 62,
   },
   {
     file: 'jc-mehendi-competition.jpg',
@@ -1117,6 +1134,7 @@ const IMAGES: ImageSeed[] = [
     alt: 'The mehendi competition, students at work on their designs.',
     caption: 'The mehendi competition',
     depictsChildren: true,
+    focalY: 38,
   },
   {
     file: 'jc-cultural-day.jpg',
@@ -1126,6 +1144,7 @@ const IMAGES: ImageSeed[] = [
     alt: 'The college cultural day programme.',
     caption: 'Cultural day',
     depictsChildren: true,
+    focalY: 38,
   },
   {
     file: 'jc-cultural-performance.jpg',
@@ -1193,6 +1212,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Occasions',
     alt: 'The Saurya day programme at the college.',
     depictsChildren: true,
+    focalY: 38,
   },
   {
     file: 'jc-vision-health-camp.jpg',
@@ -1202,6 +1222,7 @@ const IMAGES: ImageSeed[] = [
     alt: 'A vision and health camp held at the college for students.',
     caption: 'A vision and health camp for students',
     depictsChildren: true,
+    focalY: 38,
   },
   {
     file: 'jc-rabies-awareness.jpg',
@@ -1228,6 +1249,7 @@ const IMAGES: ImageSeed[] = [
     category: 'Learning',
     alt: 'Students taking part in a college activity session.',
     depictsChildren: true,
+    focalY: 38,
   },
   {
     file: 'jc-student-activity-2.jpg',
