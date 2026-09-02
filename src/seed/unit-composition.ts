@@ -66,7 +66,23 @@ const COMPOSITION = [
   { band: 'sections', source: 'keep', blockType: 'featureList' },
   { band: 'cards', source: 'keep', blockType: 'cardGrid' },
   { band: 'prose', source: 'keep', blockType: 'richText' },
-  { band: 'divider2', source: 'photos', role: 'atmospheric' },
+  /*
+   * `divider2` HAS NOW GONE TOO, at SIWS's request (2026-09-02).
+   *
+   * It sat between "About South Indians' Welfare Society" and the photograph
+   * wall below it — a wide picture under a wash, immediately above a band of
+   * pictures. The note above records why it was kept when the first divider
+   * came off: by that point the page has had figures, a list and a stretch of
+   * prose, which is the long stretch the pattern was written to break.
+   *
+   * What that reasoning missed is what follows it. The showcase is already a
+   * photographic band, so the page ran prose, one washed photograph, then a
+   * wall of them — the divider was breaking a stretch that ended a line later
+   * anyway, and reading as a preamble to the gallery rather than as a rest.
+   *
+   * Neither band is deleted from the pattern's vocabulary; both are simply not
+   * placed. A section that wants one can still carry a `divider` of its own.
+   */
   { band: 'showcase', source: 'photos', role: 'gallery' },
 ] as const
 
@@ -344,21 +360,23 @@ const run = async () => {
         continue
       }
 
-      // step.source === 'photos'
-      if (step.role === 'atmospheric') {
+      /*
+       * step.source === 'photos'
+       *
+       * NO COMPOSITION STEP ASKS FOR AN ATMOSPHERIC BAND ANY MORE — both
+       * dividers came off at SIWS's request — so this branch places nothing
+       * today. It is kept rather than deleted because the pattern still knows
+       * how to lay one: put a `divider` step back above and it works, without
+       * anybody having to write this again.
+       */
+      if ((step as { role?: string }).role === 'atmospheric') {
         const img = pick(atmospheric.length > 0 ? atmospheric : mine, used)
         if (!img) continue
         used.add(img.id)
         out.push({
           blockType: 'divider',
           image: img.id,
-          /*
-           * `divider2` is the only atmospheric band left, so this is always
-           * 'sea'. Written as the same conditional rather than collapsed to a
-           * constant: put a `divider` back in COMPOSITION above and it gets
-           * the brand wash again without anyone having to notice this line.
-           */
-          overlay: step.band === 'divider2' ? 'sea' : 'brand',
+          overlay: 'sea',
           placedBySeed: true,
           height: 'slim',
           ...(unit.tagline ? { text: unit.tagline } : {}),
