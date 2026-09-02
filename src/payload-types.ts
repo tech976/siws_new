@@ -73,6 +73,7 @@ export interface Config {
     faculty: Faculty;
     media: Media;
     enquiries: Enquiry;
+    feedback: Feedback;
     units: Unit;
     users: User;
     'audit-logs': AuditLog;
@@ -89,6 +90,7 @@ export interface Config {
     faculty: FacultySelect<false> | FacultySelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     enquiries: EnquiriesSelect<false> | EnquiriesSelect<true>;
+    feedback: FeedbackSelect<false> | FeedbackSelect<true>;
     units: UnitsSelect<false> | UnitsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'audit-logs': AuditLogsSelect<false> | AuditLogsSelect<true>;
@@ -598,6 +600,7 @@ export interface Page {
         | UnitLinksBlock
         | CallToActionBlock
         | HeroEnquiryBlock
+        | FeedbackBlock
       )[]
     | null;
   /**
@@ -2465,6 +2468,10 @@ export interface HeroEnquiryBlock {
     title: string;
     subtitle?: string | null;
     /**
+     * Which address on this school’s Unit record receives the message. Admission enquiries go to the admissions inbox; a campus tour request or a general question goes to the info inbox.
+     */
+    sendTo: 'admissions' | 'general';
+    /**
      * e.g. Jr KG, Sr KG.
      */
     classOptions?:
@@ -2495,6 +2502,36 @@ export interface HeroEnquiryBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'heroEnquiry';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeedbackBlock".
+ */
+export interface FeedbackBlock {
+  heading: string;
+  /**
+   * One or two lines above the form. Optional.
+   */
+  intro?: string | null;
+  /**
+   * A line offering the school’s own address, for anyone who would rather use their own mail app. The address is read from this school’s Unit record.
+   */
+  showEmailAlternative?: boolean | null;
+  /**
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
+  /**
+   * Type a word from the heading to show it in SIWS accent.
+   */
+  accentWord?: string | null;
+  /**
+   * Text colour adjusts automatically so it stays readable.
+   */
+  background?: ('white' | 'sea' | 'tint' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'feedback';
 }
 /**
  * Teacher profiles shown on your school’s website. Lower “Order” numbers appear first.
@@ -2615,9 +2652,61 @@ export interface Enquiry {
    */
   staffNotes?: string | null;
   /**
-   * Whether the admissions inbox was notified successfully.
+   * Whether the inbox was notified successfully.
    */
   emailDelivered?: boolean | null;
+  /**
+   * Which address was told about this. The same form appears on more than one page and each page chooses its own inbox, so "it went to admissions" is recorded rather than assumed.
+   */
+  notifiedInbox?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Messages sent from the feedback box on the Contact pages. These carry people’s contact details — please do not share them outside the school.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "feedback".
+ */
+export interface Feedback {
+  id: number;
+  /**
+   * Which school this message was sent to.
+   */
+  unit: number | Unit;
+  name: string;
+  email: string;
+  phone?: string | null;
+  /**
+   * Parent, student, staff member, visitor, or something else.
+   */
+  relationship?: string | null;
+  subject: string;
+  message: string;
+  consentGiven: boolean;
+  consentPurpose?: string | null;
+  /**
+   * Identifies the exact wording they saw.
+   */
+  consentNoticeVersion?: string | null;
+  consentAt?: string | null;
+  consentSource?: string | null;
+  /**
+   * Update this as you deal with the message.
+   */
+  status: 'new' | 'in_progress' | 'closed';
+  /**
+   * Only staff can see this. Never shown to the sender.
+   */
+  staffNotes?: string | null;
+  /**
+   * Whether the school’s inbox was notified successfully.
+   */
+  emailDelivered?: boolean | null;
+  /**
+   * Which address was told about this message.
+   */
+  notifiedInbox?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2699,6 +2788,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'enquiries';
         value: number | Enquiry;
+      } | null)
+    | ({
+        relationTo: 'feedback';
+        value: number | Feedback;
       } | null)
     | ({
         relationTo: 'units';
@@ -2832,6 +2925,7 @@ export interface PagesSelect<T extends boolean = true> {
         unitLinks?: T | UnitLinksBlockSelect<T>;
         callToAction?: T | CallToActionBlockSelect<T>;
         heroEnquiry?: T | HeroEnquiryBlockSelect<T>;
+        feedback?: T | FeedbackBlockSelect<T>;
       };
   metaTitle?: T;
   metaDescription?: T;
@@ -3591,6 +3685,7 @@ export interface HeroEnquiryBlockSelect<T extends boolean = true> {
     | {
         title?: T;
         subtitle?: T;
+        sendTo?: T;
         classOptions?:
           | T
           | {
@@ -3610,6 +3705,20 @@ export interface HeroEnquiryBlockSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeedbackBlock_select".
+ */
+export interface FeedbackBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  showEmailAlternative?: T;
+  headingLevel?: T;
+  accentWord?: T;
+  background?: T;
   id?: T;
   blockName?: T;
 }
@@ -3759,6 +3868,31 @@ export interface EnquiriesSelect<T extends boolean = true> {
   status?: T;
   staffNotes?: T;
   emailDelivered?: T;
+  notifiedInbox?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "feedback_select".
+ */
+export interface FeedbackSelect<T extends boolean = true> {
+  unit?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  relationship?: T;
+  subject?: T;
+  message?: T;
+  consentGiven?: T;
+  consentPurpose?: T;
+  consentNoticeVersion?: T;
+  consentAt?: T;
+  consentSource?: T;
+  status?: T;
+  staffNotes?: T;
+  emailDelivered?: T;
+  notifiedInbox?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -9,6 +9,7 @@ import { CardGridBlock } from './CardGridBlock'
 import { DividerBlock } from './DividerBlock'
 import { FacultyBlock } from './FacultyBlock'
 import { FeatureListBlock } from './FeatureListBlock'
+import { FeedbackBlock } from './FeedbackBlock'
 import { GalleryBlock } from './GalleryBlock'
 import { PhotoLibraryBlock } from './PhotoLibraryBlock'
 import { VideoGalleryBlock } from './VideoGalleryBlock'
@@ -68,6 +69,7 @@ export const contentBlocks: Block[] = [
   UnitLinksBlock,
   CallToActionBlock,
   HeroEnquiryBlock,
+  FeedbackBlock,
 ]
 
 export {
@@ -84,6 +86,7 @@ export {
   DividerBlock,
   ProgramCardsBlock,
   FeatureListBlock,
+  FeedbackBlock,
   GalleryBlock,
   VideoGalleryBlock,
   PhotoLibraryBlock,

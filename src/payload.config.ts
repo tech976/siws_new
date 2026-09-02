@@ -6,9 +6,12 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
+import { emailAdapter } from './lib/email'
+
 import { Announcements } from './collections/Announcements'
 import { AuditLogs } from './collections/AuditLogs'
 import { Enquiries } from './collections/Enquiries'
+import { Feedback } from './collections/Feedback'
 import { Faculty } from './collections/Faculty'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
@@ -63,9 +66,27 @@ export default buildConfig({
     },
   },
 
-  collections: [Posts, Announcements, Pages, Faculty, Media, Enquiries, Units, Users, AuditLogs],
+  collections: [
+    Posts,
+    Announcements,
+    Pages,
+    Faculty,
+    Media,
+    Enquiries,
+    Feedback,
+    Units,
+    Users,
+    AuditLogs,
+  ],
 
   editor: lexicalEditor(),
+
+  /*
+   * Undefined unless SMTP_* is set, which leaves Payload on its console
+   * transport — see `lib/email.ts` for why that default is the dangerous one
+   * and why it is still the default.
+   */
+  email: emailAdapter(),
 
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URI || '' },

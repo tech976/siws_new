@@ -10,6 +10,7 @@ import { CardGridBlockView } from './CardGridBlockView'
 import { DividerBlockView } from './DividerBlockView'
 import { FacultyBlockView } from './FacultyBlockView'
 import { FeatureListBlockView } from './FeatureListBlockView'
+import { FeedbackBlockView } from './FeedbackBlockView'
 import { GalleryBlockView } from './GalleryBlockView'
 import { PhotoLibraryBlockView } from './PhotoLibraryBlockView'
 import { VideoGalleryBlockView } from './VideoGalleryBlockView'
@@ -58,6 +59,21 @@ interface RenderBlocksProps {
  */
 export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksProps) => {
   if (!Array.isArray(blocks) || blocks.length === 0) return null
+
+  /*
+   * Whether this page carries a feedback form, decided here rather than on the
+   * enquiry block.
+   *
+   * The "Give feedback" button under the enquiry card is a jump to `#feedback`
+   * further down the same page, and a fragment matching no id fails silently —
+   * the page does not move, which reads as a broken button. The block itself
+   * cannot know: it sees its own fields and not the rest of the layout. A
+   * checkbox on the block would have worked until somebody removed the
+   * feedback section and left the tick behind.
+   *
+   * The layout is already in hand, so the honest answer is one pass over it.
+   */
+  const hasFeedback = blocks.some((entry) => entry.blockType === 'feedback')
 
   return (
     <>
@@ -124,7 +140,16 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
           case 'callToAction':
             return <CallToActionBlockView key={key} block={block} />
           case 'heroEnquiry':
-            return <HeroEnquiryBlockView key={key} block={block} unit={unit} />
+            return (
+              <HeroEnquiryBlockView
+                key={key}
+                block={block}
+                unit={unit}
+                hasFeedback={hasFeedback}
+              />
+            )
+          case 'feedback':
+            return <FeedbackBlockView key={key} block={block} unit={unit} />
           default:
             return null
         }
