@@ -2,6 +2,8 @@ import Image from 'next/image'
 
 import { Media } from '@/components/Media'
 import { getInstagramPosts, type InstagramPost } from '@/lib/instagram'
+
+import { InstagramEmbedGrid } from './InstagramEmbedGrid'
 import type { InstagramFeedBlock, Media as MediaDoc } from '@/payload-types'
 
 import { Section, SectionHeading, type BlockBackground } from './Section'
@@ -105,8 +107,19 @@ export const InstagramFeedBlockView = async ({ block }: { block: InstagramFeedBl
       isVideo: false,
     }))
 
+  /*
+   * PRECEDENCE: pasted post links first, then the API, then uploaded pictures.
+   *
+   * The links come first because they are the only route that needs no Meta
+   * setup at all, so if an editor has taken the trouble to paste them they are
+   * certainly the intended content. The API only wins where no links exist,
+   * which is the case once a token has been configured and the section is
+   * meant to run unattended.
+   */
+  const embedUrls = (block.postUrls ?? []).slice(0, limit)
   const tiles = live.length > 0 ? live.map(fromApi) : curated
-  if (tiles.length === 0) return null
+
+  if (embedUrls.length === 0 && tiles.length === 0) return null
 
   return (
     <Section background={block.background as BlockBackground}>
@@ -158,86 +171,90 @@ export const InstagramFeedBlockView = async ({ block }: { block: InstagramFeedBl
         </a>
       </div>
 
-      {/*
-        Three across on a desktop, two on a phone. Not one on a phone: these are
-        square thumbnails, and a single column turns six posts into a great deal
-        of scrolling for a section that is meant to be glanced at.
-      */}
-      <ul className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3">
-        {tiles.map((tile, index) => {
-          const label = tileLabel(tile.caption, index, tile.isVideo)
-          const line = firstLine(tile.caption)
+      {embedUrls.length > 0 ? (
+        <InstagramEmbedGrid urls={embedUrls} handle={block.handle} />
+      ) : (
+        /*
+         * Three across on a desktop, two on a phone. Not one on a phone: these
+         * are square thumbnails, and a single column turns six posts into a
+         * great deal of scrolling for a section meant to be glanced at.
+         */
+        <ul className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3">
+          {tiles.map((tile, index) => {
+            const label = tileLabel(tile.caption, index, tile.isVideo)
+            const line = firstLine(tile.caption)
 
-          return (
-            <li key={tile.key}>
-              <a
-                href={tile.href ?? block.profileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                /*
-                 * `aspect-square` with `overflow-hidden` is what makes these
-                 * read as Instagram rather than as a photo gallery: the feed
-                 * is a uniform grid, and tiles that each take their picture's
-                 * own proportions are the single thing that gives that away.
-                 */
-                className="group relative block aspect-square overflow-hidden rounded-lg bg-brand-tint focus-visible:outline-3 focus-visible:outline-offset-2"
-              >
-                {tile.remoteUrl ? (
+            return (
+              <li key={tile.key}>
+                <a
+                  href={tile.href ?? block.profileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
                   /*
-                   * `unoptimized` is deliberate. These URLs are signed and
-                   * expiring — Meta's CDN rotates them — so a copy cached in
-                   * Next's image optimiser outlives the URL it was built from
-                   * and starts serving 403s. Passing them through means the
-                   * browser always asks Instagram for a URL that is still valid.
+                   * `aspect-square` with `overflow-hidden` is what makes these
+                   * read as Instagram rather than as a photo gallery: the feed
+                   * is a uniform grid, and tiles that each take their picture's
+                   * own proportions are the single thing that gives that away.
                    */
-                  <Image
-                    src={tile.remoteUrl}
-                    alt={line ?? ''}
-                    fill
-                    unoptimized
-                    sizes="(min-width: 768px) 33vw, 50vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                  />
-                ) : (
-                  <Media
-                    resource={tile.mediaDoc}
-                    fill
-                    alt={line ?? ''}
-                    sizes="(min-width: 768px) 33vw, 50vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                  />
-                )}
+                  className="group relative block aspect-square overflow-hidden rounded-lg bg-brand-tint focus-visible:outline-3 focus-visible:outline-offset-2"
+                >
+                  {tile.remoteUrl ? (
+                    /*
+                     * `unoptimized` is deliberate. These URLs are signed and
+                     * expiring — Meta's CDN rotates them — so a copy cached in
+                     * Next's image optimiser outlives the URL it was built from
+                     * and starts serving 403s. Passing them through means the
+                     * browser always asks Instagram for a URL that is still valid.
+                     */
+                    <Image
+                      src={tile.remoteUrl}
+                      alt={line ?? ''}
+                      fill
+                      unoptimized
+                      sizes="(min-width: 768px) 33vw, 50vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                    />
+                  ) : (
+                    <Media
+                      resource={tile.mediaDoc}
+                      fill
+                      alt={line ?? ''}
+                      sizes="(min-width: 768px) 33vw, 50vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                    />
+                  )}
 
-                {/* A reel is a different kind of thing to a photograph, and the
-                    corner glyph is how Instagram says so. */}
-                {tile.isVideo ? (
-                  <span
-                    aria-hidden="true"
-                    className="absolute right-2 top-2 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
-                  >
-                    <ReelGlyph />
-                  </span>
-                ) : null}
+                  {/* A reel is a different kind of thing to a photograph, and the
+                      corner glyph is how Instagram says so. */}
+                  {tile.isVideo ? (
+                    <span
+                      aria-hidden="true"
+                      className="absolute right-2 top-2 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+                    >
+                      <ReelGlyph />
+                    </span>
+                  ) : null}
 
-                {/*
-                  The caption on hover. `aria-hidden` because the link's own
-                  accessible name already carries it — without that a screen
-                  reader reads every caption twice.
-                */}
-                {line ? (
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-t from-black/80 via-black/25 to-transparent p-3 text-xs leading-snug text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none"
-                  >
-                    <span className="line-clamp-3">{line}</span>
-                  </span>
-                ) : null}
-              </a>
-            </li>
-          )
-        })}
-      </ul>
+                  {/*
+                    The caption on hover. `aria-hidden` because the link's own
+                    accessible name already carries it — without that a screen
+                    reader reads every caption twice.
+                  */}
+                  {line ? (
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-t from-black/80 via-black/25 to-transparent p-3 text-xs leading-snug text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none"
+                    >
+                      <span className="line-clamp-3">{line}</span>
+                    </span>
+                  ) : null}
+                </a>
+              </li>
+            )
+          })}
+        </ul>
+      )}
 
       {/* Repeated for the phone, where the header action is hidden, and for
           anyone who has just finished looking through the photographs. */}
