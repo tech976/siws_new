@@ -85,6 +85,42 @@ const SHAPE_CLASS: Record<string, string> = {
   document: 'rounded-2xl aspect-[3/2]',
 }
 
+/**
+ * The length of a block's prose in characters, ignoring the editor's markup.
+ *
+ * Used for one decision only — whether the words have enough substance to hold
+ * a column beside a photograph. See `SHORT_MEASURE` below.
+ */
+const plainLength = (node: unknown): number => {
+  if (!node || typeof node !== 'object') return 0
+  const n = node as { text?: unknown; children?: unknown; root?: unknown }
+  if (typeof n.text === 'string') return n.text.length
+  const children = (n.children ?? (n.root as { children?: unknown } | undefined)?.children) as
+    | unknown[]
+    | undefined
+  if (!Array.isArray(children)) return 0
+  return children.reduce<number>((total, child) => total + plainLength(child), 0)
+}
+
+/**
+ * Below this many characters the side-by-side split stops working.
+ *
+ * The seven-column photograph takes its height from the row, and the row has a
+ * floor under it so a picture is never reduced to a letterbox strip. Three
+ * lines of text beside that floor is 85px of words centred in 384px of band —
+ * an empty pane of white down one side of the section, whichever side the
+ * photograph was put on. It is what "the alignment is not correct" has meant
+ * every time it has been raised, on four different pages.
+ *
+ * Three hundred characters is a short paragraph. Measured against the
+ * twenty-one of these bands on the four sites it falls between "Recognised by
+ * the State" at 189, which stranded, and "Beyond the classroom" at 336, which
+ * fills its column. It is a floor, not a preference: an editor who wants the
+ * stacked treatment for LONGER text still chooses `imagePosition: 'above'`
+ * from the menu.
+ */
+const SHORT_MEASURE = 300
+
 export const MediaTextBlockView = ({ block }: { block: MediaTextBlock }) => {
   const imageFirst = block.imagePosition !== 'right'
   const cta = block.cta?.[0]?.link
@@ -103,6 +139,17 @@ export const MediaTextBlockView = ({ block }: { block: MediaTextBlock }) => {
    * route's own header used to give them, not body size.
    */
   const isPageLead = block.headingLevel === 'h1'
+
+  /*
+   * TOO LITTLE TEXT FOR A COLUMN OF ITS OWN — so the band stacks and centres
+   * instead of splitting.
+   *
+   * The upright frame is exempt: it already solves this the other way round,
+   * by taking its height FROM the words rather than from a floor, so a short
+   * paragraph beside it produces a smaller photograph and no void. Nothing on
+   * the four sites uses `portrait` with text this short in any case.
+   */
+  const stacked = !upright && plainLength(block.content) < SHORT_MEASURE
 
   /* ------------------------------------------------------------- image above
    *
@@ -205,6 +252,105 @@ export const MediaTextBlockView = ({ block }: { block: MediaTextBlock }) => {
               <CMSLink link={cta} />
             </div>
           ) : null}
+        </div>
+      </Section>
+    )
+  }
+
+  /* ------------------------------------------------------- stacked & centred
+   *
+   * The band a short paragraph gets: heading, photograph, words — all on one
+   * centred axis, all on the same measure.
+   *
+   * WHY NOT THE SPLIT. See `SHORT_MEASURE`. A hundred and sixty characters
+   * cannot hold a column against a photograph, and the band renders as a pane
+   * of empty white with three lines floating in the middle of it.
+   *
+   * WHY NOT `imagePosition: 'above'`. That option exists and is the editor's
+   * to choose, but it stretches the picture across the full 1200 at 21:9 —
+   * right for a wide campus shot, and it would crop a group of students down
+   * to a strip of their shoulders. This is narrower and keeps the picture's
+   * own shape.
+   *
+   * NO RATIO ON THE FRAME, so nothing is cropped. The reason the side-by-side
+   * frames carry one is that they have a text column to end level with; there
+   * is no such column here, so the photograph is free to be whatever shape it
+   * was taken at.
+   *
+   * ONE MEASURE FOR BOTH. The picture and the paragraph are capped at the same
+   * 42rem — about 68 characters, the measure `docs/MASTER-LAYOUT.md` sets for
+   * body copy. Sharing it is what makes the three elements read as one column
+   * rather than as a picture with a caption of a different width under it.
+   */
+  if (stacked) {
+    return (
+      <Section background={block.background as BlockBackground}>
+        <div className="mb-10">
+          <span
+            aria-hidden="true"
+            className="mx-auto mb-5 block h-1 w-12 rounded-full bg-accent"
+          />
+          <SectionHeading
+            heading={block.heading}
+            accentWord={block.accentWord}
+            level={block.headingLevel}
+          />
+        </div>
+
+        <div className="mx-auto w-full max-w-2xl">
+          <div
+            className={`relative overflow-hidden shadow-card ${
+              block.imageShape === 'circle'
+                ? 'mx-auto aspect-square w-full max-w-sm rounded-full'
+                : block.imageShape === 'square'
+                  ? 'rounded-none'
+                  : 'rounded-2xl'
+            }`}
+          >
+            <Media
+              resource={block.image}
+              sizes="(min-width: 768px) 42rem, 100vw"
+              className={
+                block.imageShape === 'circle'
+                  ? 'absolute inset-0 h-full w-full object-cover'
+                  : 'h-auto w-full object-cover'
+              }
+              fill={block.imageShape === 'circle'}
+            />
+            {/*
+              NO BLUE WASH, unlike the split band.
+
+              The wash earns its place there by weighting the foot of a frame
+              that stands beside a column of prose, so the two read as one row
+              rather than as a picture next to some words. Stacked, there is no
+              column beside it — the photograph sits on the section's own
+              ground with the text under it, and the tie to the palette is
+              already made by the ground itself.
+
+              It also cannot be applied safely here. This frame is the one an
+              award or a certificate lands in, and a wash over a certificate
+              stops it looking like a certificate and starts it looking like a
+              photocopy with something spilled on it. The `figure` band above
+              carries none for the same reason.
+            */}
+          </div>
+
+          {/*
+            Justified, which is the house rule for body copy and works here
+            because the measure is wide enough for it to — unlike the five
+            columns the split band gives the same paragraph, where it is set
+            ranged left instead. `.siws-prose` justifies by default, so this
+            column asks for nothing.
+          */}
+          <div className="mt-8">
+            <RichText data={block.content} />
+
+            {cta ? (
+              <div className="mt-7 flex justify-center">
+                <CMSLink link={cta} />
+              </div>
+            ) : null}
+          </div>
         </div>
       </Section>
     )
@@ -374,7 +520,9 @@ export const MediaTextBlockView = ({ block }: { block: MediaTextBlock }) => {
           */}
           <RichText
             data={block.content}
-            className={isPageLead ? 'text-left text-[1.1875rem]' : undefined}
+            className={
+              isPageLead ? 'siws-ranged text-[1.1875rem]' : 'siws-ranged'
+            }
           />
 
           {cta ? (

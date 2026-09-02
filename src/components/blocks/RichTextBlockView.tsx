@@ -34,7 +34,23 @@ export const RichTextBlockView = ({ block }: { block: RichTextBlock }) => {
           level={block.headingLevel}
           className="mt-6 mb-5"
         />
-        <RichText data={block.content} className="text-xl leading-relaxed sm:text-2xl" />
+        {/*
+          RANGED LEFT, matching the comment above — and it has to be asked for,
+          because `.siws-prose` justifies by default and the wrapper's
+          `text-center` never reaches the paragraphs.
+
+          The measure is the reason. This band sets its statement at 24px in a
+          46rem column, which is about 46 characters a line — the narrowest
+          measure on the site. Justified, the four lines of "Where our students
+          go next" opened word gaps wide enough to read as tabs, which is
+          exactly the failure `docs/MASTER-LAYOUT.md` names: justification is a
+          function of how many word spaces a line has to spread its slack over,
+          not of how wide the viewport is.
+        */}
+        <RichText
+          data={block.content}
+          className="siws-ranged text-xl leading-relaxed sm:text-2xl"
+        />
       </div>
     )
 

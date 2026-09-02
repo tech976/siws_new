@@ -31,6 +31,7 @@ interface SectionData {
 const BLOCK_LABELS: Record<string, string> = {
   hero: 'Page banner',
   heroEnquiry: 'Banner with enquiry form',
+  feedback: 'Feedback form',
   richText: 'Text section',
   mediaText: 'Image with text',
   cardGrid: 'Card grid',

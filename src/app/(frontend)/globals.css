@@ -751,6 +751,41 @@ main > header + section[data-ground]:not([data-ground='white']) {
 }
 
 /*
+  TWO SECTIONS ON THE SAME GROUND SHARE ONE BAND OF PADDING, NOT TWO.
+
+  `docs/MASTER-LAYOUT.md` §8 puts nothing between sections because each carries
+  its own 56/80 and the COLOUR CHANGE is what separates them. That holds while
+  the colours change. Where three white bands run together — the portal's
+  "Excellence at Every Stage", "SIWS, in thirty seconds" and "Our Schools", or
+  "Life at Secondary School" and the two bands under it — the two paddings meet
+  with no edge between them and 160px of empty white opens up on a desktop. It
+  is not a separator, because there is nothing on either side of it to separate;
+  it is a hole, and it reads as the page having stopped.
+
+  So a section that follows one of its own ground drops its top padding and the
+  seam becomes exactly one band: 80px on a desktop, 56 on a phone. Both are on
+  the scale in §8 — 80 IS the band-to-band rhythm — and the section header's own
+  20/24/40 rhythm inside is what marks the new start, which is what it does on a
+  coloured band too.
+
+  Written out per ground because CSS cannot ask whether a sibling's attribute
+  matches this one's. Only `Section` and the key-figures band set `data-ground`,
+  so a photographic divider or a hero between two white bands correctly stops
+  the rule from matching — there IS an edge in that case.
+
+  A block that has deliberately overridden its own padding keeps it: those are
+  written `!py-10 sm:!py-12`, and `!important` beats this.
+
+  Deliberately unlayered, for the reason given above `main > header + section`.
+*/
+[data-ground='white'] + [data-ground='white'],
+[data-ground='sea'] + [data-ground='sea'],
+[data-ground='tint'] + [data-ground='tint'],
+[data-ground='brand'] + [data-ground='brand'] {
+  padding-top: 0;
+}
+
+/*
   TWO ROWS OF QUOTES DRIFTING PAST EACH OTHER.
 
   CSS, not JavaScript. The row is a flex track holding the quotes twice over,
@@ -1170,6 +1205,61 @@ main > header + section[data-ground]:not([data-ground='white']) {
 
   .siws-panel-rise {
     animation: none;
+  }
+}
+
+/* ==========================================================================
+   THE CENTRED ROW  —  see docs/MASTER-LAYOUT.md §12.3
+
+   WHAT IT FIXES. A CSS grid strands its last row against the left margin.
+   Ten subjects across three columns leave one tile alone on an otherwise
+   empty line; nine teaching methods across two columns leave the same; a
+   gallery of two photographs in a three-column grid leaves a third of the
+   band blank. On a page whose every heading is centred, that stranded tile
+   is the only thing on the page with no axis, and the set stops reading as a
+   set — it reads as a set plus an afterthought.
+
+   HOW. A wrapping flex row whose items carry exactly the basis a grid track
+   would have given them. A FULL row therefore lays out identically to the
+   grid it replaces — same widths, same gutter, same equal heights, because
+   flex items stretch to their line just as grid items stretch to their row.
+   Only a PARTIAL row has slack, and `justify-content: center` puts that slack
+   on both sides of it instead of all of it on the right.
+
+   The basis is a hair under the exact fraction. Flex decides whether an item
+   wraps from its hypothetical main size, before any shrinking happens, so a
+   basis that sums to exactly 100% drops the last item of a full row onto a
+   line of its own the moment sub-pixel rounding goes the wrong way. The
+   0.02px is invisible and the row stays intact.
+
+   `--flow-gap` is the gutter, so a caller that needs the card-grid gutter
+   rather than the panel one sets `[--flow-gap:1.25rem]` and nothing else.
+   ========================================================================== */
+
+.siws-flow {
+  --flow-gap: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--flow-gap);
+}
+
+/* One per line until there is room for more — the grid's `grid-cols-1`. */
+.siws-flow > * {
+  flex: 0 1 100%;
+  min-width: 0;
+}
+
+@media (min-width: 40rem) {
+  .siws-flow-2 > *,
+  .siws-flow-3 > * {
+    flex-basis: calc((100% - var(--flow-gap)) / 2 - 0.02px);
+  }
+}
+
+@media (min-width: 64rem) {
+  .siws-flow-3 > * {
+    flex-basis: calc((100% - 2 * var(--flow-gap)) / 3 - 0.02px);
   }
 }
 

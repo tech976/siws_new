@@ -49,7 +49,7 @@ export const GalleryPager = ({ items, perPage }: GalleryPagerProps) => {
       <ul
         id={gridId}
         tabIndex={-1}
-        className="grid gap-5 scroll-mt-32 outline-none sm:grid-cols-2 lg:grid-cols-3"
+        className="siws-flow siws-flow-3 scroll-mt-32 outline-none [--flow-gap:1.25rem]"
       >
         {visible}
       </ul>

@@ -240,6 +240,13 @@ Any further component brought in from an external library:
 |---|---|---|---|
 | `/primary/about` | Our Values | `panel` | 3 (default) — ten one-word labels |
 | `/primary/about` | Our Goals | `panel`, with chips | 2 — four phrases; three across would strand one on a second row and wrap the titles under their chips |
+| `/secondary` | A holistic approach to teaching | `panel`, with chips | 2 — seven titles that each carry a chip and a sentence |
+
+`/secondary` used to carry a second panel, "How we teach", and that was the
+"two at the outside" limit in §4 reached. The block has been dropped from the
+front page — the nine methods are published on `/secondary/academics`, in the
+`compact` layout that suits bare labels — so the page is back to one panel and
+has a slot spare. Spend it on something a visitor weighs, not on a list.
 
 `/primary/about` carries no photograph as a result of the removal above. If it
 needs one, the block to use is `mediaText`, not `divider`.
@@ -557,6 +564,60 @@ eye no fixed left edge to return to on each line.
 **The spacing does not change with the content type.** A section holding a
 paragraph and a section holding twelve cards have identical top padding,
 identical header rhythm and identical bottom padding. Only the middle differs.
+
+### 12.3 The last row is centred, never stranded
+
+Added 2026-09-02, after `/secondary`.
+
+A CSS grid pins its final partial row to the left margin. Ten subjects across
+three columns leave one tile alone on an otherwise empty line; nine teaching
+methods across two leave the same; a gallery of two photographs in a
+three-column grid leaves a third of the band blank. Under a centred heading
+that stranded tile is the only thing on the page with no axis, and the set
+stops reading as a set — it reads as a set plus an afterthought.
+
+`.siws-flow` in `globals.css` replaces the grid with a wrapping flex row whose
+items carry exactly the basis a grid track would have given them, plus
+`justify-content: center`. A **full** row is therefore identical to the grid it
+replaces — same widths, same gutter, same equal heights. Only a partial row has
+slack, and the slack goes on both sides of it instead of all on the right.
+
+| | |
+|---|---|
+| Classes | `.siws-flow` with `.siws-flow-2` or `.siws-flow-3` |
+| Gutter | `--flow-gap`, default `0.75rem`; a card grid sets `[--flow-gap:1.25rem]` |
+| Used by | `featureList` `panel` and `compact`, `gallery` `grid`, `GalleryPager` |
+| Not used by | `cards` and `showcase` — those already read as separate destinations on a spine, and centring a short last row detaches it from the column above |
+
+The basis is a hundredth of a pixel under the exact fraction. Flex decides
+whether an item wraps from its hypothetical main size, before any shrinking
+happens, so a basis summing to exactly 100% drops the last item of a **full**
+row onto a line of its own the moment sub-pixel rounding goes the wrong way.
+
+### 12.4 A media band with too little text stacks
+
+Added 2026-09-02, after `/secondary`.
+
+`mediaText`'s side-by-side band gives the photograph seven columns and the words
+five, and the picture takes its height from the row — which has a floor under it
+so a photograph is never reduced to a letterbox strip. Three lines of text
+beside that floor is 85px of words centred in 384px of band: an empty pane of
+white on one side of the section. It is what "the alignment is not correct" has
+meant every time it has been raised, on four different pages.
+
+**Below 300 characters the band stacks and centres instead**: heading,
+photograph, paragraph, all on one axis and all on the same 42rem measure. The
+frame takes no ratio, so nothing is cropped — the reason the split frames carry
+one is that they have a text column to finish level with, and there is no such
+column here. No blue wash either, for the same reason and because this is the
+frame an award or a certificate lands in.
+
+Three hundred is a floor, not a preference. Measured against the twenty-one of
+these bands on the four sites it falls between "Recognised by the State" at 189,
+which stranded, and "Beyond the classroom" at 336, which fills its column. An
+editor who wants the stacked treatment for **longer** text still chooses
+`imagePosition: 'above'` from the menu — this only catches text that cannot hold
+a column whatever anybody picks.
 
 ---
 
@@ -1058,14 +1119,38 @@ deliberately leaves both ragged. So the rule splits by role:
 | | Alignment |
 |---|---|
 | Headings | Centred, `text-wrap: balance`, never justified |
-| Body (`.t-prose`) | Justified with `hyphens: auto`, capped at 68ch |
+| Body (`.t-prose`, `.siws-prose`) | Justified with `hyphens: auto`, capped at 68ch |
 | Body below 640px | Falls back to ranged left |
+| Body in a column under ~50 characters | Ranged left — add `.siws-ranged` |
 
 **Justification without hyphenation is the failure to avoid.** On a narrow
 measure the justifier stretches three words across the full width and opens
 rivers of white down the paragraph, so the two are always set together. Below
 640px justification is switched off entirely — the measure is too narrow for
 good break points and the result is worse than a ragged edge.
+
+**The rule is a measure, not a device width** (corrected 2026-09-02). The 640px
+line is a proxy for "too few word spaces on a line to spread the slack over",
+and two columns on the site are that narrow while the viewport is not:
+
+| Column | Measure | Was | Now |
+|---|---:|---|---|
+| `mediaText`, the text half of a 7 + 5 split | ~43 ch | justified — rivers, and a hyphen break on most lines | ranged left |
+| `richText` `narrow`, a statement set at 24px in 46rem | ~46 ch | justified — word gaps wide enough to read as tabs | ranged left |
+| `mediaText` stacked, `richText` full, block intros | 63–72 ch | justified | justified |
+
+`.siws-ranged` is the opt-out, and it lives in **`prose.css`**, beside the rule
+it overrides, not in `globals.css` beside `.siws-centre`. Cascade layers outrank
+specificity: `.siws-prose` is declared in the components layer, so a two-class
+selector written in the base layer loses to it however specific it looks.
+`.siws-centre` gets away with being written there only because its `> *` half
+still reaches the paragraphs — the element itself keeps the alignment it was
+told to drop. Anything new of this kind goes in `prose.css`.
+
+**`.siws-prose` never had the 640px fallback at all** until 2026-09-02, so every
+rich-text block on all four sites justified on a phone — the one width at which
+the handbook says not to. `.t-prose` has carried the rule since the type scale
+landed; the CMS prose it was written to govern did not.
 
 ### Migration record
 

@@ -28,6 +28,48 @@
   text-wrap: auto;
 }
 
+/*
+ * Justification is switched off where it stops working.
+ *
+ * `docs/MASTER-LAYOUT.md` states the rule as a measure: below roughly 640px
+ * the justifier has too few word spaces per line to spread the slack over and
+ * too few break points for the hyphenator to help, so both edges flush costs
+ * more than the ragged right it buys. `.t-prose` in globals.css has carried
+ * this rule since the type scale landed; the CMS prose it is meant to govern
+ * never had it, so every rich-text block on the site justified on a phone.
+ */
+@media (max-width: 40rem) {
+  .siws-prose {
+    text-align: left;
+    hyphens: manual;
+  }
+}
+
+/*
+ * RANGED LEFT — the other exception, and the one a component asks for.
+ *
+ * The rule above is a viewport test; this one is for a column that is narrow
+ * while the viewport is not. `MediaTextBlockView` gives its text five columns
+ * of twelve — about 43 characters a line — and justification works by
+ * spreading a line's slack across its word spaces: with six or seven words to
+ * spread it over there is nowhere for it to go, so the gaps open into rivers
+ * and the hyphenator breaks a word on most lines because no better point
+ * exists. `docs/MASTER-LAYOUT.md` states the rule as a measure, not a device
+ * width — below roughly 68 characters, do not justify.
+ *
+ * It lives HERE, beside the rule it overrides, rather than in globals.css
+ * beside `.siws-centre`. Cascade layers outrank specificity: `.siws-prose` is
+ * declared in the components layer, so a two-class selector written in the
+ * base layer loses to it however specific it looks. `.siws-centre` gets away
+ * with that because its `> *` half still reaches the paragraphs; the element
+ * itself keeps the alignment it was told to drop.
+ */
+.siws-prose.siws-ranged,
+.siws-prose.siws-ranged > * {
+  text-align: left;
+  hyphens: manual;
+}
+
 .siws-prose > * + * {
   margin-block-start: 1.1em;
 }

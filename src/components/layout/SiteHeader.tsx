@@ -41,11 +41,18 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
 
   /**
    * The line under the name. `tagline` is the section's own — "Maharashtra
-   * State Board | Grades 1 to 4" — and the portal falls back to the institution
-   * line. Nothing is invented: the college's "NAAC Re-Accredited A Grade with
-   * 3.15 CGPA" belongs to the college and is not repeated over a school.
+   * State Board | Grades 1 to 4" — and the PORTAL, which has no unit, prints
+   * the institution line. Nothing is invented: the college's "NAAC
+   * Re-Accredited A Grade with 3.15 CGPA" belongs to the college and is not
+   * repeated over a school.
+   *
+   * A SECTION THAT CARRIES NO TAGLINE PRINTS NOTHING, which is why this is a
+   * ternary on `unit` rather than `unit?.tagline ?? …`. Junior College asked
+   * for its line to be taken off; with `??` the empty field fell through to
+   * the institution motto, so the line a school had removed came back reading
+   * "From KG to PG" over a Standard XI page.
    */
-  const tagline = unit?.tagline ?? 'From KG to PG — Inspiring Excellence Since 1934'
+  const tagline = unit ? unit.tagline : 'From KG to PG — Inspiring Excellence Since 1934'
 
   const place = [unit?.addressLine2, unit?.city, unit?.postalCode].filter(Boolean).join(', ')
 
@@ -102,7 +109,7 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
             </span>
           </Link>
 
-          <p className="mt-1 truncate text-sm text-ink-soft">{tagline}</p>
+          {tagline ? <p className="mt-1 truncate text-sm text-ink-soft">{tagline}</p> : null}
 
           {place ? (
             <p className="mt-0.5 text-xs text-ink-muted sm:text-sm">
