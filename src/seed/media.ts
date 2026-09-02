@@ -700,6 +700,14 @@ const IMAGES: ImageSeed[] = [
     caption: 'Prize day at the Kindergarten annual sports',
     depictsChildren: true,
   },
+  {
+    file: 'kg-sports-day-podium.jpg',
+    filename: 'kg-sports-day-podium.jpg',
+    category: 'Achievements',
+    alt: 'Four kindergarten children in red and navy sports kit on a winners’ podium numbered 1, 2 and 3, each holding a gold trophy, with a table of further trophies behind them on the turf pitch.',
+    caption: 'On the podium at the Kindergarten sports day',
+    depictsChildren: true,
+  },
 ]
 
 /*
