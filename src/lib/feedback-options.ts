@@ -1,5 +1,5 @@
 /**
- * The two fixed lists the feedback form offers, and the form's idle state.
+ * The two fixed lists the feedback form offers.
  *
  * A PLAIN MODULE, NOT THE ACTION FILE, and that is not a matter of taste. A
  * file marked `'use server'` may only export async functions: everything else
@@ -42,13 +42,3 @@ export const FEEDBACK_SUBJECTS = [
   'Transport',
   'Something else',
 ] as const
-
-export interface FeedbackState {
-  status: 'idle' | 'success' | 'error'
-  message?: string
-  errors?: Record<string, string>
-  /** Echoed back so a failed submission does not wipe what was typed. */
-  values?: Record<string, string>
-}
-
-export const initialFeedbackState: FeedbackState = { status: 'idle' }

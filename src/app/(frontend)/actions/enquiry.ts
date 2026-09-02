@@ -7,6 +7,7 @@ import config from '@payload-config'
 
 import { CAMPUS_LABELS, CAMPUS_VALUES, type Campus } from '@/fields/campus'
 import { ADMISSION_ENQUIRY_NOTICE } from '@/lib/consent-notices'
+import type { FormState } from '@/lib/form-state'
 import { HONEYPOT_FIELD, guardSubmission } from '@/lib/form-guard'
 
 /**
@@ -21,17 +22,19 @@ import { HONEYPOT_FIELD, guardSubmission } from '@/lib/form-guard'
  * the visitor; they are not a control, because anything can post to this action.
  */
 
-export interface EnquiryState {
-  status: 'idle' | 'success' | 'error'
-  /** Message shown above the form. */
-  message?: string
-  /** Field-level messages, keyed by input name. */
-  errors?: Record<string, string>
-  /** Echoed back so a failed submission does not wipe what was typed. */
-  values?: Record<string, string>
-}
-
-export const initialEnquiryState: EnquiryState = { status: 'idle' }
+/*
+ * THE STATE SHAPE AND THE IDLE VALUE LIVE IN `lib/form-state`, and they have to.
+ *
+ * `initialEnquiryState` was declared here, in a `'use server'` file, which may
+ * only export async functions. It compiled and it rendered; it threw the
+ * moment anybody pressed the button —
+ *
+ *   A "use server" file can only export async functions, found object.
+ *
+ * — so this form had been failing on submit while looking entirely correct on
+ * screen. Found on 2026-09-02 while adding the feedback form, which had made
+ * the same mistake with its two option lists.
+ */
 
 const text = (data: FormData, key: string): string => {
   const value = data.get(key)
@@ -66,9 +69,9 @@ const ROUTES = {
 type Route = keyof typeof ROUTES
 
 export const submitEnquiry = async (
-  _previous: EnquiryState,
+  _previous: FormState,
   formData: FormData,
-): Promise<EnquiryState> => {
+): Promise<FormState> => {
   const values: Record<string, string> = {
     parentFirstName: text(formData, 'parentFirstName'),
     parentLastName: text(formData, 'parentLastName'),

@@ -53,6 +53,17 @@ export const inputClass = (hasError: boolean) =>
 
 export interface FieldProps {
   name: string
+  /**
+   * The DOM id, when it must differ from the field's name.
+   *
+   * A Contact page now carries TWO forms — the enquiry card and the feedback
+   * box — and both ask for an email address and a phone number. Deriving the
+   * id from the name alone put `id="email"` on the page twice, which is
+   * invalid HTML and, worse, makes `<label for="email">` ambiguous: a screen
+   * reader resolves both labels to the first input, so the second form's
+   * fields are announced with the first form's names.
+   */
+  id?: string
   label: string
   type?: string
   required?: boolean
@@ -73,6 +84,7 @@ export interface FieldProps {
  */
 export const Field = ({
   name,
+  id,
   label,
   type = 'text',
   required = false,
@@ -83,13 +95,16 @@ export const Field = ({
   error,
   defaultValue,
   className,
-}: FieldProps) => (
+}: FieldProps) => {
+  const fieldId = id ?? name
+
+  return (
   <div>
-    <label htmlFor={name} className="mb-2 block t-small font-semibold text-brand">
+    <label htmlFor={fieldId} className="mb-2 block t-small font-semibold text-brand">
       {label} {required ? <Required /> : null}
     </label>
     <input
-      id={name}
+      id={fieldId}
       name={name}
       type={type}
       required={required}
@@ -99,16 +114,18 @@ export const Field = ({
       max={max}
       defaultValue={defaultValue}
       aria-invalid={error ? true : undefined}
-      aria-describedby={error ? `${name}-error` : undefined}
+      aria-describedby={error ? `${fieldId}-error` : undefined}
       className={className}
     />
-    <FieldError id={`${name}-error`} message={error} />
+    <FieldError id={`${fieldId}-error`} message={error} />
   </div>
-)
+  )
+}
 
 /** A `<select>` with the same label, error and focus behaviour as `Field`. */
 export const SelectField = ({
   name,
+  id,
   label,
   options,
   required = false,
@@ -117,24 +134,29 @@ export const SelectField = ({
   placeholder = 'Please choose…',
 }: {
   name: string
+  /** See the note on `FieldProps.id` — two forms share a page. */
+  id?: string
   label: string
   options: readonly string[]
   required?: boolean
   error?: string
   defaultValue?: string
   placeholder?: string
-}) => (
+}) => {
+  const fieldId = id ?? name
+
+  return (
   <div>
-    <label htmlFor={name} className="mb-2 block t-small font-semibold text-brand">
+    <label htmlFor={fieldId} className="mb-2 block t-small font-semibold text-brand">
       {label} {required ? <Required /> : null}
     </label>
     <select
-      id={name}
+      id={fieldId}
       name={name}
       required={required}
       defaultValue={defaultValue}
       aria-invalid={error ? true : undefined}
-      aria-describedby={error ? `${name}-error` : undefined}
+      aria-describedby={error ? `${fieldId}-error` : undefined}
       className={inputClass(Boolean(error))}
     >
       <option value="">{placeholder}</option>
@@ -144,9 +166,10 @@ export const SelectField = ({
         </option>
       ))}
     </select>
-    <FieldError id={`${name}-error`} message={error} />
+    <FieldError id={`${fieldId}-error`} message={error} />
   </div>
-)
+  )
+}
 
 const NoticeItem = ({ term, detail }: { term: string; detail: string }) => (
   <div>
@@ -199,31 +222,57 @@ export const ConsentNoticeDetails = ({
  * requires an affirmative action, and a `defaultChecked` here would be one
  * line away from breaking that on every form at once.
  */
-export const ConsentCheckbox = ({ label, error }: { label: string; error?: string }) => (
-  <div>
-    <label className="flex cursor-pointer items-start gap-3 text-sm text-ink-soft">
-      <input
-        type="checkbox"
-        name="consent"
-        required
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? 'consent-error' : undefined}
-        className="mt-0.5 size-5 shrink-0 rounded border-2 border-field accent-brand"
-      />
-      <span>{label}</span>
-    </label>
-    <FieldError id="consent-error" message={error} />
-  </div>
-)
+export const ConsentCheckbox = ({
+  label,
+  error,
+  /** Namespaces the error id — see the note on `FieldProps.id`. */
+  idPrefix = '',
+}: {
+  label: string
+  error?: string
+  idPrefix?: string
+}) => {
+  const errorId = `${idPrefix}consent-error`
+
+  return (
+    <div>
+      {/* The input is wrapped by its label, so it needs no id of its own. */}
+      <label className="flex cursor-pointer items-start gap-3 text-sm text-ink-soft">
+        <input
+          type="checkbox"
+          name="consent"
+          required
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
+          className="mt-0.5 size-5 shrink-0 rounded border-2 border-field accent-brand"
+        />
+        <span>{label}</span>
+      </label>
+      <FieldError id={errorId} message={error} />
+    </div>
+  )
+}
 
 /**
  * The honeypot. Positioned off-screen rather than `display:none` — some bots
  * skip hidden inputs, and `aria-hidden` plus `tabIndex={-1}` keeps it away from
  * screen readers and keyboard users either way.
  */
-export const Honeypot = ({ name }: { name: string }) => (
-  <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
-    <label htmlFor={name}>Website</label>
-    <input id={name} type="text" name={name} tabIndex={-1} autoComplete="off" defaultValue="" />
-  </div>
-)
+export const Honeypot = ({ name, idPrefix = '' }: { name: string; idPrefix?: string }) => {
+  // Namespaced for the same reason every other field is: two forms, one page.
+  const fieldId = `${idPrefix}${name}`
+
+  return (
+    <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
+      <label htmlFor={fieldId}>Website</label>
+      <input
+        id={fieldId}
+        type="text"
+        name={name}
+        tabIndex={-1}
+        autoComplete="off"
+        defaultValue=""
+      />
+    </div>
+  )
+}

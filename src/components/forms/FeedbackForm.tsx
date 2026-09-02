@@ -5,11 +5,8 @@ import { useFormStatus } from 'react-dom'
 
 import { submitFeedback } from '@/app/(frontend)/actions/feedback'
 import { FEEDBACK_NOTICE } from '@/lib/consent-notices'
-import {
-  FEEDBACK_RELATIONSHIPS,
-  FEEDBACK_SUBJECTS,
-  initialFeedbackState,
-} from '@/lib/feedback-options'
+import { FEEDBACK_RELATIONSHIPS, FEEDBACK_SUBJECTS } from '@/lib/feedback-options'
+import { idleFormState } from '@/lib/form-state'
 import { HONEYPOT_FIELD } from '@/lib/form-guard'
 
 import {
@@ -50,11 +47,20 @@ const SubmitButton = () => {
 }
 
 export const FeedbackForm = ({ unitId, formToken, privacyHref }: FeedbackFormProps) => {
-  const [state, formAction] = useActionState(submitFeedback, initialFeedbackState)
+  const [state, formAction] = useActionState(submitFeedback, idleFormState)
 
   const fieldError = (name: string) => state.errors?.[name]
   const previous = (name: string) => state.values?.[name] ?? ''
   const classFor = (name: string) => inputClass(Boolean(fieldError(name)))
+  /*
+   * A Contact page carries this form AND the enquiry card, and both ask for a
+   * name, an email address and a phone number. Without a prefix each of those
+   * ids appears twice on the page, which is invalid HTML and leaves
+   * `<label for="email">` pointing at the first input — so a screen reader
+   * reads this form's fields out under the other form's labels. The `name`
+   * attributes are untouched; only the ids are namespaced.
+   */
+  const fid = (name: string) => `feedback-${name}`
 
   if (state.status === 'success') {
     return (
@@ -75,7 +81,7 @@ export const FeedbackForm = ({ unitId, formToken, privacyHref }: FeedbackFormPro
       <input type="hidden" name="unitId" value={String(unitId)} />
       <input type="hidden" name="formToken" value={formToken} />
 
-      <Honeypot name={HONEYPOT_FIELD} />
+      <Honeypot name={HONEYPOT_FIELD} idPrefix="feedback-" />
 
       {state.status === 'error' && state.message ? (
         <p
@@ -89,6 +95,7 @@ export const FeedbackForm = ({ unitId, formToken, privacyHref }: FeedbackFormPro
       <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
         <Field
           name="name"
+          id={fid('name')}
           label="Your name"
           required
           autoComplete="name"
@@ -104,6 +111,7 @@ export const FeedbackForm = ({ unitId, formToken, privacyHref }: FeedbackFormPro
         */}
         <Field
           name="email"
+          id={fid('email')}
           label="Email address"
           type="email"
           required
@@ -117,6 +125,7 @@ export const FeedbackForm = ({ unitId, formToken, privacyHref }: FeedbackFormPro
       <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
         <Field
           name="phone"
+          id={fid('phone')}
           label="Phone number (optional)"
           type="tel"
           autoComplete="tel"
@@ -126,6 +135,7 @@ export const FeedbackForm = ({ unitId, formToken, privacyHref }: FeedbackFormPro
         />
         <SelectField
           name="relationship"
+          id={fid('relationship')}
           label="You are a"
           options={FEEDBACK_RELATIONSHIPS}
           error={fieldError('relationship')}
@@ -135,6 +145,7 @@ export const FeedbackForm = ({ unitId, formToken, privacyHref }: FeedbackFormPro
 
       <SelectField
         name="subject"
+        id={fid('subject')}
         label="What is your message about"
         options={FEEDBACK_SUBJECTS}
         required
@@ -143,20 +154,20 @@ export const FeedbackForm = ({ unitId, formToken, privacyHref }: FeedbackFormPro
       />
 
       <div>
-        <label htmlFor="message" className="mb-2 block t-small font-semibold text-brand">
+        <label htmlFor={fid('message')} className="mb-2 block t-small font-semibold text-brand">
           Your message <Required />
         </label>
         <textarea
-          id="message"
+          id={fid('message')}
           name="message"
           required
           rows={6}
           defaultValue={previous('message')}
           aria-invalid={fieldError('message') ? true : undefined}
-          aria-describedby={fieldError('message') ? 'message-error' : undefined}
+          aria-describedby={fieldError('message') ? `${fid('message')}-error` : undefined}
           className={classFor('message')}
         />
-        <FieldError id="message-error" message={fieldError('message')} />
+        <FieldError id={`${fid('message')}-error`} message={fieldError('message')} />
       </div>
 
       <ConsentNoticeDetails
@@ -165,7 +176,11 @@ export const FeedbackForm = ({ unitId, formToken, privacyHref }: FeedbackFormPro
         summary="How we will use what you send"
       />
 
-      <ConsentCheckbox label={FEEDBACK_NOTICE.checkboxLabel} error={fieldError('consent')} />
+      <ConsentCheckbox
+        label={FEEDBACK_NOTICE.checkboxLabel}
+        error={fieldError('consent')}
+        idPrefix="feedback-"
+      />
 
       <SubmitButton />
     </form>

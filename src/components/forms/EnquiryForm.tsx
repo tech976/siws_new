@@ -3,9 +3,10 @@
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 
-import { initialEnquiryState, submitEnquiry } from '@/app/(frontend)/actions/enquiry'
+import { submitEnquiry } from '@/app/(frontend)/actions/enquiry'
 import { CAMPUS_LABELS, type Campus } from '@/fields/campus'
 import { ADMISSION_ENQUIRY_NOTICE } from '@/lib/consent-notices'
+import { idleFormState } from '@/lib/form-state'
 import { HONEYPOT_FIELD } from '@/lib/form-guard'
 
 import {
@@ -66,7 +67,7 @@ export const EnquiryForm = ({
   sendTo = 'admissions',
   privacyHref,
 }: EnquiryFormProps) => {
-  const [state, formAction] = useActionState(submitEnquiry, initialEnquiryState)
+  const [state, formAction] = useActionState(submitEnquiry, idleFormState)
 
   const fieldError = (name: string) => state.errors?.[name]
   const previous = (name: string) => state.values?.[name] ?? ''

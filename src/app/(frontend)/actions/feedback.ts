@@ -6,11 +6,8 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 import { FEEDBACK_NOTICE } from '@/lib/consent-notices'
-import {
-  FEEDBACK_RELATIONSHIPS,
-  FEEDBACK_SUBJECTS,
-  type FeedbackState,
-} from '@/lib/feedback-options'
+import { FEEDBACK_RELATIONSHIPS, FEEDBACK_SUBJECTS } from '@/lib/feedback-options'
+import type { FormState } from '@/lib/form-state'
 import { HONEYPOT_FIELD, guardSubmission } from '@/lib/form-guard'
 
 /**
@@ -33,17 +30,18 @@ const text = (data: FormData, key: string): string => {
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 /*
- * THE OPTION LISTS AND THE STATE TYPE LIVE IN `lib/feedback-options`, and they
- * have to. A `'use server'` module may only export async functions — anything
- * else is rewritten into a reference the client calls over the network — so
- * declaring the two `<select>` lists here compiled and then failed at render
- * with "options.map is not a function". Both files import them from there.
+ * THE OPTION LISTS LIVE IN `lib/feedback-options` AND THE STATE IN
+ * `lib/form-state`, and they have to. A `'use server'` module may only export
+ * async functions — anything else is rewritten into a reference the client
+ * calls over the network — so declaring the two `<select>` lists here compiled
+ * and then failed at render with "options.map is not a function", and the
+ * idle-state object failed on submit. Both files import them from there.
  */
 
 export const submitFeedback = async (
-  _previous: FeedbackState,
+  _previous: FormState,
   formData: FormData,
-): Promise<FeedbackState> => {
+): Promise<FormState> => {
   const values: Record<string, string> = {
     name: text(formData, 'name'),
     email: text(formData, 'email'),
