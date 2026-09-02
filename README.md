@@ -36,6 +36,17 @@ npm run dev                                               # http://localhost:300
 That one restore is what makes a fresh clone look like everybody else's. Read
 the next section before reaching for the seed scripts instead.
 
+> **That restore REPLACES the whole database — only run it on a fresh clone.**
+>
+> Run on a machine that has already been seeded, it discards the seeded content
+> and puts the dump's older snapshot back. It reads exactly like "my changes
+> came back on their own": nothing errors, and the dump is a binary blob, so no
+> diff shows it has gone stale. If you have already set this machine up, the
+> command you want after a pull is `npm run seed:refresh`, never this one.
+>
+> `npm run seed:verify` reports which commit the database was built from, and
+> warns when the committed dump is older than the seeds.
+
 When you have *changed* a seed and need the database rebuilt from it, there is
 one command for that and it is not the individual scripts:
 
