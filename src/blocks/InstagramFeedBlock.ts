@@ -53,6 +53,37 @@ export const InstagramFeedBlock: Block = {
       admin: { description: 'Shown under the heading, e.g. @siws_wadala' },
     },
     {
+      name: 'postUrls',
+      type: 'array',
+      maxRows: 12,
+      label: 'Instagram post links',
+      labels: { singular: 'Post link', plural: 'Post links' },
+      admin: {
+        initCollapsed: false,
+        description:
+          'THE EASY OPTION. Paste the address of each post — open it on Instagram and copy the address bar. Instagram itself supplies the picture, caption and likes, and keeps them up to date. Nothing else to set up.',
+      },
+      fields: [
+        {
+          name: 'url',
+          type: 'text',
+          required: true,
+          admin: {
+            description: 'e.g. https://www.instagram.com/p/ABC123/ or .../reel/ABC123/',
+          },
+          validate: (value: unknown) => {
+            if (typeof value !== 'string' || value.length === 0) return true
+            // Only /p/, /reel/ and /tv/ can be embedded — a profile or story
+            // address renders an empty box, and the editor has no way to know
+            // that without being told here.
+            return /^https:\/\/(www\.)?instagram\.com\/(p|reel|tv)\/[\w-]+/i.test(value)
+              ? true
+              : 'That is not a link to a single post. Open the post itself and copy the address — it should contain /p/ or /reel/.'
+          },
+        },
+      ],
+    },
+    {
       name: 'posts',
       type: 'array',
       maxRows: 12,
@@ -61,7 +92,7 @@ export const InstagramFeedBlock: Block = {
       admin: {
         initCollapsed: true,
         description:
-          'Used when the automatic Instagram connection is not set up, or while it is unavailable. Add the six most recent posts here to keep the section looking current.',
+          'Only needed if you are NOT using the post links above and NOT using the API connection. Pictures uploaded here are shown as a plain grid.',
       },
       fields: [
         {

@@ -388,6 +388,9 @@ const FeaturePanel = ({ block }: { block: FeatureListBlock }) => {
         className={`mt-10 grid grid-cols-1 gap-3 ${
           block.columns === '1' ? '' : 'sm:grid-cols-2'
         } ${block.columns === '1' || block.columns === '2' ? '' : 'lg:grid-cols-3'}`}
+        /* '2-centre' means nothing to a panel grid — it is the LIST layout's
+           narrowed-and-centred pair. Treated as the default here, which is
+           three across, because a set of panels is already a grid. */
       >
         {items.map((item, index) => {
           const Icon = item.icon ? FEATURE_ICONS[item.icon] : undefined

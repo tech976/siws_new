@@ -11,10 +11,21 @@ import { cache } from 'react'
  * against Instagram's terms, so it would fail in production precisely because
  * production is a server.
  *
- * The supported replacement is the Instagram Graph API, which needs a
- * long-lived access token tied to a professional (business or creator) account.
- * @siws_wadala is already professional, so the only outstanding step is
- * generating the token — see `docs/INSTAGRAM.md`.
+ * The supported replacement is the Instagram Graph API, and there are two ways
+ * in. Which one applies depends on whether SIWS can sign in to @siws_wadala.
+ *
+ *   OWN ACCOUNT (`/me/media`) — the account authorises this site directly.
+ *   Needs the Instagram login for @siws_wadala.
+ *
+ *   BUSINESS DISCOVERY (`business_discovery`) — reads any PUBLIC PROFESSIONAL
+ *   account's recent posts using SOMEONE ELSE'S token. No authorisation from
+ *   @siws_wadala at all, because the data being read is already public.
+ *   It needs a Facebook Page and a professional Instagram account belonging to
+ *   whoever sets it up, which may be far easier to arrange than the school's
+ *   own login.
+ *
+ * Both are configured in `.env`; see `docs/INSTAGRAM.md`. Business Discovery is
+ * used when a target username is set, because it is only ever set deliberately.
  *
  * THE CONTRACT WITH THE BLOCK. This module never throws and never blocks a
  * page. Any failure — no token, an expired token, a Meta outage, a slow
@@ -91,18 +102,62 @@ const toPost = (media: GraphMedia): InstagramPost | null => {
  * request, and in Next's fetch cache so that request is reused across visitors
  * for `REVALIDATE_SECONDS`.
  */
+/**
+ * Builds the request for whichever route is configured.
+ *
+ * Business Discovery nests the media inside a `business_discovery` modifier on
+ * OUR OWN user id, rather than reading a `/media` edge directly — the target
+ * account is named in the query, not in the path. The nested field list is the
+ * same either way, which is what lets one mapper serve both.
+ */
+const buildRequest = (
+  token: string,
+  limit: number,
+): { url: URL; extract: (payload: unknown) => unknown } => {
+  const fields = 'id,caption,media_type,media_url,thumbnail_url,permalink'
+  // Over-fetch slightly: unusable records (a video with no poster) are dropped
+  // in mapping, and asking for exactly six could then render five.
+  const count = String(Math.min(limit + 6, 25))
+
+  const targetUsername = process.env.INSTAGRAM_TARGET_USERNAME?.trim().replace(/^@/, '')
+  const selfUserId = process.env.INSTAGRAM_USER_ID?.trim()
+
+  if (targetUsername && selfUserId) {
+    const url = new URL(`${GRAPH_HOST}/${selfUserId}`)
+    url.searchParams.set(
+      'fields',
+      `business_discovery.username(${targetUsername}){media.limit(${count}){${fields}}}`,
+    )
+    url.searchParams.set('access_token', token)
+    return {
+      url,
+      extract: (payload) =>
+        (payload as { business_discovery?: { media?: { data?: unknown } } })?.business_discovery
+          ?.media?.data,
+    }
+  }
+
+  const url = new URL(`${GRAPH_HOST}/me/media`)
+  url.searchParams.set('fields', fields)
+  url.searchParams.set('limit', count)
+  url.searchParams.set('access_token', token)
+  return { url, extract: (payload) => (payload as { data?: unknown })?.data }
+}
+
+/**
+ * Fetches the most recent posts, newest first.
+ *
+ * Wrapped in React's `cache` so several blocks on one page share a single
+ * request, and in Next's fetch cache so that request is reused across visitors
+ * for `REVALIDATE_SECONDS`.
+ */
 export const getInstagramPosts = cache(async (limit: number): Promise<InstagramPost[]> => {
   const token = process.env.INSTAGRAM_ACCESS_TOKEN
   // The ordinary state of affairs until a token is issued. Not an error, and
   // deliberately not logged: it would print on every render forever.
   if (!token) return []
 
-  const url = new URL(`${GRAPH_HOST}/me/media`)
-  url.searchParams.set('fields', 'id,caption,media_type,media_url,thumbnail_url,permalink')
-  // Over-fetch slightly: unusable records (a video with no poster) are dropped
-  // in mapping, and asking for exactly six could then render five.
-  url.searchParams.set('limit', String(Math.min(limit + 6, 25)))
-  url.searchParams.set('access_token', token)
+  const { url, extract } = buildRequest(token, limit)
 
   try {
     const response = await fetch(url, {
@@ -116,15 +171,19 @@ export const getInstagramPosts = cache(async (limit: number): Promise<InstagramP
        * always means the long-lived token passed its 60-day life without being
        * refreshed, and the symptom on the page — the grid quietly reverting to
        * the CMS posts — gives nobody a reason to go looking.
+       *
+       * On the Business Discovery route it can also mean the target account
+       * stopped being public or professional, which is outside our control and
+       * equally invisible without this line.
        */
       console.error(
-        `[instagram] ${response.status} ${response.statusText} — the feed has fallen back to CMS posts. Check INSTAGRAM_ACCESS_TOKEN has not expired.`,
+        `[instagram] ${response.status} ${response.statusText} — the feed has fallen back to CMS posts. Check INSTAGRAM_ACCESS_TOKEN has not expired, and that the target account is still public and professional.`,
       )
       return []
     }
 
     const payload: unknown = await response.json()
-    const data = (payload as { data?: unknown })?.data
+    const data = extract(payload)
     if (!Array.isArray(data)) return []
 
     return data

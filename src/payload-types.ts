@@ -1354,7 +1354,7 @@ export interface FeatureListBlock {
   /**
    * Always a single column on phones. “Kept together” narrows the two columns and centres them under the heading — for a SHORT list, where columns spread across the full width leave each one with a long empty tail and the section stops looking composed.
    */
-  columns?: ('1' | '2' | '2-centre') | null;
+  columns?: ('1' | '2' | '2-centre' | '3') | null;
   /**
    * Text colour adjusts automatically so it stays readable.
    */
@@ -2053,7 +2053,19 @@ export interface InstagramFeedBlock {
    */
   handle?: string | null;
   /**
-   * Used when the automatic Instagram connection is not set up, or while it is unavailable. Add the six most recent posts here to keep the section looking current.
+   * THE EASY OPTION. Paste the address of each post — open it on Instagram and copy the address bar. Instagram itself supplies the picture, caption and likes, and keeps them up to date. Nothing else to set up.
+   */
+  postUrls?:
+    | {
+        /**
+         * e.g. https://www.instagram.com/p/ABC123/ or .../reel/ABC123/
+         */
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Only needed if you are NOT using the post links above and NOT using the API connection. Pictures uploaded here are shown as a plain grid.
    */
   posts?:
     | {
@@ -3242,6 +3254,12 @@ export interface InstagramFeedBlockSelect<T extends boolean = true> {
   heading?: T;
   profileUrl?: T;
   handle?: T;
+  postUrls?:
+    | T
+    | {
+        url?: T;
+        id?: T;
+      };
   posts?:
     | T
     | {

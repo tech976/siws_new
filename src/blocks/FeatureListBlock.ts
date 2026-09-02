@@ -198,6 +198,7 @@ export const FeatureListBlock: Block = {
           { label: 'One column', value: '1' },
           { label: 'Two columns', value: '2' },
           { label: 'Two columns, kept together', value: '2-centre' },
+          { label: 'Three columns', value: '3' },
         ],
         admin: {
           description:

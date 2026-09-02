@@ -1736,11 +1736,34 @@ const main = async () => {
            * so the page still says the campus has them.
            */
           blockType: 'featureList',
+          /*
+           * PANEL 1 OF 1 on this page — docs/MASTER-LAYOUT.md §4.
+           *
+           * Three items in a two-column list put the third alone under the
+           * first and left the bottom-right of the section empty, so a band
+           * that is complete read as one that had lost an item. Three across
+           * fills its row exactly: no hole, and each of the three carries a
+           * title, a line and an icon, which is what the panel is shaped for.
+           *
+           * The items already carry `icon`, so the panel shows the drawn mark
+           * rather than the fallback tick — the canteen, the washrooms and the
+           * shield each say what they are before the words are read.
+           */
           heading: 'Also on the campus',
           accentWord: 'campus',
           headingLevel: 'h2',
+          layout: 'panel',
           marker: 'tick',
-          columns: '2-centre',
+          /*
+           * Three across, stated rather than left to the default.
+           *
+           * The block previously carried `columns: '2-centre'`, and Payload
+           * keeps a stored value through an update it is still valid for — so
+           * switching the layout alone left '2' behind in the database and the
+           * row stayed two wide with the same hole it had before. An explicit
+           * value is what actually clears it.
+           */
+          columns: '3',
           background: 'sea',
           items: [
             {

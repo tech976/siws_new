@@ -3,7 +3,7 @@
 The front page has a six-post Instagram grid ("Life at SIWS"). This is how to
 make it show real posts from [@siws_wadala](https://www.instagram.com/siws_wadala/).
 
-Roughly 20–30 minutes, done once. **Nothing here is urgent** — until it is done
+Roughly 30 minutes, done once. **Nothing here is urgent** — until it is done
 the grid shows whatever posts staff add in the admin panel, and the site works
 normally either way.
 
@@ -21,29 +21,133 @@ blocks datacentre address ranges outright, and forbids it in their terms. It
 would work on a laptop and fail on the server, which is the worst possible way
 for something to break.
 
-So the only supported route is an **access token**. The good news is that
-@siws_wadala is already a *professional* (business) account, which is the one
-prerequisite that cannot be fixed in software.
+So the only supported route is an **access token**.
 
 ---
 
-## What you need before starting
+## Which route to use
 
-- The Instagram login for **@siws_wadala**
-- A **Facebook account** — Meta requires one to create a developer app, even
-  though this only touches Instagram
-- About 25 minutes
+**Route A — Business Discovery. You do NOT need the school's Instagram login.**
+
+Meta lets any professional account read the public posts of *another* public
+professional account. @siws_wadala is public and professional, so this works
+using credentials **you** create. Nobody has to hand over the school's password,
+and nobody has to click "authorise" on the school account.
+
+The cost is that you create a Facebook Page and a professional Instagram account
+of your own — both free, and the Instagram account can be a brand new throwaway
+that never posts anything.
+
+**Route B — the school's own account.** Simpler, fewer steps, but it needs
+someone who can sign in as @siws_wadala.
+
+> **If you do not have access to the school account, use Route A.** It is the
+> whole reason it is documented first.
+
+Third-party widgets (LightWidget, SnapWidget, SociableKIT, Smash Balloon) are
+**not** a way around this. They all run on the same Graph API and all require
+connecting the account you want to display. Paying for one does not remove the
+requirement — it just adds a bill.
 
 ---
 
-## Step 1 — Create a Meta developer app
+# Route A — without access to the school account
+
+## A1. Create your own professional Instagram account
+
+Skip if you already have one you can use. It never needs to post.
+
+1. Sign up for a new Instagram account.
+2. **Settings → Account type and tools → Switch to professional account**.
+3. Pick any category (e.g. *Education*). Choose **Business**.
+
+## A2. Create a Facebook Page and link it
+
+Business Discovery uses the Facebook login path, so a Page is required.
+
+1. Create a Facebook Page (<https://www.facebook.com/pages/create>). Any name.
+2. On the Instagram app: **Settings → Accounts Centre → Add accounts**, and
+   connect the Page from step 1.
+
+## A3. Create a Meta developer app
+
+1. <https://developers.facebook.com/apps> → **Create app**.
+2. Choose **Other**, then **Business**.
+3. Name it `SIWS Website Feed`.
+
+## A4. Get a token in Graph API Explorer
+
+1. Open <https://developers.facebook.com/tools/explorer>.
+2. Pick your app, then **Generate Access Token** and log in.
+3. Add these permissions:
+   - `instagram_basic`
+   - `pages_show_list`
+   - `pages_read_engagement`
+   - `business_management`
+4. Generate, and copy the token.
+
+## A5. Find your own Instagram user id
+
+In the Explorer, run:
+
+```
+me/accounts?fields=instagram_business_account{id,username}
+```
+
+The `id` inside `instagram_business_account` is **your** Instagram user id — a
+long number. Copy it. (Confirm `username` is *your* account, not the school's.)
+
+## A6. Check it can read the school account
+
+Still in the Explorer, replace `YOUR_ID` and run:
+
+```
+YOUR_ID?fields=business_discovery.username(siws_wadala){media.limit(6){id,caption,media_url,permalink}}
+```
+
+Six recent posts come back as JSON. **That confirms the whole thing works** —
+without anyone touching the school's account.
+
+If you get *"Invalid user id"*, the target is not a public professional account.
+If you get a permissions error, re-check step A4.
+
+## A7. Exchange for a long-lived token
+
+The Explorer token lasts about an hour. Swap it for a 60-day one:
+
+```bash
+curl -s "https://graph.facebook.com/v21.0/oauth/access_token?grant_type=fb_exchange_token&client_id=APP_ID&client_secret=APP_SECRET&fb_exchange_token=SHORT_TOKEN"
+```
+
+`APP_ID` and `APP_SECRET` are in your app's **Settings → Basic**.
+
+## A8. Put it on the server
+
+In `.env` on the VPS:
+
+```
+INSTAGRAM_ACCESS_TOKEN=EAAG...your long-lived token...
+INSTAGRAM_USER_ID=17841400000000000
+INSTAGRAM_TARGET_USERNAME=siws_wadala
+```
+
+Then `pm2 restart siws`. Done.
+
+---
+
+# Route B — with access to the school account
+
+Use this only if someone can sign in as @siws_wadala. Set
+**`INSTAGRAM_ACCESS_TOKEN` only** and leave the other two variables blank.
+
+## B1. Create a Meta developer app
 
 1. Go to <https://developers.facebook.com/apps> and log in.
 2. **Create app**.
 3. For "What do you want your app to do?", choose **Other**, then **Business**.
 4. Name it something recognisable — `SIWS Website Feed` — and create it.
 
-## Step 2 — Add Instagram
+## B2. Add Instagram
 
 1. In the app dashboard, find **Instagram** in the product list and click
    **Set up**.
@@ -54,7 +158,7 @@ prerequisite that cannot be fixed in software.
 Only the read permission (`instagram_business_basic`) is needed. The site never
 posts, deletes or changes anything — it only reads.
 
-## Step 3 — Generate a long-lived token
+## B3. Generate a long-lived token
 
 In the same Instagram setup screen, use **Generate token** for @siws_wadala.
 
@@ -64,7 +168,7 @@ Copy the token immediately — Meta shows it once. It is a long string beginning
 > This is a **long-lived** token: it lasts **60 days**. See "Keeping it alive"
 > below, and do that part now rather than later.
 
-## Step 4 — Put it on the server
+## B4. Put it on the server
 
 Add it to `.env` on the VPS:
 
@@ -96,17 +200,25 @@ it also means nobody notices.
 
 1. Put a repeating calendar reminder every **50 days**, titled something like
    "Refresh SIWS Instagram token".
-2. When it fires, refresh the token:
+2. When it fires, refresh the token. **The command differs by route.**
+
+   Route A (Business Discovery) — re-exchange, as in step A7:
 
    ```bash
-   curl -s "https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=YOUR_CURRENT_TOKEN"
+   curl -s "https://graph.facebook.com/v21.0/oauth/access_token?grant_type=fb_exchange_token&client_id=APP_ID&client_secret=APP_SECRET&fb_exchange_token=CURRENT_TOKEN"
    ```
 
-   The response contains a new token with another 60 days on it. Put it in
-   `.env` and restart.
+   Route B (own account):
+
+   ```bash
+   curl -s "https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=CURRENT_TOKEN"
+   ```
+
+   Either way the response contains a new token with another 60 days on it. Put
+   it in `.env` and `pm2 restart siws`.
 
 A token can only be refreshed while it is **still valid**. If it has already
-expired, start again from Step 3.
+expired, start again from B3 (route B) or A4 (route A).
 
 ---
 
