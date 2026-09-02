@@ -225,6 +225,9 @@ const main = async () => {
 
   // Photographs uploaded by `npm run seed:media`.
   const img = {
+    stagePerformance: await mediaByFilename(payload, 'kg-stage-performance.jpg'),
+    stagePerformance2: await mediaByFilename(payload, 'kg-stage-performance-2.jpg'),
+    stagePerformance3: await mediaByFilename(payload, 'kg-stage-performance-3.jpg'),
     classroomActivity: await mediaByFilename(payload, 'kg-classroom-activity.jpg'),
     activityTable: await mediaByFilename(payload, 'kg-activity-table.jpg'),
     // The banner photograph: a whole class, not a corner of one.
@@ -531,7 +534,22 @@ const main = async () => {
         'Wadala’s most trusted kindergarten since 1934. Safe, value-based early education for Jr. KG and Sr. KG. Admissions open for 2026–27.',
       layout: [
         {
-          blockType: 'hero',
+          /*
+           * A MARQUEE RATHER THAN A STILL, at SIWS's request (2026-09-02).
+           *
+           * The section sent three banner photographs and asked for them to
+           * change. `hero` carries one picture; `heroMarquee` carries a set and
+           * dissolves between them, and every other field — the heading, the
+           * eyebrow, the standfirst, the button — is the same on both, so the
+           * page above and below is unchanged.
+           *
+           * `brisk` is three seconds, which is what was asked for. It is
+           * quicker than this banner has run before: on the portal the
+           * photographs sit behind a heading somebody is reading, and here
+           * they are the argument itself.
+           */
+          blockType: 'heroMarquee',
+          speed: 'brisk',
           title: 'Wadala’s Most Trusted Kindergarten Since 1934',
           accentWord: 'Most Trusted',
           eyebrow: 'Jr. KG and Sr. KG | Safe | Value-Based Education',
@@ -558,11 +576,14 @@ const main = async () => {
            * `activityTable` stays in the library and keeps its place in the
            * campus row below.
            */
-          ...(img.classroomTables
-            ? { image: img.classroomTables }
-            : img.activityTable
-              ? { image: img.activityTable }
-              : {}),
+          images: [
+            img.classroomTables ?? img.activityTable,
+            img.stagePerformance,
+            img.stagePerformance2,
+            img.stagePerformance3,
+          ]
+            .filter(Boolean)
+            .map((image) => ({ image })),
           // Plain string: the hero's `intro` is a textarea, not rich text.
           intro:
             'Strong academic foundations for the SSC / State Board years ahead, a structured early-learning approach, and a safe, nurturing and child-friendly campus — with a focus on discipline, values and confidence.',

@@ -667,6 +667,15 @@ const main = async () => {
    * things and the fallback is reported, not passed off as the banner.
    */
   const classroom = await photo('primary-classroom.jpg')
+  /* The four banner photographs SIWS supplied for this section. */
+  const bannerShots = (
+    await Promise.all([
+      photo('primary-classroom-full.jpg'),
+      photo('primary-classroom-group-1.jpg'),
+      photo('primary-classroom-group-2.jpg'),
+      photo('primary-classroom-desks.jpg'),
+    ])
+  ).filter(Boolean)
 
   const videoStills = {
     independence: await photo('video-2026-independence-day.jpg'),
@@ -1024,7 +1033,17 @@ const main = async () => {
        * a form.
        */
       {
-        blockType: 'hero',
+        /*
+         * A MARQUEE RATHER THAN A STILL, at SIWS's request (2026-09-02).
+         *
+         * The section sent four banner photographs and asked for them to
+         * change every three seconds. Every other field is the same on
+         * `heroMarquee` as on `hero`, so the heading, the eyebrow, the
+         * standfirst and the button are untouched — only the picture behind
+         * them becomes a set.
+         */
+        blockType: 'heroMarquee',
+        speed: 'brisk',
         title: 'SIWS Primary School',
         accentWord: 'Primary',
         eyebrow: 'Maharashtra State Board | Grades 1 to 4',
@@ -1035,7 +1054,9 @@ const main = async () => {
          * to the right so the room still reads. Omitted if the picture is not
          * in the library, so the banner keeps its contrast either way.
          */
-        ...(classroom ? { image: classroom } : {}),
+        // The classroom shot stays the first frame, so the banner opens on
+        // what it opened on before and the others follow it.
+        images: [classroom, ...bannerShots].filter(Boolean).map((image) => ({ image })),
         // Plain string: the hero's `intro` is a textarea, not rich text.
         intro:
           'A caring, inclusive and stimulating school for Grades 1 to 4 — with smart classrooms, teachers of 20+ years’ experience, and a safe, CCTV-monitored campus.',

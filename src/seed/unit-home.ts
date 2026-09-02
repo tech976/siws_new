@@ -84,10 +84,17 @@ const run = async () => {
      */
     const priorGallery = (b: Record<string, unknown>) =>
       b.blockType === 'gallery' && String(b.heading ?? '').startsWith('Life at')
-    const existingHero =
-      layout[0]?.blockType === 'hero' ? (layout[0] as Record<string, unknown>) : null
-    const cleaned =
-      layout[0]?.blockType === 'hero' ? layout.slice(1).filter((b) => !priorGallery(b)) : layout
+    /*
+     * A section may open on either block: `hero` is one photograph, and
+     * `heroMarquee` is a set that dissolves between them. Both are recognised
+     * here, and whichever the section wrote is what it keeps — rebuilding a
+     * marquee as a plain hero would throw away the photographs it was given
+     * and leave a section that asked for a changing banner with a still one.
+     */
+    const isBanner = (b: Record<string, unknown> | undefined) =>
+      b?.blockType === 'hero' || b?.blockType === 'heroMarquee'
+    const existingHero = isBanner(layout[0]) ? (layout[0] as Record<string, unknown>) : null
+    const cleaned = isBanner(layout[0]) ? layout.slice(1).filter((b) => !priorGallery(b)) : layout
 
     /*
      * THE SECTION'S OWN HEADLINE SURVIVES THIS.
@@ -183,7 +190,15 @@ const run = async () => {
         : []
 
     const banner: Record<string, unknown> = {
-      blockType: 'hero',
+      blockType: existingHero?.blockType === 'heroMarquee' ? 'heroMarquee' : 'hero',
+      // Only a marquee has these, and passing them to a `hero` would be
+      // silently dropped rather than refused, so they are set conditionally.
+      ...(existingHero?.blockType === 'heroMarquee'
+        ? {
+            ...(existingHero.images ? { images: existingHero.images } : {}),
+            ...(existingHero.speed ? { speed: existingHero.speed } : {}),
+          }
+        : {}),
       title: (existingHero?.title as string) || unit.name,
       ...(existingHero?.accentWord ? { accentWord: existingHero.accentWord } : {}),
       ...(existingHero?.eyebrow ? { eyebrow: existingHero.eyebrow } : {}),

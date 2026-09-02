@@ -676,7 +676,19 @@ const main = async () => {
       'SIWS High School, Wadala — Standards V to X on the Maharashtra State Board curriculum, aligned with NEP 2020. 99.53% in the SSC Examination 2026.',
     layout: [
       {
-        blockType: 'hero',
+        /*
+         * A MARQUEE RATHER THAN A STILL, at SIWS's request (2026-09-02), so
+         * the banner changes every three seconds as the other sections' now
+         * do. Every other field is the same on `heroMarquee` as on `hero`.
+         *
+         * NO BANNER SET WAS SUPPLIED FOR THIS SECTION. The Kindergarten and
+         * Primary each sent a folder of banner photographs; Secondary did not,
+         * so the set is drawn from the section's own library — the two
+         * classroom photographs it already had, and the two of what happens
+         * outside a lesson. Send a banner set and it replaces these.
+         */
+        blockType: 'heroMarquee',
+        speed: 'brisk',
         title: 'SIWS High School, Wadala',
         accentWord: 'High School',
         eyebrow: 'Maharashtra State Board | Standards V to X',
@@ -690,7 +702,9 @@ const main = async () => {
          * Omitted when the photograph is missing, so the banner falls back to
          * the flat panel rather than losing its gradient and its contrast.
          */
-        ...(classroomActivity ? { image: classroomActivity } : {}),
+        images: [classroomActivity, classroomAtWork, greenSkills, inTheHall]
+          .filter(Boolean)
+          .map((image) => ({ image })),
         // Plain string: the hero's `intro` is a textarea, not rich text.
         intro:
           'From Standards V to X, we follow the Maharashtra State Board curriculum, updated in line with NEP 2020. Proudly running our Wadala campus since 1934 — 90+ years of trust and excellence.',

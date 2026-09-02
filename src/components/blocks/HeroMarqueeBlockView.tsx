@@ -136,7 +136,7 @@ export const HeroMarqueeBlockView = ({ block }: { block: HeroMarqueeBlock }) => 
    * order of the three lines is read before it is parsed.
    */
   return (
-    <HeroStage photos={photos}>
+    <HeroStage photos={photos} speed={block.speed ?? undefined}>
       <div className="siws-container flex min-h-[32rem] flex-col items-center justify-center py-16 text-center sm:min-h-[36rem] sm:py-20">
         {block.eyebrow ? (
           <p className="siws-hero-rise inline-flex w-fit items-center rounded-pill border border-white/40 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm">

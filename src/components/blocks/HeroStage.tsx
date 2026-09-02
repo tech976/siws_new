@@ -5,8 +5,21 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Media } from '@/components/Media'
 import type { Media as MediaDoc } from '@/payload-types'
 
-/** How long each photograph is held, and how long one dissolves into the next. */
-const DWELL_MS = 5000
+/**
+ * How long each photograph is held, and how long one dissolves into the next.
+ *
+ * The block offers three speeds and, until now, none of them did anything:
+ * `speed` was written to the database and no component ever read it, so every
+ * banner on the site dwelled for five seconds whatever the CMS said. The
+ * options are wired to these.
+ *
+ * `brisk` is three seconds, which is short enough that a reader will see a
+ * change while their eye is still on the heading. That is the right trade on a
+ * section banner, where the photographs ARE the argument — this is what the
+ * place looks like — and the wrong one on a page of prose.
+ */
+const DWELL_BY_SPEED = { calm: 9000, steady: 5000, brisk: 3000 } as const
+export type MarqueeSpeed = keyof typeof DWELL_BY_SPEED
 const FADE_MS = 1200
 
 /**
@@ -50,7 +63,16 @@ const FADE_MS = 1200
  * or re-flow when a photograph changes. It is the reason the type sits
  * perfectly still through all of this.
  */
-export const HeroStage = ({ photos, children }: { photos: MediaDoc[]; children: ReactNode }) => {
+export const HeroStage = ({
+  photos,
+  children,
+  speed = 'steady',
+}: {
+  photos: MediaDoc[]
+  children: ReactNode
+  speed?: MarqueeSpeed
+}) => {
+  const dwellMs = DWELL_BY_SPEED[speed] ?? DWELL_BY_SPEED.steady
   const section = useRef<HTMLElement>(null)
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
@@ -73,7 +95,7 @@ export const HeroStage = ({ photos, children }: { photos: MediaDoc[]; children: 
 
   useEffect(() => {
     if (!running) return
-    const id = window.setInterval(() => advance.current?.(), DWELL_MS)
+    const id = window.setInterval(() => advance.current?.(), dwellMs)
     return () => window.clearInterval(id)
   }, [running, index])
 
@@ -260,7 +282,7 @@ export const HeroStage = ({ photos, children }: { photos: MediaDoc[]; children: 
             key={index}
             className="siws-hero-tick h-full w-full origin-left bg-white/55"
             style={{
-              animationDuration: `${DWELL_MS}ms`,
+              animationDuration: `${dwellMs}ms`,
               animationPlayState: paused ? 'paused' : 'running',
             }}
           />
