@@ -233,8 +233,14 @@ export const FacultyBlockView = async ({
                          * rather than boxing it: `rounded-l-full` takes the
                          * radius from the card's own height, so the curve stays
                          * true to the disc whether the text runs to two lines or
-                         * four. The right end keeps a plain corner, because the
-                         * mark sits in it.
+                         * four.
+                         *
+                         * The right end is softened rather than matched:
+                         * `rounded-r-3xl` at 24px is enough to lose the square
+                         * corner, and stopping short of the left's semicircle is
+                         * what keeps the card reading left-to-right instead of
+                         * as a symmetrical pill. The mark sits inside that corner
+                         * and `overflow-hidden` trims it to the same curve.
                          *
                          * PADDING IS NOT SYMMETRIC, and cannot be. `pl-6` clears
                          * the curve so the monogram is not pressed into it,
@@ -246,7 +252,7 @@ export const FacultyBlockView = async ({
                          * semicircular end, text aligned to the top sits visibly
                          * above the disc's centre and the card looks tipped.
                          */
-                        className="relative flex items-center gap-5 overflow-hidden rounded-l-full rounded-r-2xl border border-line bg-white py-4 pr-14 pl-6 shadow-card"
+                        className="relative flex items-center gap-5 overflow-hidden rounded-l-full rounded-r-3xl border border-line bg-white py-4 pr-14 pl-6 shadow-card"
                       >
                         {face(teacher, false)}
                         {details(teacher)}
