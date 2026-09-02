@@ -45,6 +45,13 @@ const FILING: { filename: string; unit: string; category: string; because: strin
       'The eleven children are in the yellow-and-green Kindergarten uniform, and the certificates read "Class Sr. KG". It was filed under Primary, so it sat on the Primary wall and counted as a Primary photograph.',
   },
   {
+    filename: 'kg-activity-table.jpg',
+    unit: 'kindergarten',
+    category: 'In the classroom',
+    because:
+      'It was filed under "Classrooms" while every other Kindergarten classroom photograph is under "In the classroom", so the gallery grew two sections that mean the same thing — one of them holding a single tile. The category is set in no seed, which is why it survived a rebuild; this is where a photograph media.ts does not upload gets filed.',
+  },
+  {
     filename: 'portal-vision-background.jpg',
     unit: 'secondary',
     category: 'In the classroom',

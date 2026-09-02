@@ -2031,7 +2031,14 @@ const main = async () => {
           background: 'white',
           images: [
             ...shot(img.activityLiteracy, 'Worksheets and number work in the early years'),
-            ...shot(img.drawingClass, 'Quiet, focused work at every desk'),
+            /*
+             * `drawingClass` came out of this row too (2026-09-02). A band
+             * headed "A day in the Kindergarten" is a stronger claim than the
+             * gallery's, and the children in that photograph are not in this
+             * section — the uniform is not the Kindergarten's. Five tiles
+             * rather than six, and the bento backfills, so nothing is left
+             * ragged.
+             */
             ...shot(img.activityCreative, 'Finger painting and activity-based learning'),
             ...shot(img.activityMotor, 'Hands-on work the whole class makes together'),
             ...shot(img.childrenTogether, 'Friendships that start in the earliest years'),
@@ -2079,8 +2086,6 @@ const main = async () => {
             ...shot(img.classroomGroup, 'Group tables sized for young children'),
             ...shot(img.teacherWithChildren, 'Supportive and trained school staff'),
             ...shot(img.classroomSeated, 'Dedicated activity rooms'),
-            ...shot(img.smartBoard, 'Interactive smart boards in every classroom'),
-            ...shot(img.drawingClass, 'Quiet, focused work at every desk'),
             ...shot(img.activityLiteracy, 'Early literacy and numeracy'),
             ...shot(img.activityCreative, 'Creative expression'),
             ...shot(img.activityMotor, 'Cognitive and motor development'),
