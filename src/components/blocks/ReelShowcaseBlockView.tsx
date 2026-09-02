@@ -25,6 +25,7 @@ import { Section, SectionHeading, type BlockBackground } from './Section'
  */
 export const ReelShowcaseBlockView = ({ block }: { block: ReelShowcaseBlock }) => {
   const reels = (block.reels ?? []).filter((reel) => Boolean(reel.src))
+  const portrait = block.shape === 'portrait'
   const refs = useRef(new Map<string, HTMLVideoElement>())
   const [audibleKey, setAudibleKey] = useState<string | null>(null)
 
@@ -92,7 +93,15 @@ export const ReelShowcaseBlockView = ({ block }: { block: ReelShowcaseBlock }) =
         </div>
       ) : null}
 
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul
+        className={
+          portrait
+            ? // Tall films run four across at most: at 9:16 a three-column row
+              // on a wide screen makes each one taller than the viewport.
+              'grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4'
+            : 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3'
+        }
+      >
         {reels.map((reel, index) => {
           const key = reel.id ?? `reel-${index}`
           const audible = audibleKey === key
@@ -118,7 +127,7 @@ export const ReelShowcaseBlockView = ({ block }: { block: ReelShowcaseBlock }) =
                    */
                   preload="metadata"
                   aria-label={reel.label ?? undefined}
-                  className="aspect-video w-full object-cover"
+                  className={`w-full object-cover ${portrait ? 'aspect-[9/16]' : 'aspect-video'}`}
                 />
 
                 <button

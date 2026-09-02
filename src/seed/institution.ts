@@ -624,39 +624,40 @@ const main = async () => {
         ],
       },
       /*
-       * THE FILMS, DIRECTLY UNDER THE BANNER.
+       * THE REELS, DIRECTLY UNDER THE BANNER.
        *
-       * The banner says the Society teaches from Kindergarten to postgraduate
-       * and asks the reader to read our story. This is the shortest possible
-       * answer to "what is it actually like" — three occasions, playing, before
-       * the page asks anybody to read anything.
+       * Shot on a phone and cut for social — fifteen to thirty seconds, 9:16,
+       * captions burned in. That is a different thing from the landscape films
+       * further down, which are whole occasions at a minute and a half, and
+       * the two do not belong in one row: a rail mixing the shapes leaves gaps
+       * above and below the wide ones.
        *
-       * They live in `public/reels/` rather than the media library: the library
-       * builds a ladder of resized copies for every upload, which means nothing
-       * for a video and would write several more copies of a file this size.
-       * Same arrangement as the banner's own film.
+       * These go at the top because they are the shortest answer to "what is
+       * it like here", and because a reel that has to be scrolled to is a reel
+       * nobody watches.
        */
       {
         blockType: 'reelShowcase',
-        heading: 'A year at SIWS, in motion',
-        accentWord: 'in motion',
+        heading: 'SIWS, in thirty seconds',
+        accentWord: 'thirty seconds',
         headingLevel: 'h2',
-        background: 'tint',
+        background: 'white',
+        shape: 'portrait',
         reels: [
           {
-            src: '/reels/commerce-day.mp4',
-            poster: '/reels/commerce-day.jpg',
-            label: 'Commerce Day at the Junior College',
+            src: '/reels/siws-reel-2.mp4',
+            poster: '/reels/siws-reel-2.jpg',
+            label: 'Types of greetings',
           },
           {
-            src: '/reels/maths-activity.mp4',
-            poster: '/reels/maths-activity.jpg',
-            label: 'The Mathematics activity',
+            src: '/reels/siws-reel-3.mp4',
+            poster: '/reels/siws-reel-3.jpg',
+            label: 'As warm as the sun — the Kindergarten',
           },
           {
-            src: '/reels/ashadhi-ekadashi.mp4',
-            poster: '/reels/ashadhi-ekadashi.jpg',
-            label: 'Ashadhi Ekadashi on the campus',
+            src: '/reels/siws-reel-4.mp4',
+            poster: '/reels/siws-reel-4.jpg',
+            label: 'Let’s ask a student why',
           },
         ],
       },
@@ -777,7 +778,45 @@ const main = async () => {
         : []),
       ...(galleryImages.length > 0
         ? [
-            {
+            /*
+       * THE LONGER FILMS, FURTHER DOWN.
+       *
+       * Whole occasions at a minute and a half each, where the reels above are
+       * thirty seconds. They sat directly under the banner and were the wrong
+       * thing in that position: a visitor who has just arrived is deciding
+       * whether to stay, and ninety seconds is a commitment. Down here they
+       * are for somebody who has already read the page and wants to see it.
+       *
+       * They live in `public/reels/` rather than the media library: the library
+       * builds a ladder of resized copies for every upload, which means nothing
+       * for a video and would write several more copies of a file this size.
+       * Same arrangement as the banner's own film.
+       */
+      {
+        blockType: 'reelShowcase',
+        heading: 'A year at SIWS, in motion',
+        accentWord: 'in motion',
+        headingLevel: 'h2',
+        background: 'tint',
+        reels: [
+          {
+            src: '/reels/commerce-day.mp4',
+            poster: '/reels/commerce-day.jpg',
+            label: 'Commerce Day at the Junior College',
+          },
+          {
+            src: '/reels/maths-activity.mp4',
+            poster: '/reels/maths-activity.jpg',
+            label: 'The Mathematics activity',
+          },
+          {
+            src: '/reels/ashadhi-ekadashi.mp4',
+            poster: '/reels/ashadhi-ekadashi.jpg',
+            label: 'Ashadhi Ekadashi on the campus',
+          },
+        ],
+      },
+      {
               blockType: 'gallery',
               heading: 'Life at SIWS',
               accentWord: 'SIWS',

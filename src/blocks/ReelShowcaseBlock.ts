@@ -26,6 +26,20 @@ export const ReelShowcaseBlock: Block = {
   fields: [
     headingField,
     {
+      name: 'shape',
+      type: 'select',
+      defaultValue: 'landscape',
+      label: 'The shape of the films',
+      options: [
+        { label: 'Wide — filmed on a camera, 16:9', value: 'landscape' },
+        { label: 'Tall — filmed on a phone, 9:16', value: 'portrait' },
+      ],
+      admin: {
+        description:
+          'Every film in one section has to be the same shape: a row mixing the two leaves gaps above and below the wide ones. Put tall films in a section of their own.',
+      },
+    },
+    {
       name: 'reels',
       type: 'array',
       minRows: 1,

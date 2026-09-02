@@ -2235,6 +2235,10 @@ export interface ReelShowcaseBlock {
    */
   heading?: string | null;
   /**
+   * Every film in one section has to be the same shape: a row mixing the two leaves gaps above and below the wide ones. Put tall films in a section of their own.
+   */
+  shape?: ('landscape' | 'portrait') | null;
+  /**
    * Each film plays on its own, without sound, when it scrolls into view. A button on it turns the sound on, and turning one on turns the others off.
    */
   reels?:
@@ -3490,6 +3494,7 @@ export interface InstagramFeedBlockSelect<T extends boolean = true> {
  */
 export interface ReelShowcaseBlockSelect<T extends boolean = true> {
   heading?: T;
+  shape?: T;
   reels?:
     | T
     | {
