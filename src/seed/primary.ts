@@ -5,6 +5,7 @@ loadEnv()
 const { getPayload } = await import('payload')
 const { default: config } = await import('@payload-config')
 const { richText } = await import('./lexical')
+const { feedbackSection } = await import('./feedback-section')
 
 /**
  * Seeds the Primary section — one school, no campus split — from the information requirement
@@ -505,6 +506,25 @@ const main = async () => {
       phone: PRIMARY_PHONE,
       phoneAlt: PRIMARY_PHONE_ALT,
       email: PRIMARY_EMAIL,
+      /*
+       * WHERE THE FORMS ON THIS SECTION'S PAGES ARE DELIVERED.
+       *
+       * Not display copy. `actions/enquiry.ts` and `actions/feedback.ts` read
+       * these to decide where a submission actually goes, and until they were
+       * set this section had `email` alone — so every route fell through to it
+       * and the fallback happened to be right by accident.
+       *
+       * All three are `PRIMARY_EMAIL` because that is the only address this
+       * section publishes: its Contact cards name it for admissions AND for
+       * "anything else". SIWS should be asked whether Primary has a separate
+       * general mailbox — the Kindergarten, on the same domain, uses
+       * info@siwsschool.edu.in — but an address nobody has confirmed would
+       * send parents' feedback to a mailbox that may not exist, and a bounce
+       * is worse than a shared inbox.
+       */
+      admissionsEmail: PRIMARY_EMAIL,
+      contactEmail: PRIMARY_EMAIL,
+      feedbackEmail: PRIMARY_EMAIL,
     } as never,
   })
 
@@ -1016,6 +1036,7 @@ const main = async () => {
           },
         ],
       },
+      feedbackSection({ school: 'the Primary Section’s' }),
     ],
   })
 

@@ -4,6 +4,7 @@ loadEnv()
 
 const { getPayload } = await import('payload')
 const { default: config } = await import('@payload-config')
+const { feedbackSection } = await import('./feedback-section')
 
 /**
  * Builds out the Primary, Secondary and Junior College websites.
@@ -64,6 +65,10 @@ const CONTACT = {
   phone: '+91 98927 03893',
   admissionsEmail: 'admissions@siws.edu.in',
   contactEmail: 'info@siws.edu.in',
+  // The feedback box on the Contact page reaches the general office. Set
+  // explicitly rather than left to fall through to `contactEmail`, so that
+  // moving one of these later cannot silently move the other.
+  feedbackEmail: 'info@siws.edu.in',
   socialProfiles: [
     { platform: 'whatsapp', url: 'https://wa.me/919892703893', showFeed: false },
     { platform: 'instagram', url: 'https://www.instagram.com/siwsschoolwadala/', showFeed: false },
@@ -373,6 +378,45 @@ const main = async () => {
       reviewStatus: 'approved',
       metaDescription: `Contact ${unit.headline} — address, phone number and email for admissions and general enquiries.`,
       layout: [
+        /*
+         * A FORM, NOT JUST TWO ADDRESSES.
+         *
+         * This page was a pair of cards naming two mailboxes, on the one page
+         * a family opens when they have a question — so the only way to ask it
+         * was to leave the site, open a mail client and retype an address.
+         * Kindergarten, Primary and Secondary all open their Contact page with
+         * this block; the Junior College is the section that never got one,
+         * because `move-enquiry` had already taken its form off the home page
+         * and put it on Admissions.
+         *
+         * It routes to the admissions inbox — the default, and right here:
+         * unlike Kindergarten's, this card is headed "Enquire about admission"
+         * rather than offering a campus tour. The cards below still name both
+         * addresses for anyone who would rather write themselves.
+         */
+        {
+          blockType: 'heroEnquiry',
+          title: 'Get in touch',
+          subtitle: unit.subtitle,
+          benefitsIntro: 'At SIWS, your child benefits from:',
+          benefits: [
+            { text: 'A structured SSC Board curriculum' },
+            { text: 'Nearly a century of educational experience' },
+            { text: 'A focus on discipline, values and confidence' },
+            { text: 'A safe, supervised campus in Wadala' },
+          ],
+          form: {
+            title: 'Enquire about admission',
+            subtitle: 'Tell us about your child and we will get in touch.',
+            classOptions: unit.classOptions.map((label) => ({ label })),
+            trustPoints: [
+              { text: 'Over 92 years of educational legacy' },
+              { text: 'SSC / State Board curriculum' },
+              { text: 'Experienced and trained teachers' },
+              { text: 'Safe and disciplined campus' },
+            ],
+          },
+        },
         {
           blockType: 'cardGrid',
           heading: 'Who to contact',
@@ -390,6 +434,7 @@ const main = async () => {
             },
           ],
         },
+        feedbackSection({ school: 'the college' }),
       ],
     })
     published += 1

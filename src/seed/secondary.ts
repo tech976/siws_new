@@ -6,6 +6,7 @@ loadEnv()
 const { getPayload } = await import('payload')
 const { default: config } = await import('@payload-config')
 const { richText, richTextLines } = await import('./lexical')
+const { feedbackSection } = await import('./feedback-section')
 
 /**
  * Seeds the Secondary Section (SIWS High School, Wadala) from the requirement
@@ -472,6 +473,18 @@ const main = async () => {
        */
       phone: '02224180877',
       email: 'info@siws.edu.in',
+      /*
+       * WHERE THE FORMS ON THIS SECTION'S PAGES ARE DELIVERED.
+       *
+       * Both addresses are the ones this section's own Contact cards print —
+       * admissions@ for Standards V to X, info@ for anything else. Neither was
+       * set, so `actions/enquiry.ts` fell through to `email` and delivered
+       * every admission enquiry to info@ while the card beside the form told
+       * the parent it was going to admissions@.
+       */
+      admissionsEmail: 'admissions@siws.edu.in',
+      contactEmail: 'info@siws.edu.in',
+      feedbackEmail: 'info@siws.edu.in',
     } as never,
   })
 
@@ -673,6 +686,7 @@ const main = async () => {
           },
         ],
       },
+      feedbackSection({ school: 'the school' }),
     ],
   })
 

@@ -5,6 +5,7 @@ loadEnv()
 const { getPayload } = await import('payload')
 const { default: config } = await import('@payload-config')
 const { richText } = await import('./lexical')
+const { feedbackSection } = await import('./feedback-section')
 
 /**
  * Seeds the Kindergarten website.
@@ -373,6 +374,9 @@ const main = async () => {
        */
       admissionsEmail: 'admissions@siwsschool.edu.in',
       contactEmail: 'info@siwsschool.edu.in',
+      // The feedback box on the Contact page, and the campus tour card beside
+      // it, both reach the general office rather than admissions.
+      feedbackEmail: 'info@siwsschool.edu.in',
       socialProfiles: [
         { platform: 'whatsapp', url: 'https://wa.me/919892703893', showFeed: false },
         {
@@ -495,6 +499,17 @@ const main = async () => {
         form: {
           title: 'Book a Free Campus Tour',
           subtitle: '(Limited seats available for Jr. KG & Sr. KG)',
+          /*
+           * THE GENERAL OFFICE, not admissions — the one place on this site
+           * where that is the right answer.
+           *
+           * The card is headed "Book a Free Campus Tour". A request to come
+           * and look round is a question for whoever opens the door, and the
+           * admissions team should not have to sift visit requests out of a
+           * queue of applications. The identical block on the Admissions page
+           * keeps the default and still reaches admissions@.
+           */
+          sendTo: 'general',
           classOptions: [{ label: 'Jr KG' }, { label: 'Sr KG' }],
           trustPoints: [
             { text: 'Over 92 years of educational legacy' },
@@ -528,6 +543,7 @@ const main = async () => {
           },
         ],
       },
+      feedbackSection({ school: 'the Kindergarten' }),
     ],
   })
 
