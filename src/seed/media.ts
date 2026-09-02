@@ -1338,8 +1338,18 @@ const IMAGES: ImageSeed[] = [
     filename: 'primary-teachers-dedicated.jpg',
     unit: 'primary',
     category: 'In the classroom',
-    alt: 'A Primary teacher with her class.',
-    caption: 'Teachers of twenty years’ standing and more',
+    /*
+     * NO CAPTION. It leads the "In the classroom" band, where it takes the
+     * 2x2 tile, and at that size a line of text printed across the corner is
+     * the first thing the eye lands on instead of the photograph. The words
+     * were "Teachers of twenty years' standing and more" — a claim the About
+     * page already makes in its own right, rather than something this picture
+     * needs to say.
+     *
+     * The alt text stays and is read by a screen reader, which cannot see the
+     * photograph and still needs to know what is in it.
+     */
+    alt: 'A Primary teacher standing with her class in the classroom.',
     depictsChildren: true,
   },
   {

@@ -224,6 +224,7 @@ const main = async () => {
   const FEATURED: Record<string, string> = {
     'secondary-toppers-2026-close.jpg': 'secondary',
     'jc-independence-day-2026.jpg': 'junior-college',
+    'primary-teachers-dedicated.jpg': 'primary',
   }
 
   /*
@@ -362,6 +363,26 @@ const main = async () => {
           const bucket = groups.get(key)
           if (bucket) bucket.push(item)
           else groups.set(key, [item])
+        }
+
+        /*
+         * THE FEATURED PHOTOGRAPH LEADS ITS BAND.
+         *
+         * `FEATURED` already named one picture per section, and until now it
+         * only meant anything on the tabbed wall, where it sets a flag. A
+         * banded wall is a bento: the size comes from POSITION, and the first
+         * tile in each band is the 2x2. So a photograph a section wanted
+         * noticed sat ninth in its category at the smallest size available.
+         *
+         * Moving it to the front is the whole of the change — the pattern that
+         * sizes the rest is untouched, and every other picture keeps its order
+         * behind it.
+         */
+        for (const [, bucket] of groups) {
+          const at = bucket.findIndex(
+            (item) => FEATURED[String(item.filename)] === unitSlug,
+          )
+          if (at > 0) bucket.unshift(...bucket.splice(at, 1))
         }
 
         /*
