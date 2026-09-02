@@ -408,10 +408,19 @@ const FeaturePanel = ({ block }: { block: FeatureListBlock }) => {
         third of the width, which pushes the chip off its title's baseline onto
         a line of its own. Two across fixes both at once.
       */}
+      {/*
+        A CENTRED ROW RATHER THAN A GRID — `.siws-flow` in globals.css.
+
+        A full row is laid out identically either way; what changes is the
+        LAST row. Nine methods across two columns and ten subjects across
+        three both end with a single panel pinned to the left margin under a
+        centred heading, which is the one thing on the page with no axis. The
+        flow row centres whatever is left over instead.
+      */}
       <List
-        className={`mt-10 grid grid-cols-1 gap-3 ${
-          block.columns === '1' ? '' : 'sm:grid-cols-2'
-        } ${block.columns === '1' || block.columns === '2' ? '' : 'lg:grid-cols-3'}`}
+        className={`mt-10 siws-flow ${
+          block.columns === '1' ? '' : block.columns === '2' ? 'siws-flow-2' : 'siws-flow-3'
+        }`}
         /* '2-centre' means nothing to a panel grid — it is the LIST layout's
            narrowed-and-centred pair. Treated as the default here, which is
            three across, because a set of panels is already a grid. */
@@ -525,7 +534,9 @@ const FeatureCompact = ({ block }: { block: FeatureListBlock }) => {
         <RichText data={block.intro} className="siws-centre mx-auto mt-6 max-w-6xl" />
       ) : null}
 
-      <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Centred row, not a grid — see `.siws-flow`. Ten subjects across three
+          columns left "Art & Craft" alone against the left margin. */}
+      <ul className="mt-10 siws-flow siws-flow-3">
         {items.map((item, index) => {
           const Icon = item.icon ? FEATURE_ICONS[item.icon] : undefined
           return (
@@ -627,8 +638,15 @@ const FeatureSpec = ({ block }: { block: FeatureListBlock }) => {
             className="grid gap-x-10 gap-y-1.5 px-6 py-5 sm:grid-cols-[12rem_1fr] sm:px-8 sm:py-6"
           >
             <dt className="text-[1.05rem] font-semibold leading-7 text-brand">{item.title}</dt>
+            {/*
+              `whitespace-pre-line`, so a detail written on two lines arrives on
+              two lines. HTML collapses a newline to a space, which put a
+              telephone number and an email address on the contact page in one
+              unbroken run. It only affects a detail that HAS a line break;
+              everything else still wraps as it always did.
+            */}
             {item.description ? (
-              <dd className="leading-7 text-ink-soft">{item.description}</dd>
+              <dd className="leading-7 whitespace-pre-line text-ink-soft">{item.description}</dd>
             ) : null}
           </div>
         ))}

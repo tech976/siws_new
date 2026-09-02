@@ -572,14 +572,40 @@ const main = async () => {
     .filter(Boolean)
     .map((unit) => {
       const u = unit as Record<string, string | undefined>
-      const phones = [u.phone, u.phoneAlt].filter(Boolean).map((n) => readableNumber(n as string)).join(' · ')
-      const emails = [u.admissionsEmail, u.contactEmail ?? u.email]
-        .filter((value, index, all) => Boolean(value) && all.indexOf(value) === index)
-        .join(' · ')
-      return {
-        title: u.name ?? '',
-        description: [phones, emails].filter(Boolean).join('\n'),
-      }
+      /*
+       * ONE THING PER LINE, AND EACH SAYS WHAT IT IS FOR.
+       *
+       * These were run together with middle dots — a number, then two
+       * addresses, in one line of small type. A parent scanning four sections
+       * for the one to ring had to read every word of it, and could not tell
+       * which address was the admissions office and which was the general one.
+       *
+       * `whitespace-pre-line` on the spec layout is what makes the newlines
+       * survive; HTML would otherwise collapse them back to spaces.
+       */
+      /*
+       * The label comes from the address where the fields do not give one.
+       *
+       * The sections do not agree about which field holds what: Primary keeps
+       * `admissions@siwsschool.edu.in` in `email` and leaves `admissionsEmail`
+       * empty, so labelling by field alone printed an address that literally
+       * begins "admissions@" as the general one. An address is asked what it
+       * is for rather than only where it was stored.
+       */
+      const labelFor = (address: string) =>
+        address.toLowerCase().startsWith('admissions@') ? 'Admissions' : 'General'
+
+      const addresses = [u.admissionsEmail, u.contactEmail ?? u.email].filter(
+        // The same address twice under two labels reads as two addresses that
+        // happen to match.
+        (value, index, all): value is string => Boolean(value) && all.indexOf(value) === index,
+      )
+
+      const lines = [
+        ...[u.phone, u.phoneAlt].filter(Boolean).map((n) => readableNumber(n as string)),
+        ...addresses.map((address) => `${labelFor(address)} — ${address}`),
+      ]
+      return { title: u.name ?? '', description: lines.join('\n') }
     })
     .filter((row) => row.description.length > 0)
 
