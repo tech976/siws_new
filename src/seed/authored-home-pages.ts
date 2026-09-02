@@ -28,6 +28,20 @@
  * the same pass. It reads as content reverting on its own, and it sent us
  * through the dump, the router cache and the type scale before the pipeline.
  *
+ * PRIMARY IS HERE FOR A SOFTER REASON THAN THE KINDERGARTEN.
+ *
+ * The Kindergarten's page was being gutted — four feature lists replaced by a
+ * bento grid and three card grids. Primary's was not: the shared steps left
+ * its own bands standing and appended a photograph wall and a media band.
+ * Additive, and defensible on its own terms.
+ *
+ * It is still not what `primary.ts` says the page is. The section's seed is
+ * the description of that page, and a step that adds two bands to it means
+ * the page on screen is nobody's decision in particular — it is the seed plus
+ * whatever the composition felt was missing. Both sections now render what
+ * their own seed says, which is the only version anyone can point at and
+ * check.
+ *
  * ADDING TO THIS LIST
  * -------------------
  * Put a unit here once its home page is authored in its own seed. Leave it out
@@ -35,7 +49,7 @@
  * authored layout gets whatever its seed leaves behind, which for an unwritten
  * page is nothing.
  */
-export const AUTHORED_HOME_UNITS = new Set(['kindergarten'])
+export const AUTHORED_HOME_UNITS = new Set(['kindergarten', 'primary'])
 
 /** Whether this unit's home page is authored, and so off-limits to a rebuild. */
 export const hasAuthoredHome = (slug: string | null | undefined): boolean =>
