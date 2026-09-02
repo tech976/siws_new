@@ -29,9 +29,10 @@ const { default: config } = await import('@payload-config')
  * WHAT IT IS FOR, AND WHAT IT IS NOT FOR
  * --------------------------------------
  * It corrects the FILING of a photograph — which section's gallery it belongs
- * in. It does not touch alt text, captions, consent records or anything else.
- * If a photograph is in the wrong place, it goes here; if its words are wrong,
- * they belong in the seed that writes them.
+ * in — and, for a photograph no seed declares, its CAPTION. It touches neither
+ * alt text nor consent records. If a photograph whose words a seed writes has
+ * the wrong ones, they belong in that seed and not here; this is only for the
+ * ones `photos:import` brought in, whose words exist nowhere but the database.
  *
  * Run with:  npm run seed:image-filing   (then seed:galleries, then seed:nav)
  */
@@ -43,8 +44,23 @@ const FILING: {
   because: string
   /** Set false to keep a photograph out of the gallery wall while leaving the record for the pages that point at it. */
   showInGallery?: boolean
-  /** A caption for a photograph no seed uploads, whose words live only here. */
-  caption?: string
+  /**
+   * A caption for a photograph no seed uploads, whose words live only here.
+   *
+   * `null` CLEARS one. A photograph brought in through `photos:import` is
+   * declared by no seed, so a caption on it can be corrected here and nowhere
+   * else — and taking one off is as much a correction as rewriting it.
+   *
+   * CHECK THAT NO SEED OWNS IT FIRST, and check by stem rather than by the
+   * name in the library. `media.ts` and `onam.ts` both match on the base name
+   * — Payload appends `-1` to any name already taken on disk, and this
+   * repository commits `media/`, so almost every row they own is stored under
+   * a suffixed name. `kg-sports-day-winners-1.jpg` looks like a photograph no
+   * seed declares and is in fact `kg-sports-day-winners.jpg` in `media.ts`.
+   * Writing its caption here as well leaves two files disagreeing about one
+   * photograph, with the winner decided by the order of `seed:refresh`.
+   */
+  caption?: string | null
 }[] = [
   {
     filename: 'ignited-mind-lab-2026.jpg',
@@ -57,32 +73,32 @@ const FILING: {
     filename: 'kg-activity-table.jpg',
     unit: 'kindergarten',
     category: 'In the classroom',
+    caption: null,
     because:
-      'It was filed under "Classrooms" while every other Kindergarten classroom photograph is under "In the classroom", so the gallery grew two sections that mean the same thing — one of them holding a single tile. The category is set in no seed, which is why it survived a rebuild; this is where a photograph media.ts does not upload gets filed.',
+      'It was filed under "Classrooms" while every other Kindergarten classroom photograph is under "In the classroom", so the gallery grew two sections that mean the same thing — one of them holding a single tile. The category is set in no seed, which is why it survived a rebuild; this is where a photograph media.ts does not upload gets filed. The caption went with it: "Activity-based learning in the early years", under a heading that already reads "In the classroom", beside a second tile saying the same thing.',
   },
   {
     filename: 'primary-classroom.jpg',
     unit: 'primary',
     category: 'In the classroom',
-    caption: 'Learning in the Primary classroom',
+    caption: null,
     because:
-      'Filed under "Classrooms" while every other classroom photograph on the site is under "In the classroom" — the same fault as `kg-activity-table.jpg` above, and with the same result: a category of one, folded into "More photographs" at the foot of the wall instead of joining the eight pictures it belongs with. No seed declares this photograph, so the category could only be corrected here.',
-  },
-  {
-    filename: 'kg-activity-table.jpg',
-    unit: 'kindergarten',
-    category: 'In the classroom',
-    caption: 'Activity-based learning in the early years',
-    because:
-      'The caption read "A Kindergarten class at the activity table." — a description of the photograph rather than of what the section does, and the only one left on the site written that way. `photos:import` brought this picture in, so no seed declares it and the words could only be corrected here.',
+      'Filed under "Classrooms" while every other classroom photograph on the site is under "In the classroom" — the same fault as `kg-activity-table.jpg` above, and with the same result: a category of one, folded into "More photographs" at the foot of the wall instead of joining the eight pictures it belongs with. No seed declares this photograph, so the category could only be corrected here. Its caption is cleared for the same reason the others in that group are: "Learning in the Primary classroom" is the heading it sits under, said twice.',
   },
   {
     filename: 'portal-vision-background.jpg',
     unit: 'secondary',
     category: 'In the classroom',
-    caption: 'Collaboration and hands-on learning',
+    /*
+     * NO `caption` HERE, deliberately, and this is the one row that must not
+     * have one. `seed:vision-bg` runs AFTER this step and rewrites the words
+     * on every run, so a caption set here is undone a moment later — which is
+     * exactly what happened when this row carried `caption: null` and the
+     * library came back captioned anyway. The words live in
+     * `vision-background.ts`; the filing lives here.
+     */
     because:
-      'The caption was a sentence — "Fostering collaboration and hands-on learning every day." — where every other caption on the site is a label. `vision-background.ts` generates this picture and never captions it, so the words could only be corrected here.',
+      '`vision-background.ts` generates this photograph and files it under no section at all, so without this row it belongs to nowhere and appears on no wall.',
   },
   /*
    * THE ONAM CELEBRATION, ON THE WALL ONCE INSTEAD OF TWICE (2026-09-02).
@@ -96,7 +112,11 @@ const FILING: {
     unit: 'primary',
     category: 'Onam',
     showInGallery: false,
-    caption: 'Onam at the Primary Section',
+    // Cleared to agree with `siws-onam-assembly-2.jpg`, which is the same
+    // photograph and is the copy on the wall. Both are on the Primary
+    // section's "Photographs" band, and one picture cannot be captioned twice
+    // over and differently.
+    caption: null,
     because:
       'The same photograph is in the library twice — once here and once as `siws-onam-assembly-2.jpg`, byte for byte, from the one file in assets/images. Two seeds imported it under two names: `onam.ts`, which owns the set and builds the "Onam Event" section the Events card links to, and an earlier import that left these behind. So the Primary gallery carried the whole celebration twice, under "Onam" and again under "Onam Event". This copy comes off the wall rather than being deleted, because `primary.ts` still points at it for a page photograph.',
   },
@@ -171,12 +191,19 @@ const main = async () => {
     }
 
     const wall = entry.showInGallery ?? true
-    const caption = entry.caption ?? (item.caption as string | undefined)
+    /*
+     * Three states, not two. A row with no `caption` leaves the words alone;
+     * `null` clears them; a string replaces them. Reading an absent caption as
+     * "clear it" would have wiped the words off every photograph this table
+     * files for its section only.
+     */
+    const held = (item.caption as string | null) ?? null
+    const caption = entry.caption === undefined ? held : entry.caption
     if (
       item.unit === target &&
       item.category === entry.category &&
       item.showInGallery === wall &&
-      item.caption === caption
+      held === caption
     )
       continue
 

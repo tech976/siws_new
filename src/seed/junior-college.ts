@@ -1497,7 +1497,7 @@ const main = async () => {
             ? [
                 {
                   image: shots.performance2025,
-                  caption: 'The Independence Day programme in the hall, 2025.',
+                  caption: 'The Independence Day programme in the hall, 2025',
                 },
               ]
             : []),

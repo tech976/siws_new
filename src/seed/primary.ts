@@ -851,28 +851,30 @@ const main = async () => {
    * the rest will go. A caption is written per picture here rather than reused
    * from the library's alt text: the alt text describes the photograph for
    * somebody who cannot see it, and a caption says what the prize was.
+   *
+   * NOT EVERY PICTURE GETS ONE, and the heading is the reason. It reads
+   * "Natya Tarang 2026 and other honours", so a caption saying "On stage at
+   * Natya Tarang 2026" over one tile and "The full company in costume at
+   * Natya Tarang 2026" over another is the heading read back twice. The three
+   * that remain each name something the heading does not — which prize, which
+   * trophy, which other honour — and the two that did not are now unlabelled,
+   * where the alt text still describes them to anybody who needs it.
    */
-  const achievementShots = [
+  const achievementShots: { file: string; caption?: string }[] = [
     {
       file: 'natya-tarang-2026-first-prize.jpg',
       caption:
-        'First prize in Category A at Natya Tarang 2026, the inter-school and college group dance competition.',
+        'First prize in Category A at Natya Tarang 2026, the inter-school and college group dance competition',
     },
-    {
-      file: 'natya-tarang-2026-performance.jpg',
-      caption: 'On stage at Natya Tarang 2026.',
-    },
+    { file: 'natya-tarang-2026-performance.jpg' },
     {
       file: 'ignited-mind-lab-2026.jpg',
       caption: 'Ignited Mind Lab certificates',
     },
-    {
-      file: 'natya-tarang-2026-company.jpg',
-      caption: 'The full company in costume at Natya Tarang 2026.',
-    },
+    { file: 'natya-tarang-2026-company.jpg' },
     {
       file: 'natya-tarang-2026-trophy.jpg',
-      caption: 'The Category A trophy, Pre-Primary to Standard IV.',
+      caption: 'The Category A trophy, Pre-Primary to Standard IV',
     },
   ]
 
@@ -880,7 +882,7 @@ const main = async () => {
     await Promise.all(
       achievementShots.map(async (shot) => {
         const id = await photo(shot.file)
-        return id ? { image: id, caption: shot.caption } : null
+        return id ? { image: id, ...(shot.caption ? { caption: shot.caption } : {}) } : null
       }),
     )
   ).filter((entry) => entry !== null)

@@ -34,7 +34,22 @@ const { default: config } = await import('@payload-config')
 
 const MAX_WIDTH = 1800
 const FILENAME = 'portal-vision-background.jpg'
-const CAPTION = 'Collaboration and hands-on learning'
+/*
+ * NO CAPTION ON THE LIBRARY RECORD, and `null` rather than an omission.
+ *
+ * This photograph is on two walls headed "In the classroom" — the Secondary
+ * section's and the portal's — where "Collaboration and hands-on learning"
+ * named neither a room nor a subject and simply said the heading again.
+ *
+ * The portal home page still prints those words, and they have not been lost:
+ * `institution.ts` writes them onto the chosen tile itself, which is where a
+ * line somebody composed for one picture belongs. What is cleared here is the
+ * library's own caption, which every gallery falls back to.
+ *
+ * `null`, because `undefined` reads to Payload as "not supplied" and would
+ * leave whatever the last run wrote sitting in the column for ever.
+ */
+const CAPTION = null
 const ALT =
   'Secondary School students and their teacher around a laboratory bench, cutting coloured paper into a decoration.'
 
@@ -62,11 +77,14 @@ const run = async () => {
 
   if (mediaId) {
     /*
-     * The file is already there, but the words may have moved on — this
-     * photograph is also a tile on the "Life at SIWS" wall, and its caption is
-     * what that tile prints. Re-running must therefore bring the text up to
-     * date rather than reporting "nothing to do" and leaving a stale line on
-     * the home page. The image itself is not re-uploaded.
+     * The file is already there, but the words may have moved on, so re-running
+     * must bring the text up to date rather than reporting "nothing to do" and
+     * leaving a stale line behind. The image itself is not re-uploaded.
+     *
+     * THIS STEP RUNS AFTER `seed:image-filing`, so whatever it writes here is
+     * the last word on this photograph's caption. A correction made in the
+     * filing table would be undone a moment later, every run — which is why
+     * the caption above is set in this file and not in that one.
      */
     await payload.update({
       collection: 'media',
@@ -92,7 +110,8 @@ const run = async () => {
       overrideAccess: true,
       data: {
         alt: ALT,
-        // Also a tile on the "Life at SIWS" wall, which reads this caption.
+        // Null: the tile on the "Life at SIWS" wall carries its own words,
+        // written in `institution.ts`. See the note on CAPTION above.
         caption: CAPTION,
         // Faces are clearly legible in this photograph.
         depictsChildren: true,

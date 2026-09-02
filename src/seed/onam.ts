@@ -50,7 +50,15 @@ interface OnamImage {
   file: string
   filename: string
   alt: string
-  caption: string
+  /**
+   * Optional, and an omission MEANS something: no caption at all.
+   *
+   * The gallery groups these five under a heading reading "Onam Event", so a
+   * caption has to name a part of the day the heading does not — the pookalam,
+   * the lamp, the teachers, the display. One of them said only "Onam at the
+   * Primary Section", which is the heading and the section's own name.
+   */
+  caption?: string
   /** FR-PRV-11 — true where a student is identifiable. */
   depictsChildren: boolean
   /** Posters and invitations: shown on the event page, kept out of the gallery. */
@@ -81,7 +89,6 @@ const PHOTOS: OnamImage[] = [
     file: 'onam-assembly.jpg',
     filename: 'siws-onam-assembly.jpg',
     alt: 'Children and teachers in cream-and-gold Kerala dress standing in a wide circle around a floral pookalam and lit brass lamp in the school hall, hands folded in greeting.',
-    caption: 'Onam at the Primary Section',
     depictsChildren: true,
   },
   {
@@ -178,7 +185,13 @@ const main = async () => {
        */
       const data = {
         alt: image.alt,
-        caption: image.caption,
+        /*
+         * `null`, not `undefined`. `undefined` reads to Payload as "not
+         * supplied" and leaves whatever an earlier run wrote in the column, so
+         * taking a caption out of the table above would have changed nothing
+         * on any database that had already been seeded with it.
+         */
+        caption: image.caption ?? null,
         unit: primary.id,
         /*
          * Only the photographs carry the category — it is what groups them
