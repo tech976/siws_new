@@ -2084,7 +2084,15 @@ const main = async () => {
               headingLevel: 'h2',
               background: 'sea',
               imagePosition: 'right',
-              imageShape: 'rounded',
+              /*
+               * PORTRAIT, not the wide default. Both league photographs are
+               * 900x1600 — taller than the 1200x1600 the `portrait` shape was
+               * written for — and the wide frame keeps the middle two fifths
+               * of that, which on a line of footballers standing to be greeted
+               * is their shorts. The square frame loses a quarter instead, and
+               * the focal point decides which quarter.
+               */
+              imageShape: 'portrait',
               image: footballShots.teams,
               content: richText([
                 'The SIWS Sports Academy runs an Inter School Football League on the school’s own turf pitch, in two age categories — under-14 and under-17 — for boys and girls.',
@@ -2108,7 +2116,15 @@ const main = async () => {
               headingLevel: 'h2',
               background: 'white',
               imagePosition: 'left',
-              imageShape: 'rounded',
+              /*
+               * PORTRAIT, not the wide default. Both league photographs are
+               * 900x1600 — taller than the 1200x1600 the `portrait` shape was
+               * written for — and the wide frame keeps the middle two fifths
+               * of that, which on a line of footballers standing to be greeted
+               * is their shorts. The square frame loses a quarter instead, and
+               * the focal point decides which quarter.
+               */
+              imageShape: 'portrait',
               image: footballShots.kickoff,
               content: richText([
                 'The league is started on the school’s own pitch, with the ball placed at the centre spot and the staff who organised it standing over it.',

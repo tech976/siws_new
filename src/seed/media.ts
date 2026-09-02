@@ -1744,6 +1744,7 @@ const IMAGES: ImageSeed[] = [
     alt: 'A line of boys in navy and yellow football kit standing on the turf pitch as a guest in a waistcoat greets them, in front of a banner for the S.I.W.S. Sports Academy Inter School Football League 2023-24, under-14 and under-17.',
     caption: 'Teams line up for the inter-school football league',
     depictsChildren: true,
+    focalY: 38,
   },
   {
     file: 'secondary-football-league-kickoff.jpg',
@@ -1753,6 +1754,7 @@ const IMAGES: ImageSeed[] = [
     alt: 'Two men and a woman in a sari standing over a football on the turf pitch beside a draped table, about to start the inter-school football league.',
     caption: 'The inter-school football league',
     depictsChildren: false,
+    focalY: 38,
   },
 ]
 
