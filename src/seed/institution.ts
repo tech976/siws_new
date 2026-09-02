@@ -533,6 +533,56 @@ const main = async () => {
    * are published, because none were supplied and a wrong number on a school's
    * contact page is worse than no number at all.
    */
+  /*
+   * THE DIRECTORY IS BUILT FROM THE UNIT RECORDS, NOT TYPED HERE.
+   *
+   * Every section already holds its own telephone number and addresses on its
+   * unit record, and each section's own contact page reads them from there. A
+   * second copy typed into this page would be right on the day it was written
+   * and wrong the first time a section changed a number — and the number a
+   * parent would be ringing is the one on THIS page, because it is the one
+   * they reach first.
+   *
+   * So the rows below are generated. A section with no number is left out
+   * rather than printed with a blank beside it: a directory entry that gives
+   * nothing is worse than an absence, because it is read as the answer.
+   */
+  /*
+   * Spacing only — never a digit changed.
+   *
+   * The sections store their numbers as they were sent: Primary's hyphenated,
+   * Secondary's as eleven digits with nothing between them. Printed side by
+   * side in one directory that reads as a mistake, and an eleven-digit run is
+   * genuinely hard to dial from. A Mumbai landline is 022 then 4+4, and
+   * anything that is not eleven digits beginning 022 is left exactly alone
+   * rather than guessed at.
+   */
+  const readableNumber = (value: string): string => {
+    const digits = value.replace(/[^0-9]/g, '')
+    if (digits.length === 11 && digits.startsWith('022')) {
+      return `022 ${digits.slice(3, 7)} ${digits.slice(7)}`
+    }
+    return value
+  }
+
+  const CONTACT_ORDER = ['kindergarten', 'primary', 'secondary', 'junior-college']
+  const directory = CONTACT_ORDER.map((slug) =>
+    (allUnits as unknown as Record<string, unknown>[]).find((u) => u.slug === slug),
+  )
+    .filter(Boolean)
+    .map((unit) => {
+      const u = unit as Record<string, string | undefined>
+      const phones = [u.phone, u.phoneAlt].filter(Boolean).map((n) => readableNumber(n as string)).join(' · ')
+      const emails = [u.admissionsEmail, u.contactEmail ?? u.email]
+        .filter((value, index, all) => Boolean(value) && all.indexOf(value) === index)
+        .join(' · ')
+      return {
+        title: u.name ?? '',
+        description: [phones, emails].filter(Boolean).join('\n'),
+      }
+    })
+    .filter((row) => row.description.length > 0)
+
   await upsert({
     slug: 'contact',
     title: 'Contact',
@@ -543,11 +593,63 @@ const main = async () => {
       "Where to find South Indians' Welfare Society — Major R Parameswaran Road, Wadala, Mumbai.",
     layout: [
       {
+        blockType: 'richText',
+        heading: 'Contact SIWS',
+        accentWord: 'SIWS',
+        headingLevel: 'h1',
+        width: 'normal',
+        background: 'white',
+        content: richText([
+          'The Society\u2019s four sections share one campus in Wadala and each keeps its own office. Ring the section your child is in — or would be joining — rather than the Society, and you will reach somebody who can answer.',
+        ]),
+      },
+      /*
+       * `spec`, not cards: every row is a name and its details, and the layout
+       * puts the names in a column of their own so a parent finds their
+       * section without reading the other three.
+       */
+      {
+        blockType: 'featureList',
+        heading: 'The sections',
+        accentWord: 'sections',
+        headingLevel: 'h2',
+        layout: 'spec',
+        marker: 'tick',
+        background: 'tint',
+        items: directory,
+      },
+      {
+        blockType: 'featureList',
+        heading: 'The Society',
+        accentWord: 'Society',
+        headingLevel: 'h2',
+        layout: 'spec',
+        marker: 'tick',
+        background: 'white',
+        items: [
+          {
+            title: 'Address',
+            description:
+              'South Indians\u2019 Welfare Society, Sewree Estate, 337, Major R Parameswaran Road, Wadala, Mumbai, Maharashtra 400031.',
+          },
+          {
+            title: 'Admission enquiries',
+            description:
+              'Each section runs its own admissions. Use the number above for the section you are asking about, or the enquiry form on that section\u2019s own contact page.',
+          },
+          {
+            title: 'Anything else',
+            description:
+              'The section offices take general enquiries as well, and will pass on anything that belongs elsewhere in the Society.',
+          },
+        ],
+      },
+      {
         blockType: 'map',
         heading: 'Find us',
         accentWord: 'us',
         headingLevel: 'h2',
-        background: 'white',
+        background: 'sea',
         label: 'South Indians\u2019 Welfare Society, Wadala',
         address: 'Sewree Estate, 337, Major R Parameswaran Rd, Wadala, Mumbai, Maharashtra 400031',
         height: 'tall',
