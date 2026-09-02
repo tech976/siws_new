@@ -151,92 +151,6 @@ const PROGRAMME_BENEFITS = [
 ]
 
 /*
- * THE SOCIETY'S OWN STATEMENT OF WHAT THE SCHOOL IS FOR.
- *
- * Sent by SIWS as one "About / Overview" block — vision, philosophy, mission,
- * ten values and four goals. It is the school's wording, with two changes and
- * no third:
- *
- *   - "our school aims" is given its capital, being the start of a sentence;
- *   - the Mission opened "The pursuit of its vision, SIWS strives ...", which
- *     leaves the sentence without a main clause. "In pursuit of" is the one
- *     word that makes it a sentence, and it changes nothing it says.
- *
- * The English line under the shloka is a rendering of it, not a second motto;
- * without one the band says nothing at all to a reader who does not read
- * Devanagari. Delete that line if SIWS would rather the Sanskrit stood alone.
- *
- * Nothing here is specific to Grades 1 to 4 — it is the Society's statement,
- * and the Secondary Section and Junior College are entitled to the same words
- * on their own About pages when SIWS asks for them.
- */
-const INTRO_TO_VISION =
-  'We, the South Indians’ Welfare Society’s School, truly follow the vision and mission given below.'
-
-const VISION =
-  'Our school aims that every child should become socially friendly, adapted to the inclusive education, and attain holistic development along with the 21st-century life skills.'
-
-/*
- * Two lines of ONE paragraph, not two paragraphs — see `richText` in
- * ./lexical. The shloka and what it says are a single thought, and a blank
- * line between them would present the English as a separate statement.
- *
- * The Devanagari renders in whichever face the reader's device carries: the
- * three webfonts this site loads are Latin subsets, so it falls through to
- * `system-ui` and lands on Devanagari MT, Nirmala UI or Noto Sans Devanagari.
- * That is the same path the "(पात्र)" already published on the Secondary
- * scholarship page takes, and it is why no font is added for one line.
- */
-const PHILOSOPHY: string[] = [
-  'विद्याधनं सर्व धनात् प्रधानम्',
-  'Of all forms of wealth, the wealth of knowledge is foremost.',
-]
-
-const MISSION =
-  'In pursuit of its vision, SIWS strives to bring out the hidden talents of the students and make them responsible citizens of India.'
-
-/*
- * Ten one-word values, so the compact layout rather than cards.
- *
- * A card apiece would be ten tall boxes holding a single word each, which is
- * the exact case the compact tile was built for — see FeatureCompact. No
- * description is invented for any of them: SIWS sent the names, and a gloss
- * written here would read as the school's definition of honesty when it is
- * this file's.
- */
-const VALUES: { title: string }[] = [
-  { title: 'Honesty' },
-  { title: 'Dignity of Labour' },
-  { title: 'Tidiness' },
-  { title: 'Sensitivity' },
-  { title: 'Punctuality' },
-  { title: 'Courteousness' },
-  { title: 'Scientific Attitude' },
-  { title: 'Religious Tolerance' },
-  { title: 'Gender Equality' },
-  { title: 'Patriotism' },
-]
-
-/*
- * "To bring out their hidden talents" is SIWS's line, and on its own in a list
- * the "their" has nobody to refer to. The block's intro names the children, so
- * the pronoun has an antecedent by the time the reader reaches it and the goal
- * itself is left exactly as it was written.
- */
-/*
- * The chips are the panel layout's per-item label, and they are only here
- * because these four goals genuinely divide — academic work, talent, health,
- * encouragement. Ten values all chipped "Value" would be ten copies of the
- * section heading, which is why VALUES above carries none.
- */
-const GOALS: { title: string; chip: string }[] = [
-  { title: 'To improve intellectual ability', chip: 'Academic' },
-  { title: 'To bring out their hidden talents', chip: 'Talent' },
-  { title: 'To follow the slogan “Health is Wealth”', chip: 'Health' },
-  { title: 'To motivate and bring out the best in each child', chip: 'Encouragement' },
-]
-
-/*
  * SIX CARDS, EACH ONE SENTENCE.
  *
  * There were ten of these, every one carrying thirty-odd words, set as a
@@ -754,29 +668,6 @@ const main = async () => {
    */
   const classroom = await photo('primary-classroom.jpg')
 
-  /*
-   * The classroom photograph's focal point.
-   *
-   * It arrived through `photos:import` rather than `seed:media`, so it has no
-   * entry carrying a `focalY` the way the hand-placed photographs do, and it
-   * sat at Payload's default 50/50. The children occupy roughly 45% to 100% of
-   * this frame and their faces sit around 55-70%, so a centred crop spends its
-   * height on ceiling, fan and bare wall and cuts the front row's heads off.
-   *
-   * 62 puts any crop across the faces. It is a property of the photograph
-   * rather than of one block, so it is still written even though the About page
-   * band it was first added for has since been removed — the gallery and the
-   * cards that crop this picture all want the same figure.
-   */
-  if (classroom) {
-    await payload.update({
-      collection: 'media',
-      id: classroom,
-      data: { focalX: 50, focalY: 62 },
-      overrideAccess: true,
-    })
-  }
-
   const videoStills = {
     independence: await photo('video-2026-independence-day.jpg'),
     raksha: await photo('video-2026-raksha-bandhan.jpg'),
@@ -1269,33 +1160,26 @@ const main = async () => {
       },
       {
         /*
-         * REBUILT ON docs/MASTER-LAYOUT.md.
+         * The compact layout, not a tick list and not cards.
          *
-         * This page ran eight sections, five of them ticked lists one after
-         * the next — subjects, practices, holistic, competitions, all the same
-         * device. It is the exact fault the handbook was written for: by the
-         * third the reader has stopped seeing the ticks, and the two lists that
-         * genuinely matter are indistinguishable from the two that are
-         * reference material.
+         * Ticks in two columns said nothing about the subjects and gave a
+         * parent scanning the page nothing to catch on. Cards are the other
+         * extreme: this block's own note explains that a card earns its size
+         * when it carries a picture and a sentence, and a one-word label given
+         * a card becomes a tall box that is mostly empty — eight of them, with
+         * a ragged last row.
          *
-         * Now every list takes the layout its CONTENT asks for, and the panel
-         * cap in §4 is held at two for the page: the practices and the holistic
-         * programme, which are the claims a parent is actually weighing.
-         *
-         * On this block in particular: ticks in two columns said nothing about
-         * the subjects and gave a parent scanning the page nothing to catch
-         * on, while a card given a one-word label becomes a tall box that is
-         * mostly empty. Compact is the middle — a labelled tile per subject,
-         * three across, at a fixed height, so the last row not dividing by
-         * three stops mattering.
+         * Compact is the middle: a labelled tile per subject, icon beside the
+         * words, three across. It reads as a syllabus at a glance, and the
+         * tiles are a fixed height so the last row not dividing by three stops
+         * mattering.
          */
         blockType: 'featureList',
         heading: 'Subjects taught',
         accentWord: 'Subjects',
         headingLevel: 'h2',
-        /* Seven one-line labels — §4's case for the compact tile exactly. */
-        layout: 'compact',
         marker: 'tick',
+        columns: '2-centre',
         background: 'sea',
         items: SUBJECTS,
       },
@@ -1320,42 +1204,30 @@ const main = async () => {
         ]),
       },
       {
-        /* PANEL 1 OF 2. Ten peers, no sequence, each a short claim a parent
-           scans rather than studies — §4's test, met on every clause. */
         blockType: 'featureList',
         heading: 'Our teaching practices',
-        accentWord: 'practices',
         headingLevel: 'h2',
-        layout: 'panel',
         marker: 'tick',
+        columns: '2',
         background: 'white',
         items: TEACHING_PRACTICES,
       },
       {
-        /* PANEL 2 OF 2 — the cap. Everything below reverts to quieter
-           devices so these two keep meaning something. */
         blockType: 'featureList',
         heading: 'Holistic Development',
         accentWord: 'Holistic',
         headingLevel: 'h2',
-        layout: 'panel',
         marker: 'tick',
+        columns: '2',
         background: 'sea',
         items: HOLISTIC,
       },
       {
-        /*
-         * Twelve short labels. A panel set would read well and would be the
-         * page's THIRD, so it takes the compact tile instead — the cap is not
-         * a suggestion, and reference material is exactly what should give way
-         * when something has to.
-         */
         blockType: 'featureList',
         heading: 'Competitions held through the year',
-        accentWord: 'Competitions',
         headingLevel: 'h2',
-        layout: 'compact',
         marker: 'tick',
+        columns: '2-centre',
         background: 'white',
         items: COMPETITIONS,
       },
@@ -2413,117 +2285,6 @@ const main = async () => {
           'The Primary Section takes a child from Grade 1 to Grade 4 — the four years in which reading stops being the thing being learnt and becomes the thing everything else is learnt with. The curriculum is the Maharashtra State Board’s, aligned with NEP 2020, and it is taught through activity and discussion rather than through dictation and copying.',
           'The section sits inside the SIWS Group of Institutions. A child who joins in Grade 1 can carry on into the Secondary School and then the Junior College without changing school in between — the same campus, and often teachers who already know the family.',
         ]),
-      },
-      /*
-       * THE SOCIETY'S STATEMENT, AS ONE COMPOSED SECTION RATHER THAN FIVE BANDS.
-       *
-       * It went in first as five full-width bands — Vision, Philosophy,
-       * Mission, Values, Goals, one under the next, each with a centred 36px
-       * heading and 80px of padding top and bottom. Every one of them was
-       * correct and the page was ruined: ten stripes of alternating colour
-       * where there had been five, two deep-blue bands within one screen of
-       * each other, and a whole white band holding a two-line motto with 160px
-       * of empty space around it. BentoBlock's own docstring names the fault —
-       * "a page of equal-weight sections reads as a list".
-       *
-       * The measure was wrong too. The paragraph above this uses the `normal`
-       * width and starts 336px in; the three bands used `narrow` and started
-       * 352px in, so the prose stepped sideways by 16px halfway down the page
-       * for no reason a reader could see.
-       *
-       * So: three sections, three different layouts, one type scale.
-       * A bento grid holds the vision, the mission and the motto in a single
-       * composition; the values keep the compact tile; the goals take the same
-       * ticked list "What is taught" below them already uses. Nothing here
-       * invents a width or a colour of its own — every measure comes from the
-       * block that owns it, which is what stops the page drifting again.
-       */
-      /*
-       * NOT A FOURTH TICK LIST.
-       *
-       * The version before this one set the vision, the values and the goals
-       * as three ticked lists, which put FOUR of them in a row once "What is
-       * taught" is counted — the page became a parade of tick discs and the
-       * reader stopped seeing any of them. Matching the page's existing
-       * pattern was the right instinct and the wrong dose.
-       *
-       * So the vision and the mission take cards, which carry a label and a
-       * paragraph with no marker at all, and the philosophy comes off the
-       * page's flat plane entirely: it runs across a photograph of a Primary
-       * classroom as a full-bleed band, which is the one thing this page had
-       * nowhere in it — somewhere to look rather than something to read.
-       *
-       * That leaves ticks on the values and the goals only, with a photograph
-       * between them and the subject list below.
-       */
-      {
-        blockType: 'cardGrid',
-        heading: 'What we stand for',
-        accentWord: 'stand for',
-        headingLevel: 'h2',
-        background: 'sea',
-        columns: '3',
-        placedBySeed: true,
-        intro: richText([INTRO_TO_VISION]),
-        /*
-         * Three cards, in the order SIWS wrote them.
-         *
-         * The philosophy spent one revision as a full-bleed band with the
-         * shloka over a photograph of a classroom. The band was removed on
-         * request, and the reason is worth keeping: DividerBlock's overlay runs
-         * at 88-92% opacity, which is what guarantees white text stays legible
-         * over ANY photograph an editor uploads — and the cost of that
-         * guarantee is that the picture barely reads. It arrives as a slab of
-         * near-solid dark blue with a faint image inside it, which is not what
-         * a photograph on a school page is for.
-         *
-         * Back in the row it is a card like the other two, it keeps its place
-         * between the vision and the mission, and the page holds one flat plane
-         * instead of a dark interruption across the middle of it.
-         */
-        cards: [
-          { title: 'Our Vision', description: VISION },
-          {
-            title: 'Our Philosophy',
-            description: `${PHILOSOPHY[0]} — ${PHILOSOPHY[1].charAt(0).toLowerCase()}${PHILOSOPHY[1].slice(1)}`,
-          },
-          { title: 'Our Mission', description: MISSION },
-        ],
-      },
-      /*
-       * The two list sections on this page use the PANEL layout — the one
-       * documented in docs/MASTER-LAYOUT.md. Two, and no more: the lift is the
-       * whole point of the device and it means nothing on a page where every
-       * section lifts. "What is taught" and "How the section is staffed" below
-       * stay as they are for exactly that reason.
-       */
-      {
-        blockType: 'featureList',
-        heading: 'Our Values',
-        accentWord: 'Values',
-        headingLevel: 'h2',
-        layout: 'panel',
-        marker: 'tick',
-        background: 'white',
-        intro: richText([
-          'We also sincerely imbibe these moral values and set our goals to achieve them.',
-        ]),
-        items: VALUES,
-      },
-      {
-        blockType: 'featureList',
-        heading: 'Our Goals',
-        accentWord: 'Goals',
-        headingLevel: 'h2',
-        layout: 'panel',
-        marker: 'tick',
-        /* Two across: four into three leaves one panel alone on a second row. */
-        columns: '2',
-        background: 'sea',
-        intro: richText([
-          'What the section sets out to do for every child in Grades 1 to 4.',
-        ]),
-        items: GOALS,
       },
       {
         blockType: 'featureList',
