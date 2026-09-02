@@ -75,7 +75,7 @@ export const RichTextBlockView = ({ block }: { block: RichTextBlock }) => {
         />
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-gradient-to-r from-[#2e3192]/92 via-[#2e3192]/72 to-[#2e3192]/92"
+          className="absolute inset-0 -z-10 bg-gradient-to-r from-brand/92 via-brand/72 to-brand/92"
         />
         <div className="siws-container">{body}</div>
       </section>
