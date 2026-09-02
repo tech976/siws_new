@@ -729,6 +729,74 @@ const IMAGES: ImageSeed[] = [
     caption: 'Prize day at the Kindergarten annual sports',
     depictsChildren: true,
   },
+  /*
+   * Supplied by SIWS on 2026-09-02 for the Events page, where the six things
+   * the section marks through the year had titles and no photographs.
+   *
+   * Four festivals for one card. "Festival celebrations" is a single line on
+   * that page and can carry one picture, so the other three go to the gallery
+   * under Events and outings rather than being held back — they are the only
+   * photographs the site has of Janmashtami, Ganesh Chaturthi and Christmas.
+   *
+   * Alt text written from each photograph. Two of these were nearly filed
+   * under each other's names: the Christmas and Raksha Bandhan frames are both
+   * upright and within a pixel of the same size, and only opening them settled
+   * which was which.
+   */
+  {
+    file: 'kg-festival-janmashtami.jpg',
+    filename: 'kg-festival-janmashtami.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'A kindergarten class at the curved tables dressed for Janmashtami, several children as Krishna in yellow with peacock crowns and flutes, others in bright festival clothes.',
+    caption: 'Dressed for Janmashtami',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-festival-ganesh-chaturthi.jpg',
+    filename: 'kg-festival-ganesh-chaturthi.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'A line of kindergarten children standing with their palms together before a decorated Ganpati shrine hung with marigolds and lights.',
+    caption: 'Ganesh Chaturthi in the section',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-festival-christmas.jpg',
+    filename: 'kg-festival-christmas.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'Kindergarten children in party clothes and red Santa hats grouped in front of a lit Christmas tree and a doorway hung with tinsel and wreaths.',
+    caption: 'Christmas in the Kindergarten',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-festival-raksha-bandhan.jpg',
+    filename: 'kg-festival-raksha-bandhan.jpg',
+    unit: 'kindergarten',
+    category: 'Events and outings',
+    alt: 'Kindergarten children lined up along a corridor tying rakhis onto each other’s wrists.',
+    caption: 'Tying rakhis on Raksha Bandhan',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-sports-day-trophies.jpg',
+    filename: 'kg-sports-day-trophies.jpg',
+    unit: 'kindergarten',
+    category: 'Sports',
+    alt: 'A whole kindergarten class in red and navy sports kit standing on the turf pitch behind a table laid with rows of gold trophies, a goal net behind them.',
+    caption: 'The whole section behind the sports day trophies',
+    depictsChildren: true,
+  },
+  {
+    file: 'kg-finger-painting.jpg',
+    filename: 'kg-finger-painting.jpg',
+    unit: 'kindergarten',
+    category: 'In the classroom',
+    alt: 'Kindergarten children leaning over a table pressing their fingers into orange and green paint on a plate and printing rows of dots onto a yellow sheet.',
+    caption: 'Printing with fingers and thumbs',
+    depictsChildren: true,
+  },
   {
     file: 'kg-sports-day-podium.jpg',
     filename: 'kg-sports-day-podium.jpg',

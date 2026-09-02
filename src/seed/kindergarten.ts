@@ -246,6 +246,15 @@ const main = async () => {
     sportsDayPodium: await mediaByFilename(payload, 'kg-sports-day-podium.jpg'),
     // The News page leads on this one — the preparation rather than the prize.
     danceRehearsal: await mediaByFilename(payload, 'kg-dance-rehearsal.jpg'),
+    /*
+     * For the Events page, where the six things the section marks through the
+     * year had titles and no pictures. The three other festivals SIWS supplied
+     * with these are in the library and on the gallery wall; only one of the
+     * four can sit on a single "Festival celebrations" card.
+     */
+    festivalJanmashtami: await mediaByFilename(payload, 'kg-festival-janmashtami.jpg'),
+    sportsDayTrophies: await mediaByFilename(payload, 'kg-sports-day-trophies.jpg'),
+    paintingPrints: await mediaByFilename(payload, 'kg-finger-painting.jpg'),
     activityLiteracy: await mediaByFilename(payload, 'kg-activity-literacy.jpg'),
     activityCreative: await mediaByFilename(payload, 'kg-activity-creative.jpg'),
     activityMotor: await mediaByFilename(payload, 'kg-activity-motor.jpg'),
@@ -1763,24 +1772,73 @@ const main = async () => {
       metaDescription:
         'The Kindergarten calendar at SIWS Wadala — festival celebrations, fancy dress, dance, sports and activity days through the year.',
       layout: [
+        /*
+         * A PHOTOGRAPH PER ENTRY, which is what turned this from a list into a
+         * page.
+         *
+         * It was six ticked labels — "Festival celebrations", "Fancy dress",
+         * "Sports" — and every one of them named something a parent cannot
+         * picture from two words. The school HAS the photographs; they were
+         * simply never brought to this page. Six pictures of the actual
+         * festivals, the actual costumes and the actual paint say what six
+         * ticks could not.
+         *
+         * Cards rather than the compact tile grid, because a compact tile has
+         * nowhere for a picture: it exists for a set of short labels where a
+         * full card per item would be mostly empty space, and that stops being
+         * true the moment each item carries a photograph.
+         *
+         * Three across on a large screen and two rows of three, so the grid
+         * ends level with no stretched card — the row-fill logic gets six
+         * exactly right without being asked.
+         *
+         * ONE LINE OF DESCRIPTION EACH, and no more. These are calendar
+         * entries, not stories; the News page is where an occasion gets told
+         * properly. Each line says what the photograph shows, so the card
+         * reads as one thought rather than a caption competing with a title.
+         */
         {
-          blockType: 'featureList',
+          blockType: 'cardGrid',
           heading: 'What we mark through the year',
           accentWord: 'through the year',
           headingLevel: 'h2',
-          layout: 'compact',
-          marker: 'tick',
+          columns: '3',
           background: 'white',
           intro: richText([
             'Every one of these is part of the Kindergarten calendar. Dates are given to parents through the school diary.',
           ]),
-          items: [
-            { title: 'Festival celebrations', icon: 'activity' },
-            { title: 'Fancy dress', icon: 'activity' },
-            { title: 'Dance and movement', icon: 'music' },
-            { title: 'Sports', icon: 'sport' },
-            { title: 'Drawing and colouring', icon: 'activity' },
-            { title: 'Finger, thumb and palm painting', icon: 'activity' },
+          cards: [
+            {
+              title: 'Festival celebrations',
+              description:
+                'Janmashtami, Ganesh Chaturthi, Raksha Bandhan and Christmas, marked in the classrooms.',
+              ...(img.festivalJanmashtami ? { image: img.festivalJanmashtami } : {}),
+            },
+            {
+              title: 'Fancy dress',
+              description: 'Costumes made at home, and a turn in front of the school.',
+              ...(img.prizeFancyDressEntrants ? { image: img.prizeFancyDressEntrants } : {}),
+            },
+            {
+              title: 'Dance and movement',
+              description: 'Group pieces learnt barefoot in the hall, and danced on stage.',
+              ...(img.danceRehearsal ? { image: img.danceRehearsal } : {}),
+            },
+            {
+              title: 'Sports',
+              description: 'The section’s own sports day on the turf pitch, and the trophies that close it.',
+              ...(img.sportsDayTrophies ? { image: img.sportsDayTrophies } : {}),
+            },
+            {
+              title: 'Drawing and colouring',
+              description: 'Crayons and activity books at the group tables.',
+              ...(img.classroomActivity ? { image: img.classroomActivity } : {}),
+            },
+            {
+              title: 'Finger, thumb and palm painting',
+              description: 'Paint on a plate, and rows of prints made by hand.',
+              ...(img.paintingPrints ? { image: img.paintingPrints } : {}),
+            },
           ],
         },
         {
