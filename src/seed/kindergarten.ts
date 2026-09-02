@@ -2111,6 +2111,14 @@ const main = async () => {
           blockType: 'faculty',
           heading: 'Meet the team',
           headingLevel: 'h2',
+          /*
+           * The same arrangement as Primary's roster, so a family moving
+           * between the four sections meets one page rather than four. The
+           * `teams` layout groups by team where a section has more than one
+           * and runs full width where it does not.
+           */
+          layout: 'teams',
+          cardLayout: 'centred',
           showQualifications: true,
           background: 'white',
           intro: richText([

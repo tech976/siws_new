@@ -205,7 +205,21 @@ export const FacultyBlockView = async ({
         and an assistant differ only in the size of the monogram beside them.
       */}
       {grouped ? (
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-8">
+        <div
+          /*
+           * TWO COLUMNS ONLY WHEN THERE ARE TWO TEAMS.
+           *
+           * Primary is the section this layout was built for and it has two
+           * lists, so the columns were hard-coded. Every other section has one
+           * — Secondary's roster is a single team, and Kindergarten's and the
+           * Junior College's carry no team key at all — and a lone column in a
+           * two-column grid leaves half the page blank beside it.
+           *
+           * One team therefore runs full width, which is the same page in one
+           * column rather than a narrow strip with a hole to its right.
+           */
+          className={`grid gap-10 lg:gap-8 ${teams.length > 1 ? 'lg:grid-cols-2' : ''}`}
+        >
           {teams.map((team) => (
             <div key={team.key}>
               {team.head ? (

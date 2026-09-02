@@ -1088,6 +1088,17 @@ const main = async () => {
         blockType: 'faculty',
         heading: 'Meet the team',
         headingLevel: 'h2',
+        /*
+         * The same arrangement as Primary's roster, so a family moving between
+         * the four sections meets one page rather than four.
+         *
+         * `campus` is left as it was and no longer filters: `teams` groups the
+         * whole roster itself rather than being handed one team, and every one
+         * of this section's forty-three teachers is tagged 'wadala', so the
+         * page shows exactly who it showed before.
+         */
+        layout: 'teams',
+        cardLayout: 'centred',
         campus: 'wadala',
         showQualifications: true,
         background: 'sea',

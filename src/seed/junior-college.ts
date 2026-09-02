@@ -634,11 +634,14 @@ const main = async () => {
          */
         showQualifications: true,
         /*
-         * The flat grid, not `teams`: SIWS sent one list. The two streams are
-         * not a split of the roster — a teacher of English teaches both — so
-         * grouping by stream would need a decision nobody has made.
+         * The same arrangement as Primary's roster, so a family moving between
+         * the four sections meets one page rather than four.
+         *
+         * SIWS sent one list and the two streams are not a split of it — a
+         * teacher of English teaches both — so this is a single team, which
+         * `teams` runs full width.
          */
-        layout: 'grid',
+        layout: 'teams',
         cardLayout: 'centred',
         intro: richText([
           'Our teachers hold the Commerce and Science streams across Standards XI and XII, on the Maharashtra State Board syllabus.',
