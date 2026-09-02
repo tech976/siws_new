@@ -8,6 +8,16 @@ import { CAMPUS_LABELS, type Campus } from '@/fields/campus'
 import { ADMISSION_ENQUIRY_NOTICE } from '@/lib/consent-notices'
 import { HONEYPOT_FIELD } from '@/lib/form-guard'
 
+import {
+  ConsentCheckbox,
+  ConsentNoticeDetails,
+  Field,
+  FieldError,
+  Honeypot,
+  Required,
+  inputClass as fieldClass,
+} from './fields'
+
 /**
  * The admission enquiry form (FR-ADM-03, FR-ADM-05, FR-ADM-06).
  *
@@ -27,6 +37,13 @@ interface EnquiryFormProps {
   campusOptions?: Campus[]
   /** Signed on the server when the page rendered — see `form-guard`. */
   formToken: string
+  /**
+   * Which of the school's inboxes this card reaches — the same eight fields
+   * are an admission enquiry on one page and a campus tour request on another.
+   * A ROLE, not an address: the action looks the address up on the unit, so
+   * nothing posted from a browser can choose who receives the submission.
+   */
+  sendTo?: 'admissions' | 'general'
   privacyHref?: string | null
 }
 
@@ -46,6 +63,7 @@ export const EnquiryForm = ({
   classOptions,
   campusOptions = [],
   formToken,
+  sendTo = 'admissions',
   privacyHref,
 }: EnquiryFormProps) => {
   const [state, formAction] = useActionState(submitEnquiry, initialEnquiryState)
@@ -67,32 +85,13 @@ export const EnquiryForm = ({
     )
   }
 
-  const inputClass = (name: string) =>
-    [
-      /*
-       * ROUNDER, ROOMIER, AND SET AT 16px.
-       *
-       * 12px corners on a 46px box read as a rectangle with the edges filed
-       * off — "blocky" was the right word for it. 16px on a 52px box reads as
-       * a considered shape.
-       *
-       * The type size is not cosmetic: iOS Safari zooms the whole page in when
-       * a focused input is under 16px, so a parent tapping "Your first name"
-       * on a phone was being thrown into a zoomed viewport they then had to
-       * pinch back out of. `text-base` is exactly the threshold.
-       */
-      'w-full rounded-2xl border-2 bg-white px-5 py-3.5 text-base text-ink',
-      'placeholder:text-ink-muted focus:outline-none focus:ring-3 focus:ring-brand/20',
-      // `border-field`, not `border-line`: an input's boundary is a meaningful
-      // UI component and WCAG 2.1 SC 1.4.11 wants it at 3:1. The decorative
-      // divider token is far too pale to show where a field actually is.
-      fieldError(name) ? 'border-[#b3172b]' : 'border-field focus:border-brand',
-    ].join(' ')
+  const inputClass = (name: string) => fieldClass(Boolean(fieldError(name)))
 
   return (
     <form action={formAction} noValidate className="grid gap-5">
       <input type="hidden" name="unitId" value={String(unitId)} />
       <input type="hidden" name="formToken" value={formToken} />
+      <input type="hidden" name="sendTo" value={sendTo} />
 
       {/*
         One campus is not a question — the answer cannot vary, so it is stamped
@@ -104,22 +103,7 @@ export const EnquiryForm = ({
         <input type="hidden" name="campus" value={campusOptions[0]} />
       ) : null}
 
-      {/*
-        Honeypot. Positioned off-screen rather than `display:none` — some bots
-        skip hidden inputs, and `aria-hidden` plus `tabIndex={-1}` keeps it away
-        from screen readers and keyboard users either way.
-      */}
-      <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
-        <label htmlFor={HONEYPOT_FIELD}>Website</label>
-        <input
-          id={HONEYPOT_FIELD}
-          type="text"
-          name={HONEYPOT_FIELD}
-          tabIndex={-1}
-          autoComplete="off"
-          defaultValue=""
-        />
-      </div>
+      <Honeypot name={HONEYPOT_FIELD} />
 
       {state.status === 'error' && state.message ? (
         <p
@@ -243,125 +227,24 @@ export const EnquiryForm = ({
         <FieldError id="gradeApplyingFor-error" message={fieldError('gradeApplyingFor')} />
       </div>
 
+      <ConsentNoticeDetails notice={ADMISSION_ENQUIRY_NOTICE} privacyHref={privacyHref} />
+
+      <ConsentCheckbox
+        label={ADMISSION_ENQUIRY_NOTICE.checkboxLabel}
+        error={fieldError('consent')}
+      />
+
       {/*
-        FR-PRV-08 — the itemised notice sits at the point of collection, not
-        behind a link, so the parent reads it before they consent rather than
-        after.
+        The same eight fields are two different requests, and the button is
+        where a visitor finds out which. On a Contact page this card is headed
+        "Book a Free Campus Tour" and goes to the general office; on an
+        Admissions page it is an application enquiry going to admissions.
+        "Book your campus tour" over the second one promised a visit that
+        nobody had asked for.
       */}
-      <details className="rounded-2xl bg-sea-soft px-5 py-3.5 t-small">
-        <summary className="cursor-pointer font-semibold text-brand">
-          How we will use your details
-        </summary>
-        <dl className="mt-3 grid gap-2 text-ink-soft">
-          <NoticeItem term="What we collect" detail={ADMISSION_ENQUIRY_NOTICE.items.whatWeCollect} />
-          <NoticeItem term="Why we need it" detail={ADMISSION_ENQUIRY_NOTICE.items.whyWeCollect} />
-          <NoticeItem term="How long we keep it" detail={ADMISSION_ENQUIRY_NOTICE.items.howLongWeKeepIt} />
-          <NoticeItem term="Your rights" detail={ADMISSION_ENQUIRY_NOTICE.items.yourRights} />
-        </dl>
-        {privacyHref ? (
-          <p className="mt-3">
-            <a href={privacyHref} className="font-semibold text-brand underline underline-offset-4">
-              Read our full privacy policy
-            </a>
-          </p>
-        ) : null}
-      </details>
-
-      <div>
-        <label className="flex cursor-pointer items-start gap-3 text-sm text-ink-soft">
-          {/* Never pre-ticked — FR-PRV-07 requires an affirmative action. */}
-          <input
-            type="checkbox"
-            name="consent"
-            required
-            aria-invalid={fieldError('consent') ? true : undefined}
-            aria-describedby={fieldError('consent') ? 'consent-error' : undefined}
-            className="mt-0.5 size-5 shrink-0 rounded border-2 border-field accent-brand"
-          />
-          <span>{ADMISSION_ENQUIRY_NOTICE.checkboxLabel}</span>
-        </label>
-        <FieldError id="consent-error" message={fieldError('consent')} />
-      </div>
-
-      <SubmitButton label="Book your campus tour" />
+      <SubmitButton
+        label={sendTo === 'general' ? 'Book your campus tour' : 'Send my enquiry'}
+      />
     </form>
   )
 }
-
-const Required = () => (
-  <>
-    <span aria-hidden="true" className="text-[#b02330]">
-      *
-    </span>
-    <span className="sr-only">(required)</span>
-  </>
-)
-
-const FieldError = ({ id, message }: { id: string; message?: string }) =>
-  message ? (
-    <p id={id} className="mt-1.5 text-sm font-medium text-[#b02330]">
-      {message}
-    </p>
-  ) : null
-
-interface FieldProps {
-  name: string
-  label: string
-  type?: string
-  required?: boolean
-  autoComplete?: string
-  inputMode?: 'numeric' | 'tel' | 'email' | 'text'
-  min?: number
-  max?: number
-  error?: string
-  defaultValue?: string
-  className?: string
-}
-
-/**
- * Every input carries a real `<label>` tied by `htmlFor`, rather than a
- * placeholder standing in for one. Placeholder-as-label disappears the moment
- * someone starts typing and is not reliably announced (WCAG 2.1 SC 3.3.2) —
- * the approved design used that pattern, so this is a deliberate departure.
- */
-const Field = ({
-  name,
-  label,
-  type = 'text',
-  required = false,
-  autoComplete,
-  inputMode,
-  min,
-  max,
-  error,
-  defaultValue,
-  className,
-}: FieldProps) => (
-  <div>
-    <label htmlFor={name} className="mb-2 block t-small font-semibold text-brand">
-      {label} {required ? <Required /> : null}
-    </label>
-    <input
-      id={name}
-      name={name}
-      type={type}
-      required={required}
-      autoComplete={autoComplete}
-      inputMode={inputMode}
-      min={min}
-      max={max}
-      defaultValue={defaultValue}
-      aria-invalid={error ? true : undefined}
-      aria-describedby={error ? `${name}-error` : undefined}
-      className={className}
-    />
-    <FieldError id={`${name}-error`} message={error} />
-  </div>
-)
-
-const NoticeItem = ({ term, detail }: { term: string; detail: string }) => (
-  <div>
-    <dt className="font-semibold text-brand">{term}</dt>
-    <dd>{detail}</dd>
-  </div>
-)

@@ -51,9 +51,38 @@ export const ADMISSION_ENQUIRY_NOTICE: ConsentNotice = {
   },
 }
 
+/**
+ * Feedback sent from a school's Contact page.
+ *
+ * A SEPARATE NOTICE, not a reuse of the one above, and the difference is the
+ * whole point of recording a version against a consent. The admission notice
+ * says the details are used to answer an enquiry about a place and are kept
+ * for the admission year; somebody writing to say the school bus is late has
+ * agreed to neither of those things. Binding their message to
+ * `admission_enquiry` would evidence a consent they were never shown.
+ *
+ * It asks for less, too. There is no child's name and no age here — feedback
+ * is from the person writing it, and FR-PRV-16 allows collecting only what the
+ * stated purpose needs.
+ */
+export const FEEDBACK_NOTICE: ConsentNotice = {
+  version: '2026-09-v1',
+  purpose: 'feedback',
+  checkboxLabel: 'I agree to SIWS using these details to reply to my message.',
+  items: {
+    whatWeCollect: 'Your name, your email address, an optional phone number, and your message.',
+    whyWeCollect:
+      'So that the school can read your feedback and reply to you about it. We will not use it for anything else, and we will not add you to a mailing list.',
+    howLongWeKeepIt: 'For up to one year after your message is dealt with, then it is deleted.',
+    yourRights:
+      'You can ask to see, correct or delete your details, or withdraw this consent, at any time by contacting our Data Protection Officer.',
+  },
+}
+
 /** Every notice, keyed by purpose — used by the consent register. */
 export const CONSENT_NOTICES = {
   [ADMISSION_ENQUIRY_NOTICE.purpose]: ADMISSION_ENQUIRY_NOTICE,
+  [FEEDBACK_NOTICE.purpose]: FEEDBACK_NOTICE,
 } as const
 
 export type ConsentPurpose = keyof typeof CONSENT_NOTICES

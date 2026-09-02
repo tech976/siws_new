@@ -93,6 +93,37 @@ export const HeroEnquiryBlock: Block = {
           type: 'text',
           defaultValue: '(Limited seats available for Jr. KG & Sr. KG)',
         },
+        /**
+         * WHICH INBOX THIS PARTICULAR CARD REACHES.
+         *
+         * The same block appears on two pages that mean different things. On
+         * an Admissions page it is an admission enquiry and belongs to the
+         * admissions office. On a Contact page it is headed "Book a Free
+         * Campus Tour", which is a request to visit — a question for the
+         * general office, and one the admissions team should not have to
+         * filter out of its own inbox.
+         *
+         * It names a ROLE, not an address. The address itself is read from the
+         * school's Unit record at the moment the form is submitted, so a
+         * change of mailbox is made once, by an editor, in the place the panel
+         * already calls "Where messages go" — and so that nothing a browser
+         * posts can choose who receives a family's details.
+         */
+        {
+          name: 'sendTo',
+          type: 'select',
+          required: true,
+          defaultValue: 'admissions',
+          label: 'Send submissions to',
+          options: [
+            { label: 'The admissions inbox', value: 'admissions' },
+            { label: 'The general (info) inbox', value: 'general' },
+          ],
+          admin: {
+            description:
+              'Which address on this school’s Unit record receives the message. Admission enquiries go to the admissions inbox; a campus tour request or a general question goes to the info inbox.',
+          },
+        },
         {
           name: 'classOptions',
           type: 'array',

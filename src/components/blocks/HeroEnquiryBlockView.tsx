@@ -1,10 +1,12 @@
-import { Check, GraduationCap } from 'lucide-react'
+import { Check, GraduationCap, MessageSquareHeart } from 'lucide-react'
 
 import { Media } from '@/components/Media'
 import { EnquiryForm } from '@/components/forms/EnquiryForm'
 import type { Campus } from '@/fields/campus'
 import { createFormToken } from '@/lib/form-guard'
 import type { HeroEnquiryBlock, Unit } from '@/payload-types'
+
+import { FEEDBACK_ANCHOR } from './FeedbackBlockView'
 
 /**
  * The Kindergarten hero, matching the approved landing page.
@@ -16,9 +18,19 @@ import type { HeroEnquiryBlock, Unit } from '@/payload-types'
 export const HeroEnquiryBlockView = ({
   block,
   unit,
+  hasFeedback = false,
 }: {
   block: HeroEnquiryBlock
   unit: Unit | null
+  /**
+   * Whether a feedback section exists further down THIS page.
+   *
+   * Decided by `RenderBlocks`, which can see the whole layout, because the
+   * link below is a jump to an id on the same page and a fragment matching
+   * nothing fails silently — the page does not move, and a button that does
+   * nothing is worse than no button.
+   */
+  hasFeedback?: boolean
 }) => {
   const benefits = (block.benefits ?? [])
     .map((entry) => entry.text)
@@ -170,6 +182,13 @@ export const HeroEnquiryBlockView = ({
               classOptions={classOptions.length > 0 ? classOptions : ['Jr KG', 'Sr KG']}
               campusOptions={campusOptions}
               formToken={createFormToken()}
+              /*
+               * Which inbox this particular card reaches. Set on the block, so
+               * the same component is an admission enquiry on the Admissions
+               * page and a campus tour request on the Contact page — see the
+               * note beside `sendTo` in `blocks/HeroEnquiryBlock.ts`.
+               */
+              sendTo={block.form?.sendTo === 'general' ? 'general' : 'admissions'}
             />
           ) : (
             /* The form is bound to a unit's admissions inbox, so on the
@@ -193,6 +212,31 @@ export const HeroEnquiryBlockView = ({
                 </li>
               ))}
             </ul>
+          ) : null}
+
+          {/*
+            NOT A SECOND PRIMARY BUTTON, deliberately.
+
+            This card's job is the tour request, and the one thing a visitor
+            should be able to do without hesitating is fill it in. A second
+            filled button under the first makes a parent choose between two
+            equal-looking actions before doing either. A quiet link, set apart
+            by a rule, is available to somebody who came to say something and
+            invisible to somebody who came to book a visit.
+
+            It only appears when the page actually holds a feedback section —
+            see `hasFeedback` above.
+          */}
+          {hasFeedback ? (
+            <p className="mt-5 border-t border-line pt-5 text-center">
+              <a
+                href={`#${FEEDBACK_ANCHOR}`}
+                className="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2 t-small font-semibold text-brand transition-colors hover:bg-sea-soft focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand/25"
+              >
+                <MessageSquareHeart size={16} strokeWidth={2} aria-hidden="true" />
+                Give feedback instead
+              </a>
+            </p>
           ) : null}
         </div>
       </div>

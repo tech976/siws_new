@@ -40,6 +40,31 @@ const text = (data: FormData, key: string): string => {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
+/**
+ * Which of the school's inboxes a given card reaches, and the order to fall
+ * back through when the first choice is not filled in on the Unit record.
+ *
+ * THE FORM POSTS A ROLE, NEVER AN ADDRESS. `sendTo` arrives in a hidden input
+ * and anything can post to this action, so accepting an address would let a
+ * stranger redirect a family's telephone number to a mailbox of their own.
+ * What arrives is matched against these two keys and thrown away if it is
+ * neither; the address is then read from the unit.
+ */
+const ROUTES = {
+  admissions: {
+    label: 'admissions',
+    /** Admissions first, then the general office rather than nobody. */
+    fields: ['admissionsEmail', 'contactEmail', 'email'] as const,
+  },
+  general: {
+    label: 'general',
+    /** The general office first — a campus tour is not an application. */
+    fields: ['contactEmail', 'email', 'admissionsEmail'] as const,
+  },
+} as const
+
+type Route = keyof typeof ROUTES
+
 export const submitEnquiry = async (
   _previous: EnquiryState,
   formData: FormData,
@@ -129,6 +154,16 @@ export const submitEnquiry = async (
     errors.consent = 'Please tick the box so we know we may contact you.'
   }
 
+  /*
+   * Not in `values`, because it is not something the visitor typed and must
+   * not be echoed back into the form on a validation failure. An unrecognised
+   * value falls back to admissions rather than being rejected: a mistyped
+   * `sendTo` is our bug, and losing a real enquiry over it would be the worse
+   * of the two outcomes.
+   */
+  const posted = text(formData, 'sendTo')
+  const route: Route = posted === 'general' ? 'general' : 'admissions'
+
   const unitId = text(formData, 'unitId')
   if (unitId.length === 0) {
     // Not a field the visitor controls, so this is our bug, not their mistake.
@@ -194,15 +229,31 @@ export const submitEnquiry = async (
       } as never,
     })
 
-    // FR-ADM-03 — route to the unit's admissions contact.
-    const recipient = unit.admissionsEmail || unit.contactEmail || unit.email
+    // FR-ADM-03 — route to the inbox this card is for, falling through the
+    // addresses on the unit in the order that role prefers.
+    const inbox = unit as unknown as Record<string, string | null | undefined>
+    const recipient = ROUTES[route].fields.map((field) => inbox[field]).find(Boolean)
+
+    /*
+     * A campus tour request and an admission enquiry are the same eight fields
+     * and read identically in an inbox, so the subject says which arrived.
+     * Without it the general office cannot tell a question about visiting from
+     * an application that has come to the wrong address.
+     */
+    const heading =
+      route === 'general'
+        ? `Campus tour / general enquiry — ${values.childName} (${values.gradeApplyingFor})`
+        : `New admission enquiry — ${values.childName} (${values.gradeApplyingFor})`
+
     if (recipient) {
       try {
         await payload.sendEmail({
           to: recipient,
-          subject: `New admission enquiry — ${values.childName} (${values.gradeApplyingFor})`,
+          subject: heading,
           text: [
-            `A new admission enquiry has been received for ${unit.name}.`,
+            route === 'general'
+              ? `A campus tour request has been received for ${unit.name}.`
+              : `A new admission enquiry has been received for ${unit.name}.`,
             '',
             `Parent:  ${values.parentFirstName} ${values.parentLastName}`,
             `Child:   ${values.childName}${values.childAge ? `, age ${values.childAge}` : ''}`,
@@ -222,7 +273,9 @@ export const submitEnquiry = async (
         await payload.update({
           collection: 'enquiries',
           id: created.id,
-          data: { emailDelivered: true } as never,
+          // The address as well as the fact, so "did admissions get this?" is
+          // answered by the record rather than by reading the server log.
+          data: { emailDelivered: true, notifiedInbox: recipient } as never,
           overrideAccess: true,
         })
       } catch (error) {
@@ -235,14 +288,16 @@ export const submitEnquiry = async (
       }
     } else {
       payload.logger.warn(
-        `Enquiry ${created.id} saved, but ${unit.name} has no admissions email set — nobody was notified.`,
+        `Enquiry ${created.id} saved, but ${unit.name} has no ${ROUTES[route].label} address set under "Where messages go" — nobody was notified.`,
       )
     }
 
     return {
       status: 'success',
       message:
-        'Thank you — your enquiry has been sent. Our admissions team will contact you shortly.',
+        route === 'general'
+          ? 'Thank you — your request has been sent. The school office will contact you to arrange a time.'
+          : 'Thank you — your enquiry has been sent. Our admissions team will contact you shortly.',
     }
   } catch (error) {
     console.error('Enquiry submission failed:', error)

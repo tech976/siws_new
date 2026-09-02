@@ -256,7 +256,19 @@ export const Enquiries: CollectionConfig = {
       admin: {
         position: 'sidebar',
         readOnly: true,
-        description: 'Whether the admissions inbox was notified successfully.',
+        description: 'Whether the inbox was notified successfully.',
+      },
+    },
+    {
+      name: 'notifiedInbox',
+      type: 'text',
+      label: 'Notified',
+      access: { update: adminFieldOnly },
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        description:
+          'Which address was told about this. The same form appears on more than one page and each page chooses its own inbox, so "it went to admissions" is recorded rather than assumed.',
       },
     },
   ],
