@@ -243,6 +243,7 @@ const main = async () => {
     classroomFullClass: await mediaByFilename(payload, 'kg-classroom-full-class.jpg'),
     outingPlaySpace: await mediaByFilename(payload, 'kg-outing-play-space.jpg'),
     sportsDayWinners: await mediaByFilename(payload, 'kg-sports-day-winners.jpg'),
+    sportsDayPodium: await mediaByFilename(payload, 'kg-sports-day-podium.jpg'),
     activityLiteracy: await mediaByFilename(payload, 'kg-activity-literacy.jpg'),
     activityCreative: await mediaByFilename(payload, 'kg-activity-creative.jpg'),
     activityMotor: await mediaByFilename(payload, 'kg-activity-motor.jpg'),
@@ -643,8 +644,20 @@ const main = async () => {
              * were the weakest of the nine either way. They stay in the
              * library, and the intro line above still names both.
              */
-            ...shot(img.smartBoard, 'Interactive smart boards in every classroom'),
-            ...shot(img.drawingClass, 'Quiet, focused work at every desk'),
+            /*
+             * THE SMART BOARD AND THE DESK ROW CAME OFF TOO (2026-09-02), and
+             * for a harder reason: neither photograph is of this section. The
+             * child at the board and the boys at the desks wear a different
+             * uniform from the Kindergarten's yellow and green — they are older
+             * pupils from elsewhere in the school — and a row headed "Campus
+             * and Facilities" on the Kindergarten site is read as this
+             * section's own rooms and its own children.
+             *
+             * Both stay in the media library, and both are still on the Campus
+             * Gallery further down this file. The same objection applies there;
+             * it is raised with SIWS at the end of the run rather than acted on
+             * here, because this instruction was about the campus row.
+             */
             /*
              * Added 2026-09-01. The first two are the campus: the play
              * equipment this row had no photograph of at all, and a full class
@@ -664,6 +677,19 @@ const main = async () => {
             ...shot(img.classroomFullClass, 'Bright classrooms with child-height furniture'),
             ...shot(img.outingPlaySpace, 'A class outing to an indoor play space'),
             ...shot(img.sportsDayWinners, 'Prize day at the Kindergarten annual sports'),
+            /*
+             * Added 2026-09-02, in place of the two that came off. Both are
+             * this section's own children, which the two they replace were
+             * not — that was the point of the swap.
+             *
+             * Neither is a facility, and the captions say what each actually
+             * shows rather than dressing an occasion up as a room. With these
+             * two the row is nine facilities and four occasions, which is the
+             * heading's problem rather than the photographs' — see the note to
+             * SIWS at the end of the run.
+             */
+            ...shot(img.awardNatyaTarang, 'A group dance at the Natya Tarang inter-school competition'),
+            ...shot(img.sportsDayPodium, 'On the podium at the Kindergarten sports day'),
           ],
         },
         {
@@ -2433,6 +2459,8 @@ const main = async () => {
      * testimonial ever returns.
      */
     'DAY CARE — left blank in the document. Wadala Primary answered "Not applicable". Does the KG section offer after-school care?',
+    'CAMPUS GALLERY — the smart-board photograph and the row of boys at desks were taken off the home page campus row on 2026-09-02 because the children in them are not from this section: the uniform is not the Kindergarten’s yellow and green. Both are still on the Campus Gallery page. Should they come off there too, or are they wanted as pictures of the wider school?',
+    'THE CAMPUS ROW NOW CARRIES FOUR OCCASIONS — an outing, a prize day, the Natya Tarang dance and the sports podium — alongside nine photographs of rooms and equipment. All four were asked for by name and each is captioned as what it is, but "Campus and Facilities" reads as a list of what the school HAS. Should the heading change to something that covers both, e.g. "Life in our Kindergarten"?',
   ]) {
     payload.logger.warn(`  • ${question}`)
   }
