@@ -645,6 +645,22 @@ const main = async () => {
         shape: 'portrait',
         reels: [
           {
+            /*
+             * ANIMATED, AND NOT THE SOCIETY'S OWN FOOTAGE.
+             *
+             * The other three were filmed at the school and carry the SIWS
+             * crest. This one is an animated clip of a couple in a taxi with a
+             * third-party watermark in the corner, so where it came from and
+             * what it may be used for is not something this repository knows.
+             * Published at SIWS's instruction (2026-09-02); the licence is
+             * theirs to hold, and this note is here so nobody later mistakes it
+             * for footage the school shot.
+             */
+            src: '/reels/siws-reel-1.mp4',
+            poster: '/reels/siws-reel-1.jpg',
+            label: 'Planning your child’s education',
+          },
+          {
             src: '/reels/siws-reel-2.mp4',
             poster: '/reels/siws-reel-2.jpg',
             label: 'Types of greetings',
