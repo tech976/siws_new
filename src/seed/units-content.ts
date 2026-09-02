@@ -255,6 +255,46 @@ const main = async () => {
             ],
           },
         },
+        /*
+         * THE TWO STREAMS, HIGH ON THE PAGE.
+         *
+         * This file now builds only the Junior College — the other three
+         * sections have seeds of their own — and its home page said nothing
+         * about Science and Commerce, which is the first thing a family
+         * choosing a junior college needs and the only real decision in front
+         * of them. It was three screens of legacy, figures and process before
+         * the page named what is actually taught.
+         *
+         * `cards`, because each is a picture-less claim with a sentence under
+         * it and there are two of them: a panel of two is a box around a
+         * sentence, per docs/MASTER-LAYOUT.md §4.
+         *
+         * The wording is the short form of what /academics carries in full;
+         * the link below sends anyone who wants the subject lists there rather
+         * than repeating them here.
+         */
+        {
+          blockType: 'featureList',
+          heading: 'Two streams, Standards XI and XII',
+          accentWord: 'Two streams',
+          headingLevel: 'h2',
+          layout: 'cards',
+          marker: 'tick',
+          columns: '2',
+          background: 'tint',
+          items: [
+            {
+              title: 'Science',
+              description:
+                'Physics, Chemistry, Biology and Mathematics on the Maharashtra State Board syllabus, with Computer Science and Information Technology as bifocal subjects — and preparation for JEE, NEET, MHT-CET and CUET alongside the HSC examination.',
+            },
+            {
+              title: 'Commerce',
+              description:
+                'Accountancy, Economics, Organisation of Commerce and Management, Secretarial Practice, Mathematics and Information Technology — the foundation for CA, CS, CMA, B.Com., BBA and the management courses that follow.',
+            },
+          ],
+        },
         {
           blockType: 'richText',
           heading: 'About South Indians’ Welfare Society (SIWS)',
