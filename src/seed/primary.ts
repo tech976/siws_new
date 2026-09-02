@@ -2171,7 +2171,7 @@ const main = async () => {
               'Space for the sports, drawing, clay work, rangoli and group singing the section competes in through the year.',
           },
           {
-            title: 'Teachers who stay',
+            title: 'Teachers who stay for years',
             icon: 'staff',
             description:
               'Twenty-two teachers, many of them more than twenty years in this section — the most important thing on any campus.',
