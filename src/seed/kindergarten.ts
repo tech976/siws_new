@@ -337,8 +337,21 @@ const main = async () => {
       postalCode: '400031',
       email: 'info@siwsschool.edu.in',
       phone: '+91 98927 03893',
-      admissionsEmail: 'admissions@siws.edu.in',
-      contactEmail: 'info@siws.edu.in',
+      /*
+       * CORRECTED WITH THE CARDS, and these two matter more than the cards do.
+       *
+       * `admissionsEmail` is not display copy: `actions/enquiry.ts` reads it to
+       * decide where a submitted admission enquiry is DELIVERED (FR-ADM-03),
+       * falling back to `contactEmail` and then `email`. Both were on the short
+       * siws.edu.in domain while `email` above was on siwsschool.edu.in, so
+       * correcting only the two cards a parent reads would have left every
+       * enquiry they then sent going to the domain SIWS has just corrected.
+       *
+       * The same short domain is still on the other units and the portal. Those
+       * are their own sections' decisions and are untouched here.
+       */
+      admissionsEmail: 'admissions@siwsschool.edu.in',
+      contactEmail: 'info@siwsschool.edu.in',
       socialProfiles: [
         { platform: 'whatsapp', url: 'https://wa.me/919892703893', showFeed: false },
         {
@@ -477,13 +490,20 @@ const main = async () => {
         columns: '2',
         background: 'white',
         cards: [
+          /*
+           * siwsschool.edu.in, not siws.edu.in — corrected at SIWS's
+           * instruction (2026-09-02). The short form was on these two cards
+           * only; the unit's own `email` above has always been the long one,
+           * so the contact page was printing both domains at once.
+           */
           {
             title: 'Admissions',
-            description: 'For enquiries about Jr. KG and Sr. KG admission — admissions@siws.edu.in',
+            description:
+              'For enquiries about Jr. KG and Sr. KG admission — admissions@siwsschool.edu.in',
           },
           {
             title: 'General enquiries',
-            description: 'For anything else — info@siws.edu.in, +91 98927 03893',
+            description: 'For anything else — info@siwsschool.edu.in, +91 98927 03893',
           },
         ],
       },
@@ -846,34 +866,27 @@ const main = async () => {
             },
           ],
         },
-        {
-          /**
-           * REPLACED, not extended.
-           *
-           * This block previously carried three quotes from the approved
-           * landing page, each attributed only to "Parent". Nobody said them —
-           * they were written as design copy — and an unattributed testimonial
-           * on a school site is fabricated social proof about real families.
-           * SIWS has now supplied one genuine testimonial, so the invented
-           * three are gone and the real one stands alone.
-           */
-          blockType: 'testimonials',
-          heading: 'What parents say',
-          accentWord: 'parents',
-          headingLevel: 'h2',
-          background: 'white',
-          quotes: [
-            {
-              quote:
-                'The curriculum perfectly balances fun with learning. The Pre-Primary team lays a rock-solid foundation for future grades. I’m happy to have enrolled my child here.',
-              // The name is published as SIWS supplied it. A parent's full name
-              // is their personal data, so SIWS should hold their permission —
-              // flagged at the end of the run.
-              attribution: 'Kaveri Rajbhansi',
-              detail: 'Parent',
-            },
-          ],
-        },
+        /*
+         * NO TESTIMONIALS BLOCK ON THIS PAGE (removed 2026-09-02).
+         *
+         * It carried the single genuine quote SIWS supplied, attributed to a
+         * named parent. One quote is a thin section — a heading, a rule and a
+         * sentence, taking a full band of the page to say what one family
+         * thought — and the Parent Feedback page carries the fuller set, which
+         * is where a reader who wants opinions goes.
+         *
+         * Removing it also retires the open question about that parent's name:
+         * a full name is personal data, the run used to end by asking SIWS to
+         * confirm they held permission to publish it, and the page no longer
+         * publishes it.
+         *
+         * BE CLEAR ABOUT WHAT WENT. That quote was the ONE attributed
+         * testimonial SIWS had supplied, and it is not preserved anywhere else
+         * — `KG_PARENT_QUOTES`, which the Parent Feedback page uses, is a
+         * different set, all of it signed only "Parent". If SIWS wants a named
+         * testimonial back on this page, the wording has to come from them
+         * again; it is in this file's history, not in this file.
+         */
         {
           blockType: 'accordion',
           heading: 'Frequently Asked Questions',
@@ -2412,7 +2425,13 @@ const main = async () => {
   for (const question of [
     'FEE PERIOD — the fee is given as "Jr.KG & Sr.KG 65K" with no period. The page publishes ₹65,000 and asks families to confirm with the office, because a guessed "per year" is what a family plans around. Is it annual, per term, or something else? Does it include any other charge?',
     'CAMPUS — the endowment register names a K.G. Section at Wadala and one at Matunga, but this document does not say which campus these five teachers and these timings belong to. No campus is recorded against any of them. Does Matunga have its own KG team and timings?',
-    'TESTIMONIAL — the parent’s full name is published as supplied. Please confirm SIWS holds that parent’s permission to publish it (DPDPA 2023), or we will shorten it to an initial.',
+    /*
+     * The TESTIMONIAL question is gone with the block it was about. It asked
+     * SIWS to confirm they held the parent's permission to publish a full name
+     * (DPDPA 2023); the home page no longer publishes it, so the question no
+     * longer has an answer worth chasing. Put it back with the block if a named
+     * testimonial ever returns.
+     */
     'DAY CARE — left blank in the document. Wadala Primary answered "Not applicable". Does the KG section offer after-school care?',
   ]) {
     payload.logger.warn(`  • ${question}`)
