@@ -305,20 +305,20 @@ const UNIT_OMIT: Record<string, string[]> = {
    */
   secondary: ['annual-calendar', 'admissions', 'admissions-faq'],
   /*
-   * Junior College drops four more, at SIWS's request (2026-08-29).
+   * Junior College drops three, at SIWS's request (2026-08-29). Annual
+   * Calendar, Rules & Uniform and Achievements: none has been written, and the
+   * section does not want them promised while they say only that content is
+   * coming.
    *
-   * Our Teachers, because the roster has not been supplied — a teachers page
-   * with no teachers on it is worse than no entry. Annual Calendar and Rules &
-   * Uniform, because neither has been written and the section does not want
-   * them promised. All three were TOP-LEVEL items rather than tucked inside
-   * Academics: that page is still a draft, and the menu promotes a child whose
-   * parent is missing rather than hiding it, so three placeholders were
-   * standing in the top row and wrapping it onto a second line.
+   * OUR TEACHERS CAME OFF THIS LIST on 2026-09-02. It was dropped because the
+   * roster had not been supplied and a teachers page with no teachers on it is
+   * worse than no entry; SIWS has since sent forty-seven, so the reason has
+   * gone and the entry comes back.
    *
-   * Academics itself is not listed here. It is a draft, so it never reaches
-   * the menu; if somebody writes it, it should appear.
+   * Academics is back in the menu for the same reason — it was a draft, and
+   * the note here said it should appear if somebody wrote it. Somebody has.
    */
-  'junior-college': ['teachers', 'annual-calendar', 'school-rules', 'achievements'],
+  'junior-college': ['annual-calendar', 'school-rules', 'achievements'],
 }
 
 /**
@@ -370,19 +370,36 @@ const UNIT_EXTRA: Record<
   kindergarten: [
     { parent: null, after: 'admissions', item: { slug: 'achievements', label: 'Achievements' } },
   ],
-  /*
-   * JUNIOR COLLEGE'S FRONT PAGE IS ITS ABOUT PAGE.
-   *
-   * The section has no written About page — the one in the database is still a
-   * draft placeholder — but it does not need one: everything an About page
-   * would carry is already on the front page, which opens with "About South
-   * Indians' Welfare Society", the legacy figures and how admission works.
-   *
-   * So the menu names it rather than duplicating it. `slug: 'home'` resolves
-   * to `/junior-college` rather than `/junior-college/home`, which is a 404 —
-   * see the href builder in `lib/site.ts`.
-   */
-  'junior-college': [{ parent: null, item: { slug: 'home', label: 'About' } }],
+}
+
+/**
+ * A top-level entry served by a DIFFERENT page than the template names, by
+ * unit slug — `{ slug: <template entry>, with: <page to use instead> }`.
+ *
+ * The drop-down keeps its label, its position and every child underneath it;
+ * only the page the heading itself points at changes.
+ *
+ * JUNIOR COLLEGE'S FRONT PAGE IS ITS ABOUT PAGE.
+ *
+ * The section has no written About page — the one in the database is still a
+ * draft placeholder — but it does not need one: everything an About page
+ * would carry is already on the front page, which opens with "About South
+ * Indians' Welfare Society", the legacy figures and how admission works.
+ *
+ * This used to be a `UNIT_EXTRA` line adding `home` as a SECOND top-level
+ * entry, which left the template's own `about` in the tree beside it. Because
+ * that page is an unpublished draft, the live menu builder dropped it and then
+ * promoted its two children — Facilities & Campus and Campus Gallery — to the
+ * top level as orphans, which is how Junior College ended up with a flat
+ * fourteen-item header while the other three sections stayed grouped.
+ *
+ * Replacing rather than adding keeps one About drop-down with both children
+ * under it. `slug: 'home'` resolves to `/junior-college` rather than
+ * `/junior-college/home`, which is a 404 — see the href builder in
+ * `lib/site.ts`.
+ */
+const UNIT_REPLACE: Record<string, { slug: string; with: string }[]> = {
+  'junior-college': [{ slug: 'about', with: 'home' }],
 }
 
 /**
@@ -435,12 +452,18 @@ const UNIT_UNPUBLISH: Record<string, string[]> = {
    */
   kindergarten: ['transport'],
   /*
-   * Junior College, at SIWS's request (2026-08-29). The teachers roster has
-   * not been supplied, and neither the annual calendar nor the rules have been
-   * written — so all three were serving a page that said only that content was
-   * coming, and the quick-links panel was still offering the calendar.
+   * Junior College, at SIWS's request (2026-08-29). Neither the annual
+   * calendar nor the rules have been written, so both were serving a page that
+   * said only that content was coming, and the quick-links panel was still
+   * offering the calendar.
+   *
+   * `teachers` CAME OFF THIS LIST on 2026-09-02, when SIWS sent the roster.
+   * The page is seeded with forty-seven teachers now, and leaving the slug
+   * here unpublished it again on the next `seed:nav` — which runs at step 26,
+   * seventeen steps after `seed:jc` writes it. The page was correct in the
+   * database and gone by the time the run finished.
    */
-  'junior-college': ['teachers', 'annual-calendar', 'school-rules', 'achievements'],
+  'junior-college': ['annual-calendar', 'school-rules', 'achievements'],
 }
 
 const UNIT_RELABEL: Record<string, Record<string, string>> = {
@@ -501,13 +524,21 @@ const run = async () => {
     extra: { parent: string | null; after?: string; item: Entry }[] = [],
     relabel: Record<string, string> = {},
     mirror: { slug: string; under: string }[] = [],
+    replace: { slug: string; with: string }[] = [],
   ) => {
     const where = unitId === null ? { unit: { exists: false } } : { unit: { equals: unitId } }
 
     // Filtered at both levels, so an omitted slug can be a whole drop-down or a
     // single item inside one.
     const drop = new Set(omit)
+    /*
+     * Substitutions run FIRST, so `omit`, `extra` and `relabel` below still
+     * name the entry by the slug the template uses. Children are untouched:
+     * only the heading's own destination moves.
+     */
+    const swap = new Map(replace.map((r) => [r.slug, r.with]))
     const tree: Entry[] = template
+      .map((top) => (swap.has(top.slug) ? { ...top, slug: swap.get(top.slug)! } : top))
       .filter((top) => !drop.has(top.slug))
       .map((top) =>
         top.children ? { ...top, children: top.children.filter((c) => !drop.has(c.slug)) } : top,
@@ -681,7 +712,15 @@ const run = async () => {
     for (const row of live) {
       const slug = String(row.slug)
       if (inTree.has(slug)) continue
-      if (!authoritative && !omit.includes(slug)) continue
+      /*
+       * A slug the template no longer points at because `UNIT_REPLACE` swapped
+       * the heading for another page has to be cleared like an omission. A unit
+       * scope is not authoritative, so without this the superseded page keeps
+       * the `show_in_nav` flag an earlier run gave it — and since it is the
+       * draft placeholder, the live menu drops it and promotes its children to
+       * the top level, which is the flat header this map exists to fix.
+       */
+      if (!authoritative && !omit.includes(slug) && !swap.has(slug)) continue
       await clearNav(row.id)
       removed.push(slug)
     }
@@ -765,6 +804,7 @@ const run = async () => {
       UNIT_EXTRA[unit.slug] ?? [],
       UNIT_RELABEL[unit.slug] ?? {},
       UNIT_MIRROR[unit.slug] ?? [],
+      UNIT_REPLACE[unit.slug] ?? [],
     )
 
     for (const slug of UNIT_UNPUBLISH[unit.slug] ?? []) {

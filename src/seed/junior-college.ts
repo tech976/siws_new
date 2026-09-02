@@ -48,6 +48,74 @@ const { richText } = await import('./lexical')
  * say" over eight cards each signed "Parent" is the same word nine times. Same
  * decision as the other three sections.
  */
+/**
+ * The teaching staff, as SIWS supplied the list (2026-09-02).
+ *
+ * ALL FORTY-SEVEN ARE ASSISTANT TEACHERS, which is what the list states for
+ * every one of them, so the designation is set once below rather than repeated
+ * on each row. No head of department or principal was named; when one is, the
+ * designation goes on that row and the block will lead with it.
+ *
+ * MOST CARRY NO QUALIFICATION, and that is the list rather than an omission
+ * here — eight of the forty-seven have one against their name. The field is
+ * left off entirely for the rest, so the card shows a name and a designation
+ * and nothing where a qualification would be. Inventing a degree for a teacher
+ * is not a small error, and a blank is honest and easily filled in later.
+ *
+ * Several are given by first name only, again as supplied. They are seeded as
+ * written: a surname guessed to make a card look tidier would be somebody
+ * else's name.
+ */
+const FACULTY: { name: string; qualifications?: string }[] = [
+  { name: 'Kalyani Deshpande', qualifications: 'MSc (Physics), B.Ed.' },
+  { name: 'Bharti Pandey', qualifications: 'M.A. (Hindi)' },
+  { name: 'Shilpa Raje', qualifications: 'MSc (Physics), B.Ed.' },
+  { name: 'Jinsy Thomas', qualifications: 'MSc (Chemistry), B.Ed.' },
+  { name: 'Sangeeta Kashid' },
+  { name: 'Kalmashi Dholakia' },
+  { name: 'Manjari', qualifications: 'M.A. (English)' },
+  { name: 'Sheela Krishnan' },
+  { name: 'Anamika Rath' },
+  { name: 'Sunil Mhadik' },
+  { name: 'Pratima Tiwari' },
+  { name: 'Jagruti Joshi' },
+  { name: 'Bhoopesh' },
+  { name: 'Mangesh' },
+  { name: 'Gayathri Sridhar' },
+  { name: 'Trupti Sawant' },
+  { name: 'Anil Arya' },
+  { name: 'Dilip Singh' },
+  { name: 'Umesh Ingole' },
+  { name: 'Sandeep Pandit' },
+  { name: 'Priyanka Sawant' },
+  { name: 'Ishwari K' },
+  { name: 'Smita Bhole', qualifications: 'MSc (Physics), B.Ed., PGDIT' },
+  { name: 'Nilesh Karbhari' },
+  { name: 'Karthik' },
+  { name: 'Suraj Bhosale' },
+  { name: 'Uma' },
+  { name: 'Komal Komavat' },
+  { name: 'Hema Patil' },
+  { name: 'Girish' },
+  { name: 'Sateesh Sawant' },
+  { name: 'Anjali' },
+  { name: 'Gauri Sawant' },
+  { name: 'Pranay Juvatkar' },
+  { name: 'Aditi' },
+  { name: 'Abhishek Madhav' },
+  { name: 'Sanjaya' },
+  { name: 'Manju Sharma', qualifications: 'MSc (Physics), B.Ed.' },
+  { name: 'Suchitra Jena', qualifications: 'MSc (Physics), B.Ed.' },
+  { name: 'Manoj Kawankar' },
+  { name: 'Ashwini' },
+  { name: 'Sonu Rajbhar', qualifications: 'MSc (Physics), B.Ed.' },
+  { name: 'Purva' },
+  { name: 'Priyanka' },
+  { name: 'Babita Jaiswar' },
+  { name: 'Vaishali' },
+  { name: 'SeturamLaxmi' },
+]
+
 const PARENT_QUOTES: { quote: string; attribution: string }[] = [
   {
     quote:
@@ -195,6 +263,389 @@ const main = async () => {
   })()
 
   const admissionsFaqPageId = await pageId('admissions-faq')
+
+  // ------------------------------------------------------------------ ABOUT
+  /*
+   * Published now. This page and the two below it were drafts — they returned
+   * 404 to a visitor while looking finished in the CMS — because nothing had
+   * been supplied to put on them. SIWS sent the college's history, vision,
+   * mission, streams, subjects and roster on 2026-09-02, which is what these
+   * three are built from.
+   */
+  await upsert({
+    slug: 'about',
+    title: 'About the college',
+    intro: 'N. R. Swamy College of Commerce & Economics and Smt. Thirumalai College of Science.',
+    showInNav: true,
+    navLabel: 'About',
+    navOrder: 5,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'About SIWS Junior College, Wadala — the Commerce and Science streams, their history, and the vision and mission of the South Indians’ Welfare Society.',
+    layout: [
+      {
+        blockType: 'richText',
+        heading: 'SIWS College',
+        accentWord: 'SIWS',
+        headingLevel: 'h1',
+        width: 'normal',
+        background: 'white',
+        content: richText([
+          'N. R. Swamy College of Commerce & Economics and Smt. Thirumalai College of Science — the Junior College of the SIWS Group, on the Society’s Wadala campus.',
+          'Vidya Dhanam Sarva Dhanat Pradhanam — of all wealth, the wealth of knowledge is foremost.',
+        ]),
+      },
+      {
+        blockType: 'richText',
+        heading: 'How the college began',
+        accentWord: 'began',
+        headingLevel: 'h2',
+        width: 'normal',
+        background: 'tint',
+        content: richText([
+          'The Junior College of the Commerce stream was begun with a view to providing higher education, to cater to the needs of the Society’s own students at the school.',
+          'The Science stream was started in the year 1988.',
+        ]),
+      },
+      {
+        blockType: 'featureList',
+        heading: 'What the Society is for',
+        accentWord: 'Society',
+        headingLevel: 'h2',
+        layout: 'cards',
+        marker: 'tick',
+        columns: '2',
+        background: 'white',
+        items: [
+          {
+            title: 'Vision',
+            description:
+              'To be an educational institution of brilliance that continually strives to respond to realities and social changes through knowledge empowerment.',
+          },
+          {
+            title: 'Mission',
+            description:
+              'In pursuance of its vision, SIWS is dedicated to producing socially responsible and intellectually capable citizens of India.',
+          },
+        ],
+      },
+      {
+        blockType: 'statistics',
+        heading: 'The college at a glance',
+        accentWord: 'a glance',
+        headingLevel: 'h2',
+        background: 'sea',
+        stats: [
+          { value: 'XI & XII', label: 'Standards taught' },
+          { value: 'Two', label: 'Streams — Commerce and Science' },
+          { value: '1988', label: 'Science stream established' },
+          { value: 'HSC', label: 'State Board curriculum' },
+        ],
+      },
+    ],
+  })
+
+  // -------------------------------------------------------------- ACADEMICS
+  await upsert({
+    slug: 'academics',
+    title: 'Academics',
+    intro: 'Commerce and Science, Standards XI and XII, on the Maharashtra State Board syllabus.',
+    showInNav: true,
+    navLabel: 'Academics',
+    navOrder: 8,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Commerce and Science at SIWS Junior College, Wadala — the subjects taught in Standards XI and XII, the curriculum, and how it is taught.',
+    layout: [
+      {
+        blockType: 'richText',
+        heading: 'Two streams, two years',
+        accentWord: 'Two streams',
+        headingLevel: 'h1',
+        width: 'normal',
+        background: 'white',
+        content: richText([
+          'The college teaches Standards XI and XII in two streams, Commerce and Science, on the Maharashtra State Board (HSC) syllabus.',
+        ]),
+      },
+      /*
+       * FOUR LISTS, NOT ONE.
+       *
+       * The subjects differ by stream AND by year — Standard XII Commerce
+       * offers Mathematics or Secretarial Practice where XI has Mathematics —
+       * so a single merged list would tell a family choosing a stream the one
+       * thing they cannot act on. Each list is given as SIWS supplied it.
+       */
+      {
+        blockType: 'featureList',
+        heading: 'Commerce — Standard XI',
+        accentWord: 'Commerce',
+        headingLevel: 'h2',
+        layout: 'compact',
+        marker: 'tick',
+        columns: '2',
+        background: 'tint',
+        items: [
+          { title: 'English' },
+          { title: 'Hindi / Marathi / Tamil' },
+          { title: 'Book Keeping and Accountancy' },
+          { title: 'Organisation of Commerce and Management' },
+          { title: 'Mathematics' },
+          { title: 'Economics' },
+          { title: 'Physical Education' },
+          { title: 'Environmental Science' },
+          { title: 'Vocational — Information Technology' },
+        ],
+      },
+      {
+        blockType: 'featureList',
+        heading: 'Commerce — Standard XII',
+        accentWord: 'Commerce',
+        headingLevel: 'h2',
+        layout: 'compact',
+        marker: 'tick',
+        columns: '2',
+        background: 'white',
+        items: [
+          { title: 'English' },
+          { title: 'Hindi / Marathi / Tamil' },
+          { title: 'Book Keeping and Accountancy' },
+          { title: 'Organisation of Commerce and Management' },
+          { title: 'Mathematics or Secretarial Practice' },
+          { title: 'Economics' },
+          { title: 'Physical Education' },
+          { title: 'Environmental Science' },
+          { title: 'Vocational — Information Technology' },
+        ],
+      },
+      {
+        blockType: 'featureList',
+        heading: 'Science — Standard XI',
+        accentWord: 'Science',
+        headingLevel: 'h2',
+        layout: 'compact',
+        marker: 'tick',
+        columns: '2',
+        background: 'tint',
+        items: [
+          { title: 'English' },
+          { title: 'Hindi / Marathi / Tamil' },
+          { title: 'Physics' },
+          { title: 'Chemistry' },
+          { title: 'Biology' },
+          { title: 'Mathematics and Statistics' },
+          { title: 'Bifocal — Information Technology' },
+          { title: 'Bifocal — Computer Science' },
+          { title: 'Physical Education' },
+          { title: 'Environmental Science' },
+        ],
+      },
+      {
+        blockType: 'featureList',
+        heading: 'Science — Standard XII',
+        accentWord: 'Science',
+        headingLevel: 'h2',
+        layout: 'compact',
+        marker: 'tick',
+        columns: '2',
+        background: 'white',
+        items: [
+          { title: 'English' },
+          { title: 'Hindi / Marathi / Tamil' },
+          { title: 'Physics' },
+          { title: 'Chemistry' },
+          { title: 'Biology' },
+          { title: 'Mathematics and Statistics' },
+          { title: 'Bifocal — Information Technology' },
+          { title: 'Bifocal — Computer Science' },
+          { title: 'Physical Education' },
+          { title: 'Environmental Science' },
+        ],
+      },
+      {
+        blockType: 'featureList',
+        heading: 'What each stream is built to do',
+        accentWord: 'each stream',
+        headingLevel: 'h2',
+        layout: 'cards',
+        marker: 'tick',
+        columns: '2',
+        background: 'sea',
+        items: [
+          {
+            title: 'Science',
+            description:
+              'The curriculum follows the Maharashtra State Board syllabus and is designed to develop scientific knowledge, analytical thinking and problem-solving skills. It provides a foundation in Physics, Chemistry, Biology, Mathematics, Computer Science and Electronics, while preparing students for the HSC Board Examination and competitive examinations such as JEE, NEET, MHT-CET and CUET.',
+          },
+          {
+            title: 'Commerce',
+            description:
+              'The curriculum is based on the Maharashtra State Board syllabus and aims to develop knowledge of Accountancy, Economics, Business Studies, Organisation of Commerce & Management, Secretarial Practice, Mathematics and Information Technology. It equips students with financial literacy, business acumen, communication skills and entrepreneurial thinking, and prepares them for higher studies and professional courses such as CA, CS, CMA, B.Com., BBA and other management programmes.',
+          },
+        ],
+      },
+      {
+        blockType: 'featureList',
+        heading: 'How it is taught',
+        accentWord: 'taught',
+        headingLevel: 'h2',
+        layout: 'list',
+        marker: 'tick',
+        columns: '1',
+        background: 'white',
+        items: [
+          { title: 'Student-centric and outcome-based learning' },
+          {
+            title: 'Experiential and activity-based learning',
+            description: 'Through practicals, projects, case studies and group discussions.',
+          },
+          {
+            title: 'Continuous assessment',
+            description:
+              'Assignments, quizzes, unit tests, practical examinations and projects, through the year rather than at the end of it.',
+          },
+          { title: 'Individual mentoring, remedial coaching and doubt-solving sessions' },
+          {
+            title: 'Career guidance, counselling and orientation',
+            description:
+              'Programmes supporting students’ academic and professional growth beyond Standard XII.',
+          },
+        ],
+      },
+      {
+        blockType: 'featureList',
+        heading: 'What a Science student leaves with',
+        accentWord: 'Science',
+        headingLevel: 'h2',
+        layout: 'list',
+        marker: 'tick',
+        columns: '2',
+        background: 'tint',
+        items: [
+          { title: 'A foundation in Physics, Chemistry, Biology, Mathematics and Computer Science' },
+          { title: 'Preparation for the HSC Board Examination and for JEE, NEET, MHT-CET and CUET' },
+          { title: 'Analytical thinking, problem-solving and scientific reasoning' },
+          { title: 'Hands-on learning through well-equipped laboratories and practical sessions' },
+          { title: 'Research aptitude, innovation and critical thinking' },
+          {
+            title:
+              'Pathways to Engineering, Medicine, Pharmacy, Pure Sciences, Biotechnology and Computer Science',
+          },
+          { title: 'Career guidance, counselling and academic mentoring for higher education' },
+        ],
+      },
+      {
+        blockType: 'featureList',
+        heading: 'What a Commerce student leaves with',
+        accentWord: 'Commerce',
+        headingLevel: 'h2',
+        layout: 'list',
+        marker: 'tick',
+        columns: '2',
+        background: 'white',
+        items: [
+          {
+            title:
+              'A foundation in Accountancy, Economics, Business Studies, OCM, Secretarial Practice and Information Technology',
+          },
+          { title: 'Financial literacy, business management and entrepreneurial skills' },
+          { title: 'Analytical, decision-making and communication abilities' },
+          { title: 'Preparation for CA, CS, CMA, B.Com., BBA, BMS and Economics' },
+          { title: 'Exposure to business practice through projects, case studies and presentations' },
+          { title: 'Leadership, teamwork and ethical business practice' },
+          { title: 'Career guidance and counselling for professional and management careers' },
+        ],
+      },
+    ],
+  })
+
+  // --------------------------------------------------------------- TEACHERS
+  /*
+   * THE ROSTER GOES IN THE FACULTY COLLECTION, NOT INTO THIS PAGE.
+   *
+   * The block reads the collection for this unit, so a teacher who joins or
+   * leaves is one record rather than an edit to a page's layout — the same
+   * arrangement the other three sections use.
+   */
+  for (const teacher of FACULTY) {
+    const existing = await payload.find({
+      collection: 'faculty',
+      where: {
+        and: [{ name: { equals: teacher.name } }, { unit: { equals: college.id } }],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+
+    const data = {
+      ...teacher,
+      unit: college.id,
+      designation: 'Assistant Teacher',
+      /*
+       * Spelled out even when absent. `payload.update` leaves a field it is
+       * not given exactly as it was, so a qualification entered once by hand
+       * would survive a re-seed that no longer lists one — and the page would
+       * disagree with the roster SIWS sent.
+       */
+      qualifications: teacher.qualifications ?? null,
+      _status: 'published',
+      reviewStatus: 'approved',
+    }
+
+    if (existing.docs[0]) {
+      await payload.update({
+        collection: 'faculty',
+        id: existing.docs[0].id,
+        data: data as never,
+        overrideAccess: true,
+      })
+    } else {
+      await payload.create({ collection: 'faculty', data: data as never, overrideAccess: true })
+    }
+  }
+  payload.logger.info(`Junior College roster: ${FACULTY.length} teacher(s).`)
+
+  await upsert({
+    slug: 'teachers',
+    title: 'Our Teachers',
+    intro: 'The teaching staff of the Commerce and Science streams.',
+    showInNav: true,
+    navLabel: 'Our Teachers',
+    navOrder: 9,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'The teaching staff of SIWS Junior College, Wadala — the teachers of the Commerce and Science streams for Standards XI and XII.',
+    layout: [
+      {
+        blockType: 'faculty',
+        heading: 'Our teachers',
+        accentWord: 'teachers',
+        headingLevel: 'h1',
+        background: 'white',
+        campus: 'all',
+        /*
+         * Shown, because eight of the forty-seven have one and those eight
+         * are worth reading. The card simply omits the line where the roster
+         * carries no qualification, rather than printing an empty label.
+         */
+        showQualifications: true,
+        /*
+         * The flat grid, not `teams`: SIWS sent one list. The two streams are
+         * not a split of the roster — a teacher of English teaches both — so
+         * grouping by stream would need a decision nobody has made.
+         */
+        layout: 'grid',
+        cardLayout: 'centred',
+        intro: richText([
+          'Our teachers hold the Commerce and Science streams across Standards XI and XII, on the Maharashtra State Board syllabus.',
+        ]),
+      },
+    ],
+  })
 
   // ------------------------------------------------------------- ADMISSIONS
   await upsert({
@@ -361,6 +812,58 @@ const main = async () => {
             },
           ]
         : []),
+      /*
+       * ADDED 2026-09-02, when SIWS sent the process and the term dates.
+       *
+       * Both admissions run to a schedule set outside this page — one by the
+       * State, one by the college — so each says WHO sets it. A family that
+       * knows the FYJC dates are the Government's looks for them where they
+       * are actually published, rather than waiting for this page to change.
+       */
+      {
+        blockType: 'featureList',
+        heading: 'How admission works',
+        accentWord: 'admission',
+        headingLevel: 'h2',
+        layout: 'cards',
+        marker: 'number',
+        columns: '2',
+        background: 'tint',
+        items: [
+          {
+            title: 'Standard XI (FYJC)',
+            description:
+              'Admission is made through the Maharashtra Government’s centralised schedule, which is set afresh each year. The dates, the cut-offs and the application itself are the State’s, not the college’s.',
+          },
+          {
+            title: 'Standard XII (SYJC)',
+            description:
+              'Admission is made at the college, each year, for students continuing into the second year.',
+          },
+        ],
+      },
+      {
+        blockType: 'featureList',
+        heading: 'The academic year',
+        accentWord: 'academic year',
+        headingLevel: 'h2',
+        layout: 'spec',
+        marker: 'tick',
+        background: 'white',
+        items: [
+          { title: 'Term 1', description: '15 June 2026 to 5 November 2026.' },
+          { title: 'Term 2', description: '21 November 2026 to 30 April 2027.' },
+          {
+            title: 'Promotion from Standard XI',
+            description: 'As per Government rules.',
+          },
+          {
+            title: 'Standard XII examinations',
+            description:
+              'Conducted by the Mumbai Divisional Board. Students are promoted as per the Government’s criteria.',
+          },
+        ],
+      },
     ],
   })
 
@@ -1141,7 +1644,7 @@ const main = async () => {
   }
 
   payload.logger.warn(
-    'STILL TO COME from SIWS for the Junior College: the streams and subject combinations offered, eligibility marks, admission dates, the document list, fees, the teaching roster, the annual calendar, college rules, and results. The Admissions pages are built from what IS known and send every one of those to the office by name — send them and the pages stop doing that.',
+    'STILL TO COME from SIWS for the Junior College: eligibility marks, the document list, fees, the annual calendar, college rules and uniform, and results. The streams, subjects, curriculum, teaching methodology, roster, admission process and term dates arrived on 2026-09-02 and are published. Rules & Uniform is still a DRAFT — the heading was supplied with nothing under it, and school rules are not something to guess at.',
   )
 
   process.exit(0)

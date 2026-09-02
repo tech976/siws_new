@@ -358,6 +358,39 @@ const main = async () => {
     const drafts = [...SHARED_DRAFTS, ...(unit.extraDrafts ?? [])]
 
     for (const [index, draft] of drafts.entries()) {
+      /*
+       * SCAFFOLDING NEVER OVERWRITES A WRITTEN PAGE.
+       *
+       * These drafts exist to give a section a page to fill in. Once a section
+       * seed has filled one in and published it, re-laying the scaffold puts
+       * "What to put on this page" back over the content and returns it to
+       * draft — which takes it off the site, because a draft is a 404 to a
+       * visitor.
+       *
+       * That is exactly what happened to the Junior College's About and
+       * Academics pages: `seed:jc` writes them at step 14 and this runs at
+       * step 16, so they were correct in the database and gone by the end of
+       * the run. Skipping a page that is already published leaves the
+       * scaffolding doing its job for pages nobody has written yet.
+       */
+      const written = await payload.find({
+        collection: 'pages',
+        where: {
+          and: [
+            { slug: { equals: draft.slug } },
+            { unit: { equals: record.id } },
+            { _status: { equals: 'published' } },
+          ],
+        },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      })
+      if (written.docs[0]) {
+        payload.logger.info(`${unit.slug}/${draft.slug}: already written — scaffolding skipped.`)
+        continue
+      }
+
       await upsert({
         slug: draft.slug,
         title: draft.title,
