@@ -233,6 +233,7 @@ export const FeatureListBlockView = ({ block }: { block: FeatureListBlock }) => 
   if (block.layout === 'cards') return <FeatureCards block={block} />
   if (block.layout === 'compact') return <FeatureCompact block={block} />
   if (block.layout === 'showcase') return <FeatureShowcase block={block} />
+  if (block.layout === 'panel') return <FeaturePanel block={block} />
 
   const numbered = block.marker === 'number'
   const twoColumns = block.columns !== '1'
@@ -316,6 +317,125 @@ export const FeatureListBlockView = ({ block }: { block: FeatureListBlock }) => 
           ))}
         </ul>
       )}
+    </Section>
+  )
+}
+
+/**
+ * The panel layout — see docs/MASTER-LAYOUT.md.
+ *
+ * WHY IT EXISTS. Everything a school publishes that is not prose is a list,
+ * and until this there were only two ways to set one: a tick beside a line, or
+ * a tile with a tick inside it. A page carrying values, goals and subjects got
+ * three of the same device in a row and the reader stopped seeing any of them.
+ *
+ * WHAT MAKES IT DIFFERENT is not decoration, it is that the row ANSWERS. It
+ * rises in when the page loads, one after another, and lifts under the pointer
+ * or a keyboard focus. That is the whole idea, and it is why the layout is
+ * capped at "two sections a page" in the block's own help text: a lift means
+ * nothing on a page where everything lifts.
+ *
+ * The movement is entirely in `globals.css` under `.siws-panel`, so it sits
+ * inside the stylesheet's `prefers-reduced-motion` block and a reader who has
+ * asked for stillness gets a plain grid of cards.
+ *
+ * THE CHIP IS OPTIONAL AND ALL-OR-NOTHING in practice. A chip earns its space
+ * by telling the reader which group a point belongs to; ten points all chipped
+ * "Value" is ten copies of the section heading. The field's help text says so;
+ * this renderer simply omits the element when the text is absent.
+ */
+const FeaturePanel = ({ block }: { block: FeatureListBlock }) => {
+  const items = block.items ?? []
+
+  /*
+   * One level below whatever the section heading turned out to be, so the
+   * outline never skips a rank (WCAG 2.1 SC 1.3.1).
+   */
+  const ItemTitle = block.heading && block.headingLevel === 'h3' ? 'h4' : 'h3'
+  const numbered = block.marker === 'number'
+  const List = numbered ? 'ol' : 'ul'
+
+  return (
+    <Section background={block.background as BlockBackground}>
+      {block.eyebrow ? (
+        <p className="mx-auto mb-5 flex w-fit items-center gap-2.5 rounded-full bg-white px-5 py-2 text-[0.8rem] font-semibold tracking-[0.12em] text-brand uppercase ring-1 ring-line">
+          <Heart aria-hidden="true" size={15} strokeWidth={2.4} fill="currentColor" />
+          {block.eyebrow}
+        </p>
+      ) : null}
+
+      <SectionHeading
+        heading={block.heading}
+        accentWord={block.accentWord}
+        level={block.headingLevel}
+      />
+
+      {block.intro ? (
+        <RichText data={block.intro} className="siws-centre mx-auto mt-6 max-w-3xl" />
+      ) : null}
+
+      {/*
+        THE COLUMN COUNT IS THE EDITOR'S, because only they know how many
+        points there are and how long each one runs.
+
+        Three across is right for a set of one-word labels. It is wrong for
+        four points that each run to a phrase: four into three leaves a single
+        panel alone on the second row, and the phrases wrap to two lines in a
+        third of the width, which pushes the chip off its title's baseline onto
+        a line of its own. Two across fixes both at once.
+      */}
+      <List
+        className={`mt-10 grid grid-cols-1 gap-3 ${
+          block.columns === '1' ? '' : 'sm:grid-cols-2'
+        } ${block.columns === '1' || block.columns === '2' ? '' : 'lg:grid-cols-3'}`}
+      >
+        {items.map((item, index) => {
+          const Icon = item.icon ? FEATURE_ICONS[item.icon] : undefined
+
+          return (
+            <li
+              key={item.id ?? index}
+              className="siws-panel siws-panel-rise flex items-start gap-4 rounded-3xl border border-line bg-white p-5"
+            >
+              {/*
+                The same solid disc every other layout uses. A new shape here
+                would make the panel read as a component from somewhere else,
+                which is the one thing the master layout is written to prevent.
+              */}
+              <span
+                aria-hidden={numbered ? undefined : 'true'}
+                className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-white"
+              >
+                {numbered ? (
+                  <span className="text-sm font-semibold">{index + 1}</span>
+                ) : Icon ? (
+                  <Icon size={19} strokeWidth={1.9} />
+                ) : (
+                  <Check size={18} strokeWidth={2.4} />
+                )}
+              </span>
+
+              <span className="min-w-0 flex-1">
+                <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <ItemTitle className="card-title font-semibold text-brand">
+                    {item.title}
+                  </ItemTitle>
+                  {item.chip ? (
+                    <span className="rounded-full border border-line px-2.5 py-0.5 text-[0.65rem] font-semibold tracking-[0.12em] text-ink-muted uppercase">
+                      {item.chip}
+                    </span>
+                  ) : null}
+                </span>
+                {item.description ? (
+                  <span className="mt-1.5 block text-sm leading-snug text-ink-muted">
+                    {item.description}
+                  </span>
+                ) : null}
+              </span>
+            </li>
+          )
+        })}
+      </List>
     </Section>
   )
 }

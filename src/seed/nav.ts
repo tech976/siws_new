@@ -190,7 +190,24 @@ const UNIT_OMIT: Record<string, string[]> = {
    */
   kindergarten: ['annual-calendar', 'school-rules', 'faq', 'student-wall'],
   primary: ['annual-calendar'],
-  secondary: ['annual-calendar'],
+  /*
+   * Secondary drops Admissions and its FAQ at SIWS's request (2026-09-01):
+   * the section is to carry no admissions tab, button or FAQ.
+   *
+   * Both pages have been DELETED from `secondary.ts`, so a menu entry for
+   * either would resolve to nothing and never render. They are listed anyway,
+   * for two reasons. It records why the section's menu is a tab shorter than
+   * the other three, which is otherwise only discoverable by diffing this
+   * template against the page seed. And `applyScope` clears `show_in_nav` on
+   * an omitted slug, so if the pages are ever restored — from the dump, or by
+   * an editor in the admin — they come back OFF the menu rather than silently
+   * back onto it.
+   *
+   * FAQ is NOT dropped here. Secondary's general FAQ is a separate page that
+   * deliberately answers nothing about admission, and it is now the section's
+   * only one.
+   */
+  secondary: ['annual-calendar', 'admissions', 'admissions-faq'],
   /*
    * Junior College drops four more, at SIWS's request (2026-08-29).
    *

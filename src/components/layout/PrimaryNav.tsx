@@ -14,27 +14,24 @@ export interface NavItem {
 }
 
 /**
- * Drop-downs that do NOT get an "… overview" row linking their own page.
+ * EVERY drop-down gets an "… overview" row linking its own page.
  *
- * About on the four unit sites, at SIWS's request (2026-08-29): under a menu
- * already headed "About", a first row reading "About overview" is the same
- * word twice, and it is the row a reader has to skip past to reach the pages
- * they came for.
+ * The four unit About menus used to be excluded, at SIWS's request
+ * (2026-08-29): under a menu already headed "About", a first row reading
+ * "About overview" is the same word twice, and it was the row a reader had to
+ * skip past to reach the pages they came for.
  *
- * Dropping it does not strand the page, which is the only reason the row
- * exists. `/<unit>/about` is linked from the footer's "This school" column on
- * every page of the site, and the mobile drawer renders the parent as a link
- * beside its expander rather than as a button — so the desktop drop-down was
- * the only place that needed the extra row, and now only for the menus that
- * still carry it.
+ * Reversed on 2026-09-01. The objection was sound about the wording and wrong
+ * about the consequence: the trigger above the menu is a BUTTON, not a link,
+ * so with the row gone `/<unit>/about` had no way in from the header at all.
+ * The footer's "This school" column and the mobile drawer still reached it,
+ * but a reader on a desktop who clicks the word "About" expecting the About
+ * page got a menu offering Gallery and nothing else.
  *
- * Matched on the href rather than the label, so renaming the menu entry cannot
- * quietly switch it back on. The one-segment portal About (`/about`) does not
- * match, and keeps its row.
+ * If the duplicated word becomes the complaint again, the fix is to make the
+ * trigger itself a link rather than to delete the only row that points at the
+ * page.
  */
-const UNIT_ABOUT = /^\/[^/]+\/about$/
-
-const showsOverviewRow = (href: string) => !UNIT_ABOUT.test(href)
 
 interface PrimaryNavProps {
   items: NavItem[]
@@ -236,17 +233,15 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
                         trigger above it is a button and the page would
                         otherwise have no way in from this menu at all.
                       */}
-                      {showsOverviewRow(item.href) ? (
-                        <li>
-                          <Link
-                            href={item.href}
-                            aria-current={isCurrent(item.href) ? 'page' : undefined}
-                            className="block border-b border-line px-4 py-2.5 font-semibold text-brand transition-colors hover:bg-brand-tint"
-                          >
-                            {item.label} overview
-                          </Link>
-                        </li>
-                      ) : null}
+                      <li>
+                        <Link
+                          href={item.href}
+                          aria-current={isCurrent(item.href) ? 'page' : undefined}
+                          className="block border-b border-line px-4 py-2.5 font-semibold text-brand transition-colors hover:bg-brand-tint"
+                        >
+                          {item.label} overview
+                        </Link>
+                      </li>
                       {item.children?.map((child) => (
                         <li key={child.href}>
                           <Link

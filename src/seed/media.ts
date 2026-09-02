@@ -292,6 +292,15 @@ const IMAGES: ImageSeed[] = [
    * so it is rotated a quarter turn anticlockwise and cropped to the paper —
    * the wooden frame around it was most of the picture and none of the
    * information. Replaces the earlier photograph of the same certificate.
+   *
+   * RETIRED 2026-09-01, and off every wall from that date. The school sent a
+   * square-on photograph of the framed award and asked for that one instead;
+   * it is the entry below, and it now holds all three placements this crop
+   * used to hold — "Recognised by the State" on the Secondary home page, the
+   * recognition card on Secondary news, and the portal's Prizes and honours
+   * wall. The row is kept rather than deleted because published versions of
+   * those pages still point at it, and a deleted row would empty the picture
+   * out of its own history.
    */
   {
     file: 'secondary-swachhta-2023.jpg',
@@ -299,7 +308,41 @@ const IMAGES: ImageSeed[] = [
     showWhole: true,
     unit: 'secondary',
     category: 'Recognition',
+    showInGallery: false,
     alt: 'A Government of Maharashtra certificate naming S.I.W.S. High School amongst the 100 Best Schools in Maharashtra under #SwachhtaMonitor 2023, signed by the Department of School Education and Sports.',
+    caption: 'Amongst the 100 Best Schools in Maharashtra — #SwachhtaMonitor 2023',
+    // A framed certificate on a wall. There is nobody in it.
+    depictsChildren: false,
+  },
+  /*
+   * The photograph of the #SwachhtaMonitor award the school sent on
+   * 2026-09-01, and the one the site now shows in place of the straightened
+   * crop above.
+   *
+   * It is the framed original on the wall, photographed square-on, so the
+   * frame is part of the picture rather than something to crop away — the
+   * school asked for this shot specifically.
+   *
+   * NOTE ON THE YEAR. The crop above reads "#SwachhtaMonitor 2023"; in this
+   * photograph the "2023" is a foil stamp that has not caught the light, so
+   * only "#SwachhtaMonitor" is legible. The alt text below therefore does not
+   * claim a year the reader of this image cannot see. The award IS the 2023
+   * one — the other photograph of the same certificate shows it — so the page
+   * copy around it still says 2023, which is accurate and separately sourced.
+   *
+   * A new library row rather than new bytes behind the old one: the upsert
+   * further down deliberately never re-uploads a file for a record that
+   * already exists, so swapping `file` alone would change nothing on any
+   * machine whose library is already seeded.
+   */
+  {
+    file: 'secondary-swachhta-framed.jpg',
+    filename: 'secondary-swachhta-framed.jpg',
+    showWhole: true,
+    unit: 'secondary',
+    category: 'Recognition',
+    // 250 characters is the ceiling the Media collection enforces on alt text.
+    alt: 'A framed Government of Maharashtra certificate on a wall, awarded to S.I.W.S. High School as amongst the 100 Best Schools in Maharashtra under #SwachhtaMonitor, signed by the Department of School Education and Sports.',
     caption: 'Amongst the 100 Best Schools in Maharashtra — #SwachhtaMonitor 2023',
     // A framed certificate on a wall. There is nobody in it.
     depictsChildren: false,

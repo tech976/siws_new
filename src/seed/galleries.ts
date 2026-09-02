@@ -119,7 +119,7 @@ const main = async () => {
    * page, and it is still on the portal's own wall under Prizes and honours.
    */
   const OMIT_FILE: Record<string, string[]> = {
-    secondary: ['secondary-swachhta-2023.jpg'],
+    secondary: ['secondary-swachhta-framed.jpg'],
   }
 
   /**
@@ -478,7 +478,7 @@ const main = async () => {
         'natya-tarang-2026-performance.jpg',
         'ignited-mind-lab-2026.jpg',
         'secondary-toppers-2026-close.jpg',
-        'secondary-swachhta-2023.jpg',
+        'secondary-swachhta-framed.jpg',
         'siws-award-andhra.jpg',
       ],
     },

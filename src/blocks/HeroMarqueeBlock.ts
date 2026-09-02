@@ -1,8 +1,34 @@
+import fs from 'fs'
+import path from 'path'
+
 import type { Block } from 'payload'
 
 import { linkField } from '@/fields/link'
 
 import { BLOCK_GROUPS, blockAdmin, sectionOptions } from './shared'
+
+/**
+ * The films available to the banner: whatever is in `public/hero`.
+ *
+ * Read once, when the server starts, rather than on every request — the
+ * directory only changes on a deployment, which restarts the server anyway.
+ *
+ * Wrapped because a missing directory is normal, not an error: a checkout with
+ * no film in it should give an editor an empty list and an explanation, not a
+ * crash on boot.
+ */
+const FILMS: string[] = (() => {
+  try {
+    return fs
+      .readdirSync(path.join(process.cwd(), 'public', 'hero'))
+      .filter((name) => /\.(mp4|webm)$/i.test(name))
+      .sort()
+  } catch {
+    return []
+  }
+})()
+
+const filmOptions = () => FILMS.map((name) => ({ label: name, value: `/hero/${name}` }))
 
 /**
  * A page-opening banner whose picture is a drifting wall of photographs.
@@ -107,6 +133,37 @@ export const HeroMarqueeBlock: Block = {
           required: true,
         },
       ],
+    },
+    {
+      /*
+       * An optional film, which replaces the banner rather than sitting behind
+       * it. Set one and the block renders `HeroFilm`: the footage alone, no
+       * heading and no wash. The words stay in the database and come back the
+       * moment this is cleared.
+       *
+       * A LIST, NOT A PATH TYPED BY HAND. Editors should not have to know that
+       * a film lives at `/hero/something.mp4`, and a mistyped path fails as a
+       * silently empty banner. The options are the files actually sitting in
+       * `public/hero`, read when the server starts — which is the right moment,
+       * because that is also when a newly deployed film arrives.
+       *
+       * NOT AN UPLOAD. The media library takes images and PDFs only, gated by
+       * a MIME allow-list AND a magic-byte check, and widening it to carry
+       * video would widen it for every collection that shares it. Nor an
+       * embed: the portal's opening frame should not depend on somebody else's
+       * uptime, cookies and player chrome. The film is a static asset deployed
+       * by the same push as the code, and served from the school's own server.
+       */
+      name: 'videoSrc',
+      type: 'select',
+      label: 'Show a film instead',
+      options: filmOptions(),
+      admin: {
+        description:
+          FILMS.length > 0
+            ? 'Optional. Choose a film and this banner becomes that film, played silently on a loop with nothing over it — no heading, no colour. Clear it to go back to the words and photographs, which are kept either way. To add a new film, put an .mp4 in public/hero and restart the site.'
+            : 'No films are installed. Put an .mp4 in public/hero and restart the site, and it will be listed here.',
+      },
     },
     {
       name: 'speed',

@@ -1,7 +1,9 @@
 import { CMSLink } from '@/components/CMSLink'
 import type { HeroMarqueeBlock, Media as MediaDoc } from '@/payload-types'
 
+import { HeroFilm } from './HeroFilm'
 import { HeroStage } from './HeroStage'
+import { Section, SectionHeading } from './Section'
 
 /**
  * A page-opening banner whose background photograph slides.
@@ -60,6 +62,66 @@ export const HeroMarqueeBlockView = ({ block }: { block: HeroMarqueeBlock }) => 
   const photos = (block.images ?? [])
     .map((entry) => entry.image)
     .filter((image): image is MediaDoc => typeof image === 'object' && image !== null)
+
+  /*
+   * A FILM REPLACES THE BANNER, AND THE WORDS MOVE BENEATH IT.
+   *
+   * Set a film and the footage plays on its own, with nothing over it — type
+   * over moving pictures is a different design from type over a still, and
+   * doing it honestly needs the blur and the gradient this was asked to drop.
+   *
+   * But the words do not go with them. THE HEADING IS THE PAGE'S H1: it was
+   * the only one on the portal home, and rendering the film alone left the
+   * document opening at "Our Schools" — an h2 — with no h1 anywhere on the
+   * most important page on the site. So the banner becomes two things in
+   * sequence, the film and then a standfirst, rather than one thing with its
+   * words deleted.
+   *
+   * It is laid out on `Section`, the same shell every content block uses, so
+   * it inherits the padding, measure and heading scale the rest of the page
+   * already keeps to instead of inventing a rhythm of its own.
+   *
+   * THE FIGURES ARE DELIBERATELY NOT HERE. 1934 / 90+ / KG-PG already have a
+   * band of their own further down the page, under "A legacy parents trust".
+   * Printing them twice within two screens would read as the page having lost
+   * its place, so they stay where they were argued for.
+   */
+  if (block.videoSrc) {
+    return (
+      <>
+        <HeroFilm src={block.videoSrc} still={photos[0] ?? null} />
+
+        <Section background="white">
+          <SectionHeading heading={block.title} accentWord={block.accentWord} level="h1" />
+
+          {/*
+            The same three-step ladder the banner used — 26 / 17 in size, 600 /
+            400 in weight — so the order of the two lines survives the move
+            onto white.
+          */}
+          {block.subtitle ? (
+            <p className="mx-auto mt-5 max-w-3xl text-center text-xl leading-snug font-semibold text-balance sm:text-[1.625rem]">
+              {block.subtitle}
+            </p>
+          ) : null}
+
+          {block.intro ? (
+            <p className="mx-auto mt-4 max-w-2xl text-center text-[0.9375rem] leading-relaxed text-balance text-ink-muted sm:text-[1.0625rem]">
+              {block.intro}
+            </p>
+          ) : null}
+
+          {links.length > 0 ? (
+            <div className="mt-9 flex flex-wrap justify-center gap-4">
+              {links.map((entry, i) => (
+                <CMSLink key={entry.id ?? i} link={entry.link} />
+              ))}
+            </div>
+          ) : null}
+        </Section>
+      </>
+    )
+  }
 
   /*
    * EVERYTHING BELOW IS RENDERED ON THE SERVER AND HANDED TO `HeroStage` AS

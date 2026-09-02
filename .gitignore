@@ -48,3 +48,8 @@ yarn-error.log*
 
 # A personal copy of the SRS. The current spec is committed; this is not.
 SIWS_School_Website_SRS_v2_ORIGINAL_backup.pdf
+
+# Large video working files — kept on disk, never committed (they stay in
+# git history forever once added, and bloat every future clone).
+Sequence*.mp4
+public/hero/*.mp4

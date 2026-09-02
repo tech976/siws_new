@@ -70,6 +70,81 @@ const METHODOLOGY = [
 ]
 
 /**
+ * The strands of the section's holistic approach, which SIWS asked on
+ * 2026-09-01 to have highlighted rather than left implied.
+ *
+ * IT WAS ALREADY IN THE COPY, TWICE, AND BURIED BOTH TIMES. "Holistic
+ * development" appears as the last item of a five-part list in the Academics
+ * opening paragraph, and again in the first line of "Beyond the classroom".
+ * A reader skimming either page meets the phrase in the middle of a sentence
+ * about something else, which is the one place a claim cannot be read.
+ *
+ * So NOTHING BELOW IS NEW. Each strand is one SIWS already named — academic
+ * excellence, communication skills, values, leadership qualities, and the
+ * co-curricular programme — and each description is assembled from what this
+ * same file already publishes about where that strand actually happens: the
+ * methods above, the subject list, the timetabled P.T. and Art & Craft, and
+ * the events named under "Beyond the classroom". Giving the idea its own
+ * heading is the change; inventing a holistic programme the school has not
+ * described would be a different and much worse one.
+ *
+ * `chip` is filled because these DO divide into groups and the panel layout
+ * shows them — a one-word answer to "which part of a child is this about",
+ * which is the whole argument for calling the approach holistic.
+ */
+const HOLISTIC = [
+  {
+    chip: 'Academics',
+    title: 'Academic excellence',
+    icon: 'thinking',
+    description:
+      'A competency-based curriculum built on conceptual understanding rather than recall, with critical thinking, creativity and problem-solving practised across all ten subjects.',
+  },
+  {
+    chip: 'Expression',
+    title: 'Communication skills',
+    icon: 'communication',
+    description:
+      'Classroom discussions, debates, peer learning and collaborative projects give every student regular practice in explaining their thinking to somebody else.',
+  },
+  {
+    chip: 'Character',
+    title: 'Values',
+    icon: 'care',
+    description:
+      'Named by the school among the things it sets out to nurture, so that a student leaves Standard X responsible as well as capable.',
+  },
+  {
+    chip: 'Responsibility',
+    title: 'Leadership qualities',
+    icon: 'staff',
+    description:
+      'Competitions, cultural programmes and community service put students in charge of something real. The confidence and the teamwork follow from having done it, not from being told about it.',
+  },
+  {
+    chip: 'The arts',
+    title: 'Creativity',
+    icon: 'music',
+    description:
+      'Music, dance, art and cultural performances run through the year, and Art & Craft is on the timetable as a subject in its own right.',
+  },
+  {
+    chip: 'Health',
+    title: 'Physical development',
+    icon: 'sport',
+    description:
+      'P.T. is a timetabled subject rather than a free period, and sports events run through the year on the Wadala grounds.',
+  },
+  {
+    chip: 'Citizenship',
+    title: 'Environmental awareness and community service',
+    icon: 'garden',
+    description:
+      'Innovation, environmental awareness and community service run alongside the academic programme rather than after it.',
+  },
+]
+
+/**
  * The 39 members of staff, in the order SIWS listed them.
  *
  * The source table is in capitals and splits academic from professional
@@ -384,7 +459,7 @@ const main = async () => {
        * three units still carry. The `phone` field holds a single value and
        * becomes a `tel:` link, so it cannot hold both.
        */
-      phone: '022-24180877',
+      phone: '02224180877',
       email: 'info@siws.edu.in',
     } as never,
   })
@@ -492,7 +567,7 @@ const main = async () => {
    */
   const classroomAtWork = await photo('secondary-craft-class.jpg')
   const classroomActivity = await photo('secondary-activity-class.jpg')
-  const recognition = await photo('secondary-swachhta-2023.jpg')
+  const recognition = await photo('secondary-swachhta-framed.jpg')
   const toppers = await photo('secondary-toppers-2026-close.jpg')
   /*
    * Named `siws-` rather than `secondary-` because both were seeded before
@@ -508,18 +583,27 @@ const main = async () => {
   const contactPageId = await upsert({
     slug: 'contact',
     title: 'Contact us',
-    intro: 'Ask us about admission to Standards V to X at Wadala.',
+    intro: 'Ask us about Standards V to X at Wadala.',
     showInNav: true,
     navLabel: 'Contact',
     navOrder: 50,
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'Contact SIWS High School, Wadala — enquire about admission to Standards V to X.',
+      'Contact SIWS High School, Wadala — reach the office about Standards V to X.',
     layout: [
       {
+        /*
+         * "Get in touch", not "Enquire about admission".
+         *
+         * SIWS asked on 2026-09-01 for the section to stop advertising an
+         * admissions process, and this heading was the last place still doing
+         * it. The form underneath is unchanged and still asks which standard
+         * and which campus — that is what makes an enquiry answerable — but
+         * the page now offers a conversation rather than an application.
+         */
         blockType: 'heroEnquiry',
-        title: 'Enquire about admission',
+        title: 'Get in touch',
         subtitle: 'Maharashtra State Board | Standards V to X',
         benefitsIntro: 'At SIWS, your child benefits from:',
         benefits: [
@@ -533,7 +617,7 @@ const main = async () => {
           subtitle: '214 of 215 students passed | 60 with Distinction',
         },
         form: {
-          title: 'Enquire about admission',
+          title: 'Send us an enquiry',
           subtitle: 'Tell us about your child and we will get in touch.',
           classOptions: CLASS_OPTIONS.map((label) => ({ label })),
           campusOptions: [{ campus: 'wadala' }],
@@ -568,7 +652,7 @@ const main = async () => {
              * number into this card too.
              */
             title: 'General enquiries',
-            description: 'For anything else — info@siws.edu.in, 022-24180877',
+            description: 'For anything else — info@siws.edu.in, 02224180877',
           },
         ],
       },
@@ -603,16 +687,16 @@ const main = async () => {
         // Plain string: the hero's `intro` is a textarea, not rich text.
         intro:
           'From Standards V to X, we follow the Maharashtra State Board curriculum, updated in line with NEP 2020. Proudly running our Wadala campus since 1934 — 90+ years of trust and excellence.',
-        links: [
-          {
-            link: {
-              label: 'Enquire about admission',
-              type: 'internal',
-              reference: { relationTo: 'pages', value: contactPageId },
-              appearance: 'primary',
-            },
-          },
-        ],
+        /*
+         * NO BUTTON. The banner carried "Enquire about admission", pointing at
+         * Contact; SIWS asked on 2026-09-01 for the section to carry no
+         * admission button, and this was the most prominent one on the site.
+         *
+         * `HeroBlock` renders the button row only when `links` has entries, so
+         * omitting the field leaves the banner as type on the photograph
+         * rather than as a panel with a gap where a button used to be. Contact
+         * is still one tap away in the menu on every page.
+         */
       },
 
       /*
@@ -707,6 +791,28 @@ const main = async () => {
           'Aligned with NEP 2020, we prioritize conceptual understanding over rote learning, fostering critical thinking and real-world application.',
         ]),
         items: METHODOLOGY,
+      },
+
+      /*
+       * The same holistic approach as on Academics, in the same panels, on the
+       * page a parent actually lands on.
+       *
+       * It follows "How we teach" rather than replacing it: that block lists
+       * the METHODS, this one says what they are FOR. Reusing one array across
+       * both pages is how SUBJECTS and METHODOLOGY already work in this file,
+       * and it means the school revises this claim in one place.
+       */
+      {
+        blockType: 'featureList',
+        heading: 'A holistic approach to teaching',
+        accentWord: 'holistic',
+        headingLevel: 'h2',
+        layout: 'panel',
+        background: 'tint',
+        intro: richText([
+          'We focus on nurturing academic excellence, communication skills, values, leadership qualities and holistic development, enabling every learner to become a confident, responsible and lifelong learner.',
+        ]),
+        items: HOLISTIC,
       },
 
       /*
@@ -853,6 +959,31 @@ const main = async () => {
           'Our Secondary Section (Standards V to X) follows the Maharashtra State Board curriculum in alignment with the National Education Policy (NEP) 2020. We adopt a learner-centred and competency-based approach that promotes conceptual understanding, critical thinking, creativity and problem-solving skills.',
           'Continuous assessment, project work, hands-on activities and real-life applications help students connect classroom learning with everyday life. We focus on nurturing academic excellence, communication skills, values, leadership qualities and holistic development, enabling every learner to become a confident, responsible and lifelong learner.',
         ]),
+      },
+      /*
+       * The holistic approach, given its own heading immediately after the
+       * paragraph that used to be the only place it was mentioned.
+       *
+       * It sits BEFORE the subject list on purpose. "What do they study" and
+       * "how do they teach" are both answered further down; this answers what
+       * the section is trying to produce, which is the question those two only
+       * make sense underneath.
+       *
+       * Panels rather than cards: seven short points a parent scans rather
+       * than studies, and the only panel section on this page.
+       */
+      {
+        blockType: 'featureList',
+        heading: 'A holistic approach to teaching',
+        accentWord: 'holistic',
+        headingLevel: 'h2',
+        layout: 'panel',
+        background: 'tint',
+        intro: richText([
+          'We focus on nurturing academic excellence, communication skills, values, leadership qualities and holistic development, enabling every learner to become a confident, responsible and lifelong learner.',
+          'These are not five programmes running side by side. The lesson that teaches a concept is where a student practises explaining it, and the year that runs the examinations is the year that runs the competitions.',
+        ]),
+        items: HOLISTIC,
       },
       {
         blockType: 'featureList',
@@ -1170,7 +1301,7 @@ const main = async () => {
               'For anything the class teacher cannot settle, the office will arrange a time. Please telephone rather than calling in, so somebody is free when you arrive.',
           },
           {
-            title: 'Telephone the school on 022-24180877',
+            title: 'Telephone the school on 02224180877',
             description:
               'The school office takes calls during working hours. Saturdays, Sundays and holidays are not office days.',
           },
@@ -1433,430 +1564,30 @@ const main = async () => {
     ],
   })
 
-  // ------------------------------------------------------------- ADMISSIONS
+  // ------------------------------------- PAGES THE OTHER PAGES LINK ACROSS TO
   /*
-   * THE HARD CONSTRAINT, STATED ONCE FOR BOTH PAGES BELOW.
+   * ADMISSIONS AND ADMISSIONS FAQ WERE DELETED HERE ON 2026-09-01, at SIWS's
+   * request: the section is not to carry an admissions tab, an admissions
+   * button or an admissions FAQ.
    *
-   * SIWS's document left the admission process blank. There is no age
-   * criterion, no list of steps, no document list, no date and no fee — the
-   * warning at the foot of this file has said so since it was written, and it
-   * is the reason both of these pages carried the generic placeholder.
+   * What stood here were two pages built entirely out of what WAS settled —
+   * the standards, the board, last year's results, the Grant-in-Aid Code
+   * terms, and the office's own address for everything the school had left
+   * blank. The process itself was never supplied, which is recorded in the
+   * warning at the foot of this file and is why those pages ended at the
+   * office rather than at a form.
    *
-   * A placeholder was still the wrong answer. What a family actually needs
-   * first is not the form; it is enough about the school to decide whether to
-   * ask for one, and then the one address that will answer. All of that IS
-   * known — the standards, the board, the subjects, the staffing, last year's
-   * results, the terms the Grant-in-Aid Code sets for admission, and the
-   * office's own email and telephone number.
+   * Nothing has been moved onto another page to compensate. A family that
+   * wants to ask still reaches the office through Contact, which is the route
+   * those pages pointed at anyway; what has gone is the claim that this
+   * section publishes an admissions process.
    *
-   * So these pages say everything that is settled and hand over the rest by
-   * name. Every place a date, a fee or a document list would go, the page says
-   * to ask the office instead of guessing — and says it in a way that tells
-   * the reader what to ask FOR, so nobody is sent there twice.
+   * Two of the four page ids declared with them are still wanted by pages
+   * further down, so they survive here. `academicsPageId` and
+   * `admissionsFaqPageId` went with the pages that were their only readers.
    */
-  const admissionsFaqPageId = await pageId('admissions-faq')
   const achievementsPageId = await pageId('achievements')
-  const academicsPageId = await pageId('academics')
   const facilitiesPageId = await pageId('facilities')
-
-  await upsert({
-    slug: 'admissions',
-    title: 'Admissions',
-    intro: 'Joining the Secondary Section — Standards V to X, on the Maharashtra State Board.',
-    showInNav: true,
-    navLabel: 'Admissions',
-    navOrder: 10,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'Admission to SIWS High School, Wadala — Standards V to X on the Maharashtra State Board. How to enquire, what the office can tell you, and the terms on which children are admitted.',
-    layout: [
-      /*
-       * The figures open the page rather than the process, because the process
-       * is the part that is not published yet — and because a family reading
-       * an admissions page is deciding whether to ask, not filling anything
-       * in. Four numbers, all of them stated elsewhere in this file.
-       */
-      {
-        blockType: 'statistics',
-        heading: 'The section at a glance',
-        accentWord: 'a glance',
-        headingLevel: 'h2',
-        background: 'sea',
-        stats: [
-          { value: 'V to X', label: 'Standards taught' },
-          { value: '99.53%', label: 'SSC result in 2026' },
-          { value: '39', label: 'Members of teaching staff' },
-          { value: '1934', label: 'Serving Mumbai since' },
-        ],
-      },
-      {
-        blockType: 'richText',
-        heading: 'Admission to Standards V to X',
-        accentWord: 'Standards V to X',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'The Secondary Section takes children from Standard V through to the S.S.C. Examination at the end of Standard X, in English medium, on the Maharashtra State Board curriculum aligned with NEP 2020.',
-          'Dates, forms and the documents to bring are set year by year and are held by the school office. Rather than print a set here that would still be here after it stopped being true, this page tells you exactly what to ask for and who to ask.',
-        ]),
-      },
-      {
-        blockType: 'featureList',
-        heading: 'How to start',
-        accentWord: 'start',
-        headingLevel: 'h2',
-        layout: 'cards',
-        background: 'sea',
-        items: [
-          {
-            title: 'Say which standard, and which year',
-            icon: 'communication',
-            description:
-              'Write to admissions@siws.edu.in, or send the enquiry form on the contact page. That one detail lets the office tell you straight away whether there is anything to apply for.',
-          },
-          {
-            title: 'Ask the office what is open',
-            icon: 'study',
-            description:
-              'This year’s dates, the form, the documents to bring and the fee structure are all with the office. Ask for them together and you will only need to ask once.',
-          },
-          {
-            title: 'Come and see the school',
-            icon: 'staff',
-            description:
-              'Arrange it with the office first — visits during school hours need the Head Mistress’s consent, which is how the school knows who is on the campus while the children are in it.',
-          },
-        ],
-      },
-      /*
-       * The one thing about admission that IS written down, and it is written
-       * down by the State rather than by the school. It belongs on this page
-       * for the same reason a term is printed on a form: a family is entitled
-       * to know the basis on which a place is offered and kept.
-       */
-      {
-        blockType: 'richText',
-        heading: 'On what terms a child is admitted',
-        accentWord: 'terms',
-        headingLevel: 'h2',
-        width: 'normal',
-        background: 'white',
-        content: richText([
-          'Under Rule 53 of the Grant-in-Aid Code, parents and guardians are given to understand that the management has the right to decide on what conditions it will admit or retain children — provided those conditions conform to the Grant-in-Aid Code and to the instructions issued by the Director or the concerned Educational Inspector from time to time.',
-          'The same rule sets what is expected of a child once admitted: regularity and obedience, courtesy of speech and conduct, cleanliness of dress and person, and responsibility to the school for their behaviour outside it as well as inside.',
-        ]),
-      },
-      {
-        blockType: 'cardGrid',
-        heading: 'Worth reading before you decide',
-        accentWord: 'before you decide',
-        headingLevel: 'h2',
-        background: 'sea',
-        columns: '2',
-        placedBySeed: true,
-        cards: [
-          {
-            title: 'The 2026 results',
-            description:
-              '214 of 215 students passed the SSC Examination, 60 of them with Distinction, with the full grade distribution.',
-            ...(achievementsPageId
-              ? {
-                  cta: [
-                    {
-                      link: {
-                        label: 'See the results',
-                        type: 'internal',
-                        reference: { relationTo: 'pages', value: achievementsPageId },
-                      },
-                    },
-                  ],
-                }
-              : {}),
-          },
-          {
-            title: 'What is taught, and how',
-            description:
-              'Ten subjects across Standards V to X, and the methods used to teach them.',
-            ...(academicsPageId
-              ? {
-                  cta: [
-                    {
-                      link: {
-                        label: 'Open Academics',
-                        type: 'internal',
-                        reference: { relationTo: 'pages', value: academicsPageId },
-                      },
-                    },
-                  ],
-                }
-              : {}),
-          },
-          {
-            title: 'Common questions',
-            description:
-              'Fifteen answers on standards, subjects, applying, fees, uniform and the scholarship examinations.',
-            ...(admissionsFaqPageId
-              ? {
-                  cta: [
-                    {
-                      link: {
-                        label: 'Open the Admissions FAQ',
-                        type: 'internal',
-                        reference: { relationTo: 'pages', value: admissionsFaqPageId },
-                      },
-                    },
-                  ],
-                }
-              : {}),
-          },
-          {
-            title: 'The campus',
-            description:
-              'Laboratories, the school hall, grounds for P.T., and how the place is kept and supervised.',
-            ...(facilitiesPageId
-              ? {
-                  cta: [
-                    {
-                      link: {
-                        label: 'See the campus',
-                        type: 'internal',
-                        reference: { relationTo: 'pages', value: facilitiesPageId },
-                      },
-                    },
-                  ],
-                }
-              : {}),
-          },
-        ],
-      },
-      {
-        blockType: 'callToAction',
-        heading: 'Ask about a place',
-        background: 'brand',
-        text: richText([
-          'Tell us the standard and the year, and the office will tell you what is possible.',
-        ]),
-        links: [
-          {
-            link: {
-              label: 'Email the admissions office',
-              type: 'external',
-              url: 'mailto:admissions@siws.edu.in',
-              appearance: 'primary',
-            },
-          },
-          ...(contactPageId
-            ? [
-                {
-                  link: {
-                    label: 'Send an enquiry',
-                    type: 'internal',
-                    reference: { relationTo: 'pages', value: contactPageId },
-                    appearance: 'secondary',
-                  },
-                },
-              ]
-            : []),
-        ],
-      },
-    ],
-  })
-
-  // --------------------------------------------------------- ADMISSIONS FAQ
-  /*
-   * Fifteen questions in the order somebody asks them: is this school right
-   * for my child, how do I apply, and what happens once a place is offered.
-   *
-   * Several answers end at the office. That is the honest shape of this page
-   * until SIWS sends the process, and each of those answers still carries
-   * everything that IS settled — so nobody is sent to ask a question this
-   * page could have answered.
-   *
-   * One open at a time. A reader comparing two answers on a phone loses their
-   * place when both are long, and only one question is ever being asked.
-   */
-  await upsert({
-    slug: 'admissions-faq',
-    title: 'Admissions FAQ',
-    intro: 'The questions the office is asked most often about joining Standards V to X.',
-    /*
-     * OFF the menu here, and `seed:nav` puts it back inside its drop-down.
-     *
-     * This is a CHILD entry in the shared unit template. Setting it true from
-     * a page seed makes it a TOP-LEVEL item, and whichever script ran last
-     * wins — so running this seed after `seed:nav` climbed every child out
-     * to the top row at once. Secondary reached thirteen top-level items and
-     * the buttons wrapped onto a second line.
-     *
-     * Omitting the field is NOT enough: `payload.update` keeps the existing
-     * `show_in_nav` while clearing `nav_parent_id`, which promotes the page
-     * rather than leaving it alone. False explicitly means the worst this seed
-     * can do is drop the entry until `seed:nav` runs — which is the
-     * documented order anyway, and a missing drop-down entry is a far smaller
-     * fault than a menu that wraps.
-     */
-    showInNav: false,
-    navLabel: 'Admissions FAQ',
-    navOrder: 11,
-    _status: 'published',
-    reviewStatus: 'approved',
-    metaDescription:
-      'Common questions about admission to SIWS High School, Wadala — which standards, the board and medium, how to apply, scholarships, uniform and how to reach the office.',
-    layout: [
-      {
-        blockType: 'accordion',
-        heading: 'Before you apply',
-        accentWord: 'apply',
-        headingLevel: 'h2',
-        background: 'white',
-        allowMultipleOpen: false,
-        items: [
-          {
-            question: 'Which standards does the Secondary Section take?',
-            answer: richText([
-              'Standards V to X. Standard X ends with the S.S.C. Examination of the Maharashtra State Board. Below Standard V is our Primary Section, and after Standard X the Junior College is on the same campus.',
-            ]),
-          },
-          {
-            question: 'What is the medium and the board?',
-            answer: richText([
-              'English medium, following the Maharashtra State Board curriculum aligned with NEP 2020.',
-            ]),
-          },
-          {
-            question: 'What will my child study?',
-            answer: richText([
-              'Ten subjects: English, Marathi, Hindi, Sanskrit, Mathematics, Science, Social Science, ICT, PT and Art & Craft.',
-            ]),
-          },
-          {
-            question: 'How is it taught?',
-            answer: richText([
-              'Activity-based and experiential learning, peer and group work, collaborative projects, classroom discussion, technology-integrated instruction, continuous assessment, project work and real-life application of what is covered in class.',
-            ]),
-          },
-          {
-            question: 'How did the school do in the last SSC Examination?',
-            answer: richText([
-              'In 2026, 214 of the 215 students who appeared passed — a 99.53% success rate. Sixty passed with Distinction, 99 in the First Class, 54 in the Second Class and one in the Pass Class.',
-            ]),
-          },
-        ],
-      },
-      {
-        blockType: 'accordion',
-        heading: 'Applying',
-        accentWord: 'Applying',
-        headingLevel: 'h2',
-        background: 'sea',
-        allowMultipleOpen: false,
-        items: [
-          {
-            question: 'How do I start?',
-            answer: richText([
-              'Write to admissions@siws.edu.in, or send the enquiry form on the contact page, saying which standard and which academic year you are asking about. You can also telephone the school on 022-24180877.',
-            ]),
-          },
-          {
-            question: 'When do admissions open, and where do I get a form?',
-            answer: richText([
-              'The dates and the form for the coming year are held by the school office, and they are set year by year rather than fixed. Ask when you enquire and the office will tell you when forms are issued.',
-            ]),
-          },
-          {
-            question: 'Which documents will I need?',
-            answer: richText([
-              'The office will give you the list when it issues the form — it depends on the standard, and on whether your child is transferring from another school. Please ask before you come in, rather than making the trip twice.',
-            ]),
-          },
-          {
-            question: 'Is there a place in the middle of the year?',
-            answer: richText([
-              'That depends on the standard and on what is vacant at the time, so it is a question only the office can answer for your case. Say which standard when you write and you will get a straight answer quickly.',
-            ]),
-          },
-          {
-            question: 'On what basis is a place offered?',
-            answer: richText([
-              'Under Rule 53 of the Grant-in-Aid Code, the management decides the conditions on which children are admitted and retained, provided those conditions conform to the Code and to the instructions issued by the Director or the concerned Educational Inspector.',
-            ]),
-          },
-        ],
-      },
-      {
-        blockType: 'accordion',
-        heading: 'Once a place is offered',
-        accentWord: 'offered',
-        headingLevel: 'h2',
-        background: 'white',
-        allowMultipleOpen: false,
-        items: [
-          {
-            question: 'What are the fees?',
-            answer: richText([
-              'The fee structure for the current year is with the school office, and it is what you should ask for when you enquire. We would rather tell you the real figure than publish one that goes out of date.',
-            ]),
-          },
-          {
-            question: 'Is there a uniform, and what else is expected?',
-            answer: richText([
-              'Yes — the uniform, and the rules the school asks children and parents to hold to, are set out in full on the rules and uniform page. They cover dress and appearance, the diary and identity card, attendance, and conduct.',
-            ]),
-          },
-          {
-            question: 'Can my child sit the scholarship examinations?',
-            answer: richText([
-              'Children here sit the Pre-Upper Primary Scholarship Examination in Standard V and the Pre-Secondary Scholarship Examination in Standard VIII. Both are State examinations, and the school prepares candidates for them — seven qualified in 2025–26.',
-            ]),
-          },
-          {
-            question: 'How do I reach my child’s teacher?',
-            answer: richText([
-              'Through the office, which will arrange a time. Parents are asked not to come in to see a child or a teacher during school hours without the prior consent of the Head Mistress.',
-            ]),
-          },
-          {
-            question: 'How do I get a bonafide or leaving certificate?',
-            answer: richText([
-              'From the school office during working hours. No school business is transacted on Saturdays, Sundays or holidays.',
-            ]),
-          },
-        ],
-      },
-      {
-        blockType: 'callToAction',
-        heading: 'Still not sure?',
-        background: 'brand',
-        text: richText([
-          'If the answer you need is not here, the admissions office would rather you asked than guessed.',
-        ]),
-        links: [
-          {
-            link: {
-              label: 'Email the admissions office',
-              type: 'external',
-              url: 'mailto:admissions@siws.edu.in',
-              appearance: 'primary',
-            },
-          },
-          ...(contactPageId
-            ? [
-                {
-                  link: {
-                    label: 'Send an enquiry',
-                    type: 'internal',
-                    reference: { relationTo: 'pages', value: contactPageId },
-                    appearance: 'secondary',
-                  },
-                },
-              ]
-            : []),
-        ],
-      },
-    ],
-  })
 
   // --------------------------------------- UPDATES, STUDENT LIFE, TRANSPORT
   /*
@@ -1956,7 +1687,7 @@ const main = async () => {
             title: 'Anything else about travel',
             icon: 'communication',
             description:
-              'Ask the office on 022-24180877. Questions about your own route are answered better by somebody who knows this year’s arrangements than by a page.',
+              'Ask the office on 02224180877. Questions about your own route are answered better by somebody who knows this year’s arrangements than by a page.',
           },
         ],
       },
@@ -2448,12 +2179,17 @@ const main = async () => {
   /*
    * The general FAQ deliberately answers NOTHING about admission.
    *
-   * The section carries two FAQ pages — this one at the top level and
-   * Admissions FAQ inside the Admissions drop-down — and two FAQs in one menu
-   * is only worth having if a reader can tell from the outside which one holds
-   * their question. The split is by WHEN somebody is asking: Admissions FAQ is
-   * for a family deciding whether to apply, this is for a family whose child
-   * is already here. The one link between them is the card at the foot.
+   * It used to be one of two FAQ pages, split by WHEN somebody was asking:
+   * Admissions FAQ for a family deciding whether to apply, this one for a
+   * family whose child is already here, with a card at the foot linking
+   * across. SIWS asked on 2026-09-01 for everything about admission to come
+   * off this section, so the other page and that card have both gone and this
+   * is the section's only FAQ.
+   *
+   * The scope has NOT widened to fill the gap. Nothing here answers how to
+   * apply, because the process was never supplied — inventing it now, with
+   * the page that used to send the question to the office deleted, would be
+   * the one way this removal could mislead somebody.
    */
   await upsert({
     slug: 'faq',
@@ -2554,7 +2290,7 @@ const main = async () => {
           {
             question: 'How do I meet my child’s teacher?',
             answer: richText([
-              'Ask the office to arrange it, on 022-24180877. Parents, guardians and others are not permitted to see their ward or meet a teacher during school hours without the prior consent of the Head Mistress — it is how the school knows who is on the campus while the children are in it.',
+              'Ask the office to arrange it, on 02224180877. Parents, guardians and others are not permitted to see their ward or meet a teacher during school hours without the prior consent of the Head Mistress — it is how the school knows who is on the campus while the children are in it.',
             ]),
           },
           {
@@ -2577,28 +2313,6 @@ const main = async () => {
           },
         ],
       },
-      ...(admissionsFaqPageId
-        ? [
-            {
-              blockType: 'callToAction',
-              heading: 'Asking about joining the school?',
-              background: 'brand',
-              text: richText([
-                'Questions about applying — which standards, how to enquire, what the office can tell you — are answered on their own page.',
-              ]),
-              links: [
-                {
-                  link: {
-                    label: 'Open the Admissions FAQ',
-                    type: 'internal',
-                    reference: { relationTo: 'pages', value: admissionsFaqPageId },
-                    appearance: 'primary',
-                  },
-                },
-              ],
-            },
-          ]
-        : []),
     ],
   })
 
@@ -2627,7 +2341,7 @@ const main = async () => {
   payload.logger.warn('LEFT BLANK by SIWS in the Secondary document:')
   for (const gap of [
     'Programme benefits',
-    'Admission process — no age criteria, no application steps, no document list and no dates. The admissions page and its FAQ are built from what IS known and send every one of those to the office by name; send the process and they stop doing that',
+    'Admission process — no age criteria, no application steps, no document list and no dates. NOTE that as of 2026-09-01 this section publishes nothing about admission at all: the Admissions page and the Admissions FAQ were deleted at SIWS’s request, so there is no longer a page waiting for this. Sending the process now means deciding first whether the section should carry it again',
     'Fee details, class-wise',
     'Day care / after-school care',
     'Accreditation and recognition — Primary claims "A Grade" from the Department of Education, but that must not be copied across to Secondary without confirmation',

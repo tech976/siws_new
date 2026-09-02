@@ -104,10 +104,26 @@ const DynamicRoute = async ({ params }: RouteProps) => {
          * contact page yet, it falls back to the old behaviour rather than
          * rendering a dead button.
          */
+        /*
+         * THE LABEL IS PER-SECTION, because one section does not offer this.
+         *
+         * SIWS asked on 2026-09-01 that the Secondary Section carry no
+         * admission button anywhere. This button is in the header of every
+         * page of every unit site, so it was the most persistent one on that
+         * section by a distance — the hero button and the Admissions tab were
+         * on one page each.
+         *
+         * The button itself STAYS on Secondary and only its wording changes.
+         * It is the header's one route to Contact, and a section whose header
+         * silently loses the affordance the other three have is a navigation
+         * bug rather than a content decision. What SIWS objected to was the
+         * section advertising an admissions process; "Contact us" does not,
+         * and it goes to the same page the old label went to.
+         */
         cta={
           unit
             ? {
-                label: 'Enquire about admission',
+                label: unit.slug === 'secondary' ? 'Contact us' : 'Enquire about admission',
                 href:
                   quickLinks.find((l) => l.href === `/${unit.slug}/contact`)?.href ??
                   `/${unit.slug}`,

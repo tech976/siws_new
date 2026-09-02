@@ -878,6 +878,10 @@ export interface HeroMarqueeBlock {
       }[]
     | null;
   /**
+   * Optional. Choose a film and this banner becomes that film, played silently on a loop with nothing over it — no heading, no colour. Clear it to go back to the words and photographs, which are kept either way. To add a new film, put an .mp4 in public/hero and restart the site.
+   */
+  videoSrc?: '/hero/siws-hero.mp4' | null;
+  /**
    * Slower is almost always better behind a heading: a visitor should never catch a picture changing while they are reading.
    */
   speed?: ('calm' | 'steady' | 'brisk') | null;
@@ -1278,6 +1282,10 @@ export interface FeatureListBlock {
          */
         description?: string | null;
         /**
+         * Optional, and only used by the “Panels” layout. One or two words categorising this point, e.g. “Conduct” or “Health”. Leave every one blank if the points do not divide into groups — a chip reading the same on all of them is noise.
+         */
+        chip?: string | null;
+        /**
          * Only used by the “Cards” layout, under More options.
          */
         icon?:
@@ -1335,9 +1343,9 @@ export interface FeatureListBlock {
    */
   accentWord?: string | null;
   /**
-   * Cards suit a handful of facilities a parent should be able to scan. A list suits rules, curricula and anything long. Compact suits a set of short labels — a subject list, a set of methods — where a full card per item is mostly empty space. Showcase is for a few items that each have a photograph worth showing: prizes, events, achievements.
+   * Cards suit a handful of facilities a parent should be able to scan. A list suits rules, curricula and anything long. Compact suits a set of short labels — a subject list, a set of methods — where a full card per item is mostly empty space. Showcase is for a few items that each have a photograph worth showing: prizes, events, achievements. Panels suit three to twelve points a visitor scans rather than studies — they arrive one after another and answer the pointer. Use at most two panel sections on a page: the movement stops meaning anything when everything moves. See docs/MASTER-LAYOUT.md.
    */
-  layout?: ('list' | 'cards' | 'compact' | 'showcase') | null;
+  layout?: ('list' | 'cards' | 'compact' | 'showcase' | 'panel') | null;
   /**
    * Choose numbers when the order matters, otherwise ticks. On cards, numbers add a coloured badge and rule to each one.
    */
@@ -2710,6 +2718,7 @@ export interface HeroMarqueeBlockSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  videoSrc?: T;
   speed?: T;
   background?: T;
   id?: T;
@@ -2870,6 +2879,7 @@ export interface FeatureListBlockSelect<T extends boolean = true> {
     | {
         title?: T;
         description?: T;
+        chip?: T;
         icon?: T;
         illustration?: T;
         photo?: T;

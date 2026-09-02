@@ -148,6 +148,13 @@ const main = async () => {
      */
     background: 'brand',
     speed: 'calm',
+    /*
+     * The film SIWS supplied, compressed for the web and committed under
+     * public/hero so it deploys with the code. The four photographs below are
+     * not redundant: they are its poster frame, and they are the banner on
+     * their own for anyone who has asked for reduced motion.
+     */
+    videoSrc: '/hero/siws-hero.mp4',
     images: chosen.map((item) => ({ image: item.id })),
   }
 

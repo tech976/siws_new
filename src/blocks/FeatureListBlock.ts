@@ -88,6 +88,16 @@ export const FeatureListBlock: Block = {
           admin: { description: 'A sentence or two explaining the point.' },
         },
         {
+          name: 'chip',
+          type: 'text',
+          maxLength: 24,
+          label: 'Small label on the point',
+          admin: {
+            description:
+              'Optional, and only used by the “Panels” layout. One or two words categorising this point, e.g. “Conduct” or “Health”. Leave every one blank if the points do not divide into groups — a chip reading the same on all of them is noise.',
+          },
+        },
+        {
           name: 'icon',
           type: 'select',
           label: 'Picture',
@@ -155,10 +165,14 @@ export const FeatureListBlock: Block = {
             label: 'Showcase — a photograph beside the words, one card each',
             value: 'showcase',
           },
+          {
+            label: 'Panels — rounded cards that lift as you point at them',
+            value: 'panel',
+          },
         ],
         admin: {
           description:
-            'Cards suit a handful of facilities a parent should be able to scan. A list suits rules, curricula and anything long. Compact suits a set of short labels — a subject list, a set of methods — where a full card per item is mostly empty space. Showcase is for a few items that each have a photograph worth showing: prizes, events, achievements.',
+            'Cards suit a handful of facilities a parent should be able to scan. A list suits rules, curricula and anything long. Compact suits a set of short labels — a subject list, a set of methods — where a full card per item is mostly empty space. Showcase is for a few items that each have a photograph worth showing: prizes, events, achievements. Panels suit three to twelve points a visitor scans rather than studies — they arrive one after another and answer the pointer. Use at most two panel sections on a page: the movement stops meaning anything when everything moves. See docs/MASTER-LAYOUT.md.',
         },
       },
       {
