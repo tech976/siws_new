@@ -228,8 +228,25 @@ export const FacultyBlockView = async ({
                          * hanging off the card. The head teacher's card above is
                          * deliberately untouched: it is the one card in the
                          * column that should not look like the others.
+                         *
+                         * THE LEFT END IS A SEMICIRCLE, following the monogram
+                         * rather than boxing it: `rounded-l-full` takes the
+                         * radius from the card's own height, so the curve stays
+                         * true to the disc whether the text runs to two lines or
+                         * four. The right end keeps a plain corner, because the
+                         * mark sits in it.
+                         *
+                         * PADDING IS NOT SYMMETRIC, and cannot be. `pl-6` clears
+                         * the curve so the monogram is not pressed into it,
+                         * `pr-14` keeps a long name off the mark, and `gap-5`
+                         * is the air between the disc and the name — at gap-4
+                         * the two read as one object.
+                         *
+                         * `items-center` rather than `items-start`: against a
+                         * semicircular end, text aligned to the top sits visibly
+                         * above the disc's centre and the card looks tipped.
                          */
-                        className="relative flex items-start gap-4 overflow-hidden rounded-2xl border border-line bg-white p-4 pr-14 shadow-card"
+                        className="relative flex items-center gap-5 overflow-hidden rounded-l-full rounded-r-2xl border border-line bg-white py-4 pr-14 pl-6 shadow-card"
                       >
                         {face(teacher, false)}
                         {details(teacher)}
