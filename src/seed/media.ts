@@ -103,6 +103,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'g1.jpeg',
     filename: 'kg-classroom-activity.jpg',
+    unit: 'kindergarten',
+    category: 'In the classroom',
     alt: 'Kindergarten children in SIWS uniform sitting at curved group tables, colouring in activity books with crayons.',
     caption: 'Spacious, well-ventilated classrooms with group seating',
     depictsChildren: true,
@@ -134,6 +136,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'g2.jpeg',
     filename: 'kg-classroom-group.jpg',
+    unit: 'kindergarten',
+    category: 'In the classroom',
     // Thirteen children stacked front to back over half the frame, and the
     // band shows a quarter of it. Placed on the two boys nearest the camera,
     // who are the subject: the rows behind fall outside the strip entirely
@@ -146,6 +150,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: '12.JPG',
     filename: 'kg-classroom-seated.jpg',
+    unit: 'kindergarten',
+    category: 'In the classroom',
     alt: 'Young children in SIWS uniform seated at classroom tables, listening to their teacher.',
     caption: 'Bright, child-height classroom furniture',
     depictsChildren: true,
@@ -153,6 +159,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: '3.JPG',
     filename: 'kg-play-area.jpg',
+    unit: 'kindergarten',
+    category: 'Play and activity',
     // A tall portrait in a wide band shows about a tenth of its height. The
     // children stand across its middle, so the strip sits on them — higher and
     // it lands on the empty wall behind, lower and it is all artificial turf.
@@ -164,6 +172,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'i4.png',
     filename: 'kg-teacher-with-children.jpg',
+    unit: 'kindergarten',
+    category: 'In the classroom',
     alt: 'A SIWS teacher surrounded by a group of kindergarten children hugging her on the school play area.',
     caption: 'Supportive and trained school staff',
     depictsChildren: true,
@@ -171,6 +181,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'ss.jpeg',
     filename: 'kg-children-together.jpg',
+    unit: 'kindergarten',
+    category: 'Play and activity',
     alt: 'A close group of kindergarten girls in SIWS sports uniform with red headbands, arms around each other, smiling.',
     caption: 'Friendships that start in the earliest years',
     depictsChildren: true,
@@ -225,8 +237,9 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'fancy-dress-environment.jpg',
     filename: 'siws-fancy-dress-environment.jpg',
+    unit: 'kindergarten',
     focalY: 62,
-    category: 'Achievements',
+    category: 'Events and outings',
     alt: 'Two young students in a fancy-dress competition, one wearing a painted globe costume and the other holding a model of the Earth.',
     caption: 'Showcasing creativity and environmental awareness',
     depictsChildren: true,
@@ -434,9 +447,9 @@ const IMAGES: ImageSeed[] = [
     filename: 'siws-dance-competition.jpg',
     focalY: 56,
     unit: 'kindergarten',
-    category: 'Achievements',
+    category: 'Events and outings',
     alt: 'Seven Kindergarten girls in orange, white and green dance costumes holding Indian flags, in front of a blackboard reading “Inter School Dance Competition, 14-08-2024”.',
-    caption: 'Inter-school dance competition, 14 August 2024',
+    caption: 'Inter-school dance competition',
     depictsChildren: true,
   },
   {
@@ -464,7 +477,7 @@ const IMAGES: ImageSeed[] = [
     filename: 'kg-fancy-dress-entrants.jpg',
     focalY: 58,
     unit: 'kindergarten',
-    category: 'Achievements',
+    category: 'Events and outings',
     alt: 'Six Kindergarten children in fancy dress with numbered cards pinned to them — a fruit seller, a pilot, a beauty queen, a campaigner, Spider-Man and a bunch of grapes — with three teachers behind and a cardboard aeroplane at their feet.',
     caption: 'Six entrants, six costumes made at home',
     depictsChildren: true,
@@ -477,7 +490,7 @@ const IMAGES: ImageSeed[] = [
     /* Portrait, and the faces are in the lower half — see the focal point. */
     focalY: 62,
     alt: 'Kindergarten children in yellow and green uniform holding Certificates of Honour and wrapped prizes, under paper lanterns and a banner reading “Annual Prize Distribution 2024-25”.',
-    caption: 'Annual prize distribution, 2024–25',
+    caption: 'Annual prize distribution',
     depictsChildren: true,
   },
   {
@@ -494,7 +507,7 @@ const IMAGES: ImageSeed[] = [
     filename: 'kg-annual-sports-prizes.jpg',
     focalY: 60,
     unit: 'kindergarten',
-    category: 'Achievements',
+    category: 'Sports',
     alt: 'Fifteen Kindergarten children in red and black sports kit holding trophies and Annual School Sports certificates, in a classroom painted with a yellow submarine, beneath a banner reading “Annual Prize Distribution — SIWS KG Section”.',
     caption: 'Annual school sports — the Kindergarten prize day',
     depictsChildren: true,
@@ -503,7 +516,7 @@ const IMAGES: ImageSeed[] = [
     file: 'kg-stage-regional-dance.jpg',
     filename: 'kg-stage-regional-dance.jpg',
     unit: 'kindergarten',
-    category: 'Achievements',
+    category: 'Events and outings',
     alt: 'A long line of Kindergarten children in green and pink Maharashtrian costume standing across a stage at the end of a performance.',
     caption: 'The whole line, at the end of the dance',
     depictsChildren: true,
@@ -512,7 +525,7 @@ const IMAGES: ImageSeed[] = [
     file: 'kg-dance-rehearsal.jpg',
     filename: 'kg-dance-rehearsal.jpg',
     unit: 'kindergarten',
-    category: 'Achievements',
+    category: 'Events and outings',
     /*
      * "In costume" was wrong — they are in ordinary school uniform, barefoot,
      * on floor marks. Checked against the photograph on 2026-09-02, because
@@ -526,6 +539,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'kg-activity-literacy.jpg',
     filename: 'kg-activity-literacy.jpg',
+    unit: 'kindergarten',
+    category: 'In the classroom',
     alt: 'Kindergarten children seated at curved tables working through printed worksheets, with a number line on the blackboard behind them.',
     caption: 'Worksheets and number work in the early years',
     depictsChildren: true,
@@ -533,6 +548,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'kg-activity-creative.jpg',
     filename: 'kg-activity-creative.jpg',
+    unit: 'kindergarten',
+    category: 'In the classroom',
     alt: 'Kindergarten children gathered around a table making a finger-painting in orange and green on yellow paper.',
     caption: 'Finger painting and activity-based learning',
     depictsChildren: true,
@@ -540,6 +557,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'kg-activity-motor.jpg',
     filename: 'kg-activity-motor.jpg',
+    unit: 'kindergarten',
+    category: 'In the classroom',
     alt: 'A full kindergarten class standing around a curved table, one child holding up a handprint flag they have made together.',
     caption: 'Hands-on work the whole class makes together',
     depictsChildren: true,
@@ -570,7 +589,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'natya-tarang.jpg',
     filename: 'siws-natya-tarang.jpg',
-    category: 'Achievements',
+    unit: 'kindergarten',
+    category: 'Events and outings',
     alt: 'A stage full of young SIWS students in bright regional costume, arms raised mid-performance, at the Natya Tarang inter-school dance competition.',
     caption: 'Natya Tarang — our inter-school dance and music competition',
     depictsChildren: true,
@@ -722,7 +742,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'kg-classroom-full-class.jpg',
     filename: 'kg-classroom-full-class.jpg',
-    category: 'Classrooms',
+    unit: 'kindergarten',
+    category: 'In the classroom',
     alt: 'A full kindergarten class in yellow and green SIWS uniform standing all the way around a large curved white table, with a child at the back holding up a handmade Indian flag made from painted handprints.',
     caption: 'A full class around the curved group table',
     depictsChildren: true,
@@ -736,7 +757,8 @@ const IMAGES: ImageSeed[] = [
      */
     file: 'kg-outing-play-space.jpg',
     filename: 'kg-outing-play-space.jpg',
-    category: 'Beyond the classroom',
+    unit: 'kindergarten',
+    category: 'Events and outings',
     alt: 'A kindergarten class posing together on a low round stage in front of a brightly lit space-themed backdrop at an indoor play centre, during a class outing.',
     caption: 'A class outing to an indoor play space',
     depictsChildren: true,
@@ -744,7 +766,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'kg-sports-day-winners.jpg',
     filename: 'kg-sports-day-winners.jpg',
-    category: 'Achievements',
+    unit: 'kindergarten',
+    category: 'Sports',
     alt: 'Thirteen kindergarten children holding certificates and trophies, seated and standing in two rows beneath a banner reading “Welcome to SIWS KG Section Sport’s Day”.',
     caption: 'Prize day at the Kindergarten annual sports',
     depictsChildren: true,
@@ -752,7 +775,8 @@ const IMAGES: ImageSeed[] = [
   {
     file: 'kg-sports-day-podium.jpg',
     filename: 'kg-sports-day-podium.jpg',
-    category: 'Achievements',
+    unit: 'kindergarten',
+    category: 'Sports',
     alt: 'Four kindergarten children in red and navy sports kit on a winners’ podium numbered 1, 2 and 3, each holding a gold trophy, with a table of further trophies behind them on the turf pitch.',
     caption: 'On the podium at the Kindergarten sports day',
     depictsChildren: true,

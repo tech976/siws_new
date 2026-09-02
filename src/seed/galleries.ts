@@ -128,6 +128,21 @@ const main = async () => {
    */
   const OMIT_FILE: Record<string, string[]> = {
     secondary: ['secondary-swachhta-framed.jpg'],
+    /*
+     * NOT KINDERGARTEN CHILDREN (2026-09-02).
+     *
+     * The girl at the smart board and the boys at the desks are in a different
+     * uniform from the Kindergarten's yellow and green — they are older pupils
+     * from elsewhere in the school. Both were tagged to this section, so both
+     * were on its wall, and a gallery headed with the section's name is read
+     * as photographs OF that section.
+     *
+     * Omitted here rather than unfiled, because the pictures themselves are
+     * fine and are still on the portal's own wall under "In the classroom";
+     * it is only the Kindergarten claim on them that was wrong. They came off
+     * the home page campus row on the same instruction.
+     */
+    kindergarten: ['kg-smart-board.jpg', 'kg-drawing-class.jpg'],
   }
 
   /**
@@ -146,6 +161,44 @@ const main = async () => {
    * whole of what it takes.
    */
   const PHOTO_LIBRARY = new Set(['secondary', 'junior-college'])
+
+  /**
+   * The order the sections of a stacked gallery appear in.
+   *
+   * TWO LISTS RATHER THAN ONE, and the gap between them is the point. A single
+   * ranked list would have to name every category any section might ever use,
+   * and the first one somebody forgot to add would jump ahead of the prizes —
+   * which is the exact fault this fixes.
+   *
+   * So: the ones named in FIRST lead, in this order; the ones named in LAST
+   * trail, in this order; everything else sits between them, alphabetically.
+   * A new category therefore lands in the middle — visible, but never ahead of
+   * the classrooms and never behind the achievements — and needs no code
+   * change to behave sensibly.
+   *
+   * WHY ACHIEVEMENTS GO LAST. Alphabetically they came first, so a gallery
+   * opened on trophies and certificates and a parent scrolled past the prize
+   * cabinet to reach a classroom. That is the wrong first impression for a
+   * page a family opens to see what the place is actually like: the rooms and
+   * the day are the evidence, the prizes are the argument, and the evidence
+   * goes first.
+   */
+  const SECTION_FIRST = [
+    'In the classroom',
+    'Classrooms',
+    'Play and activity',
+    'Events and outings',
+    'Occasions',
+    'Sports',
+  ]
+  const SECTION_LAST = ['Achievements', 'Recognition']
+  const rank = (key: string) => {
+    const first = SECTION_FIRST.indexOf(key)
+    if (first !== -1) return first
+    const last = SECTION_LAST.indexOf(key)
+    if (last !== -1) return 1000 + last
+    return 500
+  }
 
   /**
    * One photograph per section that earns the 2x2 tile.
@@ -318,7 +371,25 @@ const main = async () => {
             strays.push(...group)
             return false
           })
-          .sort(([a], [b]) => a.localeCompare(b))
+          .sort(([a], [b]) => {
+            /*
+             * A CURATED ORDER, not the alphabet.
+             *
+             * Alphabetically "Achievements" comes first, so every section's
+             * gallery opened on trophies and certificates and a parent had to
+             * scroll past the prize cabinet to reach a classroom. That is the
+             * wrong first impression for a page a family opens to see what the
+             * place is like: the rooms and the day come first, the prizes
+             * last, because the prizes are the argument and the rooms are the
+             * evidence.
+             *
+             * Anything not named here keeps its alphabetical place after the
+             * ones that are, so adding a category needs no code change — it
+             * simply lands in the unranked group rather than jumping to the
+             * front.
+             */
+            return rank(a) - rank(b) || a.localeCompare(b)
+          })
 
         /*
          * ONE GROUP IS NOT A SET OF GROUPS.

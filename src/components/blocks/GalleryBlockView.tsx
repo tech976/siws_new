@@ -134,8 +134,18 @@ const BentoGallery = ({ images }: { images: NonNullable<GalleryBlock['images']> 
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
           />
 
+          {/*
+            THE SCRIM, SOFTENED (2026-09-02) — kept rather than removed. It was
+            85% brand at the foot falling through 45%, which on the smaller
+            tiles read as a painted band with an edge rather than as a fade.
+
+            72% still carries white type over any photograph in the library —
+            it is a contrast floor, not a taste decision, so it does not go
+            lower — and the taller `pt-14` is what does the real work: the same
+            ink spread over more distance has no visible edge to it.
+          */}
           {caption ? (
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-deep/85 via-brand-deep/45 to-transparent p-4 pt-10">
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-deep/72 via-brand-deep/30 to-transparent p-4 pt-14">
               <p className="t-small leading-snug font-medium text-balance text-white">
                 {caption}
               </p>
