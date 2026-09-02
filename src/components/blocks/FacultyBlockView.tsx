@@ -143,7 +143,7 @@ export const FacultyBlockView = async ({
      * full card width and needs no such permission.
      */
     <span className={stacked ? 'mt-4' : 'min-w-0'}>
-      <strong className="block t-body leading-snug text-brand">{teacher.name}</strong>
+      <strong className="block text-[1.02rem] leading-snug text-brand">{teacher.name}</strong>
 
       {teacher.designation ? (
         <span className="mt-0.5 block text-sm font-semibold text-ink-soft">

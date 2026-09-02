@@ -93,7 +93,7 @@ export const HeroBlockView = ({ block }: { block: HeroBlock }) => {
           {block.subtitle ? (
             /* The same three-step ladder as the banner above — see there. */
             <p
-              className={`mx-auto mt-5 max-w-3xl text-center text-xl leading-snug font-semibold text-balance ${inverted ? "text-white" : "text-brand"}`}
+              className={`mx-auto mt-5 max-w-3xl text-center text-xl leading-snug font-semibold text-balance sm:text-[1.625rem] ${inverted ? 'text-white' : 'text-brand'}`}
             >
               {block.subtitle}
             </p>
@@ -101,7 +101,7 @@ export const HeroBlockView = ({ block }: { block: HeroBlock }) => {
 
           {block.intro ? (
             <p
-              className={`mx-auto mt-4 max-w-2xl text-center t-small leading-relaxed font-normal text-balance ${inverted ? "text-white/75" : "text-ink-muted"}`}
+              className={`mx-auto mt-4 max-w-2xl text-center text-[0.9375rem] leading-relaxed font-normal text-balance sm:text-[1.0625rem] ${inverted ? 'text-white/75' : 'text-ink-muted'}`}
             >
               {block.intro}
             </p>
@@ -173,7 +173,7 @@ export const HeroBlockView = ({ block }: { block: HeroBlock }) => {
            * / 400. Both gaps are visible on their own, so the order survives
            * even where one of the two happens to run to a single line.
            */
-          <p className="mx-auto mt-5 max-w-3xl text-center text-xl leading-snug font-semibold text-balance text-white">
+          <p className="mx-auto mt-5 max-w-3xl text-center text-xl leading-snug font-semibold text-balance text-white sm:text-[1.625rem]">
             {block.subtitle}
           </p>
         ) : null}
@@ -181,7 +181,7 @@ export const HeroBlockView = ({ block }: { block: HeroBlock }) => {
         {block.intro ? (
           /* The bottom step: lighter weight, smaller, and dimmed. It supports
              the two lines above rather than competing with them. */
-          <p className="mx-auto mt-4 max-w-2xl text-center t-small leading-relaxed font-normal text-balance text-white/75">
+          <p className="mx-auto mt-4 max-w-2xl text-center text-[0.9375rem] leading-relaxed font-normal text-balance text-white/75 sm:text-[1.0625rem]">
             {block.intro}
           </p>
         ) : null}

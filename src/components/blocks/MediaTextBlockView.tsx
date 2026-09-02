@@ -374,7 +374,7 @@ export const MediaTextBlockView = ({ block }: { block: MediaTextBlock }) => {
           */}
           <RichText
             data={block.content}
-            className={isPageLead ? 'text-left t-h4' : undefined}
+            className={isPageLead ? 'text-left text-[1.1875rem]' : undefined}
           />
 
           {cta ? (

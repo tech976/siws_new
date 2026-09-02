@@ -170,7 +170,7 @@ const AchievementTile = ({
             'group-focus-within:max-h-24 group-focus-within:opacity-100',
           ].join(' ')}
         >
-          <span className="mb-2 inline-block rounded-pill bg-accent px-3 py-1 t-label font-bold uppercase tracking-[0.12em] text-brand-deep">
+          <span className="mb-2 inline-block rounded-pill bg-accent px-3 py-1 text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-brand-deep">
             {item.category}
           </span>
         </div>
@@ -178,7 +178,7 @@ const AchievementTile = ({
 
       {/* The year stays. It is one short line and it dates the photograph. */}
       {item.when ? (
-        <span className="block t-caption font-semibold text-white/80">{item.when}</span>
+        <span className="block text-[0.8125rem] font-semibold text-white/80">{item.when}</span>
       ) : null}
 
       <p
@@ -189,7 +189,7 @@ const AchievementTile = ({
            * size. Without that the large tile reads as a small tile that has
            * been stretched, which is the usual way a bento grid goes wrong.
            */
-          item.feature ? 't-h4 ' : 't-body',
+          item.feature ? 'text-[1.125rem] sm:text-[1.375rem]' : 'text-[1.0625rem]',
         ].join(' ')}
       >
         {item.caption}

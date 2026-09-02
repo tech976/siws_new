@@ -994,12 +994,11 @@ const main = async () => {
       layout: [
         {
           blockType: 'featureList',
-          /* Five one-line labels — the compact tile's own case, §4. */
           heading: 'Subjects',
           accentWord: 'Subjects',
           headingLevel: 'h2',
-          layout: 'compact',
           marker: 'tick',
+          columns: '2-centre',
           background: 'white',
           items: [
             { title: 'English' },
@@ -1068,19 +1067,11 @@ const main = async () => {
         },
         {
           blockType: 'featureList',
-          /*
-           * PANEL 1 OF 1 on this page — docs/MASTER-LAYOUT.md §4.
-           *
-           * Six peers a parent scans. The Jr. KG and Sr. KG lists above keep
-           * their numbered list: those two ARE a sequence, and §4 is explicit
-           * that numbering is information rather than decoration only when the
-           * order carries something the reader needs. It does here.
-           */
           heading: 'Activities through the year',
           accentWord: 'Activities',
           headingLevel: 'h2',
-          layout: 'panel',
           marker: 'tick',
+          columns: '2-centre',
           background: 'tint',
           items: ACTIVITIES,
         },
@@ -2006,34 +1997,11 @@ const main = async () => {
            * so the page still says the campus has them.
            */
           blockType: 'featureList',
-          /*
-           * PANEL 1 OF 1 on this page — docs/MASTER-LAYOUT.md §4.
-           *
-           * Three items in a two-column list put the third alone under the
-           * first and left the bottom-right of the section empty, so a band
-           * that is complete read as one that had lost an item. Three across
-           * fills its row exactly: no hole, and each of the three carries a
-           * title, a line and an icon, which is what the panel is shaped for.
-           *
-           * The items already carry `icon`, so the panel shows the drawn mark
-           * rather than the fallback tick — the canteen, the washrooms and the
-           * shield each say what they are before the words are read.
-           */
           heading: 'Also on the campus',
           accentWord: 'campus',
           headingLevel: 'h2',
-          layout: 'panel',
           marker: 'tick',
-          /*
-           * Three across, stated rather than left to the default.
-           *
-           * The block previously carried `columns: '2-centre'`, and Payload
-           * keeps a stored value through an update it is still valid for — so
-           * switching the layout alone left '2' behind in the database and the
-           * row stayed two wide with the same hole it had before. An explicit
-           * value is what actually clears it.
-           */
-          columns: '3',
+          columns: '2-centre',
           background: 'sea',
           items: [
             {
@@ -2365,13 +2333,11 @@ const main = async () => {
         },
         {
           blockType: 'featureList',
-          /* PANEL 1 OF 1 on the admissions page. "How admission works" below
-             stays numbered — it is a real sequence. */
           heading: 'Timings and attendance',
           accentWord: 'Timings',
           headingLevel: 'h2',
-          layout: 'panel',
           marker: 'tick',
+          columns: '2-centre',
           background: 'white',
           items: [
             { title: 'Jr. KG', description: '11.00 a.m. to 1.00 p.m.' },

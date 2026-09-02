@@ -15,7 +15,7 @@ import { Section, SectionHeading, type BlockBackground } from './Section'
  */
 const DateLabel = ({ value, className = '' }: { value: string; className?: string }) => (
   <p
-    className={`t-label text-brand/70 ${className}`}
+    className={`text-[0.75rem] font-bold uppercase tracking-[0.14em] text-brand/70 ${className}`}
   >
     {value}
   </p>
@@ -89,11 +89,11 @@ export const NewsGridBlockView = ({ block }: { block: NewsGridBlock }) => {
 
           <div className="min-w-0">
             {lead.date ? <DateLabel value={lead.date} className="mb-3" /> : null}
-            <StoryTitle className="text-balance t-h3 font-bold text-brand">
+            <StoryTitle className="text-balance text-[1.5rem] font-bold leading-tight text-brand sm:text-[1.75rem]">
               {lead.title}
             </StoryTitle>
             {lead.summary ? (
-              <p className="mt-4 t-lead text-ink-soft">{lead.summary}</p>
+              <p className="mt-4 text-[1.0625rem] leading-relaxed text-ink-soft">{lead.summary}</p>
             ) : null}
           </div>
         </article>
@@ -128,11 +128,11 @@ export const NewsGridBlockView = ({ block }: { block: NewsGridBlock }) => {
 
               <div className="flex flex-1 flex-col p-6">
                 {item.date ? <DateLabel value={item.date} className="mb-2" /> : null}
-                <StoryTitle className="text-balance t-lead font-bold text-brand">
+                <StoryTitle className="text-balance text-[1.0625rem] font-bold leading-snug text-brand">
                   {item.title}
                 </StoryTitle>
                 {item.summary ? (
-                  <p className="mt-2.5 t-small text-ink-soft">
+                  <p className="mt-2.5 text-[0.95rem] leading-relaxed text-ink-soft">
                     {item.summary}
                   </p>
                 ) : null}
