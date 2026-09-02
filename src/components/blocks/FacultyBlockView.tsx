@@ -1,3 +1,4 @@
+import { BookOpen, GraduationCap, NotebookPen, Palette, type LucideIcon } from 'lucide-react'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -158,6 +159,25 @@ export const FacultyBlockView = async ({
     </span>
   )
 
+  /**
+   * The mark in the corner of an assistant teacher's card.
+   *
+   * Decoration, not information: it says nothing about the person and is
+   * hidden from assistive technology. A roster of nine identical white
+   * cards in a column reads as a table that lost its rules, and four marks
+   * in rotation give the eye something to count down.
+   *
+   * Chosen by POSITION, not at random, so the same card carries the same
+   * mark on every render — a server component that shuffled would disagree
+   * with itself between the HTML and the hydration.
+   *
+   * An art teacher gets the palette wherever she sits in the list, because
+   * that one is not decoration.
+   */
+  const CORNER_MARKS: LucideIcon[] = [BookOpen, NotebookPen, GraduationCap, Palette]
+  const cornerMark = (person: { designation?: string | null }, index: number): LucideIcon =>
+    /art/i.test(person.designation ?? '') ? Palette : CORNER_MARKS[index % CORNER_MARKS.length]!
+
   const initials = (name: string) =>
     name
       .replace(/^(Mrs|Mr|Ms|Miss|Dr)\.?\s+/i, '')
@@ -197,15 +217,54 @@ export const FacultyBlockView = async ({
 
               {team.rest.length > 0 ? (
                 <ul className="mt-4 grid gap-3">
-                  {team.rest.map((teacher) => (
-                    <li
-                      key={teacher.id}
-                      className="flex items-start gap-4 rounded-2xl border border-line bg-white p-4 shadow-card"
-                    >
-                      {face(teacher, false)}
-                      {details(teacher)}
-                    </li>
-                  ))}
+                  {team.rest.map((teacher, index) => {
+                    const Mark = cornerMark(teacher, index)
+                    return (
+                      <li
+                        key={teacher.id}
+                        /*
+                         * `relative` anchors the corner mark and `overflow-hidden`
+                         * is what makes it a quarter round rather than a circle
+                         * hanging off the card. The head teacher's card above is
+                         * deliberately untouched: it is the one card in the
+                         * column that should not look like the others.
+                         *
+                         * THE LEFT END IS A SEMICIRCLE, following the monogram
+                         * rather than boxing it: `rounded-l-full` takes the
+                         * radius from the card's own height, so the curve stays
+                         * true to the disc whether the text runs to two lines or
+                         * four.
+                         *
+                         * The right end is softened rather than matched:
+                         * `rounded-r-3xl` at 24px is enough to lose the square
+                         * corner, and stopping short of the left's semicircle is
+                         * what keeps the card reading left-to-right instead of
+                         * as a symmetrical pill. The mark sits inside that corner
+                         * and `overflow-hidden` trims it to the same curve.
+                         *
+                         * PADDING IS NOT SYMMETRIC, and cannot be. `pl-6` clears
+                         * the curve so the monogram is not pressed into it,
+                         * `pr-14` keeps a long name off the mark, and `gap-5`
+                         * is the air between the disc and the name — at gap-4
+                         * the two read as one object.
+                         *
+                         * `items-center` rather than `items-start`: against a
+                         * semicircular end, text aligned to the top sits visibly
+                         * above the disc's centre and the card looks tipped.
+                         */
+                        className="relative flex items-center gap-5 overflow-hidden rounded-l-full rounded-r-3xl border border-line bg-white py-4 pr-14 pl-6 shadow-card"
+                      >
+                        {face(teacher, false)}
+                        {details(teacher)}
+                        <span
+                          aria-hidden="true"
+                          className="pointer-events-none absolute right-0 bottom-0 grid size-14 place-items-center rounded-tl-[1.75rem] bg-brand-tint/70 text-brand/40"
+                        >
+                          <Mark size={20} strokeWidth={1.7} className="translate-x-1 translate-y-1" />
+                        </span>
+                      </li>
+                    )
+                  })}
                 </ul>
               ) : null}
             </div>
