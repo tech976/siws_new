@@ -282,8 +282,20 @@ const hasOwnHeading = (layout: Page['layout'], title?: string): boolean => {
   const first = Array.isArray(layout) ? layout[0] : undefined
   if (!first) return false
 
-  // A banner always carries the page's heading itself.
-  if (first.blockType === 'heroEnquiry' || first.blockType === 'hero') return true
+  /*
+   * A banner always carries the page's heading itself.
+   *
+   * `heroMarquee` was missing from this list, and the moment the section home
+   * pages moved onto it the route began printing the page title above the
+   * banner — "SIWS Primary School" in plain type, immediately above a banner
+   * already saying it. The block renders its own h1 exactly as `hero` does.
+   */
+  if (
+    first.blockType === 'heroEnquiry' ||
+    first.blockType === 'hero' ||
+    first.blockType === 'heroMarquee'
+  )
+    return true
 
   /*
    * A first section whose heading is the page title is also the page's

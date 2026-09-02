@@ -203,10 +203,21 @@ const run = async () => {
     const pick = (pool: typeof mine, used: Set<number>) => pool.find((m) => !used.has(m.id)) ?? null
 
     const used = new Set<number>()
-    const heroBlock = existing.find((b) => b.blockType === 'hero')
+    /*
+     * A banner is `hero` or `heroMarquee` — one photograph or a set that
+     * dissolves between them. Both belong in the hero band; matching only
+     * `hero` left a section that had moved to a marquee with no block for that
+     * band, so its banner fell through to the leftovers and was rebuilt
+     * twelfth, below the whole page.
+     */
+    const BANNERS = ['hero', 'heroMarquee']
+    const heroBlock = existing.find((b) => BANNERS.includes(String(b.blockType)))
     if (heroBlock && typeof heroBlock.image === 'number') used.add(heroBlock.image)
 
-    const take = (b: string) => existing.filter((x) => x.blockType === b)
+    const take = (b: string) =>
+      b === 'hero'
+        ? existing.filter((x) => BANNERS.includes(String(x.blockType)))
+        : existing.filter((x) => x.blockType === b)
 
     const out: Record<string, unknown>[] = []
     /*
@@ -367,7 +378,7 @@ const run = async () => {
     const keptLeftovers = existing.filter(
       (b) =>
         !consumed.has(b) &&
-        b.blockType !== 'hero' &&
+        !BANNERS.includes(String(b.blockType)) &&
         b.blockType !== 'divider' &&
         b.blockType !== 'gallery',
     )
