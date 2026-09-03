@@ -1,4 +1,5 @@
 import { loadEnv } from '@/utilities/load-env'
+import { yearsOfService } from './founding'
 
 loadEnv()
 
@@ -646,7 +647,7 @@ const main = async () => {
           background: 'sea',
           stats: [
             { value: '1934', label: 'Serving Mumbai since' },
-            { value: '92+', label: 'Years of educational legacy' },
+            { value: yearsOfService(), label: 'Years of educational legacy' },
             { value: 'State Board', label: 'Curriculum foundation' },
           ],
         },

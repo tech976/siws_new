@@ -1,5 +1,6 @@
 import { loadEnv } from '@/utilities/load-env'
 import { findMediaId } from '@/utilities/media-lookup'
+import { yearsOfService } from './founding'
 
 loadEnv()
 
@@ -24,7 +25,7 @@ const { default: config } = await import('@payload-config')
 
 const HIGHLIGHTS = [
   { value: '1934', label: 'Serving Mumbai since' },
-  { value: '90+', label: 'Years of educational legacy' },
+  { value: yearsOfService(), label: 'Years of educational legacy' },
   { value: 'KG–PG', label: 'A complete journey' },
 ]
 

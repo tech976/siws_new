@@ -1,4 +1,5 @@
 import { loadEnv } from '@/utilities/load-env'
+import { yearsOfService } from './founding'
 
 loadEnv()
 
@@ -778,7 +779,7 @@ const main = async () => {
               // so the banner asserts nothing the page does not already say.
               highlights: [
                 { value: '1934', label: 'Serving Mumbai since' },
-                { value: '90+', label: 'Years of educational legacy' },
+                { value: yearsOfService(), label: 'Years of educational legacy' },
                 { value: 'KG–PG', label: 'A complete journey' },
               ],
             }
@@ -904,7 +905,7 @@ const main = async () => {
         background: 'brand',
         stats: [
           { value: '1934', label: 'Serving Mumbai since' },
-          { value: '90+', label: 'Years of educational legacy' },
+          { value: yearsOfService(), label: 'Years of educational legacy' },
           { value: 'KG–PG', label: 'A complete educational journey' },
         ],
       },

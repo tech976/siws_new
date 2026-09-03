@@ -1,4 +1,5 @@
 import { loadEnv } from '@/utilities/load-env'
+import { yearsOfService } from './founding'
 
 loadEnv()
 
@@ -1146,7 +1147,7 @@ const main = async () => {
         background: 'sea',
         stats: [
           { value: '1934', label: 'Serving Mumbai since' },
-          { value: '90+', label: 'Years of educational service' },
+          { value: yearsOfService(), label: 'Years of educational service' },
           { value: 'A Grade', label: 'School recognition' },
           { value: '20+', label: 'Years average teaching experience' },
         ],
@@ -2465,7 +2466,16 @@ const main = async () => {
           { value: '1 to 4', label: 'Grades taught' },
           { value: '22', label: 'Teachers in the section' },
           { value: '1934', label: 'Serving Mumbai since' },
-          { value: 'SSC', label: 'Maharashtra State Board' },
+          /*
+           * NOT "SSC". The S.S.C. is the Standard X board examination, which
+           * belongs to the Secondary School and to no other section — the
+           * review of 3 September flagged exactly this claim on Kindergarten
+           * and Junior College, and Primary was carrying it too. Grades 1 to 4
+           * sit on the State Board curriculum and take no board examination,
+           * so the tile names the curriculum rather than an exam these
+           * children are eight years away from.
+           */
+          { value: 'State Board', label: 'Maharashtra curriculum' },
         ],
       },
       {

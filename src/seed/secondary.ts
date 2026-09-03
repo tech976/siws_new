@@ -1,5 +1,6 @@
 import { loadEnv } from '@/utilities/load-env'
 import { findMediaId } from '@/utilities/media-lookup'
+import { yearsOfService } from './founding'
 
 loadEnv()
 
@@ -952,7 +953,7 @@ const main = async () => {
             icon: 'activity',
           },
           {
-            title: '92+ years in Wadala',
+            title: `${yearsOfService()} years in Wadala`,
             description:
               'The Society has taught in this city since 1934, and a student can stay within it from Kindergarten to postgraduate study.',
             icon: 'study',
@@ -2723,13 +2724,13 @@ const main = async () => {
 
       {
         blockType: 'richText',
-        heading: '92+ years in Wadala',
-        accentWord: '92+ years',
+        heading: `${yearsOfService()} years in Wadala`,
+        accentWord: `${yearsOfService()} years`,
         headingLevel: 'h2',
         width: 'normal',
         background: 'tint',
         content: richText([
-          'The South Indians’ Welfare Society has taught in this city since 1934, and the High School has run on the Wadala campus for the whole of that time — 92+ years of trust and excellence.',
+          `The South Indians’ Welfare Society has taught in this city since 1934, and the High School has run on the Wadala campus for the whole of that time — ${yearsOfService()} years of trust and excellence.`,
           'The section sits inside the SIWS Group of Institutions. A child can arrive in Kindergarten and stay through the Primary Section, these six years, and the Junior College without changing school in between — after the S.S.C. examination students move into the Science and Commerce streams according to their interests, and from there to degree colleges, professional courses and the careers that follow.',
         ]),
       },
