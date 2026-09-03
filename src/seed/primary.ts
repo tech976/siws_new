@@ -908,10 +908,17 @@ const main = async () => {
         'First prize in Category A at Natya Tarang 2026, the inter-school and college group dance competition',
     },
     { file: 'natya-tarang-2026-performance.jpg' },
-    {
-      file: 'ignited-mind-lab-2026.jpg',
-      caption: 'Ignited Mind Lab certificates',
-    },
+    /*
+     * `ignited-mind-lab-2026.jpg` IS NOT A PRIMARY PHOTOGRAPH, and is not
+     * listed here.
+     *
+     * The eleven children are in the yellow-and-green Kindergarten uniform and
+     * the certificates read "Class Sr. KG". `image-filing.ts` already moved the
+     * record to the Kindergarten, which took it off the Primary gallery wall —
+     * but this list and the news card below both named the file directly, so
+     * it went on appearing on two Primary pages regardless of where it was
+     * filed. Confirmed by SIWS, 2026-09-02.
+     */
     { file: 'natya-tarang-2026-company.jpg' },
     {
       file: 'natya-tarang-2026-trophy.jpg',
@@ -1472,9 +1479,10 @@ const main = async () => {
    * Three pages that carried a heading and nothing else.
    *
    * There is one hard constraint running through all of them: this section's
-   * whole photographed record is eleven pictures of two occasions — Natya
-   * Tarang 2026 and the Ignited Mind Lab certificates — plus Onam, three film
-   * stills and one classroom. So the same photographs necessarily appear on
+   * photographed record is a handful of occasions — Natya Tarang 2026, Onam,
+   * sports day, three film stills and the classrooms. (The Ignited Mind Lab
+   * certificates were counted here once and are not this section's: the
+   * children are in Kindergarten uniform.) So the same photographs appear on
    * more than one of these pages, and each page has to earn its place by the
    * question it answers rather than by having pictures of its own:
    *
@@ -1493,7 +1501,6 @@ const main = async () => {
     firstPrize: await photo('natya-tarang-2026-first-prize.jpg'),
     performance: await photo('natya-tarang-2026-performance.jpg'),
     company: await photo('natya-tarang-2026-company.jpg'),
-    ignitedMind: await photo('ignited-mind-lab-2026.jpg'),
     pookalam: await photo('onam-2026-pookalam.jpg'),
   }
 
@@ -1788,7 +1795,7 @@ const main = async () => {
     _status: 'published',
     reviewStatus: 'approved',
     metaDescription:
-      'News from SIWS Primary School — first place at Natya Tarang 2026, certificates from the Ignited Mind Lab programme, and the celebrations of the school year.',
+      'News from SIWS Primary School — first place at Natya Tarang 2026, and the celebrations of the school year.',
     layout: [
       /*
        * Two across rather than three. Each of these has a photograph worth
@@ -1827,29 +1834,12 @@ const main = async () => {
                 },
               ]
             : []),
-          ...(newsShots.ignitedMind
-            ? [
-                {
-                  title: 'Certificates from the Ignited Mind Lab',
-                  image: newsShots.ignitedMind,
-                  description:
-                    'Eleven children came back from the Ignited Mind Lab programme with certificates of achievement and medals round their necks.',
-                  ...(achievementsPageId
-                    ? {
-                        cta: [
-                          {
-                            link: {
-                              label: 'See the photographs',
-                              type: 'internal',
-                              reference: { relationTo: 'pages', value: achievementsPageId },
-                            },
-                          },
-                        ],
-                      }
-                    : {}),
-                },
-              ]
-            : []),
+          /*
+           * The Ignited Mind Lab card was here and has gone with the
+           * photograph: it is a Kindergarten achievement, and a news card
+           * about it on the Primary page claims it for the wrong section. See
+           * the note beside `achievementShots` above.
+           */
           ...(newsShots.pookalam
             ? [
                 {

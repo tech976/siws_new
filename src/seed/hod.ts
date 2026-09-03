@@ -39,7 +39,7 @@ const main = async () => {
   let updated = 0
 
   for (const unit of units as unknown as { id: number; slug: string; name: string }[]) {
-    const email = `hod.${unit.slug}@siws.edu.in`
+    const email = `hod.${unit.slug}@siwsschool.edu.in`
 
     const { docs: existing } = await payload.find({
       collection: 'users',

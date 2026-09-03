@@ -472,7 +472,7 @@ const main = async () => {
        * becomes a `tel:` link, so it cannot hold both.
        */
       phone: '02224180877',
-      email: 'info@siws.edu.in',
+      email: 'info@siwsschool.edu.in',
       /*
        * WHERE THE FORMS ON THIS SECTION'S PAGES ARE DELIVERED.
        *
@@ -482,9 +482,9 @@ const main = async () => {
        * every admission enquiry to info@ while the card beside the form told
        * the parent it was going to admissions@.
        */
-      admissionsEmail: 'admissions@siws.edu.in',
-      contactEmail: 'info@siws.edu.in',
-      feedbackEmail: 'info@siws.edu.in',
+      admissionsEmail: 'admissions@siwsschool.edu.in',
+      contactEmail: 'info@siwsschool.edu.in',
+      feedbackEmail: 'info@siwsschool.edu.in',
     } as never,
   })
 
@@ -668,7 +668,7 @@ const main = async () => {
         cards: [
           {
             title: 'Admissions',
-            description: 'For enquiries about Standards V to X — admissions@siws.edu.in',
+            description: 'For enquiries about Standards V to X — admissions@siwsschool.edu.in',
           },
           {
             /*
@@ -682,7 +682,7 @@ const main = async () => {
              * number into this card too.
              */
             title: 'General enquiries',
-            description: 'For anything else — info@siws.edu.in, 02224180877',
+            description: 'For anything else — info@siwsschool.edu.in, 02224180877',
           },
         ],
       },
@@ -953,7 +953,7 @@ const main = async () => {
             link: {
               label: 'Email the admissions team',
               type: 'external',
-              url: 'mailto:admissions@siws.edu.in',
+              url: 'mailto:admissions@siwsschool.edu.in',
               appearance: 'primary',
             },
           },

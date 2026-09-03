@@ -61,14 +61,14 @@ const CONTACT = {
   addressLine2: 'Sion–Wadala Estate Road, Wadala',
   city: 'Mumbai',
   postalCode: '400031',
-  email: 'info@siws.edu.in',
+  email: 'info@siwsschool.edu.in',
   phone: '+91 98927 03893',
-  admissionsEmail: 'admissions@siws.edu.in',
-  contactEmail: 'info@siws.edu.in',
+  admissionsEmail: 'admissions@siwsschool.edu.in',
+  contactEmail: 'info@siwsschool.edu.in',
   // The feedback box on the Contact page reaches the general office. Set
   // explicitly rather than left to fall through to `contactEmail`, so that
   // moving one of these later cannot silently move the other.
-  feedbackEmail: 'info@siws.edu.in',
+  feedbackEmail: 'info@siwsschool.edu.in',
   socialProfiles: [
     { platform: 'whatsapp', url: 'https://wa.me/919892703893', showFeed: false },
     { platform: 'instagram', url: 'https://www.instagram.com/siwsschoolwadala/', showFeed: false },
@@ -356,7 +356,7 @@ const main = async () => {
               link: {
                 label: 'Email the admissions team',
                 type: 'external',
-                url: 'mailto:admissions@siws.edu.in',
+                url: 'mailto:admissions@siwsschool.edu.in',
                 appearance: 'primary',
               },
             },
@@ -426,11 +426,11 @@ const main = async () => {
           cards: [
             {
               title: 'Admissions',
-              description: 'For enquiries about joining the school — admissions@siws.edu.in',
+              description: 'For enquiries about joining the school — admissions@siwsschool.edu.in',
             },
             {
               title: 'General enquiries',
-              description: 'For anything else — info@siws.edu.in, +91 98927 03893',
+              description: 'For anything else — info@siwsschool.edu.in, +91 98927 03893',
             },
           ],
         },

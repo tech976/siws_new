@@ -746,7 +746,7 @@ const main = async () => {
           link: {
             label: 'Contact the school office',
             type: 'external',
-            url: 'mailto:info@siws.edu.in',
+            url: 'mailto:info@siwsschool.edu.in',
             appearance: 'primary',
           },
         },
