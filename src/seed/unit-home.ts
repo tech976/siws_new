@@ -204,7 +204,23 @@ const run = async () => {
       ...(existingHero?.eyebrow ? { eyebrow: existingHero.eyebrow } : {}),
       ...(existingHero?.subtitle ? { subtitle: existingHero.subtitle } : {}),
       background: 'brand',
-      ...(unit.tagline ? { intro: unit.tagline } : {}),
+      /*
+       * THE PAGE'S OWN BANNER LINE WINS OVER THE UNIT TAGLINE.
+       *
+       * This read `unit.tagline` alone, so a line written on the banner in a
+       * section's own seed was thrown away every time this step ran — and
+       * neither Secondary nor Junior College carries a tagline, so both
+       * banners published with no line under the title at all. The sentence
+       * each seed had written for it never reached a visitor.
+       *
+       * The order matches `title` above: what the page already says wins, and
+       * the unit record is the fallback for a section that has not said
+       * anything. Kindergarten and Primary do not reach this code — their home
+       * pages are authored and skipped at the top of the loop.
+       */
+      ...(existingHero?.intro || unit.tagline
+        ? { intro: (existingHero?.intro as string) || (unit.tagline as string) }
+        : {}),
       ...(heroImage ? { image: heroImage } : {}),
       ...(highlights.length > 0 ? { highlights } : {}),
       /*

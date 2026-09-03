@@ -828,7 +828,14 @@ const main = async () => {
           {
             src: '/reels/siws-reel-2.mp4',
             poster: '/reels/siws-reel-2.jpg',
-            label: 'Types of greetings',
+            /*
+             * The film's own burnt-in title is "Types of greetings..", which
+             * is a label for a list rather than a line under a reel — it read
+             * as an odd one out beside its three neighbours. This says what
+             * the film shows: children demonstrating one greeting after
+             * another on the turf.
+             */
+            label: 'The many ways we say hello',
           },
           {
             src: '/reels/siws-reel-3.mp4',

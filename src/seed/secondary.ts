@@ -758,7 +758,7 @@ const main = async () => {
           .map((image) => ({ image })),
         // Plain string: the hero's `intro` is a textarea, not rich text.
         intro:
-          'From Standards V to X, we follow the Maharashtra State Board curriculum, updated in line with NEP 2020. Proudly running our Wadala campus since 1934 — 92+ years of trust and excellence.',
+          'SIWS High School, Wadala empowers students from Standards V to X with academic excellence, strong values, and holistic development in a nurturing learning environment.',
         /*
          * NO BUTTON. The banner carried "Enquire about admission", pointing at
          * Contact; SIWS asked on 2026-09-01 for the section to carry no
@@ -794,19 +794,21 @@ const main = async () => {
         ]),
       },
 
-      {
-        blockType: 'statistics',
-        heading: 'SSC Examination 2026',
-        accentWord: '2026',
-        background: 'sea',
-        stats: [
-          { value: SSC_2026.percentage, label: 'Overall pass percentage' },
-          { value: String(SSC_2026.appeared), label: 'Students appeared' },
-          { value: String(SSC_2026.passed), label: 'Students passed' },
-          { value: '60', label: 'Passed with Distinction' },
-        ],
-      },
-
+      /*
+       * THE SSC FIGURES BAND HAS COME OFF THE HOME PAGE, at SIWS's request
+       * (2026-09-03), because the same result is already stated twice further
+       * down: "How the 2026 results broke down" is the next band but one, and
+       * the results page carries the identical band in full.
+       *
+       * The band was the page's third screen and its second washed
+       * photograph, so a visitor met the 2026 percentage before the school
+       * had described itself. What replaces it is not another band but the
+       * banner line above, which now says what the school is for rather than
+       * how one cohort scored.
+       *
+       * The figures themselves are untouched on `results` — this removes a
+       * repetition, not the achievement.
+       */
       {
         blockType: 'featureList',
         heading: 'How the 2026 results broke down',
