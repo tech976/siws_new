@@ -72,6 +72,7 @@ const { orderedList, para, richText, richTextNodes } = await import('./lexical')
 
 /** Reported after each run so these do not quietly become permanent. */
 const OPEN_QUESTIONS = [
+  'Mr. Vachan Giri Endowment Scholarship Fund — listed twice, once on the merit list ("To a meritorious and financially weak student.") and once on the open list ("For two meritorious and poor students of Standard X."). Both wordings name merit AND need, which is why it landed in both. Published once, on the merit list, with the first wording. Is it one fund or two, and if one, which wording and how many students?',
   'Shri. Sankara Mattham Scholarship Fund — Wadala’s document calls it a Sanskrit merit award for three students in Standards VIII & IX; Matunga’s calls it a needs award for five students. The Wadala wording is published. Which is correct?',
   'Smt. Mangalam Ramachandran Endowment Scholarship Fund — Wadala’s document calls it a Hindi S.S.C. merit award; Matunga’s calls it a needs award. The Wadala wording is published. Which is correct?',
   'The Matunga list has a line reading only "Fund: To a deserving student." — the fund’s name is missing. Not published.',
@@ -574,10 +575,6 @@ const OPEN: ListEntry[] = [
   {
     term: 'Smt. Meenakshi & Shri. Kuppuswamy Trust Endowment Scholarship Fund',
     detail: 'To meritorious needy school children.',
-  },
-  {
-    term: 'Mr. Vachan Giri Endowment Scholarship Fund',
-    detail: 'For two meritorious and poor students of Standard X.',
   },
   {
     term: 'Shri. T.R. Iyengar & Late Smt. Alamelu R. Iyengar Scholarship Fund',

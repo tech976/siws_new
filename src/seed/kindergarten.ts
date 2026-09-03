@@ -1020,10 +1020,21 @@ const main = async () => {
           ]),
           links: [
             {
+              /*
+               * INTERNAL, to this section's own contact page.
+               *
+               * This page carries two buttons reading "Book a free campus
+               * tour". The one higher up goes to /kindergarten/contact; this
+               * one went to https://siws.edu.in/kindergarten#enquire — a
+               * different domain, and a different site. Two identical buttons
+               * that land in different places is the fault, and taking a
+               * visitor off the site to make an enquiry the page can take
+               * itself is the worse half of it.
+               */
               link: {
                 label: 'Book a free campus tour',
-                type: 'external',
-                url: 'https://siws.edu.in/kindergarten#enquire',
+                type: 'internal',
+                reference: { relationTo: 'pages', value: contact.id },
                 appearance: 'primary',
               },
             },
