@@ -359,7 +359,7 @@ const main = async () => {
         ...(aboutPhotos.classroom ? { image: aboutPhotos.classroom } : {}),
         content: richText([
           'SIWS Junior College teaches Standards XI and XII in two streams, Commerce and Science, on the Maharashtra State Board syllabus. It is part of the South Indians’ Welfare Society group on the Wadala campus, alongside the Society’s Kindergarten, Primary and Secondary sections.',
-          'The students are typically between 15 and 17 years old, and most arrive from the Society’s own Secondary School — which is the need the college was founded to meet.',
+          'Most students arrive from the Society’s own Secondary School — which is the need the college was founded to meet.',
         ]),
       },
 
@@ -438,7 +438,7 @@ const main = async () => {
           { value: 'XI & XII', label: 'Standards taught' },
           { value: 'Two', label: 'Streams — Commerce and Science' },
           { value: '1988', label: 'Science stream established' },
-          { value: '15–17', label: 'Years, the age of our students' },
+          { value: 'HSC', label: 'Maharashtra State Board curriculum' },
         ],
       },
 
