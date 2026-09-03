@@ -272,6 +272,24 @@ const main = async () => {
    * mission, streams, subjects and roster on 2026-09-02, which is what these
    * three are built from.
    */
+  /*
+   * The photographs the About page places, resolved once. `photo` returns
+   * null for a filename the library does not hold, and every use below is
+   * conditional, so a missing picture costs that band its image rather than
+   * failing the seed.
+   */
+  const aboutPhotos = {
+    library: await photo('jc-library-shelves.jpg'),
+    classroom: await photo('jc-classroom.jpg'),
+    commerce: await photo('jc-career-guidance-commerce.jpg'),
+    physicsLab: await photo('jc-physics-lab.jpg'),
+    assembly: await photo('jc-independence-day-2026-assembly.jpg'),
+  }
+
+  const academicsPageId = await pageId('academics')
+  const admissionsPageId = await pageId('admissions')
+  const teachersPageId = await pageId('teachers')
+
   await upsert({
     slug: 'about',
     title: 'About the college',
@@ -284,30 +302,108 @@ const main = async () => {
     metaDescription:
       'About SIWS Junior College, Wadala — the Commerce and Science streams, their history, and the vision and mission of the South Indians’ Welfare Society.',
     layout: [
+      /*
+       * A BANNER, WHERE THE PAGE USED TO OPEN ON BODY COPY.
+       *
+       * The route prints the page title above the first block unless that
+       * block is a banner or repeats the title, so this page published two
+       * first-level headings — "About the college" in plain type, immediately
+       * above "SIWS College". A `hero` carries the page's heading itself,
+       * which removes the duplicate and gives the page an entrance.
+       *
+       * THE TWO COLLEGE NAMES SIT ABOVE THE HEADING, NOT IN IT. They are the
+       * institution's formal identity and they are long; set as the heading
+       * they would run to three lines and bury the short name a reader
+       * actually uses. The eyebrow is where a formal name belongs.
+       *
+       * The motto is the subtitle, in its own right rather than as the second
+       * sentence of an opening paragraph, which is where it used to sit.
+       */
       {
-        blockType: 'richText',
-        heading: 'SIWS College',
+        blockType: 'hero',
+        eyebrow:
+          'N. R. Swamy College of Commerce & Economics · Smt. Thirumalai College of Science',
+        title: 'SIWS College',
         accentWord: 'SIWS',
-        headingLevel: 'h1',
-        width: 'normal',
+        subtitle: 'Vidya Dhanam Sarva Dhanat Pradhanam',
+        intro:
+          'Of all wealth, the wealth of knowledge is foremost — the Junior College of the South Indians’ Welfare Society, on the Wadala campus.',
+        ...(aboutPhotos.library ? { image: aboutPhotos.library } : {}),
+        /*
+         * The three facts a visitor to an About page is looking for, in the
+         * banner rather than four screens down. The figures band below still
+         * carries the full set; these are the ones that answer "what is this
+         * place" before any prose is read.
+         */
+        highlights: [
+          { value: 'XI & XII', label: 'Standards taught' },
+          { value: 'Two', label: 'Commerce and Science' },
+          { value: '1988', label: 'Science stream begun' },
+        ],
+      },
+
+      /*
+       * The overview, beside a photograph of it happening. The page ran four
+       * blocks of unbroken prose with no picture on any of them; this is the
+       * first thing a reader meets after the banner, so it is the one that
+       * most needed something to look at.
+       */
+      {
+        blockType: 'mediaText',
+        heading: 'What the college is for',
+        accentWord: 'college',
+        headingLevel: 'h2',
         background: 'white',
+        imagePosition: 'right',
+        imageShape: 'rounded',
+        ...(aboutPhotos.classroom ? { image: aboutPhotos.classroom } : {}),
         content: richText([
-          'N. R. Swamy College of Commerce & Economics and Smt. Thirumalai College of Science — the Junior College of the SIWS Group, on the Society’s Wadala campus.',
-          'Vidya Dhanam Sarva Dhanat Pradhanam — of all wealth, the wealth of knowledge is foremost.',
+          'SIWS Junior College teaches Standards XI and XII in two streams, Commerce and Science, on the Maharashtra State Board syllabus. It is part of the South Indians’ Welfare Society group on the Wadala campus, alongside the Society’s Kindergarten, Primary and Secondary sections.',
+          'The students are typically between 15 and 17 years old, and most arrive from the Society’s own Secondary School — which is the need the college was founded to meet.',
         ]),
       },
+
+      /*
+       * THE HISTORY AS TWO MILESTONES RATHER THAN TWO SENTENCES.
+       *
+       * SIWS supplied the founding of each stream as a pair of flat
+       * statements. A date is the most scannable thing on a page about an
+       * institution's past, so each stream gets a card with its own
+       * photograph — Commerce as it is taught now, and the Physics laboratory
+       * the Science stream was built around.
+       */
       {
-        blockType: 'richText',
+        blockType: 'cardGrid',
         heading: 'How the college began',
         accentWord: 'began',
         headingLevel: 'h2',
-        width: 'normal',
         background: 'tint',
-        content: richText([
-          'The Junior College of the Commerce stream was begun with a view to providing higher education, to cater to the needs of the Society’s own students at the school.',
-          'The Science stream was started in the year 1988.',
-        ]),
+        columns: '2',
+        imageFrame: 'photo',
+        placedBySeed: true,
+        intro:
+          'The college grew out of the school below it, one stream at a time.',
+        cards: [
+          {
+            title: 'The Commerce stream',
+            description:
+              'Begun with a view to providing higher education, to cater to the needs of the Society’s own students at the school — so that a child who finished Standard X at SIWS need not leave the campus to continue.',
+            ...(aboutPhotos.commerce ? { image: aboutPhotos.commerce } : {}),
+          },
+          {
+            title: 'The Science stream, 1988',
+            description:
+              'Added in 1988, opening Physics, Chemistry, Biology and Mathematics to the same students — and with them the laboratories the college still teaches its practicals in.',
+            ...(aboutPhotos.physicsLab ? { image: aboutPhotos.physicsLab } : {}),
+          },
+        ],
       },
+
+      /*
+       * Vision and Mission, kept as the Society wrote them. Two cards rather
+       * than a run of prose, because they are a pair and are read as one
+       * against the other.
+       */
       {
         blockType: 'featureList',
         heading: 'What the Society is for',
@@ -330,17 +426,90 @@ const main = async () => {
           },
         ],
       },
+
       {
         blockType: 'statistics',
         heading: 'The college at a glance',
         accentWord: 'a glance',
         headingLevel: 'h2',
         background: 'sea',
+        ...(aboutPhotos.assembly ? { image: aboutPhotos.assembly } : {}),
         stats: [
           { value: 'XI & XII', label: 'Standards taught' },
           { value: 'Two', label: 'Streams — Commerce and Science' },
           { value: '1988', label: 'Science stream established' },
-          { value: 'HSC', label: 'State Board curriculum' },
+          { value: '15–17', label: 'Years, the age of our students' },
+        ],
+      },
+
+      /*
+       * Where a reader goes after "about". An About page answers who we are
+       * and then leaves a visitor at a dead end; these are the three pages
+       * they most often want next.
+       */
+      {
+        blockType: 'cardGrid',
+        heading: 'Where to go next',
+        accentWord: 'next',
+        headingLevel: 'h2',
+        background: 'white',
+        columns: '3',
+        placedBySeed: true,
+        cards: [
+          {
+            title: 'Academics',
+            description:
+              'The subjects taught in each stream, the syllabus they follow, and how the two years are organised.',
+            ...(academicsPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'See what is taught',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: academicsPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+          {
+            title: 'Admissions',
+            description:
+              'How to apply for Standard XI, what the college asks for, and the dates that matter.',
+            ...(admissionsPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'How to apply',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: admissionsPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
+          {
+            title: 'Our teachers',
+            description:
+              'Every teacher in the Commerce and Science streams, with their qualifications.',
+            ...(teachersPageId
+              ? {
+                  cta: [
+                    {
+                      link: {
+                        label: 'Meet the team',
+                        type: 'internal',
+                        reference: { relationTo: 'pages', value: teachersPageId },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          },
         ],
       },
     ],
@@ -363,7 +532,14 @@ const main = async () => {
         blockType: 'richText',
         heading: 'Two streams, two years',
         accentWord: 'Two streams',
-        headingLevel: 'h1',
+        /*
+         * h2, NOT h1. The route prints the page title above the first block
+         * unless that block is a banner or repeats the title, and "Two streams, two years"
+         * is neither — so the page published two first-level headings, one
+         * immediately above the other. The page title is the h1; this is the
+         * first section under it.
+         */
+        headingLevel: 'h2',
         width: 'normal',
         background: 'white',
         content: richText([

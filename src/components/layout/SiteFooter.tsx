@@ -87,6 +87,33 @@ const SOCIAL_LABEL: Record<string, string> = {
  * are required here by FR-PRV-15. They are rendered only once their pages
  * exist, so the footer never ships a link to a 404.
  */
+/**
+ * THE SOCIETY-LEVEL PAGES, REACHABLE FROM EVERY PAGE.
+ *
+ * The header menu is the current section's menu: step into Kindergarten,
+ * Primary, Secondary or Junior College and "About SIWS", "Scholarships" and
+ * the Society's own Contact page leave the navigation entirely. They were
+ * reachable from the portal home page and nowhere else, so a parent reading
+ * about the Primary school had no route to the scholarships that pay for it
+ * short of editing the address bar.
+ *
+ * The footer is on every page and already carries the sections, so this is
+ * where the way back belongs — a short list rather than a second menu
+ * competing with the section's own.
+ *
+ * THE DEGREE COLLEGE IS THE ONE EXTERNAL ENTRY. The Society describes itself
+ * as running "from KG to PG" and names a Degree College in its own copy, but
+ * that college is a separate site and this one linked to it nowhere, so the
+ * promise was made and not kept. It is marked as leaving the site.
+ */
+const SOCIETY_LINKS: { href: string; label: string; external?: boolean }[] = [
+  { href: '/about', label: 'About SIWS' },
+  { href: '/vision-mission', label: 'Vision & Mission' },
+  { href: '/scholarships', label: 'Scholarships' },
+  { href: '/contact', label: 'Contact the Society' },
+  { href: 'https://siwscollege.edu.in', label: 'SIWS Degree College', external: true },
+]
+
 export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
   const year = new Date().getFullYear()
 
@@ -300,6 +327,32 @@ export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
               South Indians&rsquo; Welfare Society is a trusted educational institution in Wadala
               since 1934, committed to value-based, disciplined and structured learning.
             </p>
+
+            <ul className="mt-4 space-y-2 t-small text-white/90">
+              {SOCIETY_LINKS.map((item) => (
+                <li key={item.href}>
+                  {item.external ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline-offset-4 hover:text-white hover:underline"
+                    >
+                      {item.label}
+                      <span className="sr-only"> (opens in a new tab)</span>
+                      <span aria-hidden="true"> &#8599;</span>
+                    </a>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className="underline-offset-4 hover:text-white hover:underline"
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

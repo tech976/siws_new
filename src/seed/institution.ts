@@ -622,7 +622,14 @@ const main = async () => {
         blockType: 'richText',
         heading: 'Contact SIWS',
         accentWord: 'SIWS',
-        headingLevel: 'h1',
+        /*
+         * h2, NOT h1. The route prints the page title above the first block
+         * unless that block is a banner or repeats the title, and "Contact SIWS"
+         * is neither — so the page published two first-level headings, one
+         * immediately above the other. The page title is the h1; this is the
+         * first section under it.
+         */
+        headingLevel: 'h2',
         width: 'normal',
         background: 'white',
         content: richText([
