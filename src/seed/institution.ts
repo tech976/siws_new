@@ -683,6 +683,43 @@ const main = async () => {
     ],
   })
 
+  // ------------------------------------------------------------------ LIVE
+  /*
+   * THE TELECAST PAGE, matching siwscollege.edu.in/live.
+   *
+   * The Degree College has carried one for a while and this site had none, so
+   * a link handed round before an event went to the college's domain whatever
+   * the event was. The address is the point: siwsschool.edu.in/live is what
+   * goes on a notice or into a WhatsApp group, and it has to work.
+   *
+   * OFF THE MENU. A telecast page is dead most of the year and a permanent
+   * "Live" entry in the bar promises something that is usually not happening.
+   * It stays published so the address always resolves, and is shared when
+   * there is something to watch.
+   */
+  await upsert({
+    slug: 'live',
+    title: 'Live Telecast',
+    intro: null,
+    showInNav: false,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaTitle: "Live Telecast — South Indians' Welfare Society",
+    metaDescription:
+      "Watch the SIWS live telecast — events and ceremonies from the South Indians' Welfare Society, Wadala, streamed as they happen.",
+    layout: [
+      {
+        blockType: 'liveStream',
+        heading: 'Live Telecast — SIWS Future Ready',
+        accentWord: 'Live Telecast',
+        headingLevel: 'h1',
+        background: 'white',
+        youtubeUrl: 'https://youtube.com/live/RIUJk36mSfY',
+        note: 'If the stream has finished, the recording plays here in its place.',
+      },
+    ],
+  })
+
   // --------------------------------------------------------------- PORTAL HOME
   await upsert({
     slug: 'home',

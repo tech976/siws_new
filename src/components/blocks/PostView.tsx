@@ -1,4 +1,5 @@
 import { CalendarDays } from 'lucide-react'
+import { youtubeEmbed } from '@/lib/youtube'
 
 import { GalleryPager } from '@/components/blocks/GalleryPager'
 import { Media } from '@/components/Media'
@@ -16,20 +17,6 @@ import { Section } from './Section'
  * design or create web pages", so there is no per-post styling to get wrong.
  */
 
-/** Turns any YouTube address a person might paste into an embeddable one. */
-const youtubeEmbed = (url: string): string | null => {
-  const trimmed = url.trim()
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=)([\w-]{6,})/i,
-    /(?:youtu\.be\/)([\w-]{6,})/i,
-    /(?:youtube\.com\/(?:live|shorts|embed)\/)([\w-]{6,})/i,
-  ]
-  for (const pattern of patterns) {
-    const id = trimmed.match(pattern)?.[1]
-    if (id) return `https://www.youtube-nocookie.com/embed/${id}`
-  }
-  return null
-}
 
 const PostVideo = ({ post }: { post: Post }) => {
   const embed = post.video?.youtubeUrl ? youtubeEmbed(post.video.youtubeUrl) : null

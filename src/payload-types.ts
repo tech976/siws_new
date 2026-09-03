@@ -596,6 +596,7 @@ export interface Page {
         | TestimonialsBlock
         | StatisticsBlock
         | InstagramFeedBlock
+        | LiveStreamBlock
         | ReelShowcaseBlock
         | UnitLinksBlock
         | CallToActionBlock
@@ -2230,6 +2231,39 @@ export interface InstagramFeedBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LiveStreamBlock".
+ */
+export interface LiveStreamBlock {
+  /**
+   * Optional.
+   */
+  heading?: string | null;
+  /**
+   * Paste the link exactly as YouTube gives it — the watch page, a youtu.be link, or a live link all work. The player is embedded on the no-cookie host, so a visitor is not given advertising cookies before they press play.
+   */
+  youtubeUrl: string;
+  /**
+   * Optional, and worth keeping current — "Live from 10.00 a.m. on Saturday" before the event, "A recording of the ceremony" after it.
+   */
+  note?: string | null;
+  /**
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
+  /**
+   * Type a word from the heading to show it in SIWS accent.
+   */
+  accentWord?: string | null;
+  /**
+   * Text colour adjusts automatically so it stays readable.
+   */
+  background?: ('white' | 'sea' | 'tint' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'liveStream';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ReelShowcaseBlock".
  */
 export interface ReelShowcaseBlock {
@@ -2921,6 +2955,7 @@ export interface PagesSelect<T extends boolean = true> {
         testimonials?: T | TestimonialsBlockSelect<T>;
         statistics?: T | StatisticsBlockSelect<T>;
         instagramFeed?: T | InstagramFeedBlockSelect<T>;
+        liveStream?: T | LiveStreamBlockSelect<T>;
         reelShowcase?: T | ReelShowcaseBlockSelect<T>;
         unitLinks?: T | UnitLinksBlockSelect<T>;
         callToAction?: T | CallToActionBlockSelect<T>;
@@ -3578,6 +3613,20 @@ export interface InstagramFeedBlockSelect<T extends boolean = true> {
   accentWord?: T;
   display?: T;
   count?: T;
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LiveStreamBlock_select".
+ */
+export interface LiveStreamBlockSelect<T extends boolean = true> {
+  heading?: T;
+  youtubeUrl?: T;
+  note?: T;
+  headingLevel?: T;
+  accentWord?: T;
   background?: T;
   id?: T;
   blockName?: T;
