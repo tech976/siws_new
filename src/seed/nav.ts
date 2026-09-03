@@ -331,7 +331,14 @@ const UNIT_OMIT: Record<string, string[]> = {
    * deliberately answers nothing about admission, and it is now the section's
    * only one.
    */
-  secondary: ['annual-calendar', 'admissions', 'admissions-faq'],
+  /*
+   * `achievements` comes out of the Updates drop-down so `UNIT_EXTRA` can put
+   * it back at the top level, exactly as Primary already does — see the note
+   * beside Primary's entry there. SIWS asked for the section's results to be
+   * on the header itself rather than behind a hover and a second click, which
+   * is a fair ask for the page carrying a 99.53% S.S.C. result.
+   */
+  secondary: ['annual-calendar', 'admissions', 'admissions-faq', 'achievements'],
   /*
    * Junior College drops three, at SIWS's request (2026-08-29). Annual
    * Calendar, Rules & Uniform and Achievements: none has been written, and the
@@ -380,6 +387,20 @@ const UNIT_EXTRA: Record<
      * Achievements — what the school is, what it teaches, what that has
      * won — and the drop-down it left keeps News, Events and the rest.
      */
+    {
+      parent: null,
+      after: 'academics',
+      item: { slug: 'achievements', label: 'Achievements' },
+    },
+  ],
+  /*
+   * THE SAME MOVE AS PRIMARY'S ABOVE, at SIWS's request.
+   *
+   * `after: 'academics'` so the row reads About, Academics, Achievements —
+   * what the school is, what it teaches, what that has won. The Updates
+   * drop-down it leaves keeps News, Events and Download Centre.
+   */
+  secondary: [
     {
       parent: null,
       after: 'academics',
