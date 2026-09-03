@@ -419,28 +419,28 @@ const UNIT_EXTRA: Record<
  * The drop-down keeps its label, its position and every child underneath it;
  * only the page the heading itself points at changes.
  *
- * JUNIOR COLLEGE'S FRONT PAGE IS ITS ABOUT PAGE.
+ * EMPTY, and deliberately kept rather than deleted.
  *
- * The section has no written About page — the one in the database is still a
- * draft placeholder — but it does not need one: everything an About page
- * would carry is already on the front page, which opens with "About South
- * Indians' Welfare Society", the legacy figures and how admission works.
+ * Junior College used to replace `about` with `home`, because the section had
+ * no written About page — the one in the database was a draft placeholder,
+ * and everything an About page would carry was already on the front page.
  *
- * This used to be a `UNIT_EXTRA` line adding `home` as a SECOND top-level
- * entry, which left the template's own `about` in the tree beside it. Because
- * that page is an unpublished draft, the live menu builder dropped it and then
- * promoted its two children — Facilities & Campus and Campus Gallery — to the
- * top level as orphans, which is how Junior College ended up with a flat
- * fourteen-item header while the other three sections stayed grouped.
+ * SIWS supplied the college's overview, history, vision and mission, and the
+ * About page was written and published from it on 2026-09-03. Leaving the
+ * replacement in place after that pointed the "About" drop-down — and the
+ * "About overview" link inside it — at the front page, so the one page a
+ * visitor opens the menu to find was unreachable from the menu.
  *
- * Replacing rather than adding keeps one About drop-down with both children
- * under it. `slug: 'home'` resolves to `/junior-college` rather than
+ * The hazard the note below described is gone with it: the menu builder drops
+ * an unpublished parent and promotes its children as orphans, which is how
+ * this section once ended up with a flat fourteen-item header. `about` is
+ * published now, so it holds its own drop-down.
+ *
+ * `slug: 'home'` resolves to `/junior-college` rather than
  * `/junior-college/home`, which is a 404 — see the href builder in
- * `lib/site.ts`.
+ * `lib/site.ts`. Worth keeping written down if this is ever needed again.
  */
-const UNIT_REPLACE: Record<string, { slug: string; with: string }[]> = {
-  'junior-college': [{ slug: 'about', with: 'home' }],
-}
+const UNIT_REPLACE: Record<string, { slug: string; with: string }[]> = {}
 
 /**
  * Pages that appear in a SECOND drop-down as well as their own.
@@ -523,15 +523,6 @@ const UNIT_RELABEL: Record<string, Record<string, string>> = {
   primary: { news: 'News' },
   // Kindergarten split the same page the same way, for the same reason.
   kindergarten: { news: 'News' },
-  /*
-   * The front page reads "About" in the menu, not its own title.
-   *
-   * A label lives on the PAGE rather than in the template above — see the
-   * note beside the relabel loop — so an entry added by `UNIT_EXTRA` needs a
-   * line here as well, or the menu falls back to the page title and the first
-   * item reads "SIWS Junior College, Wadala".
-   */
-  'junior-college': { home: 'About' },
 }
 
 /*

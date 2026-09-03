@@ -231,6 +231,19 @@ const main = async () => {
       title: unit.headline,
       _status: 'published',
       reviewStatus: 'approved',
+      /*
+       * A SECTION'S FRONT PAGE IS NOT A MENU ITEM.
+       *
+       * It is reached by the section switcher above the header and by the
+       * logo, the way the other three sections' front pages are. This is
+       * set rather than left alone because Junior College's `home` carried
+       * `showInNav` from the months its front page stood in for a missing
+       * About page: the menu entry was retired when the real About page was
+       * written, but the flag on the page outlived it, leaving two "About"
+       * entries in the header. `seed:nav` places entries and does not clear
+       * the ones it stops placing, so the page has to say so itself.
+       */
+      showInNav: false,
       metaDescription: `${unit.headline} — part of South Indians’ Welfare Society, serving Wadala, Mumbai since 1934. Enquire about admission.`,
       layout: [
         {
