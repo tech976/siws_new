@@ -2485,9 +2485,15 @@ const main = async () => {
         headingLevel: 'h2',
         width: 'normal',
         background: 'white',
+        /*
+         * SIWS's own wording (2026-09-02), as three paragraphs where this was
+         * two. What was one sentence about reading and the curriculum together
+         * is now a paragraph for each, which is how they sent it.
+         */
         content: richText([
-          'The Primary Section takes a child from Grade 1 to Grade 4 — the four years in which reading stops being the thing being learnt and becomes the thing everything else is learnt with. The curriculum is the Maharashtra State Board’s, aligned with NEP 2020, and it is taught through activity and discussion rather than through dictation and copying.',
-          'The section sits inside the SIWS Group of Institutions. A child who joins in Grade 1 can carry on into the Secondary School and then the Junior College without changing school in between — the same campus, and often teachers who already know the family.',
+          'The Primary Section takes a child from Grade 1 to Grade 4 — a crucial four-year period during which reading becomes the foundation for all further learning. During these years, children develop essential skills and begin to understand and explore the world around them.',
+          'The curriculum follows the Maharashtra State Board and is aligned with NEP 2020. Learning is facilitated through activities and discussions rather than relying solely on dictation and copying.',
+          'The Primary Section is an integral part of the SIWS Group of Institutions. A child who joins in Grade 1 can continue their educational journey through Secondary School and Junior College without changing campuses, often learning alongside familiar teachers who already know the child and the family.',
         ]),
       },
       {
@@ -2512,7 +2518,13 @@ const main = async () => {
           {
             title: 'Two head teachers',
             description:
-              'Mrs. Geeta Raja is I/C Head Teacher and Mrs. Sreedevi Prasanna Bagayatkar is Head Teacher. Each leads her own teaching team.',
+              /*
+               * Mrs. Bagayatkar first, which is the order the roster runs in:
+               * her team is tagged 'matunga' and sorts ahead of 'wadala', so
+               * she leads the left-hand column on the teachers page. The
+               * sentence naming them was the other way round.
+               */
+              'Mrs. Sreedevi Prasanna Bagayatkar is Head Teacher and Mrs. Geeta Raja is I/C Head Teacher. Each leads her own teaching team.',
           },
           {
             title: 'Twenty assistant teachers',
