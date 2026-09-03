@@ -255,7 +255,20 @@ const MATUNGA_FACULTY = [
    * arrives in is the one that supplies her qualifications. Nobody fills in
    * the qualifications of a teacher they are removing.
    */
-  { name: 'Ms. Vaishali Baghat', designation: 'Asst. Teacher', qualifications: 'H.S.C., A.T.D.' },
+  /*
+   * M.A., D.T.Ed., NET — CONFIRMED BY SIWS, 2026-09-02.
+   *
+   * These two qualifications had been swapped between the two names, and the
+   * roster note below flagged it rather than guessing: an earlier instruction
+   * gave this teacher M.A., D.T.Ed., NET and Deepika Boricha H.S.C., A.T.D.,
+   * while the list the roster was rebuilt from had them the other way round.
+   * SIWS has now confirmed the earlier one, so this reverses the list.
+   */
+  {
+    name: 'Ms. Vaishali Baghat',
+    designation: 'Asst. Teacher',
+    qualifications: 'M.A., D.T.Ed., NET',
+  },
 ]
 
 /** The 18 rules Matunga supplied, verbatim. */
@@ -309,8 +322,16 @@ const FACULTY = [
   { name: 'Gurjit Kaur Matta', qualifications: 'B.A., D.Ed.' },
   { name: 'Shruti Sampat Gaware', qualifications: 'B.A., D.Ed.' },
   { name: 'Deepika Naidu', qualifications: 'H.S.C., D.Ed.' },
-  // Listed by SIWS with a subject and no qualification of her own.
-  { name: 'Deepika Boricha', designation: 'Arts Teacher' },
+  /*
+   * H.S.C., A.T.D. — CONFIRMED BY SIWS, 2026-09-02, and the other half of the
+   * swap noted against Ms. Baghat above.
+   *
+   * She was carried here with no qualification at all, and the note further
+   * down this file records the trouble that took to make stick. It was the
+   * right reading of the list in front of us and the wrong answer: the
+   * qualification was not missing, it was on the other name.
+   */
+  { name: 'Deepika Boricha', designation: 'Arts Teacher', qualifications: 'H.S.C., A.T.D.' },
 ]
 
 /**
