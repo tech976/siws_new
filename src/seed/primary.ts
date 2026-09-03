@@ -126,7 +126,7 @@ const TEACHING_PRACTICES = [
 ]
 
 const HOLISTIC = [
-  { title: 'Literary and language activities' },
+  { title: 'Literacy and language activities' },
   { title: 'Mathematics and EVS enrichment programmes' },
   { title: 'Art, Craft, Music and Dance' },
   { title: 'Sports and Physical Education' },
@@ -423,7 +423,7 @@ const GENERAL_RULES: string[] = [
   'The school observes the “Principles of Discipline” set out in Rule 53 of the Grant-In-Aid Code: regularity and implicit obedience; politeness and courtesy of speech and conduct together with cleanliness of dress and person; and students’ responsibility to the school for their conduct both inside and outside it.',
   'No school business will be transacted on Saturdays, Sundays and holidays.',
   'Any student who is persistently non-co-operative, repeatedly or wilfully mischievous, guilty of gross malpractice in connection with examinations, or has committed an act of serious indiscipline or misbehaviour, or who in the opinion of the Head of the School has an undesirable influence on fellow students, is liable to be expelled permanently or removed for a specific period, with the reasons recorded in writing.',
-  'Certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — will be issued between 1.00 p.m. and 2.30 p.m. only.',
+  'Certificates — date of birth, student bonafide, leaving certificate and similar — will be issued between 1.00 p.m. and 2.30 p.m. only.',
 ]
 
 /**
@@ -1508,7 +1508,7 @@ const main = async () => {
   const OFFICE_NOTICES = [
     {
       title:
-        'Certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
+        'Certificates — date of birth, student bonafide, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
     },
     { title: 'No school business is transacted on Saturdays, Sundays and holidays.' },
   ]
@@ -1561,7 +1561,7 @@ const main = async () => {
         background: 'sea',
         items: [
           {
-            title: 'Literary and language activities',
+            title: 'Literacy and language activities',
             icon: 'library',
             description:
               'Recitation, elocution, story telling and handwriting — in English and in Marathi.',
@@ -2398,7 +2398,7 @@ const main = async () => {
         width: 'normal',
         background: 'sea',
         content: richText([
-          'Certificates — date of birth, bonafide student, first attempt, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
+          'Certificates — date of birth, student bonafide, leaving certificate and similar — are issued between 1.00 p.m. and 2.30 p.m. only.',
         ]),
       },
       ...(galleryPageId
