@@ -479,15 +479,15 @@ const main = async () => {
          * Secondary says Standards V to X.
          *
          * The curriculum claim has not been dropped, only moved to where it is
-         * true: the trust points below still say "SSC / State Board
-         * curriculum", which is what the SIWS Group follows onward from
+         * true: the trust points below still name the State Board curriculum,
+         * which is what the SIWS Group follows onward from
          * Grade 1 and is the reason a family choosing a kindergarten here is
          * choosing a school for the next twelve years.
          */
         subtitle: 'Jr. KG and Sr. KG | Safe | Value-Based Education',
         benefitsIntro: 'At SIWS, your child benefits from:',
         benefits: [
-          { text: 'Strong academic foundations for the SSC / State Board years ahead' },
+          { text: 'Strong academic foundations for the State Board years ahead' },
           { text: 'Structured early learning approach' },
           { text: 'Focus on discipline, values and confidence' },
           { text: 'Safe, nurturing and child-friendly campus' },
@@ -513,7 +513,7 @@ const main = async () => {
           classOptions: [{ label: 'Jr KG' }, { label: 'Sr KG' }],
           trustPoints: [
             { text: 'Over 92 years of educational legacy' },
-            { text: 'SSC / State Board curriculum' },
+            { text: 'State Board curriculum' },
             { text: 'Experienced and trained teachers' },
             { text: 'Safe and disciplined campus' },
           ],
@@ -617,7 +617,7 @@ const main = async () => {
             .map((image) => ({ image })),
           // Plain string: the hero's `intro` is a textarea, not rich text.
           intro:
-            'Strong academic foundations for the SSC / State Board years ahead, a structured early-learning approach, and a safe, nurturing and child-friendly campus — with a focus on discipline, values and confidence.',
+            'Strong academic foundations for the State Board years ahead, a structured early-learning approach, and a safe, nurturing and child-friendly campus — with a focus on discipline, values and confidence.',
           links: [
             {
               link: {
@@ -647,7 +647,7 @@ const main = async () => {
           stats: [
             { value: '1934', label: 'Serving Mumbai since' },
             { value: '92+', label: 'Years of educational legacy' },
-            { value: 'SSC', label: 'State Board curriculum' },
+            { value: 'State Board', label: 'Curriculum foundation' },
           ],
         },
         /**
@@ -755,7 +755,7 @@ const main = async () => {
           columns: '2',
           background: 'tint',
           intro: richText([
-            'SIWS follows the SSC (State Board) curriculum, with a structured approach to foundational learning at the kindergarten and pre-primary levels.',
+            'SIWS follows the State Board curriculum, with a structured approach to foundational learning at the kindergarten and pre-primary levels.',
           ]),
           layout: 'cards',
           footnote: 'Building strong foundations today for a brighter tomorrow.',
@@ -983,7 +983,7 @@ const main = async () => {
             },
             {
               question: 'Which board does SIWS follow?',
-              answer: richText(['SIWS follows the SSC (State Board) curriculum.']),
+              answer: richText(['SIWS follows the State Board curriculum.']),
             },
             {
               question: 'What is the eligibility for kindergarten admission?',
@@ -1124,7 +1124,7 @@ const main = async () => {
             {
               title: 'Curriculum',
               description:
-                'The State Board (SSC) curriculum — English, Mathematics, EVS, General Knowledge and Arts, taught through play.',
+                'The State Board curriculum — English, Mathematics, EVS, General Knowledge and Arts, taught through play.',
             },
             {
               title: 'Campus',
@@ -2293,7 +2293,7 @@ const main = async () => {
             {
               question: 'Which board does the Kindergarten follow?',
               answer: richText([
-                'SIWS follows the SSC curriculum of the Maharashtra State Board, and the Kindergarten years prepare children for it.',
+                'SIWS follows the Maharashtra State Board curriculum, and the Kindergarten years prepare children for it.',
               ]),
             },
           ],

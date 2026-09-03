@@ -758,7 +758,7 @@ const main = async () => {
           .map((image) => ({ image })),
         // Plain string: the hero's `intro` is a textarea, not rich text.
         intro:
-          'From Standards V to X, we follow the Maharashtra State Board curriculum, updated in line with NEP 2020. Proudly running our Wadala campus since 1934 — 90+ years of trust and excellence.',
+          'From Standards V to X, we follow the Maharashtra State Board curriculum, updated in line with NEP 2020. Proudly running our Wadala campus since 1934 — 92+ years of trust and excellence.',
         /*
          * NO BUTTON. The banner carried "Enquire about admission", pointing at
          * Contact; SIWS asked on 2026-09-01 for the section to carry no
@@ -950,7 +950,7 @@ const main = async () => {
             icon: 'activity',
           },
           {
-            title: 'Ninety years in Wadala',
+            title: '92+ years in Wadala',
             description:
               'The Society has taught in this city since 1934, and a student can stay within it from Kindergarten to postgraduate study.',
             icon: 'study',
@@ -2721,13 +2721,13 @@ const main = async () => {
 
       {
         blockType: 'richText',
-        heading: 'Ninety years in Wadala',
-        accentWord: 'Ninety years',
+        heading: '92+ years in Wadala',
+        accentWord: '92+ years',
         headingLevel: 'h2',
         width: 'normal',
         background: 'tint',
         content: richText([
-          'The South Indians’ Welfare Society has taught in this city since 1934, and the High School has run on the Wadala campus for the whole of that time — 90+ years of trust and excellence.',
+          'The South Indians’ Welfare Society has taught in this city since 1934, and the High School has run on the Wadala campus for the whole of that time — 92+ years of trust and excellence.',
           'The section sits inside the SIWS Group of Institutions. A child can arrive in Kindergarten and stay through the Primary Section, these six years, and the Junior College without changing school in between — after the S.S.C. examination students move into the Science and Commerce streams according to their interests, and from there to degree colleges, professional courses and the careers that follow.',
         ]),
       },

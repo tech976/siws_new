@@ -14,7 +14,7 @@ const { feedbackSection } = await import('./feedback-section')
  *
  *  1. **Nothing invented is ever published.** Every published sentence is
  *     either institution-wide fact already confirmed on the approved
- *     Kindergarten page (founded 1934, Wadala, SSC Board) or a generic
+ *     Kindergarten page (founded 1934, Wadala, State Board) or a generic
  *     description of a process that is true of any admissions enquiry. There
  *     are no fabricated testimonials, no invented facilities, no made-up
  *     statistics and no faculty names. Publishing invented content about a real
@@ -88,7 +88,7 @@ interface UnitContent {
   /**
    * Classes offered, used by the enquiry form's dropdown.
    *
-   * TO CONFIRM with SIWS: these follow the usual Maharashtra SSC pattern, but
+   * TO CONFIRM with SIWS: these follow the usual Maharashtra State Board pattern, but
    * the exact standards each unit covers must be verified before go-live. They
    * are on the content questionnaire.
    */
@@ -239,7 +239,7 @@ const main = async () => {
           subtitle: unit.subtitle,
           benefitsIntro: 'At SIWS, your child benefits from:',
           benefits: [
-            { text: 'A structured SSC Board curriculum' },
+            { text: 'A structured Maharashtra State Board curriculum' },
             { text: 'Nearly a century of educational experience' },
             { text: 'A focus on discipline, values and confidence' },
             { text: 'A safe, supervised campus in Wadala' },
@@ -254,7 +254,7 @@ const main = async () => {
             classOptions: unit.classOptions.map((label) => ({ label })),
             trustPoints: [
               { text: 'Over 92 years of educational legacy' },
-              { text: 'SSC / State Board curriculum' },
+              { text: 'Maharashtra State Board curriculum' },
               { text: 'Experienced and trained teachers' },
               { text: 'Safe and disciplined campus' },
             ],
@@ -316,7 +316,7 @@ const main = async () => {
           stats: [
             { value: '1934', label: 'Serving Mumbai since' },
             { value: '92+', label: 'Years of educational legacy' },
-            { value: 'SSC', label: 'State Board curriculum' },
+            { value: 'State Board', label: 'Maharashtra curriculum' },
           ],
         },
         {
@@ -400,7 +400,7 @@ const main = async () => {
           subtitle: unit.subtitle,
           benefitsIntro: 'At SIWS, your child benefits from:',
           benefits: [
-            { text: 'A structured SSC Board curriculum' },
+            { text: 'A structured Maharashtra State Board curriculum' },
             { text: 'Nearly a century of educational experience' },
             { text: 'A focus on discipline, values and confidence' },
             { text: 'A safe, supervised campus in Wadala' },
@@ -411,7 +411,7 @@ const main = async () => {
             classOptions: unit.classOptions.map((label) => ({ label })),
             trustPoints: [
               { text: 'Over 92 years of educational legacy' },
-              { text: 'SSC / State Board curriculum' },
+              { text: 'Maharashtra State Board curriculum' },
               { text: 'Experienced and trained teachers' },
               { text: 'Safe and disciplined campus' },
             ],
