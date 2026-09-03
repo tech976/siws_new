@@ -599,6 +599,33 @@ const main = async () => {
   const classroomActivity = await photo('secondary-activity-class.jpg')
   const recognition = await photo('secondary-swachhta-framed.jpg')
   const toppers = await photo('secondary-toppers-2026-close.jpg')
+
+  /*
+   * The year's events, and the staff, sent by SIWS on 2026-09-02.
+   *
+   * Resolved as lists rather than named one by one: a wall of twenty is not a
+   * composition anybody arranged, and naming each would put twenty variables
+   * in this file to say "all of them".
+   */
+  const eventShots = (
+    await Promise.all(
+      Array.from({ length: 20 }, (_, i) =>
+        photo(`secondary-event-${String(i + 1).padStart(2, '0')}.jpg`),
+      ),
+    )
+  ).filter((id): id is number => typeof id === 'number')
+
+  const staffShots = (
+    await Promise.all(
+      [
+        'secondary-staff-group.jpg',
+        'secondary-staffroom.jpg',
+        'secondary-staff-onam.jpg',
+        'secondary-staff-meditation.jpg',
+        'secondary-staff-yoga.jpg',
+      ].map((f) => photo(f)),
+    )
+  ).filter((id): id is number => typeof id === 'number')
   /*
    * Named `siws-` rather than `secondary-` because both were seeded before
    * anybody was filing photographs by section — but the alt text of each says
@@ -1070,6 +1097,51 @@ const main = async () => {
     ],
   })
 
+  // ---------------------------------------------------------------- EVENTS
+  /*
+   * THE MENU HAS POINTED HERE SINCE IT WAS BUILT AND NOTHING FILLED IT.
+   *
+   * `seed:nav` creates an Events entry under Updates for every section, and
+   * the Kindergarten and Primary both write their own page behind it. This one
+   * was a published page with an empty layout — a live link to nothing.
+   *
+   * A gallery rather than a card grid, because these are twenty photographs of
+   * a year rather than a set of things to click. The `grid` layout is the
+   * square-tiled wall the other sections use: one shape for every tile, so
+   * mixed portrait and landscape uploads do not come out ragged, and
+   * `.siws-flow` centres a short last row instead of stranding it left.
+   */
+  await upsert({
+    slug: 'events',
+    title: 'Events',
+    intro: 'Celebrations, competitions and campaigns through the school year.',
+    showInNav: false,
+    _status: 'published',
+    reviewStatus: 'approved',
+    metaDescription:
+      'Events at SIWS Secondary School, Wadala — celebrations, competitions and campaigns through the school year.',
+    layout:
+      eventShots.length > 0
+        ? [
+            {
+              blockType: 'gallery',
+              heading: 'The year at SIWS Secondary',
+              // Matched exactly, capital included — the field validates that
+              // the word appears in the heading and 'the' is not 'The'.
+              accentWord: 'The year',
+              headingLevel: 'h1',
+              background: 'white',
+              layout: 'grid',
+              perPage: '12',
+              intro: richText([
+                'A year of assemblies, competitions, campaigns and celebrations, photographed as they happened.',
+              ]),
+              images: eventShots.map((image) => ({ image, caption: '' })),
+            },
+          ]
+        : [],
+  })
+
   // -------------------------------------------------------------- TEACHERS
   await upsert({
     slug: 'teachers',
@@ -1131,6 +1203,32 @@ const main = async () => {
         showQualifications: true,
         background: 'sea',
       },
+      /*
+       * THE STAFF AWAY FROM THE ROSTER, under it rather than among it.
+       *
+       * The block above is the roster — names, qualifications, one card each.
+       * These five are the same people at Onam, in the staff room and at yoga
+       * in the hall, and they answer a different question: not who teaches
+       * here, but what it is like to work here. Mixing them into the roster
+       * would put a group photograph where a person's card should be.
+       *
+       * The full staff photograph leads, because it is the one picture that
+       * shows everybody, and a bento wall gives its first tile the 2x2.
+       */
+      ...(staffShots.length > 0
+        ? [
+            {
+              blockType: 'gallery',
+              heading: 'The staff through the year',
+              accentWord: 'through the year',
+              headingLevel: 'h2',
+              background: 'white',
+              layout: 'grid',
+              perPage: '12',
+              images: staffShots.map((image) => ({ image, caption: '' })),
+            },
+          ]
+        : []),
     ],
   })
 

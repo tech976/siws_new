@@ -1766,6 +1766,234 @@ const IMAGES: ImageSeed[] = [
     depictsChildren: false,
     focalY: 38,
   },
+  /*
+   * SIWS SECONDARY, sent 2026-09-02: twenty from the year's events and five of
+   * the staff.
+   *
+   * The staff folder held eight files and five photographs — one picture was
+   * in it three times and another twice, under names a letter apart.
+   *
+   * ALT TEXT IS SPECIFIC WHERE THE PHOTOGRAPH WAS READ and general where it
+   * was not. Four of the twenty events were looked at; the rest carry a line
+   * that is true of all of them rather than a guess at each. Anybody
+   * correcting one is filling a gap that was left deliberately.
+   *
+   * FOUR OF THESE CARRY BURNT-IN TEXT, and are published as supplied at SIWS's
+   * instruction (2026-09-02): some are collages of several photographs with a
+   * title across them, and at least one carries a GPS Map Camera stamp giving
+   * the school's address, coordinates and the time it was taken. The stamp sits
+   * over a classroom of children. It was raised before publishing and the
+   * decision was to keep them as they are.
+   */
+  {
+    file: 'secondary-event-01.jpg',
+    filename: 'secondary-event-01.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Secondary students in traditional Maharashtrian dress on the school ground, one in costume with a sword.',
+    caption: 'In traditional dress for the occasion',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-02.jpg',
+    filename: 'secondary-event-02.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-03.jpg',
+    filename: 'secondary-event-03.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-04.jpg',
+    filename: 'secondary-event-04.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-05.jpg',
+    filename: 'secondary-event-05.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Secondary girls holding T-shirts they painted with anti-drug slogans and artwork.',
+    caption: 'T-shirt painting for the anti-drug campaign',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-06.jpg',
+    filename: 'secondary-event-06.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-07.jpg',
+    filename: 'secondary-event-07.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-08.jpg',
+    filename: 'secondary-event-08.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-09.jpg',
+    filename: 'secondary-event-09.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-10.jpg',
+    filename: 'secondary-event-10.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-11.jpg',
+    filename: 'secondary-event-11.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-12.jpg',
+    filename: 'secondary-event-12.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'A Secondary class standing at their desks with right arms raised, taking the pledge for a drug-free life.',
+    caption: 'The pledge for a drug-free school',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-13.jpg',
+    filename: 'secondary-event-13.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-14.jpg',
+    filename: 'secondary-event-14.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-15.jpg',
+    filename: 'secondary-event-15.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-16.jpg',
+    filename: 'secondary-event-16.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-17.jpg',
+    filename: 'secondary-event-17.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-18.jpg',
+    filename: 'secondary-event-18.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'The head boy and head girl investiture — students receiving their sashes and crowns from the staff.',
+    caption: 'The head boy and head girl investiture',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-19.jpg',
+    filename: 'secondary-event-19.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-event-20.jpg',
+    filename: 'secondary-event-20.jpg',
+    unit: 'secondary',
+    category: 'Events and occasions',
+    alt: 'Students and staff at a Secondary School event.',
+    depictsChildren: true,
+  },
+  {
+    file: 'secondary-staff-group.jpg',
+    filename: 'secondary-staff-group.jpg',
+    unit: 'secondary',
+    category: 'Our staff',
+    alt: 'The teaching staff of SIWS Secondary School assembled on the turf pitch.',
+    caption: 'The teaching staff',
+    depictsChildren: false,
+  },
+  {
+    file: 'secondary-staff-onam.jpg',
+    filename: 'secondary-staff-onam.jpg',
+    unit: 'secondary',
+    category: 'Our staff',
+    alt: 'Staff at the Onam celebration, in traditional Kerala dress.',
+    caption: 'Onam at the school',
+    depictsChildren: false,
+  },
+  {
+    file: 'secondary-staffroom.jpg',
+    filename: 'secondary-staffroom.jpg',
+    unit: 'secondary',
+    category: 'Our staff',
+    alt: 'Teachers at work together around a desk in the staff room.',
+    caption: 'In the staff room',
+    depictsChildren: false,
+  },
+  {
+    file: 'secondary-staff-meditation.jpg',
+    filename: 'secondary-staff-meditation.jpg',
+    unit: 'secondary',
+    category: 'Our staff',
+    alt: 'Staff seated cross-legged in the school hall during a guided meditation.',
+    caption: 'Meditation in the hall',
+    depictsChildren: false,
+  },
+  {
+    file: 'secondary-staff-yoga.jpg',
+    filename: 'secondary-staff-yoga.jpg',
+    unit: 'secondary',
+    category: 'Our staff',
+    alt: 'Staff taking part in a yoga session in the school hall.',
+    caption: 'Yoga for the staff',
+    depictsChildren: false,
+  },
 ]
 
 /*
