@@ -2,7 +2,6 @@ import { Check, GraduationCap, MessageSquareHeart } from 'lucide-react'
 
 import { Media } from '@/components/Media'
 import { EnquiryForm } from '@/components/forms/EnquiryForm'
-import type { Campus } from '@/fields/campus'
 import { createFormToken } from '@/lib/form-guard'
 import type { HeroEnquiryBlock, Unit } from '@/payload-types'
 
@@ -43,10 +42,6 @@ export const HeroEnquiryBlockView = ({
   const classOptions = (block.form?.classOptions ?? [])
     .map((entry) => entry.label)
     .filter((entry): entry is string => typeof entry === 'string' && entry.length > 0)
-
-  const campusOptions = (block.form?.campusOptions ?? [])
-    .map((entry) => entry.campus)
-    .filter((entry): entry is Campus => Boolean(entry))
 
   const badgeTitle = block.badge?.title
 
@@ -180,7 +175,6 @@ export const HeroEnquiryBlockView = ({
             <EnquiryForm
               unitId={unit.id}
               classOptions={classOptions.length > 0 ? classOptions : ['Jr KG', 'Sr KG']}
-              campusOptions={campusOptions}
               formToken={createFormToken()}
               /*
                * Which inbox this particular card reaches. Set on the block, so

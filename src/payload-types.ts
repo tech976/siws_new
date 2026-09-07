@@ -1435,11 +1435,7 @@ export interface FacultyBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Choose a campus to list only its teachers. Most schools can leave this on “Every campus”.
-   */
-  campus?: ('all' | 'wadala' | 'matunga') | null;
-  /**
-   * Grouping puts each head teacher at the top of her own column with her teachers beneath, side by side. It reads the groups off the roster itself and ignores the campus setting above.
+   * “Led by the head teacher” puts the head teacher at the top with the rest of the roster beneath her. The school is one place now, so this is a single group rather than one column per campus.
    */
   layout?: ('grid' | 'teams') | null;
   cardLayout?: ('beside' | 'centred') | null;
@@ -2515,15 +2511,6 @@ export interface HeroEnquiryBlock {
         }[]
       | null;
     /**
-     * Leave empty for a school at one location. Add one campus to record every enquiry from this page against it, or both to let parents choose.
-     */
-    campusOptions?:
-      | {
-          campus: 'wadala' | 'matunga';
-          id?: string | null;
-        }[]
-      | null;
-    /**
      * Shown with ticks beneath the form.
      */
     trustPoints?:
@@ -3286,7 +3273,6 @@ export interface FeatureListBlockSelect<T extends boolean = true> {
 export interface FacultyBlockSelect<T extends boolean = true> {
   heading?: T;
   intro?: T;
-  campus?: T;
   layout?: T;
   cardLayout?: T;
   showQualifications?: T;
@@ -3739,12 +3725,6 @@ export interface HeroEnquiryBlockSelect<T extends boolean = true> {
           | T
           | {
               label?: T;
-              id?: T;
-            };
-        campusOptions?:
-          | T
-          | {
-              campus?: T;
               id?: T;
             };
         trustPoints?:

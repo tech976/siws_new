@@ -30,10 +30,11 @@ export const FacultyBlockView = async ({
   const payload = await getPayload({ config })
 
   /**
-   * "all" (and an unset value, on blocks saved before the field existed) means
-   * every campus. Anything else narrows to that campus only — a teacher with no
-   * campus recorded is deliberately excluded, because listing them under Wadala
-   * when nobody has said so would be a guess presented as fact.
+   * The school is published as a single entity, so the roster is never narrowed
+   * by campus and never split by it. The block's own campus setting is ignored
+   * rather than honoured: Wadala and Matunga are no longer presented as
+   * separate places, and a filter that quietly hid two thirds of the teachers
+   * would be the one visible trace of a distinction the school has dropped.
    */
   const grouped = block.layout === 'teams'
 
@@ -50,18 +51,10 @@ export const FacultyBlockView = async ({
    * well left the column with two competing centres.
    */
   const centred = block.cardLayout === 'centred'
-  /*
-   * Grouping needs everybody: it splits the roster into teams itself, so a
-   * campus filter would hand it one team and nothing to compare it with.
-   */
-  const campus = grouped || !block.campus || block.campus === 'all' ? null : block.campus
-
   const { docs: teachers } = await payload
     .find({
       collection: 'faculty',
-      where: campus
-        ? { and: [{ unit: { equals: unit.id } }, { campus: { equals: campus } }] }
-        : { unit: { equals: unit.id } },
+      where: { unit: { equals: unit.id } },
       sort: 'order',
       limit: 100,
       depth: 1,
@@ -75,34 +68,21 @@ export const FacultyBlockView = async ({
     /head teacher/i.test(person.designation ?? '')
 
   /**
-   * The roster split into teams, each led by its head teacher.
+   * The roster as one team, led by its head teacher.
    *
-   * The split comes off the `campus` field, which is the only thing on a
-   * faculty record that says which team somebody belongs to. That field is no
-   * longer shown anywhere — Primary is published as one school — but it still
-   * records the grouping correctly, and it is a truer key than guessing from
-   * names or order. Groups run in alphabetical key order, so the arrangement
-   * is the same on every render rather than following whatever the database
-   * happened to return first.
+   * This used to split on the `campus` field, putting Wadala and Matunga in
+   * separate groups. The school is published as a single entity now, so the
+   * whole roster is one group and the stored campus value is not read here —
+   * the records keep it, but it no longer decides what a visitor sees.
    */
   const teams = grouped
     ? [
-        ...teachers
-          .reduce((map, person) => {
-            const key = typeof person.campus === 'string' ? person.campus : ''
-            const bucket = map.get(key)
-            if (bucket) bucket.push(person)
-            else map.set(key, [person])
-            return map
-          }, new Map<string, typeof teachers>())
-          .entries(),
+        {
+          key: '',
+          head: teachers.find(isHead) ?? null,
+          rest: teachers.filter((person) => !isHead(person)),
+        },
       ]
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([key, members]) => ({
-          key,
-          head: members.find(isHead) ?? null,
-          rest: members.filter((person) => !isHead(person)),
-        }))
     : []
 
   /** The monogram or photograph. Bigger for a head teacher, bigger again when stacked. */

@@ -4,7 +4,6 @@ import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 
 import { submitEnquiry } from '@/app/(frontend)/actions/enquiry'
-import { CAMPUS_LABELS, type Campus } from '@/fields/campus'
 import { ADMISSION_ENQUIRY_NOTICE } from '@/lib/consent-notices'
 import { idleFormState } from '@/lib/form-state'
 import { HONEYPOT_FIELD } from '@/lib/form-guard'
@@ -31,11 +30,6 @@ interface EnquiryFormProps {
   unitId: number | string
   /** Class options offered by this unit, e.g. Jr KG / Sr KG. */
   classOptions: string[]
-  /**
-   * Campuses this form covers. Empty for a single-location school, one to stamp
-   * every enquiry with that campus, two or more to let the parent choose.
-   */
-  campusOptions?: Campus[]
   /** Signed on the server when the page rendered — see `form-guard`. */
   formToken: string
   /**
@@ -62,7 +56,6 @@ const SubmitButton = ({ label }: { label: string }) => {
 export const EnquiryForm = ({
   unitId,
   classOptions,
-  campusOptions = [],
   formToken,
   sendTo = 'admissions',
   privacyHref,
@@ -93,16 +86,6 @@ export const EnquiryForm = ({
       <input type="hidden" name="unitId" value={String(unitId)} />
       <input type="hidden" name="formToken" value={formToken} />
       <input type="hidden" name="sendTo" value={sendTo} />
-
-      {/*
-        One campus is not a question — the answer cannot vary, so it is stamped
-        on the enquiry instead of asked. The server re-checks the value against
-        the campuses it knows either way, so a hidden input is no more
-        trustworthy here than a visible select.
-      */}
-      {campusOptions.length === 1 ? (
-        <input type="hidden" name="campus" value={campusOptions[0]} />
-      ) : null}
 
       <Honeypot name={HONEYPOT_FIELD} />
 
@@ -179,31 +162,6 @@ export const EnquiryForm = ({
           className={inputClass('email')}
         />
       </div>
-
-      {campusOptions.length > 1 ? (
-        <div>
-          <label htmlFor="campus" className="mb-1.5 block text-sm font-semibold text-brand">
-            Which campus <Required />
-          </label>
-          <select
-            id="campus"
-            name="campus"
-            required
-            defaultValue={previous('campus')}
-            aria-invalid={fieldError('campus') ? true : undefined}
-            aria-describedby={fieldError('campus') ? 'campus-error' : undefined}
-            className={inputClass('campus')}
-          >
-            <option value="">Please choose…</option>
-            {campusOptions.map((option) => (
-              <option key={option} value={option}>
-                {CAMPUS_LABELS[option]}
-              </option>
-            ))}
-          </select>
-          <FieldError id="campus-error" message={fieldError('campus')} />
-        </div>
-      ) : null}
 
       <div>
         <label htmlFor="gradeApplyingFor" className="mb-1.5 block text-sm font-semibold text-brand">

@@ -1,7 +1,5 @@
 import type { Block } from 'payload'
 
-import { CAMPUS_OPTIONS } from '@/fields/campus'
-
 import { BLOCK_GROUPS, blockAdmin } from './shared'
 
 /**
@@ -133,30 +131,6 @@ export const HeroEnquiryBlock: Block = {
           labels: { singular: 'Class', plural: 'Classes' },
           admin: { description: 'e.g. Jr KG, Sr KG.' },
           fields: [{ name: 'label', type: 'text', required: true }],
-        },
-        {
-          /**
-           * Only shown to a parent when there is more than one row: with a
-           * single campus the answer is already known, and asking a question
-           * whose answer cannot vary is a form field that only adds friction.
-           */
-          name: 'campusOptions',
-          type: 'array',
-          label: 'Campuses parents can choose from',
-          maxRows: CAMPUS_OPTIONS.length,
-          labels: { singular: 'Campus', plural: 'Campuses' },
-          admin: {
-            description:
-              'Leave empty for a school at one location. Add one campus to record every enquiry from this page against it, or both to let parents choose.',
-          },
-          fields: [
-            {
-              name: 'campus',
-              type: 'select',
-              required: true,
-              options: CAMPUS_OPTIONS,
-            },
-          ],
         },
         {
           name: 'trustPoints',

@@ -1,25 +1,24 @@
 import type { SelectField } from 'payload'
 
 /**
- * Campus — a location within a school, not a school of its own.
+ * Campus — retained for historical data only.
  *
- * SIWS runs the Primary Section at two locations, Wadala and Matunga, and the
- * K.G. Section likewise (several endowment funds name "K.G. section Wadala"
- * and "K.G. section Matunga" separately). They share a board, a curriculum and
- * an admissions policy, but each has its own head teacher, its own roster and
- * its own house rules.
+ * SIWS ran the Primary and K.G. Sections at two locations, Wadala and Matunga,
+ * and this field recorded which one a teacher, a photograph or an enquiry
+ * belonged to. The school is now published as a single entity: Wadala and
+ * Matunga are no longer presented as separate campuses anywhere, in the admin
+ * panel or on the public site.
  *
- * MODELLED AS A FIELD, NOT A UNIT
- * -------------------------------
- * The SRS defines exactly four units — Kindergarten, Primary, Secondary and
- * Junior College — and the main portal's navigation is built from them. A fifth
- * "Primary Matunga" unit would put a second Primary School in that list as
- * though it were a separate school, and would split one section's content under
- * two unit heads. A campus field keeps the section whole and still lets a page,
- * a roster or an enquiry say exactly which location it means.
+ * WHY THE FIELD STILL EXISTS
+ * --------------------------
+ * Sixty-seven faculty records carry a campus value, and dropping the column
+ * would destroy that history irreversibly for no gain. `campusField` therefore
+ * still defines the column — it is simply hidden from every form, so nobody can
+ * set or change it and no reader is shown a distinction the school no longer
+ * makes.
  *
- * Left blank means "the whole school", which is the correct answer for every
- * unit that runs at one location.
+ * To bring the distinction back, remove `hidden: true` below and restore the
+ * campus grouping in FacultyBlockView.
  */
 
 export const CAMPUS_VALUES = ['wadala', 'matunga'] as const
@@ -58,5 +57,10 @@ export const campusField = ({
     ...(position ? { position } : {}),
     description,
     ...admin,
+    /*
+     * The school is one entity now. Hidden rather than removed so the stored
+     * values survive; see the note at the top of this file.
+     */
+    hidden: true,
   },
 })
