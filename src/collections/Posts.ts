@@ -16,6 +16,7 @@ import { constrainUnitToScope } from '@/hooks/workflow'
 import { ensureUniqueSlugPerUnit } from '@/hooks/unique-slug'
 import { richTextField } from '@/fields/richText'
 import { hideFromHod } from '@/fields/hod-simple'
+import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 
 /**
  * A department update — "Independence Day Celebrations 2026" — written by the
@@ -96,6 +97,15 @@ export const Posts: CollectionConfig = {
   hooks: {
     beforeValidate: [ensureUniqueSlugPerUnit('posts')],
     beforeChange: [constrainUnitToScope],
+    /*
+     * News appears in the ticker, on section home pages and on the news
+     * listing, none of which is the post's own address — so a teacher who
+     * published an item saw nothing change and published it again. Dropping
+     * the whole tree is what every other rendered collection does, for the
+     * same reason.
+     */
+    afterChange: [revalidateAfterChange],
+    afterDelete: [revalidateAfterDelete],
   },
 
   fields: [

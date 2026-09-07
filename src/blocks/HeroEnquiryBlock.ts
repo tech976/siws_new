@@ -133,6 +133,34 @@ export const HeroEnquiryBlock: Block = {
           fields: [{ name: 'label', type: 'text', required: true }],
         },
         {
+          /*
+           * SCHEMA ONLY — hidden, and not read when the form renders.
+           *
+           * Parents are no longer asked which campus, so nothing populates or
+           * reads this. It stays declared because its tables exist in the
+           * database with rows in them: dropping the declaration makes
+           * Payload's schema push offer to DELETE those tables, which is a
+           * data-loss prompt standing between the team and every future seed
+           * run.
+           *
+           * Delete this only together with a migration that drops the tables
+           * deliberately.
+           */
+          name: 'campusOptions',
+          type: 'array',
+          admin: { hidden: true },
+          fields: [
+            {
+              name: 'campus',
+              type: 'select',
+              options: [
+                { label: 'Wadala', value: 'wadala' },
+                { label: 'Matunga', value: 'matunga' },
+              ],
+            },
+          ],
+        },
+        {
           name: 'trustPoints',
           type: 'array',
           label: 'Reassurance points',

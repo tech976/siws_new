@@ -119,7 +119,7 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
           case 'faculty':
             return <FacultyBlockView key={key} block={block} unit={unit} />
           case 'gallery':
-            return <GalleryBlockView key={key} block={block} />
+            return <GalleryBlockView key={key} block={block} unit={unit} />
 
           case 'videoGallery':
             return <VideoGalleryBlockView key={key} block={block} />

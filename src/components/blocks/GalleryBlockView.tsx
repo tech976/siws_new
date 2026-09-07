@@ -1,6 +1,10 @@
+import config from '@payload-config'
+import { getPayload } from 'payload'
+import type { Where } from 'payload'
+
 import { Media } from '@/components/Media'
 import { RichText } from '@/components/RichText'
-import type { GalleryBlock, Media as MediaDoc } from '@/payload-types'
+import type { GalleryBlock, Media as MediaDoc, Unit } from '@/payload-types'
 
 import { GalleryCarousel } from './GalleryCarousel'
 import { GalleryPager } from './GalleryPager'
@@ -157,10 +161,84 @@ const BentoGallery = ({ images }: { images: NonNullable<GalleryBlock['images']> 
   </ul>
 )
 
-export const GalleryBlockView = ({ block }: { block: GalleryBlock }) => {
-  const images = (block.images ?? []).filter(
+export const GalleryBlockView = async ({
+  block,
+  unit,
+}: {
+  block: GalleryBlock
+  unit?: Unit | null
+}) => {
+  const stored = (block.images ?? []).filter(
     (entry) => entry.image && typeof entry.image === 'object',
   )
+
+  /**
+   * PHOTOGRAPHS ADDED SINCE THIS BLOCK WAS BUILT.
+   *
+   * The list above is written by `seed:galleries` and then frozen, so a teacher
+   * who uploaded a photograph, filed it under this section and ticked "Include
+   * in the photo gallery" saw nothing appear — the seed had to be re-run from
+   * the command line before the wall knew the picture existed. That is not
+   * something a school can be asked to do, and it is the one place on the site
+   * where publishing did not publish.
+   *
+   * So the stored list is treated as the floor rather than the whole truth: it
+   * renders exactly as before — nothing already live moves or disappears — and
+   * anything newer carrying the same section is appended to it.
+   *
+   * Matching is by the block's own heading, which is what the seed names each
+   * block after, so no new field is needed to join the two.
+   */
+  const extra = await (async () => {
+    const section = block.heading?.trim()
+    if (!section) return []
+
+    const known = new Set(
+      stored
+        .map((entry) => (typeof entry.image === 'object' ? entry.image?.id : null))
+        .filter((id): id is number => typeof id === 'number'),
+    )
+
+    try {
+      const payload = await getPayload({ config })
+
+      const clauses: Where[] = [
+        { category: { equals: section } },
+        { showInGallery: { equals: true } },
+      ]
+      /*
+       * A photograph with no school is shared by all four, so it belongs on
+       * this wall as much as one filed to the school itself.
+       */
+      clauses.push(
+        unit
+          ? ({ or: [{ unit: { equals: unit.id } }, { unit: { exists: false } }] } as Where)
+          : ({ unit: { exists: false } } as Where),
+      )
+
+      const { docs } = await payload.find({
+        collection: 'media',
+        where: { and: clauses },
+        sort: '-createdAt',
+        limit: 40,
+        depth: 0,
+        overrideAccess: false,
+      })
+
+      return docs
+        .filter((doc) => !known.has(doc.id))
+        .map((doc) => ({ id: `live-${doc.id}`, image: doc as MediaDoc, caption: doc.caption }))
+    } catch {
+      /*
+       * A failed lookup leaves the wall exactly as it was built. A gallery
+       * missing its newest photograph is a much smaller fault than a gallery
+       * that fails to render at all.
+       */
+      return []
+    }
+  })()
+
+  const images = [...stored, ...extra]
 
   if (images.length === 0) return null
 

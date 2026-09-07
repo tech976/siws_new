@@ -25,6 +25,29 @@ export const FacultyBlock: Block = {
       admin: { description: 'Optional line above the teachers.' },
     }),
     {
+      /*
+       * SCHEMA ONLY — hidden, and not read when the roster renders.
+       *
+       * The school is published as one place, so nothing offers a campus to
+       * choose any more. The field stays declared because the column exists in
+       * the database with live rows in it: removing the declaration makes
+       * Payload's schema push offer to DROP that column, which is a data-loss
+       * prompt standing between the team and every future seed run.
+       *
+       * Delete this only together with a migration that drops the column
+       * deliberately.
+       */
+      name: 'campus',
+      type: 'select',
+      options: [
+        { label: 'Every campus', value: 'all' },
+        { label: 'Wadala', value: 'wadala' },
+        { label: 'Matunga', value: 'matunga' },
+      ],
+      defaultValue: 'all',
+      admin: { hidden: true },
+    },
+    {
       name: 'layout',
       type: 'select',
       defaultValue: 'grid',

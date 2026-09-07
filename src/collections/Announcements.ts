@@ -11,6 +11,7 @@ import { isAdmin, type AccessUser } from '@/access/user'
 import { scheduledUnless } from '@/fields/publishing'
 import { hideFromHod } from '@/fields/hod-simple'
 import { constrainUnitToScope } from '@/hooks/workflow'
+import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 
 /**
  * One line for the news ticker across the top of the site.
@@ -45,7 +46,17 @@ export const Announcements: CollectionConfig = {
 
   versions: { drafts: true, maxPerDoc: 10 },
 
-  hooks: { beforeChange: [constrainUnitToScope] },
+  hooks: {
+    beforeChange: [constrainUnitToScope],
+    /*
+     * The ticker is in the layout of every page, so an announcement is never
+     * at an address of its own. Without this, raising one changed the database
+     * and nothing on screen — the worst case being an urgent notice that does
+     * not appear.
+     */
+    afterChange: [revalidateAfterChange],
+    afterDelete: [revalidateAfterDelete],
+  },
 
   fields: [
     {
