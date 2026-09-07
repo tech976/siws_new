@@ -295,18 +295,31 @@ export const Media: CollectionConfig = {
     {
       /**
        * The group a photograph belongs to on a gallery page — "Sports",
-       * "Festivals", "Annual Day".
+       * "In the classroom", "Play and activity".
        *
        * Free text rather than a fixed list: schools already sort their
        * photographs into folders, and those names differ per section and change
        * every year. A closed list would mean a code change each time a school
        * ran a new kind of event.
+       *
+       * Free text alone, though, fragments — the library grew "Occasions",
+       * "Events and occasions" and "Events and outings" as three headings for
+       * one idea, and "Onam" beside "Onam Event", each spelling becoming its own
+       * section on the page. `GallerySectionField` keeps the value free text but
+       * offers the sections this school already uses as you type, so the
+       * consistent choice is the easy one and a genuinely new heading is still
+       * possible.
        */
       name: 'category',
       type: 'text',
+      label: 'Section',
       admin: {
         position: 'sidebar',
-        description: 'Optional. Groups photos on the gallery page, e.g. “Sports” or “Festivals”.',
+        description:
+          'Which group this photograph appears under on the gallery page. Choose one already in use, or type a new one.',
+        components: {
+          Field: '@/components/admin/GallerySectionField#GallerySectionField',
+        },
       },
       index: true,
     },
