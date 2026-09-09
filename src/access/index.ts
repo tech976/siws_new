@@ -85,8 +85,27 @@ const withinAssignedUnits = (user: AccessUser): Where | false => {
  * Read access for public content collections.
  *
  * Anonymous visitors and Public-role callers see published, in-window content.
- * Staff additionally see everything inside their own unit — including drafts —
- * so they can preview their work (BR-EDIT-04) without exposing it publicly.
+ * Staff see their OWN unit — drafts included, so they can preview their work
+ * (BR-EDIT-04) — plus institution-wide content that belongs to no unit.
+ *
+ * WHY STAFF ARE NOT SIMPLY GIVEN THE PUBLISHED SET AS WELL
+ * --------------------------------------------------------
+ * They were: this returned `{ or: [publishedWhere(), scope] }`, which reads as
+ * "your unit, and anything already public". The effect in the admin panel was
+ * that the Primary School's head of department opened News & Events and found
+ * the Kindergarten's seven stories — every published document from every
+ * school, in a list they can neither edit nor explain.
+ *
+ * The panel and the public site share this rule, so the fix has to keep the
+ * site working: `src/lib/site.ts` queries with no user at all except in draft
+ * preview, so it takes the anonymous branch above and is untouched by the
+ * change here. A signed-in member of staff browsing the public site sees
+ * published pages the same way, because those pages are rendered by those same
+ * user-less queries.
+ *
+ * Content with no unit stays visible to everyone. It is the institution's
+ * own — the portal's pages, shared photographs — and a school's staff have as
+ * much business reading it as anybody.
  */
 export const readPublishedOrScoped: Access = ({ req }) => {
   const user = asUser(req.user)
@@ -96,7 +115,7 @@ export const readPublishedOrScoped: Access = ({ req }) => {
   const scope = withinAssignedUnits(user)
   if (scope === false) return publishedWhere()
 
-  return { or: [publishedWhere(), scope] }
+  return { or: [scope, { unit: { exists: false } }] }
 }
 
 /**
