@@ -37,6 +37,42 @@ export const Media: CollectionConfig = {
     defaultColumns: ['filename', 'alt', 'unit', 'updatedAt'],
     description:
       'Pictures and PDFs used anywhere on the website. Never upload anything containing someone’s personal details here.',
+
+    /**
+     * THE LIBRARY SHOWS A MEMBER OF STAFF THEIR OWN SCHOOL'S PICTURES.
+     *
+     * `read` on this collection is deliberately open and has to stay that way:
+     * it gates serving the files themselves, so narrowing it would blank images
+     * on the public site for every visitor. The result in the panel, though,
+     * was that the Primary School's head of department scrolled a library of
+     * 195 photographs from all four schools to find their own forty-four — and
+     * could edit none of the rest, since `update` and `delete` below are
+     * already unit-scoped.
+     *
+     * `baseFilter` narrows the LIST rather than access. It is presentation, not
+     * a permission: a file's address still serves to anybody, which is what
+     * being a public website means.
+     *
+     * Items with no unit are shared by all four schools and stay visible to
+     * everyone, as do a person's own uploads — matching exactly what `update`
+     * already lets them edit, so the list never shows less than they can work
+     * with.
+     */
+    baseFilter: ({ req }) => {
+      const user = req.user as AccessUser | null
+      if (!isActiveUser(user) || isAdmin(user)) return null
+
+      const ids = unitIdsOf(user)
+      if (ids.length === 0) return null
+
+      const clauses: Where[] = [
+        { unit: { in: ids } },
+        { unit: { exists: false } },
+        { uploadedBy: { equals: user.id } },
+      ]
+
+      return { or: clauses }
+    },
   },
 
   upload: {
