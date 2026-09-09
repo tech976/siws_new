@@ -111,7 +111,7 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
           case 'announcements':
             return <AnnouncementsBlockView key={key} block={block} />
           case 'newsGrid':
-            return <NewsGridBlockView key={key} block={block} />
+            return <NewsGridBlockView key={key} block={block} unit={unit} />
           case 'logoStrip':
             return <LogoStripBlockView key={key} block={block} />
           case 'featureList':

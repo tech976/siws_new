@@ -1,6 +1,9 @@
+import config from '@payload-config'
+import { getPayload } from 'payload'
+
 import { Media } from '@/components/Media'
 import { RichText } from '@/components/RichText'
-import type { NewsGridBlock, Media as MediaDoc } from '@/payload-types'
+import type { NewsGridBlock, Media as MediaDoc, Unit } from '@/payload-types'
 
 import { Section, SectionHeading, type BlockBackground } from './Section'
 
@@ -44,8 +47,82 @@ const DateLabel = ({ value, className = '' }: { value: string; className?: strin
  * every card because on a school news page the photograph IS the news — a
  * parent is looking for their own child before they read a word.
  */
-export const NewsGridBlockView = ({ block }: { block: NewsGridBlock }) => {
-  const items = (block.items ?? []).filter((item) => item.photo && typeof item.photo === 'object')
+export const NewsGridBlockView = async ({
+  block,
+  unit,
+}: {
+  block: NewsGridBlock
+  unit?: Unit | null
+}) => {
+  const stored = (block.items ?? []).filter((item) => item.photo && typeof item.photo === 'object')
+
+  /**
+   * STORIES PUBLISHED IN NEWS & EVENTS.
+   *
+   * News was published two different ways: these stories, typed into a block on
+   * this page, and the News & Events collection in the sidebar — which is where
+   * a teacher is told to add news, and which appeared nowhere on the site.
+   * Neither knew about the other, so the panel showed nothing of what was
+   * published and anything published in the panel was invisible.
+   *
+   * The block's own stories are treated as the floor: they render exactly as
+   * before, in the order somebody chose, and posts from the collection follow
+   * them newest first. A story that has been migrated into the collection is
+   * matched by title and shown once, not twice.
+   */
+  const fromCollection = await (async () => {
+    try {
+      const payload = await getPayload({ config })
+
+      const seen = new Set(
+        stored
+          .map((item) => (typeof item.title === 'string' ? item.title.trim().toLowerCase() : ''))
+          .filter(Boolean),
+      )
+
+      const { docs } = await payload.find({
+        collection: 'posts',
+        where: unit ? { unit: { equals: unit.id } } : {},
+        sort: '-date',
+        limit: 24,
+        depth: 1,
+        /*
+         * `false` so a draft stays invisible until it is published — the same
+         * rule the rest of the site reads by, rather than one written here.
+         */
+        overrideAccess: false,
+      })
+
+      return docs
+        .filter((doc) => !seen.has(String(doc.title ?? '').trim().toLowerCase()))
+        .map((doc) => {
+          const photo = Array.isArray(doc.photos) ? doc.photos[0] : null
+          return {
+            id: `post-${doc.id}`,
+            title: doc.title,
+            date: doc.date
+              ? new Date(doc.date).toLocaleDateString('en-GB', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })
+              : null,
+            summary: doc.summary ?? null,
+            photo: photo as MediaDoc | null,
+          }
+        })
+        .filter((entry) => entry.photo && typeof entry.photo === 'object')
+    } catch {
+      /*
+       * A failed lookup leaves the page showing exactly what it showed before.
+       * A news list missing its newest story is a far smaller fault than a news
+       * page that fails to render.
+       */
+      return []
+    }
+  })()
+
+  const items = [...stored, ...fromCollection] as typeof stored
   if (items.length === 0) return null
 
   const [lead, ...rest] = items
