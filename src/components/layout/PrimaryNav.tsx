@@ -1,5 +1,6 @@
 'use client'
 
+import { Search } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -363,6 +364,26 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
         full label rather than truncating mid-word, and the links reflow.
       */}
       <div className="ml-auto flex min-w-0 shrink-0 items-center gap-2 self-start sm:gap-3 min-[1200px]:absolute min-[1200px]:top-2.5 min-[1200px]:right-5">
+        {/*
+          FR-SR-01 — search reaches every page, so its way in is in the header
+          rather than on a page a visitor has to find first.
+
+          A LINK, NOT A BOX. An input here would have to be narrow enough to sit
+          beside Quick links and the enquiry button, which on a phone leaves
+          something too small to type a sentence into; the search page has room
+          for a real field and its own results. The icon carries a visible label
+          from `sm` up — an unlabelled magnifier is only obvious to people who
+          already knew what it was.
+        */}
+        <Link
+          href="/search"
+          className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold text-brand transition hover:bg-sea focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+        >
+          <Search size={17} aria-hidden="true" />
+          <span className="hidden sm:inline">Search</span>
+          <span className="sr-only sm:hidden">Search this website</span>
+        </Link>
+
         <QuickLinks links={quickLinks} />
 
         {cta ? (
