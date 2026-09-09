@@ -106,6 +106,19 @@ const SOCIAL_LABEL: Record<string, string> = {
  * that college is a separate site and this one linked to it nowhere, so the
  * promise was made and not kept. It is marked as leaving the site.
  */
+/**
+ * FR-PRV-15 — the statutory pages, on every page's footer.
+ *
+ * Institution-wide rather than per-unit: one privacy policy and one cookie
+ * policy govern the whole society, and four copies would be four things to
+ * keep in step with the law.
+ */
+const LEGAL_LINKS: { href: string; label: string }[] = [
+  { href: '/privacy', label: 'Privacy & Data Protection' },
+  { href: '/cookies', label: 'Cookie Policy' },
+  { href: '/accessibility', label: 'Accessibility' },
+]
+
 const SOCIETY_LINKS: { href: string; label: string; external?: boolean }[] = [
   { href: '/about', label: 'About SIWS' },
   { href: '/vision-mission', label: 'Vision & Mission' },
@@ -369,9 +382,33 @@ export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
         </div>
       </div>
 
+      {/*
+        FR-PRV-15 — "Privacy, cookie and data protection pages shall be
+        reachable from the footer of every page across the portal and all unit
+        sites."
+        
+        Beside the copyright rather than among the section columns above: these
+        are the statutory row every site carries at its foot, and a visitor
+        looking for a privacy policy looks there. They are not content a parent
+        browses, and putting them in a column would give them the same weight as
+        Admissions.
+      */}
       <div className="border-t border-white/25">
-        <div className="siws-container py-5 text-xs text-white/85">
+        <div className="siws-container flex flex-col gap-3 py-5 text-xs text-white/85 sm:flex-row sm:items-center sm:justify-between">
           <p>© {year} South Indians&rsquo; Welfare Society (SIWS). All rights reserved.</p>
+
+          <ul className="flex flex-wrap gap-x-5 gap-y-2">
+            {LEGAL_LINKS.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="underline-offset-4 hover:text-white hover:underline"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </footer>

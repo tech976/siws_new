@@ -23,6 +23,14 @@ export const slugify = (input: string): string =>
  * Top-level path segments the router owns. A unit or page may not claim one of
  * these, or it would shadow a real route — checked at validation time so the
  * clash surfaces in the admin panel rather than as a mysterious 404 later.
+ *
+ * ONLY SEGMENTS SOMETHING ACTUALLY SERVES BELONG HERE. `privacy`, `cookies`
+ * and `accessibility` were reserved in anticipation of routes that were never
+ * written, so all three answered 404 while the CMS refused to let anybody
+ * create a page that would have answered them — the reservation was the only
+ * thing standing between the site and the pages FR-PRV-15 requires on every
+ * footer. They are ordinary content pages now: SIWS owns and must be able to
+ * edit that text (SRS 2.6), which means it belongs in the CMS.
  */
 export const RESERVED_SLUGS = new Set([
   'admin',
@@ -30,9 +38,6 @@ export const RESERVED_SLUGS = new Set([
   'search',
   'sitemap.xml',
   'robots.txt',
-  'privacy',
-  'cookies',
-  'accessibility',
   'alumni',
   'careers',
   'mandatory-documents',

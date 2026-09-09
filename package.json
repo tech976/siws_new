@@ -40,6 +40,7 @@
     "verify:ui": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/verify-ui.ts",
     "db:start": "powershell -ExecutionPolicy Bypass -File scripts/start-postgres.ps1",
     "db:stop": "powershell -ExecutionPolicy Bypass -File scripts/start-postgres.ps1 -Stop",
+    "seed:legal": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/legal-pages.ts",
     "seed:institution": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/institution.ts",
     "verify:audit": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/verify-audit.ts",
     "seed:primary": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/primary.ts",
