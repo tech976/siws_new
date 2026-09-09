@@ -6,6 +6,7 @@ import { RenderBlocks } from '@/components/blocks/RenderBlocks'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { getInstitutionPage, getNavItems, getQuickLinks, getUnits } from '@/lib/site'
+import { organisationSchema, serialise } from '@/lib/structured-data'
 
 /**
  * Regenerate at most once a minute.
@@ -43,6 +44,12 @@ const PortalHome = async () => {
 
   return (
     <>
+      {/* BR-SEO-03 — the institution itself, for the portal's own page. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serialise(organisationSchema(null)) }}
+      />
+
       <SiteHeader units={units} navItems={navItems} quickLinks={quickLinks} infoText={TAGLINE} />
 
       <main id="main-content">

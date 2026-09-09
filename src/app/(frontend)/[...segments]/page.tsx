@@ -5,6 +5,12 @@ import { notFound } from 'next/navigation'
 import { PostView } from '@/components/blocks/PostView'
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
 import { NewsTicker, type TickerItem } from '@/components/layout/NewsTicker'
+import {
+  breadcrumbSchema,
+  newsArticleSchema,
+  organisationSchema,
+  serialise,
+} from '@/lib/structured-data'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import {
@@ -80,8 +86,29 @@ const DynamicRoute = async ({ params }: RouteProps) => {
   const footerUnits = units.map(({ id, slug, shortName }) => ({ id, slug, shortName }))
   const announcements = await getAnnouncements(unit?.id ?? null)
 
+  /*
+   * BR-SEO-03 — schema.org data for this page, as JSON-LD.
+   *
+   * Emitted here rather than from `generateMetadata` because Next's metadata
+   * API has no slot for arbitrary structured data, and because the schema
+   * needs the resolved document, which this component already has.
+   */
+  const schemas = [
+    organisationSchema(unit),
+    kind === 'post' && post ? newsArticleSchema(post, unit) : null,
+    breadcrumbSchema(segments ?? [], unit, page ?? post),
+  ].filter(Boolean)
+
   return (
     <>
+      {schemas.map((schema, index) => (
+        <script
+          key={index}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serialise(schema) }}
+        />
+      ))}
+
       <SiteHeader
         unit={unit}
         units={units}

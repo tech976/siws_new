@@ -238,7 +238,7 @@ export interface Media {
    */
   campus?: ('wadala' | 'matunga') | null;
   /**
-   * Optional. Groups photos on the gallery page, e.g. “Sports” or “Festivals”.
+   * Which group this photograph appears under on the gallery page. Choose one already in use, or type a new one.
    */
   category?: string | null;
   /**
@@ -1434,6 +1434,7 @@ export interface FacultyBlock {
     };
     [k: string]: unknown;
   } | null;
+  campus?: ('all' | 'wadala' | 'matunga') | null;
   /**
    * “Led by the head teacher” puts the head teacher at the top with the rest of the roster beneath her. The school is one place now, so this is a single group rather than one column per campus.
    */
@@ -2510,6 +2511,12 @@ export interface HeroEnquiryBlock {
           id?: string | null;
         }[]
       | null;
+    campusOptions?:
+      | {
+          campus?: ('wadala' | 'matunga') | null;
+          id?: string | null;
+        }[]
+      | null;
     /**
      * Shown with ticks beneath the form.
      */
@@ -3273,6 +3280,7 @@ export interface FeatureListBlockSelect<T extends boolean = true> {
 export interface FacultyBlockSelect<T extends boolean = true> {
   heading?: T;
   intro?: T;
+  campus?: T;
   layout?: T;
   cardLayout?: T;
   showQualifications?: T;
@@ -3725,6 +3733,12 @@ export interface HeroEnquiryBlockSelect<T extends boolean = true> {
           | T
           | {
               label?: T;
+              id?: T;
+            };
+        campusOptions?:
+          | T
+          | {
+              campus?: T;
               id?: T;
             };
         trustPoints?:
