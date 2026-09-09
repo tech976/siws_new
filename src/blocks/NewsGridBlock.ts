@@ -50,7 +50,14 @@ export const NewsGridBlock: Block = {
     {
       name: 'items',
       type: 'array',
-      minRows: 1,
+      /*
+       * NO MINIMUM. The block used to require at least one story typed into it,
+       * which was right when this was the only way news reached the page. It
+       * now also lists whatever is published in News & Events, so a section
+       * starting with an empty block and adding its news through the panel is
+       * the normal case — and `minRows: 1` would refuse to save that page at
+       * all.
+       */
       maxRows: 24,
       labels: { singular: 'Story', plural: 'Stories' },
       admin: {
