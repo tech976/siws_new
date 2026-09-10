@@ -1,6 +1,6 @@
 'use client'
 
-import { Globe } from 'lucide-react'
+import { ChevronDown, Globe } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 /**
@@ -133,8 +133,37 @@ export const LanguageSelector = () => {
   }
 
   return (
-    <div className="flex items-center gap-1.5 px-3 py-1.5">
+    /*
+     * `notranslate` ON THE WHOLE CONTROL, and this is the requirement that
+     * matters most.
+     *
+     * Google translates every text node it is given, including this list. So
+     * choosing Urdu rewrote the options into Urdu — and a visitor who picked a
+     * language by mistake was left reading a menu in a script they cannot read,
+     * with no way back to English. The one control that must never be
+     * translated is the one that changes the language.
+     *
+     * The names are already in their own scripts, so nothing is lost: a Urdu
+     * reader sees "اردو" whether the page is in English or Urdu, and an English
+     * reader sees "Urdu" beside it either way.
+     */
+    <div className="notranslate relative ml-auto flex shrink-0 items-center gap-1.5 py-1.5 pl-4" translate="no">
       <Globe size={15} aria-hidden="true" className="shrink-0" />
+
+      {/*
+        The chosen language, drawn by us, plus a caret.
+        
+        A native `<select>` reserves room for the operating system's own arrow
+        and the width of that arrow is not ours to set — which left the control
+        ending 100px short of the header above it however the padding was
+        trimmed. So the label is rendered here and the real `<select>` is laid
+        transparently over the top: the browser still owns the menu, the
+        keyboard and the touch behaviour, and the bar still lines up.
+      */}
+      <span aria-hidden="true" className="pointer-events-none text-sm font-semibold whitespace-nowrap">
+        {LANGUAGES.find((l) => l.code === current)?.native ?? 'English'}
+      </span>
+      <ChevronDown size={14} aria-hidden="true" className="pointer-events-none shrink-0" />
 
       <label htmlFor="siws-language" className="sr-only">
         Choose a language. Pages are translated automatically by Google Translate.
@@ -146,7 +175,11 @@ export const LanguageSelector = () => {
         value={current}
         disabled={busy}
         onChange={(event) => change(event.target.value)}
-        className="cursor-pointer rounded border-0 bg-transparent py-1 pr-1 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-60"
+        /*
+         * Transparent and stretched over the label above. `inset-0` rather than
+         * a width, so it always covers exactly what is drawn.
+         */
+        className="absolute inset-0 cursor-pointer appearance-none bg-transparent text-transparent opacity-0 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-wait"
       >
         {LANGUAGES.map((language) => (
           /*
@@ -155,9 +188,18 @@ export const LanguageSelector = () => {
            * invisible menu. This is the one place the bar's colour cannot carry
            * through.
            */
-          <option key={language.code} value={language.code} className="text-ink">
+          <option key={language.code} value={language.code} className="text-ink" translate="no">
+            {/*
+              BOTH names on every row, English included.
+              
+              The native name alone is unreadable to somebody who landed in the
+              wrong language; the English name alone is unreadable to the reader
+              the language is for. Showing both means the row is legible to
+              either, which is what makes the list usable as an escape route
+              rather than only as a way in.
+            */}
             {language.code === 'en'
-              ? language.native
+              ? 'English'
               : `${language.native} · ${language.english}`}
           </option>
         ))}

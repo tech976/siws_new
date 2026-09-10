@@ -44,8 +44,14 @@ export const SectionSwitcher = ({ units, currentSlug }: SectionSwitcherProps) =>
         fit on a narrow screen, and a bar that wraps to three lines pushes the
         school's own name below the fold on the page a visitor arrived at.
       */}
-      <div className="siws-container flex items-center justify-end gap-1">
-        <nav aria-label="SIWS sections" className="flex min-w-0 overflow-x-auto">
+      <div className="siws-container flex items-center gap-1">
+        {/*
+          `ml-auto` on the nav pushes BOTH it and the selector to the right,
+          then the selector's own `ml-auto` below separates the two so the
+          language control sits hard against the right edge — where a visitor
+          expects it, and away from the section tabs it has nothing to do with.
+        */}
+        <nav aria-label="SIWS sections" className="ml-auto flex min-w-0 overflow-x-auto">
           {links.map((link) => {
             const current = link.slug === (currentSlug ?? null)
             return (
