@@ -147,7 +147,25 @@ export const LanguageSelector = () => {
      * reader sees "اردو" whether the page is in English or Urdu, and an English
      * reader sees "Urdu" beside it either way.
      */
-    <div className="notranslate relative ml-auto flex shrink-0 items-center gap-1.5 py-1.5 pl-4" translate="no">
+    <div
+      /*
+       * Absolutely positioned, so it takes no width in the bar's flow. Placed
+       * in the flow it made the section tabs share the row and shifted all five
+       * left of where they had always sat — see the note in `SectionSwitcher`.
+       *
+       * `right-5` matches `siws-container`'s own 1.25rem padding, so it lines
+       * up with the bar's inner edge like everything else in the header.
+       */
+      /*
+       * `bg-sky` and a little padding, because the section tabs SCROLL
+       * sideways underneath this on a narrow screen — without an opaque
+       * background the two overprint each other and neither is readable. The
+       * gradient on the left fades the tabs out as they pass behind rather
+       * than cutting them off at a hard edge.
+       */
+      className="notranslate absolute top-0 right-0 bottom-0 z-10 flex items-center gap-1.5 bg-sky pl-6 pr-5 [mask-image:linear-gradient(to_right,transparent,black_1.25rem)]"
+      translate="no"
+    >
       <Globe size={15} aria-hidden="true" className="shrink-0" />
 
       {/*
