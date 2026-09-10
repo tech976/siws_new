@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { LanguageSelector } from '@/components/translate/LanguageSelector'
 import type { Unit } from '@/payload-types'
 
 interface SectionSwitcherProps {
@@ -43,8 +44,8 @@ export const SectionSwitcher = ({ units, currentSlug }: SectionSwitcherProps) =>
         fit on a narrow screen, and a bar that wraps to three lines pushes the
         school's own name below the fold on the page a visitor arrived at.
       */}
-      <div className="siws-container overflow-x-auto">
-        <nav aria-label="SIWS sections" className="flex min-w-max justify-end">
+      <div className="siws-container flex items-center justify-end gap-1">
+        <nav aria-label="SIWS sections" className="flex min-w-0 overflow-x-auto">
           {links.map((link) => {
             const current = link.slug === (currentSlug ?? null)
             return (
@@ -58,13 +59,32 @@ export const SectionSwitcher = ({ units, currentSlug }: SectionSwitcherProps) =>
                   // The current section is marked by a filled block, not colour
                   // alone — WCAG 2.1 SC 1.4.1.
                   current ? 'bg-brand text-white' : 'text-white',
+                  /*
+                    The section names are proper nouns. Google transliterates
+                    them into the target script, so "Primary School" became
+                    "प्राथमिक स्कूल" and the bar a parent had learnt to
+                    navigate changed with the language.
+                  */
+                  'notranslate',
                 ].join(' ')}
+                translate="no"
               >
                 {link.label}
               </Link>
             )
           })}
         </nav>
+
+        {/*
+          The language selector, at SIWS's request. Machine translation rather
+          than the Phase 2 multi-language support SRS 1.2 scopes — see
+          `LanguageSelector` for what that difference means.
+
+          In this bar rather than the white one below because it belongs with
+          the other site-wide chrome: it applies to every page of every section,
+          which is exactly what this band is for.
+        */}
+        <LanguageSelector />
       </div>
     </div>
   )

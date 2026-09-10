@@ -98,9 +98,19 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
 
         <div className="min-w-0">
           <Link href={home} className="block">
+            {/*
+              `notranslate` — the acronym is a proper noun and Google
+              transliterates it into the target script ("एसआईडब्ल्यूएस"),
+              which is not the school's name in any language. The same class
+              guards the section names below, for the same reason: a parent
+              looking for "SIWS High School, Wadala" is looking for those
+              words, and a school whose own name changes with the language
+              selector is not identifiable.
+            */}
             <span
-              className="block text-2xl leading-none tracking-wide text-brand sm:text-3xl"
+              className="notranslate block text-2xl leading-none tracking-wide text-brand sm:text-3xl"
               style={{ fontFamily: 'var(--font-display)' }}
+              translate="no"
             >
               SIWS
             </span>

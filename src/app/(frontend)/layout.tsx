@@ -7,6 +7,7 @@ import { PreviewBanner } from '@/components/preview/PreviewBanner'
 import { fontVariables } from '@/fonts'
 
 import './globals.css'
+import { TranslateLoader } from '@/components/translate/TranslateLoader'
 
 const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
@@ -110,6 +111,13 @@ const FrontendLayout = async ({ children }: { children: ReactNode }) => {
       data-contrast={contrast}
     >
       <body>
+        {/*
+          Loads Google's translation script, and ONLY when a language has been
+          chosen — so a visitor reading in English is never given a Google
+          cookie (FR-PRV-02). See `TranslateLoader`.
+        */}
+        <TranslateLoader />
+
         {/* SRS 4.4 — skip-to-content link, the first thing a keyboard user reaches. */}
         <a href="#main-content" className="skip-link">
           Skip to content
