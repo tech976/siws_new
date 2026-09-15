@@ -3,6 +3,9 @@ import type { Media as MediaDoc, VideoGalleryBlock } from '@/payload-types'
 
 import { Section, SectionHeading, type BlockBackground } from './Section'
 import { VideoCard } from './VideoCard'
+import Link from 'next/link'
+import { readConsent } from '@/app/(frontend)/actions/consent'
+import { hasConsent } from '@/lib/cookie-consent'
 
 /**
  * A row of event videos.
@@ -19,12 +22,25 @@ import { VideoCard } from './VideoCard'
  * Cropping to fill instead would take a 9:16 still down to its middle third,
  * and on these particular films that is where the caption is.
  */
-export const VideoGalleryBlockView = ({ block }: { block: VideoGalleryBlock }) => {
+export const VideoGalleryBlockView = async ({ block }: { block: VideoGalleryBlock }) => {
   const videos = (block.videos ?? []).filter(
     (item) => item.poster && typeof item.poster === 'object' && item.driveUrl,
   )
 
   if (videos.length === 0) return null
+
+  /*
+   * FR-PRV-02 — Drive's player is a third-party frame that sets Google's
+   * cookies. `VideoCard` is a client component (it holds the play state), so
+   * the check cannot live inside it: consent is resolved here, on the server,
+   * and the card is only given the id it needs to build the frame once the
+   * visitor has allowed embedded media.
+   *
+   * The POSTER still renders either way. It is our own photograph out of the
+   * media library, so a visitor who declined cookies sees the gallery and what
+   * each film is of — they simply cannot press play.
+   */
+  const embedsAllowed = hasConsent(await readConsent(), 'embeds')
 
   return (
     <Section background={block.background as BlockBackground}>
@@ -53,14 +69,36 @@ export const VideoGalleryBlockView = ({ block }: { block: VideoGalleryBlock }) =
                 frame holds still and only its contents come alive.
               */}
               <div className="relative aspect-video w-full overflow-hidden bg-black">
-                <VideoCard title={item.title} driveId={item.driveUrl}>
-                  <Media
-                    resource={poster}
-                    sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-                    fill
-                    className="object-contain"
-                  />
-                </VideoCard>
+                {embedsAllowed ? (
+                  <VideoCard title={item.title} driveId={item.driveUrl}>
+                    <Media
+                      resource={poster}
+                      sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
+                      fill
+                      className="object-contain"
+                    />
+                  </VideoCard>
+                ) : (
+                  <>
+                    <Media
+                      resource={poster}
+                      sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
+                      fill
+                      className="object-contain"
+                    />
+                    {/*
+                      Over the still rather than replacing it: the photograph is
+                      ours and worth showing, and this says why pressing it does
+                      nothing yet.
+                    */}
+                    <Link
+                      href="/cookies"
+                      className="absolute inset-0 grid place-items-center bg-black/55 p-4 text-center text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    >
+                      Allow embedded media to play this film
+                    </Link>
+                  </>
+                )}
               </div>
 
               <div className="flex flex-1 flex-col p-5">

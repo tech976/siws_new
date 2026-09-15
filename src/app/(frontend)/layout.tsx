@@ -8,6 +8,13 @@ import { fontVariables } from '@/fonts'
 
 import './globals.css'
 import { TranslateLoader } from '@/components/translate/TranslateLoader'
+import { CookieBanner } from '@/components/consent/CookieBanner'
+import {
+  acceptAllCookies,
+  readConsent,
+  rejectAllCookies,
+  saveCookiePreferences,
+} from '@/app/(frontend)/actions/consent'
 
 const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
@@ -91,6 +98,9 @@ const FrontendLayout = async ({ children }: { children: ReactNode }) => {
   // public visitor is never served either component.
   const { isEnabled: isDraft } = await draftMode()
 
+  /* FR-PRV-01 — whether this visitor has already answered the banner. */
+  const consent = await readConsent()
+
   const cookieStore = await cookies()
   const savedSize = cookieStore.get(TEXT_SIZE_COOKIE)?.value
   const textSize = savedSize === 'large' || savedSize === 'x-large' ? savedSize : undefined
@@ -117,6 +127,18 @@ const FrontendLayout = async ({ children }: { children: ReactNode }) => {
           cookie (FR-PRV-02). See `TranslateLoader`.
         */}
         <TranslateLoader />
+
+        {/*
+          FR-PRV-01 — the consent banner, on every page until it is answered.
+          `answered` is resolved on the server, so a visitor who decided months
+          ago never sees it flash up before React works that out.
+        */}
+        <CookieBanner
+          answered={consent !== null}
+          acceptAll={acceptAllCookies}
+          rejectAll={rejectAllCookies}
+          save={saveCookiePreferences}
+        />
 
         {/* SRS 4.4 — skip-to-content link, the first thing a keyboard user reaches. */}
         <a href="#main-content" className="skip-link">

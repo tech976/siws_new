@@ -2,6 +2,7 @@ import type { LiveStreamBlock } from '@/payload-types'
 import { youtubeEmbed } from '@/lib/youtube'
 
 import { Section, SectionHeading, type BlockBackground } from './Section'
+import { EmbedGate } from '@/components/consent/EmbedGate'
 
 /**
  * The player, at the width of the page rather than the width of the prose.
@@ -11,7 +12,7 @@ import { Section, SectionHeading, type BlockBackground } from './Section'
  * 16:9 frame across a very wide screen puts the picture taller than the
  * viewport and pushes everything else off it.
  */
-export const LiveStreamBlockView = ({ block }: { block: LiveStreamBlock }) => {
+export const LiveStreamBlockView = async ({ block }: { block: LiveStreamBlock }) => {
   const embed = block.youtubeUrl ? youtubeEmbed(block.youtubeUrl) : null
 
   /*
@@ -34,6 +35,13 @@ export const LiveStreamBlockView = ({ block }: { block: LiveStreamBlock }) => {
         </div>
       ) : null}
 
+      {/*
+        FR-PRV-02 — YouTube's player sets YouTube's cookies, so it waits for
+        consent. The placeholder links to the stream on YouTube itself, which
+        is the whole point of degrading gracefully: a parent who declined
+        cookies can still watch it, just not here.
+      */}
+      <EmbedGate label="live telecast" provider="YouTube" href={block.youtubeUrl}>
       <div className="mx-auto w-full max-w-4xl overflow-hidden rounded-2xl bg-brand-deep ring-1 ring-line/60">
         <iframe
           src={embed}
@@ -49,6 +57,7 @@ export const LiveStreamBlockView = ({ block }: { block: LiveStreamBlock }) => {
           className="aspect-video w-full border-0"
         />
       </div>
+      </EmbedGate>
 
       {block.note ? (
         <p className="mx-auto mt-4 max-w-4xl text-center t-small text-ink-muted">{block.note}</p>

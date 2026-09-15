@@ -10,6 +10,7 @@ import { InstagramProfileEmbed } from './InstagramProfileEmbed'
 import type { InstagramFeedBlock, Media as MediaDoc } from '@/payload-types'
 
 import { Section, SectionHeading, type BlockBackground } from './Section'
+import { EmbedGate } from '@/components/consent/EmbedGate'
 
 /**
  * The Instagram grid.
@@ -243,12 +244,23 @@ export const InstagramFeedBlockView = async ({ block }: { block: InstagramFeedBl
         </a>
       </div>
 
+      {/*
+        FR-PRV-02 — the two branches that render INSTAGRAM'S OWN frames wait for
+        consent; the tile grid below does not, because those are photographs
+        from our own media library and set nobody's cookies. So a visitor who
+        declined embedded media still sees the section, styled as ours, and only
+        loses the parts Meta would have served.
+      */}
       {wantsReels ? (
         <InstagramReels reels={reels} />
       ) : isProfile && publicPosts.length === 0 ? (
-        <InstagramProfileEmbed handle={block.handle} />
+        <EmbedGate label="Instagram feed" provider="Instagram" href={block.profileUrl}>
+          <InstagramProfileEmbed handle={block.handle} />
+        </EmbedGate>
       ) : isLinks ? (
-        <InstagramEmbedGrid urls={embedUrls} handle={block.handle} />
+        <EmbedGate label="Instagram posts" provider="Instagram" href={block.profileUrl}>
+          <InstagramEmbedGrid urls={embedUrls} handle={block.handle} />
+        </EmbedGate>
       ) : (
         <ul
           /*

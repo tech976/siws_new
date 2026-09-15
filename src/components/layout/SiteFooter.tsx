@@ -6,6 +6,8 @@ import type { Unit } from '@/payload-types'
 
 import type { NavItem } from './PrimaryNav'
 import { AccessibilityControls } from './AccessibilityControls'
+import { CookieSettings } from '@/components/consent/CookieSettings'
+import { withdrawCookieConsent } from '@/app/(frontend)/actions/consent'
 
 interface SiteFooterProps {
   unit?: Unit | null
@@ -408,6 +410,15 @@ export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
                 </Link>
               </li>
             ))}
+
+            {/*
+              FR-PRV-03 — reviewing and withdrawing consent has to be as easy as
+              giving it, and reachable at any time. Beside the policy links
+              because that is where somebody looking for it will look.
+            */}
+            <li>
+              <CookieSettings withdraw={withdrawCookieConsent} />
+            </li>
           </ul>
         </div>
       </div>

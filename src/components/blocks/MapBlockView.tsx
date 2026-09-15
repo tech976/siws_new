@@ -1,6 +1,7 @@
 import type { MapBlock } from '@/payload-types'
 
 import { Section, SectionHeading, type BlockBackground } from './Section'
+import { EmbedGate } from '@/components/consent/EmbedGate'
 
 const HEIGHT_CLASS: Record<string, string> = {
   short: 'h-64 sm:h-72',
@@ -21,7 +22,7 @@ const HEIGHT_CLASS: Record<string, string> = {
  * keyed Embed API would put a credential in the client bundle and bill the
  * school per view, for a map that never changes.
  */
-export const MapBlockView = ({ block }: { block: MapBlock }) => {
+export const MapBlockView = async ({ block }: { block: MapBlock }) => {
   const address = block.address?.trim()
   if (!address) return null
 
@@ -37,20 +38,30 @@ export const MapBlockView = ({ block }: { block: MapBlock }) => {
     <Section background={(block.background ?? 'white') as BlockBackground}>
       <SectionHeading heading={block.heading} accentWord={block.accentWord} level="h2" />
 
-      <div className="mt-6 overflow-hidden rounded-card border border-line shadow-card">
-        <iframe
-          src={embedSrc}
-          title={title}
-          className={`w-full border-0 ${HEIGHT_CLASS[block.height ?? 'medium'] ?? HEIGHT_CLASS.medium}`}
-          loading="lazy"
-          /*
-           * `no-referrer-when-downgrade` is what Google's own embed uses.
-           * The map is a third-party frame, so it is denied everything it does
-           * not need — it cannot reach the camera, microphone or location.
-           */
-          referrerPolicy="no-referrer-when-downgrade"
-          allow="fullscreen"
-        />
+      {/*
+        FR-PRV-02 — the frame is Google's and sets Google's cookies, so it is
+        not rendered until the visitor has allowed embedded media. The address
+        and the directions link below are ours and stay unconditional: a parent
+        who declined cookies still needs to know where the school is.
+      */}
+      <div className="mt-6">
+        <EmbedGate label="map" provider="Google Maps" href={directionsHref}>
+          <div className="overflow-hidden rounded-card border border-line shadow-card">
+            <iframe
+              src={embedSrc}
+              title={title}
+              className={`w-full border-0 ${HEIGHT_CLASS[block.height ?? 'medium'] ?? HEIGHT_CLASS.medium}`}
+              loading="lazy"
+              /*
+               * `no-referrer-when-downgrade` is what Google's own embed uses.
+               * The map is a third-party frame, so it is denied everything it
+               * does not need — no camera, microphone or location.
+               */
+              referrerPolicy="no-referrer-when-downgrade"
+              allow="fullscreen"
+            />
+          </div>
+        </EmbedGate>
       </div>
 
       {/*

@@ -104,8 +104,13 @@ export const withCategories = (chosen: ConsentCategory[]): ConsentState => ({
   categories: Array.from(new Set<ConsentCategory>(['necessary', ...chosen])),
 })
 
-export const serialiseConsent = (state: ConsentState): string =>
-  encodeURIComponent(JSON.stringify(state))
+/*
+ * NOT URL-ENCODED HERE. Next's cookie API encodes the value on the way out and
+ * decodes it on the way in, so encoding first produced a double-encoded cookie
+ * (`%257B` rather than `%7B`) that `parseConsent` could not read back — the
+ * visitor's answer was stored and then silently ignored on the next page.
+ */
+export const serialiseConsent = (state: ConsentState): string => JSON.stringify(state)
 
 /**
  * Reads a stored consent. Anything unparseable, or carrying a version older
@@ -116,7 +121,13 @@ export const parseConsent = (raw: string | undefined | null): ConsentState | nul
   if (!raw) return null
 
   try {
-    const parsed = JSON.parse(decodeURIComponent(raw)) as Partial<ConsentState>
+    /*
+     * Tolerates a percent-encoded value as well as a plain one: cookies written
+     * by the earlier double-encoding build are still in visitors' browsers, and
+     * a stored consent that cannot be read is a consent silently re-asked for.
+     */
+    const decoded = raw.trimStart().startsWith('{') ? raw : decodeURIComponent(raw)
+    const parsed = JSON.parse(decoded) as Partial<ConsentState>
 
     if (parsed.version !== CONSENT_VERSION) return null
     if (!Array.isArray(parsed.categories)) return null
