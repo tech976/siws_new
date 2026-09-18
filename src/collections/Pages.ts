@@ -18,6 +18,7 @@ import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate
 import { blockUnconsentedChildImages } from '@/hooks/child-consent'
 import type { Page } from '@/payload-types'
 import { ensureUniqueSlugPerUnit } from '@/hooks/unique-slug'
+import { recordRedirectOnMove } from '@/lib/redirects'
 import {
   constrainUnitToScope,
   enforcePublishPermission,
@@ -112,7 +113,7 @@ export const Pages: CollectionConfig = {
       blockUnconsentedChildImages,
       stampWorkflowTransitions,
     ],
-    afterChange: [notifyWorkflowParticipants, auditChange('pages'), revalidateAfterChange],
+    afterChange: [recordRedirectOnMove, notifyWorkflowParticipants, auditChange('pages'), revalidateAfterChange],
     afterDelete: [auditDelete('pages'), revalidateAfterDelete],
   },
 
@@ -327,6 +328,26 @@ export const Pages: CollectionConfig = {
       },
     },
 
+    {
+      /*
+       * FR-PRV-14 — "the privacy policy, cookie policy and consent notices shall
+       * be versioned, with the effective date displayed and previous versions
+       * retained". Previous versions are the page's own version history; this
+       * is the date shown on the page, set deliberately rather than taken from
+       * the last save, because correcting a typo does not change when a policy
+       * took effect.
+       */
+      name: 'effectiveDate',
+      type: 'date',
+      label: 'Policy takes effect from',
+      admin: {
+        position: 'sidebar',
+        date: { pickerAppearance: 'dayOnly', displayFormat: 'd MMM yyyy' },
+        description: 'Shown at the top of the page. Change it when the policy itself changes.',
+        condition: (data) =>
+          !data?.unit && ['privacy', 'cookies', 'accessibility'].includes(data?.slug),
+      },
+    },
     ...workflowFields,
     ...schedulingFields,
   ],

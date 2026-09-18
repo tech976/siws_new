@@ -80,6 +80,9 @@ export interface Config {
     'audit-logs': AuditLog;
     'consent-records': ConsentRecord;
     'data-requests': DataRequest;
+    'quick-links': QuickLink;
+    redirects: Redirect;
+    'consent-notices': ConsentNotice;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -100,6 +103,9 @@ export interface Config {
     'audit-logs': AuditLogsSelect<false> | AuditLogsSelect<true>;
     'consent-records': ConsentRecordsSelect<false> | ConsentRecordsSelect<true>;
     'data-requests': DataRequestsSelect<false> | DataRequestsSelect<true>;
+    'quick-links': QuickLinksSelect<false> | QuickLinksSelect<true>;
+    redirects: RedirectsSelect<false> | RedirectsSelect<true>;
+    'consent-notices': ConsentNoticesSelect<false> | ConsentNoticesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -112,10 +118,12 @@ export interface Config {
   globals: {
     'data-protection': DataProtection;
     'cookie-inventory': CookieInventory;
+    'privacy-contact': PrivacyContact;
   };
   globalsSelect: {
     'data-protection': DataProtectionSelect<false> | DataProtectionSelect<true>;
     'cookie-inventory': CookieInventorySelect<false> | CookieInventorySelect<true>;
+    'privacy-contact': PrivacyContactSelect<false> | PrivacyContactSelect<true>;
   };
   locale: null;
   widgets: {
@@ -624,6 +632,7 @@ export interface Page {
         | HeroEnquiryBlock
         | FeedbackBlock
         | CookieInventoryBlock
+        | DpoContactBlock
       )[]
     | null;
   /**
@@ -670,6 +679,10 @@ export interface Page {
    * Optional. Puts this page in the drop-down beneath another menu item. Leave blank to make it a top-level item.
    */
   navParent?: (number | null) | Page;
+  /**
+   * Shown at the top of the page. Change it when the policy itself changes.
+   */
+  effectiveDate?: string | null;
   /**
    * When your work is ready, choose “Submitted for review”. Your head of school is emailed and can either approve it or send it back with a note.
    */
@@ -2613,6 +2626,31 @@ export interface CookieInventoryBlock {
   blockType: 'cookieInventory';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DpoContactBlock".
+ */
+export interface DpoContactBlock {
+  /**
+   * Optional.
+   */
+  heading?: string | null;
+  /**
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
+  /**
+   * Type a word from the heading to show it in SIWS accent.
+   */
+  accentWord?: string | null;
+  /**
+   * Text colour adjusts automatically so it stays readable.
+   */
+  background?: ('white' | 'sea' | 'tint' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'dpoContact';
+}
+/**
  * Short lines that scroll across the top of the site. Keep each one to a single sentence.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2851,7 +2889,8 @@ export interface AuditLog {
     | 'viewed_personal_data'
     | 'exported_personal_data'
     | 'deleted_personal_data'
-    | 'emergency_publish';
+    | 'emergency_publish'
+    | 'failed_login';
   targetCollection?: string | null;
   targetId?: string | null;
   targetTitle?: string | null;
@@ -2936,6 +2975,103 @@ export interface DataRequest {
   createdAt: string;
 }
 /**
+ * The shortcuts under “Quick links” at the top right of every page. Drag the rows to change the order. Links with no school are for the main SIWS website.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quick-links".
+ */
+export interface QuickLink {
+  id: number;
+  _order?: string | null;
+  /**
+   * Short — it sits in a menu. For example “Fee structure”.
+   */
+  label: string;
+  linkType: 'page' | 'post' | 'document' | 'external';
+  page?: (number | null) | Page;
+  post?: (number | null) | Post;
+  /**
+   * Upload the PDF to the media library first, or drop it here.
+   */
+  document?: (number | null) | Media;
+  /**
+   * The full address, starting https://
+   */
+  url?: string | null;
+  /**
+   * Shown beside the label.
+   */
+  icon?:
+    | (
+        | 'arrow'
+        | 'admissions'
+        | 'fees'
+        | 'scholarship'
+        | 'calendar'
+        | 'download'
+        | 'news'
+        | 'bus'
+        | 'contact'
+        | 'map'
+        | 'info'
+      )
+    | null;
+  /**
+   * Leave empty for the main SIWS website (administrators only).
+   */
+  unit?: (number | null) | Unit;
+  state?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Old web addresses and where they now go. Added automatically when a published page is renamed; you can add or remove your own.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "redirects".
+ */
+export interface Redirect {
+  id: number;
+  /**
+   * The path only, starting with / — for example /primary/old-admissions
+   */
+  from: string;
+  /**
+   * A path on this website (/primary/admissions) or a full https:// address.
+   */
+  to: string;
+  automatic?: boolean | null;
+  note?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * The wording shown beside the tick box on each form. Saving a change starts a new version automatically; earlier versions are kept under “Versions”.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consent-notices".
+ */
+export interface ConsentNotice {
+  id: number;
+  title: string;
+  purpose: 'admission_enquiry' | 'feedback' | 'data_request';
+  /**
+   * What the person agrees to by ticking. One sentence.
+   */
+  checkboxLabel: string;
+  whatWeCollect: string;
+  whyWeCollect: string;
+  howLongWeKeepIt: string;
+  yourRights: string;
+  /**
+   * Set automatically when the wording changes. Recorded against every consent.
+   */
+  version?: string | null;
+  effectiveFrom?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -3010,6 +3146,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'data-requests';
         value: number | DataRequest;
+      } | null)
+    | ({
+        relationTo: 'quick-links';
+        value: number | QuickLink;
+      } | null)
+    | ({
+        relationTo: 'redirects';
+        value: number | Redirect;
+      } | null)
+    | ({
+        relationTo: 'consent-notices';
+        value: number | ConsentNotice;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -3155,6 +3303,7 @@ export interface PagesSelect<T extends boolean = true> {
         heroEnquiry?: T | HeroEnquiryBlockSelect<T>;
         feedback?: T | FeedbackBlockSelect<T>;
         cookieInventory?: T | CookieInventoryBlockSelect<T>;
+        dpoContact?: T | DpoContactBlockSelect<T>;
       };
   metaTitle?: T;
   metaDescription?: T;
@@ -3167,6 +3316,7 @@ export interface PagesSelect<T extends boolean = true> {
   navOrder?: T;
   navMirrorParent?: T;
   navParent?: T;
+  effectiveDate?: T;
   reviewStatus?: T;
   reviewNote?: T;
   submittedBy?: T;
@@ -3980,6 +4130,18 @@ export interface CookieInventoryBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DpoContactBlock_select".
+ */
+export interface DpoContactBlockSelect<T extends boolean = true> {
+  heading?: T;
+  headingLevel?: T;
+  accentWord?: T;
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "faculty_select".
  */
 export interface FacultySelect<T extends boolean = true> {
@@ -4289,6 +4451,53 @@ export interface DataRequestsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quick-links_select".
+ */
+export interface QuickLinksSelect<T extends boolean = true> {
+  _order?: T;
+  label?: T;
+  linkType?: T;
+  page?: T;
+  post?: T;
+  document?: T;
+  url?: T;
+  icon?: T;
+  unit?: T;
+  state?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "redirects_select".
+ */
+export interface RedirectsSelect<T extends boolean = true> {
+  from?: T;
+  to?: T;
+  automatic?: T;
+  note?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consent-notices_select".
+ */
+export interface ConsentNoticesSelect<T extends boolean = true> {
+  title?: T;
+  purpose?: T;
+  checkboxLabel?: T;
+  whatWeCollect?: T;
+  whyWeCollect?: T;
+  howLongWeKeepIt?: T;
+  yourRights?: T;
+  version?: T;
+  effectiveFrom?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -4401,6 +4610,26 @@ export interface CookieInventory {
   createdAt?: string | null;
 }
 /**
+ * Who families contact about their personal data, and how to raise a grievance. Published on the privacy page and at the foot of every page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-contact".
+ */
+export interface PrivacyContact {
+  id: number;
+  name?: string | null;
+  role?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  /**
+   * What a person does if they are unhappy with how their data was handled, and how long they can expect to wait for an answer. SIWS to confirm.
+   */
+  grievanceRoute?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "data-protection_select".
  */
@@ -4456,6 +4685,21 @@ export interface CookieInventorySelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-contact_select".
+ */
+export interface PrivacyContactSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  email?: T;
+  phone?: T;
+  address?: T;
+  grievanceRoute?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
 export interface CollectionsWidget {
@@ -4463,6 +4707,27 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VideoEmbedBlock".
+ */
+export interface VideoEmbedBlock {
+  /**
+   * Paste the address from the browser bar, e.g. https://www.youtube.com/watch?v=…
+   */
+  url: string;
+  /**
+   * Read out to visitors using a screen reader, e.g. “Annual Day 2026 — the Primary dance”.
+   */
+  title: string;
+  /**
+   * Optional line under the video.
+   */
+  caption?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'videoEmbed';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

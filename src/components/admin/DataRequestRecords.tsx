@@ -77,6 +77,29 @@ export const DataRequestRecords = () => {
         .reduce((sum, group) => sum + group.records.length, 0)
     : 0
 
+  const withdraw = async () => {
+    setBusy(true)
+    setMessage(null)
+    try {
+      const response = await fetch(`/api/data-requests/${id}/withdraw-consent`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      const body = await response.json()
+      if (!response.ok) throw new Error(body.error ?? 'Withdrawal failed.')
+      setMessage(
+        body.withdrawn > 0
+          ? `Withdrew ${body.withdrawn} consent${body.withdrawn === 1 ? '' : 's'}. Reload the page to see it in the history below.`
+          : 'There were no standing consents to withdraw.',
+      )
+      await load()
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Withdrawal failed.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   const erase = async () => {
     setBusy(true)
     setMessage(null)
@@ -155,6 +178,25 @@ export const DataRequestRecords = () => {
               Download everything held (JSON)
             </a>
           </div>
+
+          {requestType === 'withdraw_consent' ? (
+            <div className="siws-dsr__group">
+              <p className="siws-dsr__label">Withdraw their consents</p>
+              <p className="siws-dsr__muted">
+                Marks every consent they have given as withdrawn in the consent register and
+                records it in the history. Nothing is deleted. Afterwards, stop contacting them
+                for the purposes listed — for example, do not follow up an admission enquiry.
+              </p>
+              <button
+                type="button"
+                className="btn btn--style-primary btn--size-small"
+                disabled={busy}
+                onClick={withdraw}
+              >
+                {busy ? 'Withdrawing…' : 'Withdraw all their consents'}
+              </button>
+            </div>
+          ) : null}
 
           {requestType === 'erasure' ? (
             <div className="siws-dsr__danger">

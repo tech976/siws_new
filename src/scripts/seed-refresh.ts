@@ -163,6 +163,15 @@ const STEPS: Step[] = [
   { script: 'seed:portal-marquee', does: 'the four photographs the banner crossfades' },
 
   /*
+   * Records the site cannot work properly without, moved out of code into the
+   * admin panel. Each leaves alone anything already there, so a school's edits
+   * survive every refresh. Quick links need the pages above to exist.
+   */
+  { script: 'seed:cookies', does: 'the cookie inventory on the cookie policy' },
+  { script: 'seed:quick-links', does: 'the quick links, and the DPO section on the privacy page' },
+  { script: 'seed:consent-notices', does: 'the consent notices beside each form’s tick box' },
+
+  /*
    * GALLERIES BEFORE NAV, and the order is not a preference.
    *
    * `galleries.ts` writes each unit gallery with `showInNav: false` so that

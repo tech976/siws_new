@@ -4,7 +4,7 @@ import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 
 import { submitDataRequest } from '@/app/(frontend)/actions/data-request'
-import { DATA_REQUEST_NOTICE } from '@/lib/consent-notices'
+import { DATA_REQUEST_NOTICE, type ConsentNotice } from '@/lib/consent-notices'
 import { REQUEST_RELATIONSHIPS, REQUEST_TYPES } from '@/lib/data-protection'
 import { HONEYPOT_FIELD } from '@/lib/form-guard'
 import { idleFormState } from '@/lib/form-state'
@@ -37,7 +37,14 @@ const SubmitButton = () => {
   )
 }
 
-export const DataRequestForm = ({ formToken }: { formToken: string }) => {
+export const DataRequestForm = ({
+  formToken,
+  notice = DATA_REQUEST_NOTICE,
+}: {
+  formToken: string
+  /** BR-DPA-07 — the notice as worded in the admin panel. */
+  notice?: ConsentNotice
+}) => {
   const [state, formAction] = useActionState(submitDataRequest, idleFormState)
 
   const fieldError = (name: string) => state.errors?.[name]
@@ -140,13 +147,13 @@ export const DataRequestForm = ({ formToken }: { formToken: string }) => {
       </div>
 
       <ConsentNoticeDetails
-        notice={DATA_REQUEST_NOTICE}
+        notice={notice}
         privacyHref="/privacy"
         summary="How we will use the details on this form"
       />
 
       <ConsentCheckbox
-        label={DATA_REQUEST_NOTICE.checkboxLabel}
+        label={notice.checkboxLabel}
         error={fieldError('consent')}
         idPrefix="dsr-"
       />

@@ -314,8 +314,166 @@ const eraseHandler = async (req: PayloadRequest): Promise<Response> => {
   })
 }
 
+
+/**
+ * FR-PRV-13 — "withdrawal of consent shall cease the associated processing,
+ * and the system shall stop using the data for that purpose without requiring
+ * the individual to contact the school again".
+ *
+ * On a withdraw-consent request: every standing consent held for this person
+ * is marked withdrawn in the register, the request history records it, and the
+ * reply lists the records that were collected under those consents so the DPO
+ * can see what processing has to stop. Nothing is deleted — withdrawing
+ * consent is not erasure, and a family that wants both asks for both.
+ */
+const withdrawHandler = async (req: PayloadRequest): Promise<Response> => {
+  const loaded = await loadRequest(req)
+  if (!loaded.ok) return loaded.error
+
+  if (loaded.request.requestType !== 'withdraw_consent') {
+    return Response.json(
+      { error: 'Consent can only be withdrawn in answer to a withdraw-consent request.' },
+      { status: 400 },
+    )
+  }
+
+  const reference = `DSR-${String(loaded.request.id).padStart(4, '0')}`
+  const found = await findPersonalRecords(req, identifiersOf(loaded.request))
+  const consents = found.find((group) => group.collection === 'consent-records')?.docs ?? []
+  const standing = consents.filter((doc) => doc.status === 'given')
+
+  const now = new Date().toISOString()
+  for (const doc of standing) {
+    await req.payload.update({
+      collection: 'consent-records',
+      id: doc.id as number,
+      data: { status: 'withdrawn', withdrawnAt: now } as never,
+      overrideAccess: true,
+      req,
+    })
+  }
+
+  const affected = standing
+    .map((doc) => `${doc.purpose}${doc.relatedCollection ? ` (${doc.relatedCollection} #${doc.relatedId})` : ''}`)
+    .join('; ')
+
+  await writeAuditLog({
+    req,
+    action: 'updated',
+    targetCollection: 'consent-records',
+    targetId: loaded.request.id,
+    targetTitle: `Consent withdrawn under ${reference}`,
+    detail: `${standing.length} consent${standing.length === 1 ? '' : 's'} withdrawn: ${affected || 'none were standing'}.`,
+  })
+  await noteOnRequest(
+    req,
+    loaded.request.id,
+    standing.length > 0
+      ? `Withdrew ${standing.length} consent${standing.length === 1 ? '' : 's'}: ${affected}. Stop contacting them for those purposes.`
+      : 'No standing consents were found for this person.',
+  )
+
+  return Response.json({ withdrawn: standing.length, affected })
+}
+
+/**
+ * BR-DPA-09 — "identification and export of the personal data affected by a
+ * suspected breach, to assist SIWS in meeting its notification obligations".
+ *
+ * A breach is not about one person, so this is the one tool here that is not
+ * tied to a request: given a window (when the exposure may have happened) it
+ * returns every personal-data record created or changed in it, and — what the
+ * notification actually needs — the distinct people those records belong to.
+ *
+ * GET /api/data-requests/breach-report?from=YYYY-MM-DD&to=YYYY-MM-DD
+ */
+const breachHandler = async (req: PayloadRequest): Promise<Response> => {
+  if (!req.user || !isAdminOrDpo(req.user)) {
+    return Response.json(
+      { error: 'Only an administrator or the Data Protection Officer can do this.' },
+      { status: 403 },
+    )
+  }
+
+  const url = new URL(req.url ?? 'http://local/')
+  const from = new Date(url.searchParams.get('from') ?? '')
+  const toParam = url.searchParams.get('to')
+  const to = toParam ? new Date(`${toParam}T23:59:59.999Z`) : new Date()
+  if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime()) || from > to) {
+    return Response.json({ error: 'Give a valid “from” and “to” date.' }, { status: 400 })
+  }
+
+  const window: Where = {
+    or: [
+      { createdAt: { greater_than_equal: from.toISOString(), less_than_equal: to.toISOString() } },
+      { updatedAt: { greater_than_equal: from.toISOString(), less_than_equal: to.toISOString() } },
+    ],
+  }
+
+  const records: Record<string, Record<string, unknown>[]> = {}
+  const people = new Map<string, { email: string | null; phone: string | null; name: string | null }>()
+
+  for (const source of SOURCES) {
+    const { docs } = await req.payload.find({
+      collection: source.collection,
+      where: window,
+      depth: 0,
+      limit: 10000,
+      overrideAccess: true,
+      req,
+      context: { skipAudit: true },
+    })
+    const rows = docs as unknown as Record<string, unknown>[]
+    records[source.label] = rows
+
+    for (const row of rows) {
+      const email = normaliseEmail(source.email ? row[source.email] : null)
+      const phone = source.collection === 'consent-records' ? null : phoneKey(row.phone)
+      if (!email && !phone) continue
+      const key = email ?? `phone:${phone}`
+      const name =
+        (row.name as string) ??
+        (row.subjectName as string) ??
+        ([row.parentFirstName, row.parentLastName].filter(Boolean).join(' ') || null)
+      if (!people.has(key)) people.set(key, { email, phone, name })
+    }
+  }
+
+  const counts = Object.fromEntries(Object.entries(records).map(([label, rows]) => [label, rows.length]))
+  const total = Object.values(counts).reduce((sum, n) => sum + n, 0)
+
+  await writeAuditLog({
+    req,
+    action: 'exported_personal_data',
+    targetCollection: 'data-requests',
+    targetTitle: 'Breach report',
+    detail: `Breach report for ${from.toISOString().slice(0, 10)} to ${to.toISOString().slice(0, 10)}: ${total} records, ${people.size} people.`,
+  })
+
+  const body = {
+    notice:
+      'CONFIDENTIAL — prepared to assess a suspected personal-data breach. Share only with those handling the breach and delete when the matter is closed.',
+    window: { from: from.toISOString(), to: to.toISOString() },
+    preparedAt: new Date().toISOString(),
+    preparedBy: req.user.email,
+    summary: { records: counts, peopleAffected: people.size },
+    people: [...people.values()],
+    records,
+  }
+
+  return new Response(JSON.stringify(body, null, 2), {
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Disposition': `attachment; filename="siws-breach-report-${from.toISOString().slice(0, 10)}.json"`,
+      'Cache-Control': 'no-store',
+    },
+  })
+}
+
 export const dataRequestEndpoints: Endpoint[] = [
   { path: '/:id/records', method: 'get', handler: recordsHandler },
   { path: '/:id/export', method: 'get', handler: exportHandler },
   { path: '/:id/erase', method: 'post', handler: eraseHandler },
+  { path: '/:id/withdraw-consent', method: 'post', handler: withdrawHandler },
+  { path: '/breach-report', method: 'get', handler: breachHandler },
 ]

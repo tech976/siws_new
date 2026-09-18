@@ -5,6 +5,7 @@ import { EmergencyNoticeBanner } from '@/components/emergency/EmergencyNoticeBan
 import { DataRequestForm } from '@/components/forms/DataRequestForm'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
+import { getConsentNotice } from '@/lib/consent-notices-server'
 import { createFormToken } from '@/lib/form-guard'
 import { getNavItems, getQuickLinks, getUnits } from '@/lib/site'
 
@@ -71,7 +72,7 @@ const DataRequestPage = async () => {
           </div>
 
           <div className="siws-card rounded-3xl p-6 sm:p-8">
-            <DataRequestForm formToken={createFormToken()} />
+            <DataRequestForm formToken={createFormToken()} notice={await getConsentNotice('data_request')} />
           </div>
         </section>
       </main>

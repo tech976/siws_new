@@ -5,6 +5,8 @@ import type { ComponentType, ReactNode } from 'react'
 import type { Unit } from '@/payload-types'
 
 import type { NavItem } from './PrimaryNav'
+import { getPrivacyContact } from '@/components/blocks/DpoContactBlockView'
+
 import { AccessibilityControls } from './AccessibilityControls'
 import { CookieSettings } from '@/components/consent/CookieSettings'
 import { withdrawCookieConsent } from '@/app/(frontend)/actions/consent'
@@ -131,7 +133,10 @@ const SOCIETY_LINKS: { href: string; label: string; external?: boolean }[] = [
   { href: 'https://siwscollege.edu.in', label: 'SIWS Degree College', external: true },
 ]
 
-export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
+export const SiteFooter = async ({ unit, quickLinks, units }: SiteFooterProps) => {
+  // FR-PRV-06 / §4.1 — the grievance contact, on every page.
+  const privacyContact = await getPrivacyContact()
+
   const year = new Date().getFullYear()
 
   /**
@@ -399,7 +404,37 @@ export const SiteFooter = ({ unit, quickLinks, units }: SiteFooterProps) => {
       */}
       <div className="border-t border-white/25">
         <div className="siws-container flex flex-col gap-3 py-5 text-xs text-white/85 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} South Indians&rsquo; Welfare Society (SIWS). All rights reserved.</p>
+          <div className="grid gap-1">
+            <p>© {year} South Indians&rsquo; Welfare Society (SIWS). All rights reserved.</p>
+            {/*
+              FR-PRV-06 / FR-CON-04 — the Data Protection Officer and grievance
+              contact, reachable from every page. Until SIWS nominates one, the
+              line points to the privacy page rather than naming nobody.
+            */}
+            <p>
+              Data protection &amp; grievances:{' '}
+              {privacyContact?.name ? (
+                <>
+                  {privacyContact.name}
+                  {privacyContact.email ? (
+                    <>
+                      ,{' '}
+                      <a
+                        href={`mailto:${privacyContact.email}`}
+                        className="underline underline-offset-4 hover:text-white"
+                      >
+                        {privacyContact.email}
+                      </a>
+                    </>
+                  ) : null}
+                </>
+              ) : (
+                <Link href="/privacy" className="underline underline-offset-4 hover:text-white">
+                  see our privacy page
+                </Link>
+              )}
+            </p>
+          </div>
 
           <ul className="flex flex-wrap gap-x-5 gap-y-2">
             {LEGAL_LINKS.map((item) => (

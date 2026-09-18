@@ -89,6 +89,8 @@ export const AuditLogs: CollectionConfig = {
             { label: 'Exported personal data', value: 'exported_personal_data' },
             { label: 'Deleted personal data', value: 'deleted_personal_data' },
             { label: 'Emergency publish', value: 'emergency_publish' },
+            // BR-AUTH-06 — failed sign-ins and lock-outs.
+            { label: 'Failed sign-in', value: 'failed_login' },
           ],
         },
         {

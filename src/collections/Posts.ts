@@ -17,6 +17,7 @@ import { ensureUniqueSlugPerUnit } from '@/hooks/unique-slug'
 import { richTextField } from '@/fields/richText'
 import { hideFromHod } from '@/fields/hod-simple'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
+import { recordRedirectOnMove } from '@/lib/redirects'
 
 /**
  * A department update — "Independence Day Celebrations 2026" — written by the
@@ -104,7 +105,7 @@ export const Posts: CollectionConfig = {
      * the whole tree is what every other rendered collection does, for the
      * same reason.
      */
-    afterChange: [revalidateAfterChange],
+    afterChange: [recordRedirectOnMove, revalidateAfterChange],
     afterDelete: [revalidateAfterDelete],
   },
 

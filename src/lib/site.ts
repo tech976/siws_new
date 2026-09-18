@@ -6,6 +6,7 @@ import { getPayload } from 'payload'
 
 import type { NavItem } from '@/components/layout/PrimaryNav'
 import type { Announcement, Page, Post, Unit } from '@/payload-types'
+import type { QuickLink } from '@/components/layout/QuickLinks'
 
 /**
  * Read-side queries for the public website.
@@ -81,52 +82,76 @@ export const getUnitBySlug = cache(async (slug: string): Promise<Unit | null> =>
  * indistinguishable from a live one.
  */
 /**
- * SRS 5.24 — the most-requested destinations.
+ * SRS 5.24 — the quick links for a scope, as managed under Configuration →
+ * Quick links (FR-QL-02), in the order they were dragged into (FR-QL-04).
  *
- * Resolved against pages that actually exist and are published, so the panel
- * can never offer a dead link: a shortcut that 404s is worse than no shortcut.
- * Unit sites get their own admissions and contact pages; the portal gets the
- * institution-wide ones.
+ * A link whose destination is unpublished or gone is left out rather than
+ * rendered (FR-QL-06): a shortcut that 404s is worse than no shortcut. The
+ * admin list flags it, so whoever owns it can see why it disappeared.
  */
-const QUICK_LINK_SLUGS = [
-  'admissions',
-  'scholarships',
-  'annual-calendar',
-  'download-centre',
-  'careers',
-  'contact',
-]
-
 export const getQuickLinks = cache(
-  async (unitId: number | string | null, unitSlug: string | null) => {
+  async (unitId: number | string | null, unitSlug: string | null): Promise<QuickLink[]> => {
     const payload = await payloadClient()
 
-    const { docs } = await payload.find({
-      collection: 'pages',
-      where: {
-        and: [
-          { slug: { in: QUICK_LINK_SLUGS } },
-          { _status: { equals: 'published' } },
-          unitId === null ? { unit: { exists: false } } : { unit: { equals: unitId } },
-        ],
-      },
-      limit: 20,
-      depth: 0,
-      overrideAccess: false,
-      select: { title: true, navLabel: true, slug: true },
-    })
+    try {
+      const { docs } = await payload.find({
+        collection: 'quick-links',
+        where: unitId === null ? { unit: { exists: false } } : { unit: { equals: unitId } },
+        sort: '_order',
+        limit: 30,
+        depth: 2,
+        overrideAccess: false,
+      })
 
-    // Ordered by the list above, not by what the database happened to return.
-    return QUICK_LINK_SLUGS.flatMap((slug) => {
-      const page = docs.find((doc) => doc.slug === slug)
-      if (!page) return []
-      return [
-        {
-          label: page.navLabel || page.title,
-          href: unitSlug ? `/${unitSlug}/${page.slug}` : `/${page.slug}`,
-        },
-      ]
-    })
+      const links: QuickLink[] = []
+
+      for (const doc of docs as unknown as {
+        label: string
+        linkType: string
+        icon?: string | null
+        url?: string | null
+        page?: { slug?: string; _status?: string; unit?: { slug?: string } | number | null } | null
+        post?: { slug?: string; _status?: string; unit?: { slug?: string } | number | null } | null
+        document?: { url?: string | null } | null
+      }[]) {
+        const icon = doc.icon ?? 'arrow'
+
+        if (doc.linkType === 'external' && doc.url) {
+          links.push({ label: doc.label, href: doc.url.trim(), icon, external: true })
+          continue
+        }
+
+        if (doc.linkType === 'document') {
+          const url = doc.document && typeof doc.document === 'object' ? doc.document.url : null
+          if (url) links.push({ label: doc.label, href: url, icon, download: true })
+          continue
+        }
+
+        const target = doc.linkType === 'post' ? doc.post : doc.page
+        if (!target || typeof target !== 'object' || !target.slug) continue
+        if (target._status && target._status !== 'published') continue
+
+        const targetUnit =
+          target.unit && typeof target.unit === 'object' ? target.unit.slug : null
+        const base = targetUnit ?? (target.unit ? unitSlug : null)
+
+        const href =
+          doc.linkType === 'page' && target.slug === UNIT_HOME_SLUG
+            ? base
+              ? `/${base}`
+              : '/'
+            : base
+              ? `/${base}/${target.slug}`
+              : `/${target.slug}`
+
+        links.push({ label: doc.label, href, icon })
+      }
+
+      return links
+    } catch {
+      // A header that cannot load its shortcuts still renders, without them.
+      return []
+    }
   },
 )
 

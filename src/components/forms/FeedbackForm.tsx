@@ -4,7 +4,7 @@ import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 
 import { submitFeedback } from '@/app/(frontend)/actions/feedback'
-import { FEEDBACK_NOTICE } from '@/lib/consent-notices'
+import { FEEDBACK_NOTICE, type ConsentNotice } from '@/lib/consent-notices'
 import { FEEDBACK_RELATIONSHIPS, FEEDBACK_SUBJECTS } from '@/lib/feedback-options'
 import { idleFormState } from '@/lib/form-state'
 import { HONEYPOT_FIELD } from '@/lib/form-guard'
@@ -33,6 +33,8 @@ interface FeedbackFormProps {
   /** Signed on the server when the page rendered — see `form-guard`. */
   formToken: string
   privacyHref?: string | null
+  /** BR-DPA-07 — the notice as worded in the admin panel. */
+  notice?: ConsentNotice
 }
 
 const SubmitButton = () => {
@@ -46,7 +48,7 @@ const SubmitButton = () => {
   )
 }
 
-export const FeedbackForm = ({ unitId, formToken, privacyHref }: FeedbackFormProps) => {
+export const FeedbackForm = ({ unitId, formToken, privacyHref, notice = FEEDBACK_NOTICE }: FeedbackFormProps) => {
   const [state, formAction] = useActionState(submitFeedback, idleFormState)
 
   const fieldError = (name: string) => state.errors?.[name]
@@ -171,13 +173,13 @@ export const FeedbackForm = ({ unitId, formToken, privacyHref }: FeedbackFormPro
       </div>
 
       <ConsentNoticeDetails
-        notice={FEEDBACK_NOTICE}
+        notice={notice}
         privacyHref={privacyHref}
         summary="How we will use what you send"
       />
 
       <ConsentCheckbox
-        label={FEEDBACK_NOTICE.checkboxLabel}
+        label={notice.checkboxLabel}
         error={fieldError('consent')}
         idPrefix="feedback-"
       />

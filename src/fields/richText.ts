@@ -1,5 +1,6 @@
 import {
   BlocksFeature,
+  EXPERIMENTAL_TableFeature,
   FixedToolbarFeature,
   HeadingFeature,
   HorizontalRuleFeature,
@@ -7,6 +8,8 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import type { RichTextField } from 'payload'
+
+import { VideoEmbedBlock } from '@/blocks/inline/VideoEmbed'
 
 /**
  * FR-CMS-02 / BR-EDIT-02 — the WYSIWYG editor.
@@ -67,6 +70,15 @@ export const richTextField = ({
          */
         HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
         HorizontalRuleFeature(),
+        /*
+         * BR-EDIT-02 — tables (a fee structure, a timetable, a list of
+         * results) and embeds. Payload labels its table support experimental;
+         * it is used here for simple grids, which is all a school write-up
+         * needs, and renders through the same structured converter as
+         * everything else.
+         */
+        EXPERIMENTAL_TableFeature(),
+        BlocksFeature({ blocks: [VideoEmbedBlock] }),
         FixedToolbarFeature(),
         InlineToolbarFeature(),
       ]

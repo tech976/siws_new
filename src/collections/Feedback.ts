@@ -4,6 +4,7 @@ import { adminFieldOnly, isAdmin, isDPO, readPersonalData } from '@/access'
 import { auditChange, auditDelete, auditPersonalDataReads } from '@/hooks/audit'
 import type { AccessUser } from '@/access'
 import { hiddenFromHod } from '@/access/admin-nav'
+import { exportFeedbackEndpoint } from '@/endpoints/export-feedback'
 
 /**
  * Feedback sent from a school's Contact page.
@@ -47,8 +48,12 @@ export const Feedback: CollectionConfig = {
     // BR-DPA-02 — records past their retention period are flagged here.
     components: {
       beforeList: ['@/components/admin/RetentionNotice#RetentionNotice'],
+      // FR-PF-03 / BR-SUB-03 — download as CSV, logged.
+      beforeListTable: ['@/components/admin/ExportEnquiries#ExportFeedbackButton'],
     },
   },
+
+  endpoints: [exportFeedbackEndpoint],
 
   access: {
     read: readPersonalData,

@@ -254,22 +254,47 @@ Work through these in order. The first one is a requirement, not a nicety.
 
 ## Backups
 
-The database is the site. Back it up nightly, off the server.
+The database is the site, and `media/` holds every uploaded photo and PDF —
+neither is in git. `scripts/backup.sh` copies both every night (BR-DPA-10):
+
+- **Database** — a full `pg_dump`, gzipped, checked to be complete, kept 30 days
+  (`BACKUP_KEEP_DAYS`).
+- **Media** — an rsync snapshot per night, kept 14 (`BACKUP_KEEP_MEDIA`).
+  Unchanged files are hard-linked to the night before, so each snapshot costs
+  only that day's uploads while still being a complete copy.
+
+Everything is written owner-only; a dump contains every enquiry and data request.
 
 ```bash
-sudo -u siws mkdir -p /home/siws/backups
-sudo -u siws crontab -e
+# crontab -e, as the siws user — at 01:45, BEFORE the retention job at 02:15,
+# so whatever retention deletes was copied minutes earlier.
+45 1 * * * /home/siws/app/scripts/backup.sh >> /home/siws/backup.log 2>&1
 ```
 
-```cron
-15 2 * * * pg_dump --no-owner --no-privileges "postgres://siws:PASSWORD@localhost:5432/siws" | gzip > /home/siws/backups/siws-$(date +\%F).sql.gz
-30 2 * * * find /home/siws/backups -name '*.sql.gz' -mtime +14 -delete
-```
+Check it ran: `tail /home/siws/backup.log` — each night ends with `done`, and
+any failure is a line starting `FAILED`.
 
-`media/` also needs backing up once editors start uploading through the admin
-panel — those files are written to disk and are **not** in git. Either
-`rsync` the directory off-server on the same schedule, or move uploads to S3
-(the Payload S3 adapter is a drop-in change to `payload.config.ts`).
+**Still needed from SIWS — these copies are on the same disk as the site.** A
+failed disk or a compromised server takes the backups with it. Put these in the
+crontab line (e.g. `BACKUP_OFFSITE=... /home/siws/app/scripts/backup.sh`):
+
+- `BACKUP_OFFSITE=user@host:/path` — an rsync destination off this server.
+- `BACKUP_GPG_RECIPIENT=key-id` — encrypts each dump to a public key imported
+  for the siws user (`gpg --import school-backup.pub`). Keep the private key
+  off the server; without it the dumps cannot be restored.
+
+### Restoring
+
+```bash
+# Stop the site, keep a copy of what is there now, then load the dump.
+pm2 stop siws
+pg_dump "$DATABASE_URI" | gzip > ~/before-restore-$(date +%F-%H%M).sql.gz
+psql "$DATABASE_URI" -c 'drop schema public cascade; create schema public;'
+zcat /home/siws/backups/db/siws-YYYY-MM-DD-HHMM.sql.gz | psql "$DATABASE_URI"
+#   (encrypted: gpg --decrypt FILE.sql.gz.gpg | zcat | psql "$DATABASE_URI")
+rsync -a --delete /home/siws/backups/media/media-YYYY-MM-DD-HHMM/ /home/siws/app/media/
+pm2 start siws
+```
 
 ---
 

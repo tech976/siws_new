@@ -1,4 +1,4 @@
-import { RichText as LexicalRichText } from '@payloadcms/richtext-lexical/react'
+import { RichText as LexicalRichText, type JSXConvertersFunction } from '@payloadcms/richtext-lexical/react'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
 /**
@@ -11,6 +11,21 @@ import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical
  * stored-XSS risk the block editor exists to prevent, so rich text must always
  * be rendered through here.
  */
+
+import { VideoEmbedView } from '@/components/richtext/VideoEmbedView'
+
+/**
+ * The default node converters plus the blocks an editor can place inside text.
+ * Tables need nothing here — the default converters already render them.
+ */
+const converters: JSXConvertersFunction = ({ defaultConverters }) => ({
+  ...defaultConverters,
+  blocks: {
+    videoEmbed: ({ node }: { node: { fields: { url?: string; title?: string; caption?: string } } }) => (
+      <VideoEmbedView fields={node.fields} />
+    ),
+  },
+})
 
 interface RichTextProps {
   data: SerializedEditorState | null | undefined
@@ -31,5 +46,5 @@ export const RichText = ({ data, className, narrow = false }: RichTextProps) => 
     .filter(Boolean)
     .join(' ')
 
-  return <LexicalRichText data={data} className={classes} />
+  return <LexicalRichText data={data} className={classes} converters={converters} />
 }

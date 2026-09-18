@@ -1,5 +1,19 @@
 'use client'
 
+import {
+  ArrowUpRight,
+  Award,
+  Bus,
+  CalendarDays,
+  FileDown,
+  GraduationCap,
+  IndianRupee,
+  Info,
+  MapPin,
+  Newspaper,
+  Phone,
+  type LucideIcon,
+} from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
@@ -7,6 +21,26 @@ import { useEffect, useRef, useState } from 'react'
 export interface QuickLink {
   label: string
   href: string
+  /** One of `QUICK_LINK_ICONS`. */
+  icon?: string
+  /** FR-QL-03 — leaves this website; opens in a new tab and says so. */
+  external?: boolean
+  /** A document from the media library. */
+  download?: boolean
+}
+
+const ICONS: Record<string, LucideIcon> = {
+  arrow: ArrowUpRight,
+  admissions: GraduationCap,
+  fees: IndianRupee,
+  scholarship: Award,
+  calendar: CalendarDays,
+  download: FileDown,
+  news: Newspaper,
+  bus: Bus,
+  contact: Phone,
+  map: MapPin,
+  info: Info,
 }
 
 /**
@@ -111,16 +145,39 @@ export const QuickLinks = ({ links }: { links: QuickLink[] }) => {
           className="absolute right-0 top-full z-50 mt-2 min-w-60 rounded-xl border-t-4 border-accent bg-white py-2 shadow-raised"
         >
           <ul>
-            {links.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="block px-4 py-2.5 text-ink-soft transition-colors hover:bg-brand-tint hover:text-brand"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {links.map((link) => {
+              const Icon = ICONS[link.icon ?? 'arrow'] ?? ArrowUpRight
+              const className =
+                'flex items-center gap-3 px-4 py-2.5 text-ink-soft transition-colors hover:bg-brand-tint hover:text-brand'
+              const body = (
+                <>
+                  <Icon size={16} aria-hidden="true" className="shrink-0 text-brand/70" />
+                  <span className="flex-1">{link.label}</span>
+                  {link.external ? (
+                    <>
+                      <span aria-hidden="true" className="text-xs">&#8599;</span>
+                      <span className="sr-only"> (another website, opens in a new tab)</span>
+                    </>
+                  ) : link.download ? (
+                    <span className="sr-only"> (document, opens in a new tab)</span>
+                  ) : null}
+                </>
+              )
+
+              return (
+                <li key={`${link.href}-${link.label}`}>
+                  {link.external || link.download ? (
+                    <a href={link.href} target="_blank" rel="noopener noreferrer" className={className}>
+                      {body}
+                    </a>
+                  ) : (
+                    <Link href={link.href} className={className}>
+                      {body}
+                    </Link>
+                  )}
+                </li>
+              )
+            })}
           </ul>
         </div>
       ) : null}

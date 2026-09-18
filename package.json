@@ -46,6 +46,8 @@
     "verify:data-protection": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/verify-data-protection.ts",
     "retention": "cross-env NODE_OPTIONS=--no-deprecation NODE_ENV=production tsx src/scripts/apply-retention.ts",
     "email:test": "cross-env NODE_OPTIONS=--no-deprecation NODE_ENV=production tsx src/scripts/send-test-email.ts",
+    "seed:quick-links": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/quick-links.ts",
+    "seed:consent-notices": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/consent-notices.ts",
     "seed:legal": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/legal-pages.ts",
     "seed:institution": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/institution.ts",
     "verify:audit": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/verify-audit.ts",

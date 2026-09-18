@@ -4,7 +4,7 @@ import config from '@payload-config'
 import { headers } from 'next/headers'
 import { getPayload } from 'payload'
 
-import { DATA_REQUEST_NOTICE } from '@/lib/consent-notices'
+import { getConsentNotice } from '@/lib/consent-notices-server'
 import { recordConsent } from '@/lib/consent-register'
 import { REQUEST_RELATIONSHIPS, REQUEST_TYPES, normaliseEmail } from '@/lib/data-protection'
 import { HONEYPOT_FIELD, guardSubmission } from '@/lib/form-guard'
@@ -104,6 +104,8 @@ export const submitDataRequest = async (
   try {
     const payload = await getPayload({ config })
     const referer = headerList.get('referer') ?? ''
+    // BR-DPA-07 — the version shown today, as worded in the admin panel.
+    const notice = await getConsentNotice('data_request')
     const now = new Date().toISOString()
 
     const created = await payload.create({
@@ -117,7 +119,7 @@ export const submitDataRequest = async (
         requestType,
         details: values.details || undefined,
         status: 'received',
-        noticeVersion: DATA_REQUEST_NOTICE.version,
+        noticeVersion: notice.version,
         submittedAt: now,
         source: referer.slice(0, 250),
         history: [{ at: now, by: 'Website form', status: 'received', note: 'Request received.' }],
@@ -128,7 +130,7 @@ export const submitDataRequest = async (
       subject: email,
       subjectName: values.name,
       purpose: 'data_request',
-      noticeVersion: DATA_REQUEST_NOTICE.version,
+      noticeVersion: notice.version,
       source: referer,
       relatedCollection: 'data-requests',
       relatedId: created.id,

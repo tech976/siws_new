@@ -20,6 +20,8 @@ import { LinkFeatureClient as LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { RelationshipFeatureClient as RelationshipFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { SectionLabel as SectionLabel_2867838a5bd2bea20d36a7ab26d60171 } from '@/components/admin/SectionLabel'
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { TableFeatureClient as TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { HeadingFeatureClient as HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BlockquoteFeatureClient as BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
@@ -27,7 +29,9 @@ import { UploadFeatureClient as UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { GallerySectionField as GallerySectionField_c2778135b391975cf45ad2157a720e4e } from '@/components/admin/GallerySectionField'
 import { RetentionNotice as RetentionNotice_85c660b779d4c69ef5b5267d8d3b6115 } from '@/components/admin/RetentionNotice'
 import { ExportEnquiriesButton as ExportEnquiriesButton_1167363ec6bcd4f3b4bd454449b94f30 } from '@/components/admin/ExportEnquiries'
+import { ExportFeedbackButton as ExportFeedbackButton_1167363ec6bcd4f3b4bd454449b94f30 } from '@/components/admin/ExportEnquiries'
 import { DataRequestRecords as DataRequestRecords_5f5d0381b63b7f4dd5bb1e7263479848 } from '@/components/admin/DataRequestRecords'
+import { BreachReport as BreachReport_8479b8063f4149ca8e9c4dabb671304c } from '@/components/admin/BreachReport'
 import { Icon as Icon_8dacfc192c590b985f87490817bab56e } from '@/components/admin/Branding'
 import { Logo as Logo_8dacfc192c590b985f87490817bab56e } from '@/components/admin/Branding'
 import { NavFooterCard as NavFooterCard_8dacfc192c590b985f87490817bab56e } from '@/components/admin/Branding'
@@ -60,6 +64,8 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#RelationshipFeatureClient": RelationshipFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/SectionLabel#SectionLabel": SectionLabel_2867838a5bd2bea20d36a7ab26d60171,
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#TableFeatureClient": TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#HorizontalRuleFeatureClient": HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#HeadingFeatureClient": HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BlockquoteFeatureClient": BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
@@ -67,7 +73,9 @@ export const importMap = {
   "@/components/admin/GallerySectionField#GallerySectionField": GallerySectionField_c2778135b391975cf45ad2157a720e4e,
   "@/components/admin/RetentionNotice#RetentionNotice": RetentionNotice_85c660b779d4c69ef5b5267d8d3b6115,
   "@/components/admin/ExportEnquiries#ExportEnquiriesButton": ExportEnquiriesButton_1167363ec6bcd4f3b4bd454449b94f30,
+  "@/components/admin/ExportEnquiries#ExportFeedbackButton": ExportFeedbackButton_1167363ec6bcd4f3b4bd454449b94f30,
   "@/components/admin/DataRequestRecords#DataRequestRecords": DataRequestRecords_5f5d0381b63b7f4dd5bb1e7263479848,
+  "@/components/admin/BreachReport#BreachReport": BreachReport_8479b8063f4149ca8e9c4dabb671304c,
   "@/components/admin/Branding#Icon": Icon_8dacfc192c590b985f87490817bab56e,
   "@/components/admin/Branding#Logo": Logo_8dacfc192c590b985f87490817bab56e,
   "@/components/admin/Branding#NavFooterCard": NavFooterCard_8dacfc192c590b985f87490817bab56e,

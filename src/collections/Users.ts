@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { APIError } from 'payload'
+import { APIError, AuthenticationError, LockedAuth } from 'payload'
 
 import {
   ROLES,
@@ -116,6 +116,52 @@ export const Users: CollectionConfig = {
   },
 
   hooks: {
+    /**
+     * BR-AUTH-06 — "rate-limit and lock out repeated failed login attempts, and
+     * shall log them". The lock-out is `maxLoginAttempts` above; this is the
+     * logging half.
+     *
+     * A failed sign-in has no user, which is why it is written here directly
+     * rather than through `writeAuditLog` (that records signed-in actions
+     * only). It keeps the address that was tried and where from, so the office
+     * can see a guessing attack against an account and when it was locked —
+     * but never the password, and never whether the address belongs to a real
+     * account, because the log is not a way to find that out either.
+     */
+    afterError: [
+      async ({ error, req }) => {
+        const locked = error instanceof LockedAuth
+        if (!locked && !(error instanceof AuthenticationError)) return
+        // Only the sign-in route: the same error class is thrown elsewhere.
+        const url = typeof req?.url === 'string' ? req.url : ''
+        if (!/\/login(\?|$)/.test(url)) return
+        const name = locked ? 'LockedAuth' : 'AuthenticationError'
+
+        const attempted = typeof req.data?.email === 'string' ? req.data.email.slice(0, 200) : ''
+        const forwarded = req.headers?.get('x-forwarded-for') ?? ''
+        const from = (forwarded.split(',')[0] || req.headers?.get('x-real-ip') || 'unknown').trim()
+
+        try {
+          await req.payload.create({
+            collection: 'audit-logs',
+            overrideAccess: true,
+            data: {
+              summary:
+                name === 'LockedAuth'
+                  ? `Sign-in refused: account locked (${attempted || 'no address given'})`
+                  : `Failed sign-in for ${attempted || 'no address given'}`,
+              action: 'failed_login',
+              targetCollection: 'users',
+              actorEmail: attempted || undefined,
+              detail: `From ${from}.${name === 'LockedAuth' ? ' The account is locked after repeated failures.' : ''}`,
+            } as never,
+          })
+        } catch (logError) {
+          req.payload.logger.error({ err: logError }, 'Could not record a failed sign-in.')
+        }
+      },
+    ],
+
     beforeValidate: [
       /**
        * BR-AUTH-03 — password strength. Enforced here because Payload strips

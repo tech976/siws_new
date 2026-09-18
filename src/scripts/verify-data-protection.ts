@@ -7,6 +7,7 @@ const { default: config } = await import('@payload-config')
 const { recordConsent, withdrawConsents } = await import('@/lib/consent-register')
 const { dataRequestEndpoints, findPersonalRecords } = await import('@/endpoints/data-requests')
 const { RETENTION_CATEGORIES, overdueWhere } = await import('@/lib/retention')
+const { getConsentNotice } = await import('@/lib/consent-notices-server')
 
 /**
  * Integration check for SRS 6.9 — the consent register, data-subject requests
@@ -312,7 +313,8 @@ const main = async () => {
       assert(byCollection['data-requests']?.includes(request.id) === true, 'the request itself was not found')
     })
 
-    const [recordsEndpoint, exportEndpoint, eraseEndpoint] = dataRequestEndpoints
+    const [recordsEndpoint, exportEndpoint, eraseEndpoint, withdrawEndpoint, breachEndpoint] =
+      dataRequestEndpoints
 
     await check('The records tool refuses a Unit Head', async () => {
       const response = await recordsEndpoint!.handler(await reqAs(head))
@@ -337,6 +339,62 @@ const main = async () => {
         overrideAccess: true,
       })
       assert(totalDocs >= 1, 'the export was not logged')
+    })
+
+    await check('Consent is only withdrawn in answer to a withdraw-consent request', async () => {
+      const response = await withdrawEndpoint!.handler(await reqAs(dpo))
+      assert(response.status === 400, `an erasure request withdrew consent (status ${response.status})`)
+    })
+
+    await check('Withdrawing marks every standing consent withdrawn, and notes it on the request', async () => {
+      const withdrawal = await payload.create({
+        collection: 'data-requests',
+        overrideAccess: true,
+        data: {
+          name: 'Verify Parent',
+          email,
+          requestType: 'withdraw_consent',
+          status: 'received',
+          history: [{ at: new Date().toISOString(), by: 'Website form', status: 'received' }],
+        } as never,
+      })
+      const req = await reqAs(dpo)
+      req.routeParams = { id: String(withdrawal.id) }
+      const response = await withdrawEndpoint!.handler(req)
+      assert(response.status === 200, `status ${response.status}`)
+      const { docs } = await payload.find({
+        collection: 'consent-records',
+        where: { subject: { equals: email } },
+        depth: 0,
+        overrideAccess: true,
+      })
+      assert(docs.length > 0, 'no consent record to check')
+      assert(
+        docs.every((doc) => (doc as unknown as { status: string }).status === 'withdrawn'),
+        'a consent is still standing',
+      )
+      const after = (await payload.findByID({
+        collection: 'data-requests',
+        id: withdrawal.id,
+        depth: 0,
+        overrideAccess: true,
+      })) as unknown as { history: { note?: string }[] }
+      assert(after.history.some((entry) => entry.note?.startsWith('Withdrew')), 'nothing noted on the request')
+      await payload.delete({ collection: 'data-requests', id: withdrawal.id, overrideAccess: true })
+    })
+
+    await check('The breach export refuses a Unit Head, and lists the register for the DPO', async () => {
+      const refused = await breachEndpoint!.handler(await reqAs(head))
+      assert(refused.status === 403, `a Unit Head got status ${refused.status}`)
+      const undated = await breachEndpoint!.handler(await reqAs(dpo))
+      assert(undated.status === 400, `no date range gave status ${undated.status}`)
+      const req = await reqAs(dpo)
+      ;(req as unknown as { url: string }).url =
+        `http://local/api/data-requests/breach-report?from=${new Date(Date.now() - 86_400_000).toISOString().slice(0, 10)}`
+      const response = await breachEndpoint!.handler(req)
+      assert(response.status === 200, `status ${response.status}`)
+      const body = await response.text()
+      assert(body.includes(email), 'today’s affected person is missing from the report')
     })
 
     await check('Erasure needs the typed confirmation', async () => {
@@ -441,6 +499,118 @@ const main = async () => {
         'a Unit Head read the retention settings',
       )
     })
+
+    console.log('\nConsent notices — BR-DPA-07')
+
+    const { docs: noticeDocs } = await payload.find({
+      collection: 'consent-notices',
+      where: { purpose: { equals: 'feedback' } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    const original = noticeDocs[0] as unknown as Record<string, unknown> & { id: number; version: string }
+    const editStartedAt = new Date().toISOString()
+
+    if (!original) {
+      await check('The consent notices have been seeded', async () => {
+        assert(false, 'no feedback notice in the panel — run npm run seed:consent-notices')
+      })
+    } else {
+      try {
+        await check('A Unit Head cannot edit a consent notice', async () => {
+          await expectRejection(
+            () =>
+              payload.update({
+                collection: 'consent-notices',
+                id: original.id,
+                data: { yourRights: 'changed by a unit head' } as never,
+                overrideAccess: false,
+                user: head as never,
+              }),
+            'a Unit Head changed the wording',
+          )
+        })
+
+        await check('Saving without changing the wording keeps the version', async () => {
+          const saved = (await payload.update({
+            collection: 'consent-notices',
+            id: original.id,
+            data: { title: original.title } as never,
+            overrideAccess: false,
+            user: dpo as never,
+          })) as unknown as { version: string }
+          assert(saved.version === original.version, `version moved to ${saved.version}`)
+        })
+
+        await check('Changing the wording starts a new version, and nobody can set it by hand', async () => {
+          const saved = (await payload.update({
+            collection: 'consent-notices',
+            id: original.id,
+            data: {
+              yourRights: `${original.yourRights} (verify ${stamp})`,
+              version: 'typed-by-hand',
+              purpose: 'admission_enquiry',
+            } as never,
+            overrideAccess: false,
+            user: dpo as never,
+          })) as unknown as { version: string; purpose: string; effectiveFrom: string }
+          assert(saved.version !== original.version, 'the version did not change')
+          assert(saved.version !== 'typed-by-hand', 'a hand-typed version was kept')
+          assert(/^\d{4}-\d{2}-v\d+$/.test(saved.version), `odd version ${saved.version}`)
+          assert(saved.purpose === 'feedback', 'the purpose was changed')
+          assert(saved.effectiveFrom >= editStartedAt, 'the effective date was not stamped')
+        })
+
+        await check('The form shows, and records against, the wording now in the panel', async () => {
+          const live = await getConsentNotice('feedback')
+          assert(live.items.yourRights.endsWith(`(verify ${stamp})`), 'the form still shows the old wording')
+          assert(live.version !== original.version, 'the form would record the old version')
+        })
+
+        await check('The earlier wording is kept in the version history', async () => {
+          const { docs } = await payload.findVersions({
+            collection: 'consent-notices',
+            where: { parent: { equals: original.id } },
+            sort: '-createdAt',
+            limit: 10,
+            overrideAccess: true,
+          })
+          const versions = docs.map((doc) => (doc.version as { version?: string }).version)
+          assert(versions.includes(original.version), 'the earlier version is not in the history')
+        })
+
+        await check('Nobody can delete a consent notice, not even an administrator', async () => {
+          await expectRejection(
+            () =>
+              payload.delete({
+                collection: 'consent-notices',
+                id: original.id,
+                overrideAccess: false,
+                user: admin as never,
+              }),
+            'an administrator deleted a notice',
+          )
+        })
+      } finally {
+        // Put the notice back exactly, without starting another version.
+        await payload.db.updateOne({
+          collection: 'consent-notices',
+          id: original.id,
+          data: {
+            yourRights: original.yourRights,
+            version: original.version,
+            effectiveFrom: original.effectiveFrom,
+          },
+        })
+        await payload.db.deleteVersions({
+          collection: 'consent-notices',
+          where: {
+            and: [{ parent: { equals: original.id } }, { createdAt: { greater_than: editStartedAt } }],
+          },
+        })
+      }
+    }
   } finally {
     await sweep()
   }

@@ -9,7 +9,7 @@ import { useState } from 'react'
  * auth failure surfaces as a readable message where the person is looking —
  * a plain link would navigate to a JSON error body, which reads as a crash.
  */
-export const ExportEnquiriesButton = () => {
+const ExportButton = ({ endpoint, fallbackName }: { endpoint: string; fallbackName: string }) => {
   const [state, setState] = useState<'idle' | 'working' | 'error'>('idle')
   const [message, setMessage] = useState('')
 
@@ -18,7 +18,7 @@ export const ExportEnquiriesButton = () => {
     setMessage('')
 
     try {
-      const response = await fetch('/api/enquiries/export', { credentials: 'include' })
+      const response = await fetch(endpoint, { credentials: 'include' })
 
       if (!response.ok) {
         const body = (await response.json().catch(() => null)) as { error?: string } | null
@@ -30,7 +30,7 @@ export const ExportEnquiriesButton = () => {
       const blob = await response.blob()
       const disposition = response.headers.get('Content-Disposition') ?? ''
       const filename =
-        /filename="([^"]+)"/.exec(disposition)?.[1] ?? 'siws-admission-enquiries.csv'
+        /filename="([^"]+)"/.exec(disposition)?.[1] ?? fallbackName
 
       const url = URL.createObjectURL(blob)
       const anchor = document.createElement('a')
@@ -69,5 +69,14 @@ export const ExportEnquiriesButton = () => {
     </div>
   )
 }
+
+export const ExportEnquiriesButton = () => (
+  <ExportButton endpoint="/api/enquiries/export" fallbackName="siws-admission-enquiries.csv" />
+)
+
+/** FR-PF-03 / BR-SUB-03 — the same control above the feedback list. */
+export const ExportFeedbackButton = () => (
+  <ExportButton endpoint="/api/feedback/export" fallbackName="siws-feedback.csv" />
+)
 
 export default ExportEnquiriesButton

@@ -6,7 +6,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 import { CAMPUS_LABELS, CAMPUS_VALUES, type Campus } from '@/fields/campus'
-import { ADMISSION_ENQUIRY_NOTICE } from '@/lib/consent-notices'
+import { getConsentNotice } from '@/lib/consent-notices-server'
 import { recordConsent } from '@/lib/consent-register'
 import type { FormState } from '@/lib/form-state'
 import { HONEYPOT_FIELD, guardSubmission } from '@/lib/form-guard'
@@ -205,6 +205,8 @@ export const submitEnquiry = async (
     }
 
     const referer = headerList.get('referer') ?? ''
+    // BR-DPA-07 — the version shown today, as worded in the admin panel.
+    const notice = await getConsentNotice('admission_enquiry')
 
     const created = await payload.create({
       collection: 'enquiries',
@@ -224,8 +226,8 @@ export const submitEnquiry = async (
         message: values.message.length > 0 ? values.message : undefined,
         status: 'new',
         consentGiven: true,
-        consentPurpose: ADMISSION_ENQUIRY_NOTICE.purpose,
-        consentNoticeVersion: ADMISSION_ENQUIRY_NOTICE.version,
+        consentPurpose: notice.purpose,
+        consentNoticeVersion: notice.version,
         consentAt: new Date().toISOString(),
         // Records where consent was given, without storing anything about the
         // person's device or network.
@@ -238,7 +240,7 @@ export const submitEnquiry = async (
       subject: values.email.length > 0 ? values.email.toLowerCase() : values.phone,
       subjectName: `${values.parentFirstName} ${values.parentLastName}`.trim(),
       purpose: 'admission_enquiry',
-      noticeVersion: ADMISSION_ENQUIRY_NOTICE.version,
+      noticeVersion: notice.version,
       source: referer,
       relatedCollection: 'enquiries',
       relatedId: created.id,

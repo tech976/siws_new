@@ -5,7 +5,7 @@ import { getPayload } from 'payload'
 
 import config from '@payload-config'
 
-import { FEEDBACK_NOTICE } from '@/lib/consent-notices'
+import { getConsentNotice } from '@/lib/consent-notices-server'
 import { recordConsent } from '@/lib/consent-register'
 import { FEEDBACK_RELATIONSHIPS, FEEDBACK_SUBJECTS } from '@/lib/feedback-options'
 import type { FormState } from '@/lib/form-state'
@@ -155,6 +155,8 @@ export const submitFeedback = async (
     }
 
     const referer = headerList.get('referer') ?? ''
+    // BR-DPA-07 — the version shown today, as worded in the admin panel.
+    const notice = await getConsentNotice('feedback')
 
     const created = await payload.create({
       collection: 'feedback',
@@ -171,8 +173,8 @@ export const submitFeedback = async (
         message: values.message,
         status: 'new',
         consentGiven: true,
-        consentPurpose: FEEDBACK_NOTICE.purpose,
-        consentNoticeVersion: FEEDBACK_NOTICE.version,
+        consentPurpose: notice.purpose,
+        consentNoticeVersion: notice.version,
         consentAt: new Date().toISOString(),
         // Records where consent was given, without storing anything about the
         // person's device or network.
@@ -185,7 +187,7 @@ export const submitFeedback = async (
       subject: values.email.toLowerCase(),
       subjectName: values.name,
       purpose: 'feedback',
-      noticeVersion: FEEDBACK_NOTICE.version,
+      noticeVersion: notice.version,
       source: referer,
       relatedCollection: 'feedback',
       relatedId: created.id,

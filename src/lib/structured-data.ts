@@ -9,10 +9,9 @@ import type { Page, Post, Unit } from '@/payload-types'
  *
  * WHAT IS HERE AND WHAT IS NOT
  * ----------------------------
- * EducationalOrganization, NewsArticle and BreadcrumbList are emitted, because
- * the content behind them exists. FAQPage, Event and JobPosting are not: the
- * FAQ pages are ordinary content rather than a question/answer collection, and
- * the careers and calendar modules are not built. Emitting a `JobPosting` with
+ * EducationalOrganization, NewsArticle, BreadcrumbList and FAQPage are
+ * emitted, because the content behind them exists. Event and JobPosting are
+ * not: the careers and calendar modules are not built. Emitting a `JobPosting` with
  * no vacancy, or an `FAQPage` whose questions are guessed out of headings,
  * publishes a claim about the page that is not true — and Google penalises
  * structured data that does not match visible content. They belong with the
@@ -140,6 +139,48 @@ export const breadcrumbSchema = (
       position: index + 1,
       name: item.name,
       item: item.url,
+    })),
+  }
+}
+
+/** Plain text out of a Lexical document, for structured data. */
+const lexicalText = (node: unknown): string => {
+  if (!node || typeof node !== 'object') return ''
+  const current = node as { text?: unknown; children?: unknown[]; root?: unknown; type?: string }
+  if (current.root) return lexicalText(current.root)
+  if (typeof current.text === 'string') return current.text
+  if (!Array.isArray(current.children)) return ''
+  const joiner = current.type === 'root' ? '\n' : ''
+  return current.children.map(lexicalText).join(joiner).replace(/\s+\n/g, '\n').trim()
+}
+
+/**
+ * FR-FAQ-05 / BR-SEO-03 — FAQPage, from the question-and-answer sections
+ * actually on the page.
+ *
+ * Built from the page's own accordion sections rather than from a separate FAQ
+ * store, which is what makes it safe: Google requires FAQ markup to match
+ * questions a visitor can read on the page, and these ARE those questions. A
+ * page with no accordion emits nothing.
+ */
+export const faqSchema = (page?: Page | null) => {
+  const layout = (page?.layout ?? []) as { blockType?: string; items?: { question?: string; answer?: unknown }[] }[]
+
+  const entries = layout
+    .filter((block) => block.blockType === 'accordion')
+    .flatMap((block) => block.items ?? [])
+    .map((item) => ({ question: item.question?.trim() ?? '', answer: lexicalText(item.answer) }))
+    .filter((item) => item.question.length > 0 && item.answer.length > 0)
+
+  if (entries.length === 0) return null
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: entries.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
     })),
   }
 }

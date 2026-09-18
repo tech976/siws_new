@@ -132,6 +132,14 @@ export const DataProtection: GlobalConfig = {
       ],
     },
     {
+      // BR-DPA-09 — the breach report. A tool, not a stored value.
+      name: 'breachReport',
+      type: 'ui',
+      admin: {
+        components: { Field: '@/components/admin/BreachReport#BreachReport' },
+      },
+    },
+    {
       type: 'collapsible',
       label: 'Last nightly run',
       admin: { initCollapsed: false },

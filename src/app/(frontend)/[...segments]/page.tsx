@@ -1,13 +1,17 @@
+import config from '@payload-config'
+import { getPayload } from 'payload'
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 
 import { PostView } from '@/components/blocks/PostView'
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
 import { EmergencyNoticeBanner } from '@/components/emergency/EmergencyNoticeBanner'
+import { findRedirect } from '@/lib/redirects'
 import { NewsTicker, type TickerItem } from '@/components/layout/NewsTicker'
 import {
   breadcrumbSchema,
+  faqSchema,
   newsArticleSchema,
   organisationSchema,
   serialise,
@@ -77,7 +81,17 @@ const DynamicRoute = async ({ params }: RouteProps) => {
   const { isEnabled: draft } = await draftMode()
 
   const resolved = await resolveRoute(segments, draft)
-  if (!resolved) notFound()
+  if (!resolved) {
+    /*
+     * BR-SEO-07 — an address that used to be a page. Checked only once nothing
+     * lives here, so a redirect can never hide a real page. `permanentRedirect`
+     * is a 308, which search engines treat as "moved for good" and carry the
+     * old address's standing across.
+     */
+    const to = await findRedirect(await getPayload({ config }), `/${(segments ?? []).join('/')}`)
+    if (to) permanentRedirect(to)
+    notFound()
+  }
 
   const { unit, page, post, kind } = resolved
   const units = await getUnits()
@@ -98,6 +112,7 @@ const DynamicRoute = async ({ params }: RouteProps) => {
     organisationSchema(unit),
     kind === 'post' && post ? newsArticleSchema(post, unit) : null,
     breadcrumbSchema(segments ?? [], unit, page ?? post),
+    kind === 'post' ? null : faqSchema(page),
   ].filter(Boolean)
 
   return (
@@ -186,6 +201,24 @@ const DynamicRoute = async ({ params }: RouteProps) => {
                 ) : null}
               </header>
             )}
+            {/*
+              FR-PRV-14 — a policy page says which version the reader is looking
+              at. Earlier versions are kept in the page's version history.
+            */}
+            {!unit && page.effectiveDate && ['privacy', 'cookies', 'accessibility'].includes(page.slug) ? (
+              <p className="siws-container pt-4 text-sm text-ink-muted">
+                This version took effect on{' '}
+                <time dateTime={page.effectiveDate}>
+                  {new Date(page.effectiveDate).toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    timeZone: 'Asia/Kolkata',
+                  })}
+                </time>
+                . Earlier versions are kept on record and are available on request.
+              </p>
+            ) : null}
             <RenderBlocks blocks={page.layout} unit={unit} units={units} />
           </>
         ) : null}

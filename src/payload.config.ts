@@ -14,6 +14,9 @@ import { Enquiries } from './collections/Enquiries'
 import { Feedback } from './collections/Feedback'
 import { Faculty } from './collections/Faculty'
 import { ConsentRecords } from '@/collections/ConsentRecords'
+import { ConsentNotices } from '@/collections/ConsentNotices'
+import { QuickLinks } from '@/collections/QuickLinks'
+import { Redirects } from '@/collections/Redirects'
 import { DataRequests } from '@/collections/DataRequests'
 import { EmergencyNotices } from '@/collections/EmergencyNotices'
 import { Media } from './collections/Media'
@@ -23,6 +26,7 @@ import { Units } from './collections/Units'
 import { Users } from './collections/Users'
 import { CookieInventory } from '@/globals/CookieInventory'
 import { DataProtection } from '@/globals/DataProtection'
+import { PrivacyContact } from '@/globals/PrivacyContact'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -90,10 +94,14 @@ export default buildConfig({
     // SRS 6.9 — data protection.
     ConsentRecords,
     DataRequests,
+    // SRS 5.24 and BR-SEO-07.
+    QuickLinks,
+    Redirects,
+    ConsentNotices,
   ],
 
   // SRS 6.9 — retention (BR-DPA-02) and the cookie inventory (BR-DPA-06).
-  globals: [DataProtection, CookieInventory],
+  globals: [DataProtection, CookieInventory, PrivacyContact],
 
   editor: lexicalEditor(),
 

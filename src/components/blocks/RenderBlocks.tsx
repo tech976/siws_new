@@ -8,6 +8,7 @@ import { CallToActionBlockView } from './CallToActionBlockView'
 import { BentoBlockView } from './BentoBlockView'
 import { CardGridBlockView } from './CardGridBlockView'
 import { CookieInventoryBlockView } from './CookieInventoryBlockView'
+import { DpoContactBlockView } from './DpoContactBlockView'
 import { DividerBlockView } from './DividerBlockView'
 import { FacultyBlockView } from './FacultyBlockView'
 import { FeatureListBlockView } from './FeatureListBlockView'
@@ -156,6 +157,8 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
             return <FeedbackBlockView key={key} block={block} unit={unit} />
           case 'cookieInventory':
             return <CookieInventoryBlockView key={key} block={block} />
+          case 'dpoContact':
+            return <DpoContactBlockView key={key} block={block} />
           default:
             return null
         }

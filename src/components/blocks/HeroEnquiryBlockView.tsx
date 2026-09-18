@@ -6,6 +6,7 @@ import { createFormToken } from '@/lib/form-guard'
 import type { HeroEnquiryBlock, Unit } from '@/payload-types'
 
 import { FEEDBACK_ANCHOR } from './FeedbackBlockView'
+import { getConsentNotice } from '@/lib/consent-notices-server'
 
 /**
  * The Kindergarten hero, matching the approved landing page.
@@ -14,7 +15,7 @@ import { FEEDBACK_ANCHOR } from './FeedbackBlockView'
  * measures how long the page was actually on screen. Because this is a Server
  * Component the secret never reaches the browser — only the signed value does.
  */
-export const HeroEnquiryBlockView = ({
+export const HeroEnquiryBlockView = async ({
   block,
   unit,
   hasFeedback = false,
@@ -31,6 +32,9 @@ export const HeroEnquiryBlockView = ({
    */
   hasFeedback?: boolean
 }) => {
+  // BR-DPA-07 — the notice as currently worded in the admin panel.
+  const notice = await getConsentNotice('admission_enquiry')
+
   const benefits = (block.benefits ?? [])
     .map((entry) => entry.text)
     .filter((entry): entry is string => typeof entry === 'string' && entry.length > 0)
@@ -176,6 +180,7 @@ export const HeroEnquiryBlockView = ({
               unitId={unit.id}
               classOptions={classOptions.length > 0 ? classOptions : ['Jr KG', 'Sr KG']}
               formToken={createFormToken()}
+              notice={notice}
               /*
                * Which inbox this particular card reaches. Set on the block, so
                * the same component is an admission enquiry on the Admissions

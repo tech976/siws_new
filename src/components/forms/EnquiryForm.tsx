@@ -4,7 +4,7 @@ import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 
 import { submitEnquiry } from '@/app/(frontend)/actions/enquiry'
-import { ADMISSION_ENQUIRY_NOTICE } from '@/lib/consent-notices'
+import { ADMISSION_ENQUIRY_NOTICE, type ConsentNotice } from '@/lib/consent-notices'
 import { idleFormState } from '@/lib/form-state'
 import { HONEYPOT_FIELD } from '@/lib/form-guard'
 
@@ -40,6 +40,8 @@ interface EnquiryFormProps {
    */
   sendTo?: 'admissions' | 'general'
   privacyHref?: string | null
+  /** BR-DPA-07 — the notice as worded in the admin panel. */
+  notice?: ConsentNotice
 }
 
 const SubmitButton = ({ label }: { label: string }) => {
@@ -59,6 +61,7 @@ export const EnquiryForm = ({
   formToken,
   sendTo = 'admissions',
   privacyHref,
+  notice = ADMISSION_ENQUIRY_NOTICE,
 }: EnquiryFormProps) => {
   const [state, formAction] = useActionState(submitEnquiry, idleFormState)
 
@@ -186,10 +189,10 @@ export const EnquiryForm = ({
         <FieldError id="gradeApplyingFor-error" message={fieldError('gradeApplyingFor')} />
       </div>
 
-      <ConsentNoticeDetails notice={ADMISSION_ENQUIRY_NOTICE} privacyHref={privacyHref} />
+      <ConsentNoticeDetails notice={notice} privacyHref={privacyHref} />
 
       <ConsentCheckbox
-        label={ADMISSION_ENQUIRY_NOTICE.checkboxLabel}
+        label={notice.checkboxLabel}
         error={fieldError('consent')}
       />
 

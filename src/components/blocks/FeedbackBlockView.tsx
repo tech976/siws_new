@@ -3,6 +3,7 @@ import { createFormToken } from '@/lib/form-guard'
 import type { FeedbackBlock, Unit } from '@/payload-types'
 
 import { Section, SectionHeading, type BlockBackground } from './Section'
+import { getConsentNotice } from '@/lib/consent-notices-server'
 
 /**
  * The anchor the "Give feedback" button on the enquiry card jumps to.
@@ -23,13 +24,16 @@ export const FEEDBACK_ANCHOR = 'feedback'
  * the visitor at the four schools rather than showing a form that would have
  * to guess.
  */
-export const FeedbackBlockView = ({
+export const FeedbackBlockView = async ({
   block,
   unit,
 }: {
   block: FeedbackBlock
   unit: Unit | null
 }) => {
+  // BR-DPA-07 — the notice as currently worded in the admin panel.
+  const notice = await getConsentNotice('feedback')
+
   const intro = block.intro?.trim()
 
   /*
@@ -68,7 +72,7 @@ export const FeedbackBlockView = ({
         {unit ? (
           <>
             <div className="siws-card rounded-3xl p-7 sm:p-9">
-              <FeedbackForm unitId={unit.id} formToken={createFormToken()} />
+              <FeedbackForm unitId={unit.id} formToken={createFormToken()} notice={notice} />
             </div>
 
             {block.showEmailAlternative && address ? (
