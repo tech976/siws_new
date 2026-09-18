@@ -290,9 +290,9 @@ crontab line (e.g. `BACKUP_OFFSITE=... /home/siws/app/scripts/backup.sh`):
 pm2 stop siws
 pg_dump "$DATABASE_URI" | gzip > ~/before-restore-$(date +%F-%H%M).sql.gz
 psql "$DATABASE_URI" -c 'drop schema public cascade; create schema public;'
-zcat /home/siws/backups/db/siws-YYYY-MM-DD-HHMM.sql.gz | psql "$DATABASE_URI"
+zcat /home/siws/backups/db/siws-YYYY-MM-DD-HHMMSS.sql.gz | psql "$DATABASE_URI"
 #   (encrypted: gpg --decrypt FILE.sql.gz.gpg | zcat | psql "$DATABASE_URI")
-rsync -a --delete /home/siws/backups/media/media-YYYY-MM-DD-HHMM/ /home/siws/app/media/
+rsync -a --delete /home/siws/backups/media/media-YYYY-MM-DD-HHMMSS/ /home/siws/app/media/
 pm2 start siws
 ```
 

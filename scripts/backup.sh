@@ -35,7 +35,7 @@ BACKUP_DIR="${BACKUP_DIR:-/home/siws/backups}"
 KEEP_DAYS="${BACKUP_KEEP_DAYS:-30}"
 KEEP_MEDIA="${BACKUP_KEEP_MEDIA:-14}"
 
-stamp="$(date +%F-%H%M)"
+stamp="$(date +%F-%H%M%S)"
 log() { echo "$(date '+%F %T') $*"; }
 fail() { log "FAILED: $*"; exit 1; }
 
