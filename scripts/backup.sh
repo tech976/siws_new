@@ -50,10 +50,11 @@ chmod 700 "$BACKUP_DIR" "$BACKUP_DIR/db" "$BACKUP_DIR/media"
 dump="$BACKUP_DIR/db/siws-$stamp.sql.gz"
 pg_dump --no-owner --no-privileges "$DATABASE_URI" | gzip > "$dump.partial"
 
-# A dump that stopped half way still gzips cleanly; pg_dump's closing line is
-# the only proof it finished.
+# A dump that stopped half way still gzips cleanly; pg_dump's closing comment
+# is the only proof it finished. It is not the last line — 16.10 and later end
+# with `\unrestrict <key>` — so look a little way back.
 gzip -t "$dump.partial" || fail "the dump is not a valid gzip file"
-zcat "$dump.partial" | tail -n 5 | grep -q 'PostgreSQL database dump complete' \
+zcat "$dump.partial" | tail -n 20 | grep -q 'PostgreSQL database dump complete' \
   || fail "the dump did not finish"
 mv "$dump.partial" "$dump"
 
