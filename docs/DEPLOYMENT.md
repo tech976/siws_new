@@ -266,9 +266,10 @@ neither is in git. `scripts/backup.sh` copies both every night (BR-DPA-10):
 Everything is written owner-only; a dump contains every enquiry and data request.
 
 ```bash
-# crontab -e, as the siws user — at 01:45, BEFORE the retention job at 02:15,
-# so whatever retention deletes was copied minutes earlier.
-45 1 * * * /home/siws/app/scripts/backup.sh >> /home/siws/backup.log 2>&1
+# crontab -e, as the siws user. The server clock is UTC: 20:45 UTC is 02:15 IST.
+# BEFORE the retention job (21:15 UTC), so whatever retention deletes was
+# copied half an hour earlier.
+45 20 * * * /home/siws/app/scripts/backup.sh >> /home/siws/backup.log 2>&1
 ```
 
 Check it ran: `tail /home/siws/backup.log` — each night ends with `done`, and
@@ -318,8 +319,8 @@ are counted at the top of their list and nothing is deleted until SIWS switches
 it to Delete. The nightly job applies whatever is set there:
 
 ```bash
-# crontab -e, as the siws user
-15 2 * * * cd /home/siws/app && NODE_ENV=production npx tsx src/scripts/apply-retention.ts --apply >> /home/siws/retention.log 2>&1
+# crontab -e, as the siws user — 21:15 UTC is 02:45 IST, after the backup
+15 21 * * * cd /home/siws/app && NODE_ENV=production npx tsx src/scripts/apply-retention.ts --apply >> /home/siws/retention.log 2>&1
 ```
 
 `NODE_ENV=production` matters: outside production Payload reconciles the schema

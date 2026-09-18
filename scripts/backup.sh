@@ -23,7 +23,7 @@
 # Run nightly from the siws user's crontab, BEFORE the retention job, so the
 # night's deletions always have a copy taken just before them:
 #
-#   45 1 * * * /home/siws/app/scripts/backup.sh >> /home/siws/backup.log 2>&1
+#   45 20 * * * /home/siws/app/scripts/backup.sh >> /home/siws/backup.log 2>&1   (UTC = 02:15 IST)
 #
 # Restore: see "Backups" in docs/DEPLOYMENT.md.
 
