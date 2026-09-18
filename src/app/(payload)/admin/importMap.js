@@ -1,3 +1,4 @@
+import { LiveNoticesSummary as LiveNoticesSummary_6cf4ade704c9e00dcb9d941ed4ce6bb7 } from '@/components/admin/LiveNoticesSummary'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -24,7 +25,9 @@ import { HeadingFeatureClient as HeadingFeatureClient_e70f5e05f09f93e00b997edb1e
 import { BlockquoteFeatureClient as BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { UploadFeatureClient as UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { GallerySectionField as GallerySectionField_c2778135b391975cf45ad2157a720e4e } from '@/components/admin/GallerySectionField'
+import { RetentionNotice as RetentionNotice_85c660b779d4c69ef5b5267d8d3b6115 } from '@/components/admin/RetentionNotice'
 import { ExportEnquiriesButton as ExportEnquiriesButton_1167363ec6bcd4f3b4bd454449b94f30 } from '@/components/admin/ExportEnquiries'
+import { DataRequestRecords as DataRequestRecords_5f5d0381b63b7f4dd5bb1e7263479848 } from '@/components/admin/DataRequestRecords'
 import { Icon as Icon_8dacfc192c590b985f87490817bab56e } from '@/components/admin/Branding'
 import { Logo as Logo_8dacfc192c590b985f87490817bab56e } from '@/components/admin/Branding'
 import { NavFooterCard as NavFooterCard_8dacfc192c590b985f87490817bab56e } from '@/components/admin/Branding'
@@ -35,6 +38,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "@/components/admin/LiveNoticesSummary#LiveNoticesSummary": LiveNoticesSummary_6cf4ade704c9e00dcb9d941ed4ce6bb7,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -61,7 +65,9 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BlockquoteFeatureClient": BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#UploadFeatureClient": UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/GallerySectionField#GallerySectionField": GallerySectionField_c2778135b391975cf45ad2157a720e4e,
+  "@/components/admin/RetentionNotice#RetentionNotice": RetentionNotice_85c660b779d4c69ef5b5267d8d3b6115,
   "@/components/admin/ExportEnquiries#ExportEnquiriesButton": ExportEnquiriesButton_1167363ec6bcd4f3b4bd454449b94f30,
+  "@/components/admin/DataRequestRecords#DataRequestRecords": DataRequestRecords_5f5d0381b63b7f4dd5bb1e7263479848,
   "@/components/admin/Branding#Icon": Icon_8dacfc192c590b985f87490817bab56e,
   "@/components/admin/Branding#Logo": Logo_8dacfc192c590b985f87490817bab56e,
   "@/components/admin/Branding#NavFooterCard": NavFooterCard_8dacfc192c590b985f87490817bab56e,

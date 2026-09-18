@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 
 import { PostView } from '@/components/blocks/PostView'
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
+import { EmergencyNoticeBanner } from '@/components/emergency/EmergencyNoticeBanner'
 import { NewsTicker, type TickerItem } from '@/components/layout/NewsTicker'
 import {
   breadcrumbSchema,
@@ -108,6 +109,9 @@ const DynamicRoute = async ({ params }: RouteProps) => {
           dangerouslySetInnerHTML={{ __html: serialise(schema) }}
         />
       ))}
+
+      {/* FR-EMG-01 — above all other content, for this page's school. */}
+      <EmergencyNoticeBanner unitId={unit?.id ?? null} units={units} />
 
       <SiteHeader
         unit={unit}

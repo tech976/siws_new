@@ -1,6 +1,10 @@
 'use server'
 
-import { cookies } from 'next/headers'
+import config from '@payload-config'
+import { cookies, headers } from 'next/headers'
+import { getPayload } from 'payload'
+
+import { recordConsent, withdrawConsents } from '@/lib/consent-register'
 
 import {
   CONSENT_COOKIE,
@@ -31,6 +35,32 @@ import {
 const write = async (state: ConsentState) => {
   const store = await cookies()
 
+  /*
+   * BR-DPA-01 / FR-PRV-09 — every choice goes in the consent register, under
+   * the reference the visitor's own cookie carries. A reject is recorded too:
+   * "this visitor declined analytics on this date" is exactly what the register
+   * exists to evidence.
+   */
+  try {
+    const payload = await getPayload({ config })
+    const referer = (await headers()).get('referer') ?? ''
+    let source = ''
+    try {
+      source = referer ? new URL(referer).pathname : ''
+    } catch {
+      source = ''
+    }
+    await recordConsent(payload, {
+      subject: state.ref,
+      purpose: 'cookies',
+      noticeVersion: state.version,
+      categories: state.categories,
+      source,
+    })
+  } catch (error) {
+    console.error('Cookie consent could not be recorded in the register:', error)
+  }
+
   store.set(CONSENT_COOKIE, serialiseConsent(state), {
     maxAge: CONSENT_MAX_AGE,
     path: '/',
@@ -41,16 +71,27 @@ const write = async (state: ConsentState) => {
   })
 }
 
+/**
+ * The visitor's existing reference, so a changed mind is recorded as a change
+ * to the same consent rather than as a stranger's.
+ */
+const currentRef = async (): Promise<string | undefined> =>
+  (await readConsent())?.ref || undefined
+
 export const acceptAllCookies = async () => {
-  await write(acceptAll())
+  await write(acceptAll(await currentRef()))
 }
 
 export const rejectAllCookies = async () => {
-  await write(rejectAll())
+  await write(rejectAll(await currentRef()))
 }
 
 export const saveCookiePreferences = async (categories: ConsentCategory[]) => {
-  await write(withCategories(categories))
+  // Only real categories are stored, whatever was posted.
+  const allowed = categories.filter((c): c is ConsentCategory =>
+    ['necessary', 'analytics', 'embeds'].includes(c),
+  )
+  await write(withCategories(allowed, await currentRef()))
 }
 
 /**
@@ -63,8 +104,18 @@ export const saveCookiePreferences = async (categories: ConsentCategory[]) => {
  * withdrew could never be asked again.
  */
 export const withdrawCookieConsent = async () => {
+  const ref = await currentRef()
   const store = await cookies()
   store.delete(CONSENT_COOKIE)
+
+  // FR-PRV-13 — the register shows the withdrawal, not just the absence.
+  if (ref) {
+    try {
+      await withdrawConsents(await getPayload({ config }), ref, 'cookies')
+    } catch (error) {
+      console.error('Cookie consent withdrawal could not be recorded:', error)
+    }
+  }
 }
 
 /** The current choice, for a server component deciding whether to render an embed. */

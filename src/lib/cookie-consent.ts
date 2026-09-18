@@ -81,27 +81,44 @@ export interface ConsentState {
   version: string
   at: string
   categories: ConsentCategory[]
+  /**
+   * FR-PRV-09 — the reference this choice is recorded under in the consent
+   * register. Random, and meaningless outside the register: it lets a visitor
+   * quote their consent and lets the school evidence it, without the cookie
+   * identifying anybody.
+   */
+  ref: string
 }
 
+const REF_PATTERN = /^[a-z0-9-]{16,40}$/
+
+export const newConsentRef = (): string => `ck-${crypto.randomUUID()}`
+
 /** Everything on. */
-export const acceptAll = (): ConsentState => ({
+export const acceptAll = (ref: string = newConsentRef()): ConsentState => ({
   version: CONSENT_VERSION,
   at: new Date().toISOString(),
   categories: [...CONSENT_CATEGORIES],
+  ref,
 })
 
 /** Only what the site cannot work without. */
-export const rejectAll = (): ConsentState => ({
+export const rejectAll = (ref: string = newConsentRef()): ConsentState => ({
   version: CONSENT_VERSION,
   at: new Date().toISOString(),
   categories: ['necessary'],
+  ref,
 })
 
-export const withCategories = (chosen: ConsentCategory[]): ConsentState => ({
+export const withCategories = (
+  chosen: ConsentCategory[],
+  ref: string = newConsentRef(),
+): ConsentState => ({
   version: CONSENT_VERSION,
   at: new Date().toISOString(),
   // `necessary` is not a choice, so it is added whatever the visitor ticked.
   categories: Array.from(new Set<ConsentCategory>(['necessary', ...chosen])),
+  ref,
 })
 
 /*
@@ -140,6 +157,9 @@ export const parseConsent = (raw: string | undefined | null): ConsentState | nul
       version: CONSENT_VERSION,
       at: typeof parsed.at === 'string' ? parsed.at : new Date().toISOString(),
       categories: Array.from(new Set<ConsentCategory>(['necessary', ...categories])),
+      // Cookies written before references existed get one on their next change.
+      ref:
+        typeof parsed.ref === 'string' && REF_PATTERN.test(parsed.ref) ? parsed.ref : '',
     }
   } catch {
     return null

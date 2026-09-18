@@ -273,6 +273,50 @@ panel — those files are written to disk and are **not** in git. Either
 
 ---
 
+## Email (required before go-live)
+
+Every form stores its submission in the admin panel and then emails the school.
+**Without SMTP settings nothing is emailed** — Payload writes the message to the
+server log and reports success, so the forms look fine and nobody is told.
+Set `SMTP_HOST`, `SMTP_USER` and `SMTP_PASSWORD` in `.env` (all three), restart,
+then prove it:
+
+```bash
+npm run email:test -- someone@siwsschool.edu.in
+```
+
+## Data retention (nightly)
+
+`Data protection → Data retention` in the admin panel sets how long each kind of
+personal data is kept (BR-DPA-02). It starts in **Flag** mode: overdue records
+are counted at the top of their list and nothing is deleted until SIWS switches
+it to Delete. The nightly job applies whatever is set there:
+
+```bash
+# crontab -e, as the siws user
+15 2 * * * cd /home/siws/app && NODE_ENV=production npx tsx src/scripts/apply-retention.ts --apply >> /home/siws/retention.log 2>&1
+```
+
+`NODE_ENV=production` matters: outside production Payload reconciles the schema
+on start-up and can stop to ask a question, which an unattended job must never
+answer. Run it without `--apply` to see what tonight would do.
+
+## Adding tables (until migrations exist)
+
+Production does not push schema changes on its own. When a release adds a
+collection or field, back up first and let one script run push it:
+
+```bash
+pg_dump "$DATABASE_URI" | gzip > ~/backup-before-release.sql.gz && chmod 600 ~/backup-before-release.sql.gz
+timeout 300 npx tsx src/seed/cookie-inventory.ts   # any script: it pushes on start-up
+```
+
+If it stops at *"Accept warnings and push schema to database? (y/N)"*, the
+change would **drop** data. Do not answer yes: the timeout ends it with nothing
+applied. That change needs a reviewed migration instead.
+
+---
+
 ## Deploying an update
 
 ```bash

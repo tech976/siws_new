@@ -44,6 +44,10 @@ export const Feedback: CollectionConfig = {
     description:
       'Messages sent from the feedback box on the Contact pages. These carry people’s contact details — please do not share them outside the school.',
     preview: () => null,
+    // BR-DPA-02 — records past their retention period are flagged here.
+    components: {
+      beforeList: ['@/components/admin/RetentionNotice#RetentionNotice'],
+    },
   },
 
   access: {

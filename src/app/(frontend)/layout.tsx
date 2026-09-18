@@ -1,5 +1,7 @@
+import config from '@payload-config'
 import type { Metadata, Viewport } from 'next'
 import { cookies, draftMode } from 'next/headers'
+import { getPayload } from 'payload'
 import type { ReactNode } from 'react'
 
 import { LivePreviewListener } from '@/components/preview/LivePreviewListener'
@@ -101,6 +103,24 @@ const FrontendLayout = async ({ children }: { children: ReactNode }) => {
   /* FR-PRV-01 — whether this visitor has already answered the banner. */
   const consent = await readConsent()
 
+  /* BR-DPA-06 — the banner's category wording, as the school maintains it. */
+  let cookieCategoryText = {}
+  try {
+    const payload = await getPayload({ config })
+    const inventory = (await payload.findGlobal({
+      slug: 'cookie-inventory',
+      depth: 0,
+      overrideAccess: false,
+    })) as unknown as Record<string, unknown>
+    cookieCategoryText = {
+      necessary: inventory.necessary,
+      analytics: inventory.analytics,
+      embeds: inventory.embeds,
+    }
+  } catch {
+    // The built-in wording stands in; a banner must never fail to render.
+  }
+
   const cookieStore = await cookies()
   const savedSize = cookieStore.get(TEXT_SIZE_COOKIE)?.value
   const textSize = savedSize === 'large' || savedSize === 'x-large' ? savedSize : undefined
@@ -135,6 +155,7 @@ const FrontendLayout = async ({ children }: { children: ReactNode }) => {
         */}
         <CookieBanner
           answered={consent !== null}
+          categoryText={cookieCategoryText}
           acceptAll={acceptAllCookies}
           rejectAll={rejectAllCookies}
           save={saveCookiePreferences}

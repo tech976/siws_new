@@ -32,15 +32,28 @@ import {
  * reader than announcing what it actually is.
  */
 
+type CategoryText = Partial<Record<ConsentCategory, { label?: string | null; description?: string | null }>>
+
 interface CookieBannerProps {
   /** True when a valid, current consent already exists — the banner stays away. */
   answered: boolean
+  /**
+   * BR-DPA-06 — the category wording as maintained under Data protection →
+   * Cookies. Falls back to the built-in wording for anything left empty.
+   */
+  categoryText?: CategoryText
   acceptAll: () => Promise<void>
   rejectAll: () => Promise<void>
   save: (categories: ConsentCategory[]) => Promise<void>
 }
 
-export const CookieBanner = ({ answered, acceptAll, rejectAll, save }: CookieBannerProps) => {
+export const CookieBanner = ({
+  answered,
+  categoryText = {},
+  acceptAll,
+  rejectAll,
+  save,
+}: CookieBannerProps) => {
   const [dismissed, setDismissed] = useState(false)
   const [choosing, setChoosing] = useState(false)
   const [pending, startTransition] = useTransition()
@@ -103,7 +116,12 @@ export const CookieBanner = ({ answered, acceptAll, rejectAll, save }: CookieBan
 
             <ul className="grid gap-3 sm:grid-cols-3">
               {CONSENT_CATEGORIES.map((category) => {
-                const detail = CATEGORY_DETAIL[category]
+                const built = CATEGORY_DETAIL[category]
+                const detail = {
+                  ...built,
+                  label: categoryText[category]?.label || built.label,
+                  description: categoryText[category]?.description || built.description,
+                }
                 return (
                   <li key={category} className="rounded-2xl bg-sea-soft p-4">
                     <label className="flex items-start gap-2.5">

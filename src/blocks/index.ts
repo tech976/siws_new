@@ -4,6 +4,7 @@ import { AccordionBlock } from './AccordionBlock'
 import { AchievementWallBlock } from './AchievementWallBlock'
 import { AnnouncementsBlock } from './AnnouncementsBlock'
 import { CallToActionBlock } from './CallToActionBlock'
+import { CookieInventoryBlock } from './CookieInventoryBlock'
 import { BentoBlock } from './BentoBlock'
 import { CardGridBlock } from './CardGridBlock'
 import { DividerBlock } from './DividerBlock'
@@ -72,6 +73,7 @@ export const contentBlocks: Block[] = [
   CallToActionBlock,
   HeroEnquiryBlock,
   FeedbackBlock,
+  CookieInventoryBlock,
 ]
 
 export {
@@ -85,6 +87,7 @@ export {
   CallToActionBlock,
   CardGridBlock,
   BentoBlock,
+  CookieInventoryBlock,
   DividerBlock,
   ProgramCardsBlock,
   FeatureListBlock,

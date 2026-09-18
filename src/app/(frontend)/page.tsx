@@ -3,6 +3,7 @@ import { draftMode } from 'next/headers'
 import Link from 'next/link'
 
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
+import { EmergencyNoticeBanner } from '@/components/emergency/EmergencyNoticeBanner'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { getInstitutionPage, getNavItems, getQuickLinks, getUnits } from '@/lib/site'
@@ -49,6 +50,9 @@ const PortalHome = async () => {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serialise(organisationSchema(null)) }}
       />
+
+      {/* FR-EMG-01 — the portal belongs to no school, so institution-wide notices only. */}
+      <EmergencyNoticeBanner unitId={null} units={units} />
 
       <SiteHeader units={units} navItems={navItems} quickLinks={quickLinks} infoText={TAGLINE} />
 

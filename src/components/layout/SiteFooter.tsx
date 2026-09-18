@@ -119,6 +119,8 @@ const LEGAL_LINKS: { href: string; label: string }[] = [
   { href: '/privacy', label: 'Privacy & Data Protection' },
   { href: '/cookies', label: 'Cookie Policy' },
   { href: '/accessibility', label: 'Accessibility' },
+  // FR-PRV-12 — the route to exercise data rights, reachable from every page.
+  { href: '/data-request', label: 'Your data rights' },
 ]
 
 const SOCIETY_LINKS: { href: string; label: string; external?: boolean }[] = [

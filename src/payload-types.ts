@@ -67,6 +67,7 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    'emergency-notices': EmergencyNotice;
     posts: Post;
     announcements: Announcement;
     pages: Page;
@@ -77,6 +78,8 @@ export interface Config {
     units: Unit;
     users: User;
     'audit-logs': AuditLog;
+    'consent-records': ConsentRecord;
+    'data-requests': DataRequest;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -84,6 +87,7 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    'emergency-notices': EmergencyNoticesSelect<false> | EmergencyNoticesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
@@ -94,6 +98,8 @@ export interface Config {
     units: UnitsSelect<false> | UnitsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'audit-logs': AuditLogsSelect<false> | AuditLogsSelect<true>;
+    'consent-records': ConsentRecordsSelect<false> | ConsentRecordsSelect<true>;
+    'data-requests': DataRequestsSelect<false> | DataRequestsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -103,8 +109,14 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'data-protection': DataProtection;
+    'cookie-inventory': CookieInventory;
+  };
+  globalsSelect: {
+    'data-protection': DataProtectionSelect<false> | DataProtectionSelect<true>;
+    'cookie-inventory': CookieInventorySelect<false> | CookieInventorySelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -134,80 +146,157 @@ export interface UserAuthOperations {
   };
 }
 /**
- * Fill in the steps below, then use the eye icon at the top to see the page beside your writing, or the arrow to open it in a new tab. Nothing is public until you press Publish.
+ * A banner across the top of the website for anything families must see now — a closure, a weather warning, an exam change. It appears as soon as you save. Nothing here goes through review.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts".
+ * via the `definition` "emergency-notices".
  */
-export interface Post {
+export interface EmergencyNotice {
   id: number;
   /**
-   * You can change this later and look again.
+   * One or two plain sentences. For example: “The school is closed today, Monday 22 July, because of heavy rain.”
    */
-  template: 'story' | 'album' | 'notice';
+  message: string;
   /**
-   * For example: Independence Day Celebrations 2026
+   * Each level has its own colour. A “Notice” can be closed by a visitor; “Warning” and “Urgent” stay on screen.
    */
-  title: string;
+  severity: 'information' | 'warning' | 'critical';
+  scope?: ('institution' | 'units') | null;
   /**
-   * The day it happened, or the day it is happening.
+   * The notice appears across the website of each school chosen here.
    */
-  date: string;
+  units?: (number | Unit)[] | null;
   /**
-   * This is what people read first, and what shows up on Google. Plain sentences are best.
+   * A news item or page with the full story. FR-EMG-07.
    */
-  summary?: string | null;
+  link?:
+    | ({
+        relationTo: 'posts';
+        value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null);
+  linkLabel?: string | null;
   /**
-   * Only if you want to say more. A photo album often needs nothing here at all.
+   * The notice disappears from the website at this time without anyone having to remember. Leave empty to keep it up until you withdraw it.
    */
-  body?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  expiresAt?: string | null;
   /**
-   * Drag them in, as many as you like. Each one needs a line saying what is in it — that line is what a blind visitor hears instead of the picture.
+   * Only needed when something is already showing. If it is, saving will tell you what, and ask you to choose here. FR-EMG-11.
    */
-  photos?: (number | Media)[] | null;
+  onConflict?: ('replace' | 'stack') | null;
   /**
-   * Paste a YouTube link, or upload a file. Leave it empty if none.
+   * Choose “Withdrawn” and save to take it down now. It stays here, so it can be put back.
    */
-  video?: {
-    /**
-     * Paste the address from the browser bar. Leave blank if none.
-     */
-    youtubeUrl?: string | null;
-    file?: (number | null) | Media;
-  };
-  /**
-   * Which school this belongs to. Yours is filled in for you.
-   */
-  unit?: (number | null) | Unit;
-  /**
-   * The web address, made from the title. Filled in automatically.
-   */
-  slug?: string | null;
-  /**
-   * Optional. Keeps this hidden until the date and time you choose, even after you publish it.
-   */
-  publishAt?: string | null;
-  /**
-   * Optional. Takes this off the website automatically — useful for a notice that expires.
-   */
-  unpublishAt?: string | null;
+  status: 'live' | 'withdrawn';
+  state?: string | null;
+  raisedBy?: (number | null) | User;
+  withdrawnAt?: string | null;
+  withdrawnBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
-  _status?: ('draft' | 'published') | null;
+}
+/**
+ * The four SIWS schools. The main SIWS home page links to each one.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "units".
+ */
+export interface Unit {
+  id: number;
+  /**
+   * e.g. "SIWS Kindergarten"
+   */
+  name: string;
+  /**
+   * The short name used in menus, e.g. "Kindergarten".
+   */
+  shortName: string;
+  /**
+   * e.g. "SSC Board | Safe | Value-Based Education".
+   */
+  tagline?: string | null;
+  /**
+   * One or two sentences about this school. Shown on the main SIWS home page and in Google search results.
+   */
+  description?: string | null;
+  /**
+   * Leave empty to use the main SIWS logo.
+   */
+  logo?: (number | null) | Media;
+  heroImage?: (number | null) | Media;
+  addressLine1?: string | null;
+  addressLine2?: string | null;
+  city?: string | null;
+  postalCode?: string | null;
+  phone?: string | null;
+  /**
+   * Optional. Printed beside the first wherever the number appears, with a dialling link of its own.
+   */
+  phoneAlt?: string | null;
+  /**
+   * The email address shown publicly on the website.
+   */
+  email?: string | null;
+  /**
+   * In Google Maps choose Share → Embed a map, then paste the web address here. The map only appears once a visitor has accepted cookies.
+   */
+  mapEmbedUrl?: string | null;
+  /**
+   * Where admission enquiries are sent.
+   */
+  admissionsEmail?: string | null;
+  /**
+   * Where messages from the contact form are sent.
+   */
+  contactEmail?: string | null;
+  /**
+   * Where parent feedback is sent.
+   */
+  feedbackEmail?: string | null;
+  /**
+   * Where job applications are sent.
+   */
+  recruitmentEmail?: string | null;
+  /**
+   * Where bus and transport questions are sent.
+   */
+  transportEmail?: string | null;
+  socialProfiles?:
+    | {
+        platform: 'facebook' | 'instagram' | 'youtube' | 'x' | 'linkedin' | 'whatsapp';
+        url: string;
+        /**
+         * Posts only appear once a visitor has accepted cookies. Until then they see a link to the account instead.
+         */
+        showFeed?: boolean | null;
+        /**
+         * How many recent posts to show.
+         */
+        postCount?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * This school’s part of the web address — "kindergarten" gives siws.edu.in/kindergarten. Changing it changes the address of every page in this school, so old links will stop working.
+   */
+  slug: string;
+  /**
+   * Untick to hide this school from the website completely.
+   */
+  isActive?: boolean | null;
+  /**
+   * The order schools appear in menus. Lower numbers come first.
+   */
+  order: number;
+  /**
+   * Gives this school its own accent colour. Everything else stays the same.
+   */
+  accent: 'accent' | 'accentDeep' | 'sky' | 'sea' | 'brandInk';
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * Pictures and PDFs used anywhere on the website. Never upload anything containing someone’s personal details here.
@@ -337,106 +426,6 @@ export interface Media {
   };
 }
 /**
- * The four SIWS schools. The main SIWS home page links to each one.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "units".
- */
-export interface Unit {
-  id: number;
-  /**
-   * e.g. "SIWS Kindergarten"
-   */
-  name: string;
-  /**
-   * The short name used in menus, e.g. "Kindergarten".
-   */
-  shortName: string;
-  /**
-   * e.g. "SSC Board | Safe | Value-Based Education".
-   */
-  tagline?: string | null;
-  /**
-   * One or two sentences about this school. Shown on the main SIWS home page and in Google search results.
-   */
-  description?: string | null;
-  /**
-   * Leave empty to use the main SIWS logo.
-   */
-  logo?: (number | null) | Media;
-  heroImage?: (number | null) | Media;
-  addressLine1?: string | null;
-  addressLine2?: string | null;
-  city?: string | null;
-  postalCode?: string | null;
-  phone?: string | null;
-  /**
-   * Optional. Printed beside the first wherever the number appears, with a dialling link of its own.
-   */
-  phoneAlt?: string | null;
-  /**
-   * The email address shown publicly on the website.
-   */
-  email?: string | null;
-  /**
-   * In Google Maps choose Share → Embed a map, then paste the web address here. The map only appears once a visitor has accepted cookies.
-   */
-  mapEmbedUrl?: string | null;
-  /**
-   * Where admission enquiries are sent.
-   */
-  admissionsEmail?: string | null;
-  /**
-   * Where messages from the contact form are sent.
-   */
-  contactEmail?: string | null;
-  /**
-   * Where parent feedback is sent.
-   */
-  feedbackEmail?: string | null;
-  /**
-   * Where job applications are sent.
-   */
-  recruitmentEmail?: string | null;
-  /**
-   * Where bus and transport questions are sent.
-   */
-  transportEmail?: string | null;
-  socialProfiles?:
-    | {
-        platform: 'facebook' | 'instagram' | 'youtube' | 'x' | 'linkedin' | 'whatsapp';
-        url: string;
-        /**
-         * Posts only appear once a visitor has accepted cookies. Until then they see a link to the account instead.
-         */
-        showFeed?: boolean | null;
-        /**
-         * How many recent posts to show.
-         */
-        postCount?: number | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * This school’s part of the web address — "kindergarten" gives siws.edu.in/kindergarten. Changing it changes the address of every page in this school, so old links will stop working.
-   */
-  slug: string;
-  /**
-   * Untick to hide this school from the website completely.
-   */
-  isActive?: boolean | null;
-  /**
-   * The order schools appear in menus. Lower numbers come first.
-   */
-  order: number;
-  /**
-   * Gives this school its own accent colour. Everything else stays the same.
-   */
-  accent: 'accent' | 'accentDeep' | 'sky' | 'sea' | 'brandInk';
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -508,37 +497,69 @@ export interface User {
   collection: 'users';
 }
 /**
- * Short lines that scroll across the top of the site. Keep each one to a single sentence.
+ * Fill in the steps below, then use the eye icon at the top to see the page beside your writing, or the arrow to open it in a new tab. Nothing is public until you press Publish.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "announcements".
+ * via the `definition` "posts".
  */
-export interface Announcement {
+export interface Post {
   id: number;
   /**
-   * For example: SIWS School celebrates India’s 80th Independence Day with grandeur and pride.
+   * You can change this later and look again.
    */
-  message: string;
+  template: 'story' | 'album' | 'notice';
   /**
-   * This decides the colour of the label in front of your sentence.
+   * For example: Independence Day Celebrations 2026
    */
-  tone: 'news' | 'achievement' | 'event' | 'urgent';
+  title: string;
   /**
-   * Choose one of your write-ups and the sentence becomes clickable. Leave it empty otherwise.
+   * The day it happened, or the day it is happening.
    */
-  link?:
-    | ({
-        relationTo: 'posts';
-        value: number | Post;
-      } | null)
-    | ({
-        relationTo: 'pages';
-        value: number | Page;
-      } | null);
+  date: string;
   /**
-   * Which school this is from. Yours is filled in for you. Announcements from every school appear on the main SIWS ticker.
+   * This is what people read first, and what shows up on Google. Plain sentences are best.
+   */
+  summary?: string | null;
+  /**
+   * Only if you want to say more. A photo album often needs nothing here at all.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Drag them in, as many as you like. Each one needs a line saying what is in it — that line is what a blind visitor hears instead of the picture.
+   */
+  photos?: (number | Media)[] | null;
+  /**
+   * Paste a YouTube link, or upload a file. Leave it empty if none.
+   */
+  video?: {
+    /**
+     * Paste the address from the browser bar. Leave blank if none.
+     */
+    youtubeUrl?: string | null;
+    file?: (number | null) | Media;
+  };
+  /**
+   * Which school this belongs to. Yours is filled in for you.
    */
   unit?: (number | null) | Unit;
+  /**
+   * The web address, made from the title. Filled in automatically.
+   */
+  slug?: string | null;
   /**
    * Optional. Keeps this hidden until the date and time you choose, even after you publish it.
    */
@@ -602,6 +623,7 @@ export interface Page {
         | CallToActionBlock
         | HeroEnquiryBlock
         | FeedbackBlock
+        | CookieInventoryBlock
       )[]
     | null;
   /**
@@ -2562,6 +2584,79 @@ export interface FeedbackBlock {
   blockType: 'feedback';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CookieInventoryBlock".
+ */
+export interface CookieInventoryBlock {
+  /**
+   * Optional.
+   */
+  heading?: string | null;
+  /**
+   * Optional. The list itself is edited under Data protection → Cookies, not here.
+   */
+  intro?: string | null;
+  /**
+   * Use “Smaller” when this section sits underneath another heading. Use “The page heading” only on the FIRST section of a page, when its heading is the page title — the title then appears here instead of on its own above.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h1') | null;
+  /**
+   * Type a word from the heading to show it in SIWS accent.
+   */
+  accentWord?: string | null;
+  /**
+   * Text colour adjusts automatically so it stays readable.
+   */
+  background?: ('white' | 'sea' | 'tint' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cookieInventory';
+}
+/**
+ * Short lines that scroll across the top of the site. Keep each one to a single sentence.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "announcements".
+ */
+export interface Announcement {
+  id: number;
+  /**
+   * For example: SIWS School celebrates India’s 80th Independence Day with grandeur and pride.
+   */
+  message: string;
+  /**
+   * This decides the colour of the label in front of your sentence.
+   */
+  tone: 'news' | 'achievement' | 'event' | 'urgent';
+  /**
+   * Choose one of your write-ups and the sentence becomes clickable. Leave it empty otherwise.
+   */
+  link?:
+    | ({
+        relationTo: 'posts';
+        value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null);
+  /**
+   * Which school this is from. Yours is filled in for you. Announcements from every school appear on the main SIWS ticker.
+   */
+  unit?: (number | null) | Unit;
+  /**
+   * Optional. Keeps this hidden until the date and time you choose, even after you publish it.
+   */
+  publishAt?: string | null;
+  /**
+   * Optional. Takes this off the website automatically — useful for a notice that expires.
+   */
+  unpublishAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Teacher profiles shown on your school’s website. Lower “Order” numbers appear first.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2770,6 +2865,77 @@ export interface AuditLog {
   createdAt: string;
 }
 /**
+ * Every consent given on the website, with the notice it was given against. Read-only: consents are recorded automatically and cannot be edited.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consent-records".
+ */
+export interface ConsentRecord {
+  id: number;
+  /**
+   * An email address or phone number for a form. For cookies, the anonymous reference stored in that visitor’s browser.
+   */
+  subject: string;
+  subjectName?: string | null;
+  purpose: 'admission_enquiry' | 'feedback' | 'data_request' | 'cookies';
+  categories?: ('necessary' | 'analytics' | 'embeds')[] | null;
+  noticeVersion: string;
+  status: 'given' | 'withdrawn' | 'superseded';
+  givenAt: string;
+  withdrawnAt?: string | null;
+  /**
+   * The page the form or banner was on.
+   */
+  source?: string | null;
+  relatedCollection?: string | null;
+  relatedId?: string | null;
+  unit?: (number | null) | Unit;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Requests from families to see, correct or delete their information. Work each one through to “Completed”; the history records every step.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "data-requests".
+ */
+export interface DataRequest {
+  id: number;
+  reference?: string | null;
+  requestType: 'access' | 'correction' | 'erasure' | 'withdraw_consent' | 'other';
+  relationship?: ('self' | 'parent' | 'representative') | null;
+  name: string;
+  email: string;
+  phone?: string | null;
+  details?: string | null;
+  /**
+   * What you did, or what you told them. It is added to the history below with your name and the time when you save, and this box empties.
+   */
+  addNote?: string | null;
+  /**
+   * Every status change and note, oldest first. It cannot be edited.
+   */
+  history?:
+    | {
+        at?: string | null;
+        by?: string | null;
+        status?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  status: 'received' | 'in_progress' | 'completed' | 'refused';
+  /**
+   * The date you have committed to answer by. Set it from the timeline SIWS’s privacy policy promises.
+   */
+  respondBy?: string | null;
+  noticeVersion?: string | null;
+  submittedAt?: string | null;
+  source?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -2793,6 +2959,10 @@ export interface PayloadKv {
 export interface PayloadLockedDocument {
   id: number;
   document?:
+    | ({
+        relationTo: 'emergency-notices';
+        value: number | EmergencyNotice;
+      } | null)
     | ({
         relationTo: 'posts';
         value: number | Post;
@@ -2832,6 +3002,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'audit-logs';
         value: number | AuditLog;
+      } | null)
+    | ({
+        relationTo: 'consent-records';
+        value: number | ConsentRecord;
+      } | null)
+    | ({
+        relationTo: 'data-requests';
+        value: number | DataRequest;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -2874,6 +3052,27 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "emergency-notices_select".
+ */
+export interface EmergencyNoticesSelect<T extends boolean = true> {
+  message?: T;
+  severity?: T;
+  scope?: T;
+  units?: T;
+  link?: T;
+  linkLabel?: T;
+  expiresAt?: T;
+  onConflict?: T;
+  status?: T;
+  state?: T;
+  raisedBy?: T;
+  withdrawnAt?: T;
+  withdrawnBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2955,6 +3154,7 @@ export interface PagesSelect<T extends boolean = true> {
         callToAction?: T | CallToActionBlockSelect<T>;
         heroEnquiry?: T | HeroEnquiryBlockSelect<T>;
         feedback?: T | FeedbackBlockSelect<T>;
+        cookieInventory?: T | CookieInventoryBlockSelect<T>;
       };
   metaTitle?: T;
   metaDescription?: T;
@@ -3767,6 +3967,19 @@ export interface FeedbackBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CookieInventoryBlock_select".
+ */
+export interface CookieInventoryBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  headingLevel?: T;
+  accentWord?: T;
+  background?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "faculty_select".
  */
 export interface FacultySelect<T extends boolean = true> {
@@ -4026,6 +4239,56 @@ export interface AuditLogsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consent-records_select".
+ */
+export interface ConsentRecordsSelect<T extends boolean = true> {
+  subject?: T;
+  subjectName?: T;
+  purpose?: T;
+  categories?: T;
+  noticeVersion?: T;
+  status?: T;
+  givenAt?: T;
+  withdrawnAt?: T;
+  source?: T;
+  relatedCollection?: T;
+  relatedId?: T;
+  unit?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "data-requests_select".
+ */
+export interface DataRequestsSelect<T extends boolean = true> {
+  reference?: T;
+  requestType?: T;
+  relationship?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  details?: T;
+  addNote?: T;
+  history?:
+    | T
+    | {
+        at?: T;
+        by?: T;
+        status?: T;
+        note?: T;
+        id?: T;
+      };
+  status?: T;
+  respondBy?: T;
+  noticeVersion?: T;
+  submittedAt?: T;
+  source?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -4063,6 +4326,133 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * How long the website keeps each kind of personal data. Records older than this are flagged at the top of their list, or deleted each night once deletion is switched on.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "data-protection".
+ */
+export interface DataProtection {
+  id: number;
+  /**
+   * Switch to “Delete” only once SIWS has confirmed the periods below. Deletion cannot be undone.
+   */
+  mode: 'flag' | 'delete';
+  /**
+   * The enquiry notice promises “the current admission year and one year afterwards”. Months. 0 keeps them indefinitely.
+   */
+  enquiriesMonths?: number | null;
+  /**
+   * The feedback notice promises “up to one year after your message is dealt with”. Months. 0 keeps them indefinitely.
+   */
+  feedbackMonths?: number | null;
+  /**
+   * Counted from when the request was closed. Open requests are never deleted. Months. 0 keeps them indefinitely.
+   */
+  dataRequestsMonths?: number | null;
+  /**
+   * Keep these at least as long as the data they cover. Months. 0 keeps them indefinitely.
+   */
+  consentRecordsMonths?: number | null;
+  /**
+   * The record of who did what. Kept indefinitely unless SIWS decides otherwise. Months. 0 keeps them indefinitely.
+   */
+  auditLogsMonths?: number | null;
+  lastRunAt?: string | null;
+  lastRunSummary?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * The cookies this website sets, as listed on the cookie policy page, and the wording of the cookie banner. Add a row whenever a new video service, map or social feed is added to the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cookie-inventory".
+ */
+export interface CookieInventory {
+  id: number;
+  necessary?: {
+    label?: string | null;
+    description?: string | null;
+  };
+  analytics?: {
+    label?: string | null;
+    description?: string | null;
+  };
+  embeds?: {
+    label?: string | null;
+    description?: string | null;
+  };
+  cookies?:
+    | {
+        name: string;
+        provider: string;
+        category: 'necessary' | 'analytics' | 'embeds';
+        purpose: string;
+        /**
+         * For example “1 year”, or “Until you close your browser”.
+         */
+        duration: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "data-protection_select".
+ */
+export interface DataProtectionSelect<T extends boolean = true> {
+  mode?: T;
+  enquiriesMonths?: T;
+  feedbackMonths?: T;
+  dataRequestsMonths?: T;
+  consentRecordsMonths?: T;
+  auditLogsMonths?: T;
+  lastRunAt?: T;
+  lastRunSummary?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cookie-inventory_select".
+ */
+export interface CookieInventorySelect<T extends boolean = true> {
+  necessary?:
+    | T
+    | {
+        label?: T;
+        description?: T;
+      };
+  analytics?:
+    | T
+    | {
+        label?: T;
+        description?: T;
+      };
+  embeds?:
+    | T
+    | {
+        label?: T;
+        description?: T;
+      };
+  cookies?:
+    | T
+    | {
+        name?: T;
+        provider?: T;
+        category?: T;
+        purpose?: T;
+        duration?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

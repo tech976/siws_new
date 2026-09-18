@@ -79,10 +79,39 @@ export const FEEDBACK_NOTICE: ConsentNotice = {
   },
 }
 
+/**
+ * A request to see, correct or delete personal data, or to withdraw consent
+ * (FR-PRV-12, BR-DPA-03).
+ *
+ * Handling the request is an obligation under the DPDPA, not something the
+ * person consents to — but they are still handing over contact details, so
+ * FR-PRV-07 still requires the notice, and the tick records that they read it.
+ * The details are kept longer than a feedback message, because the record of a
+ * request having been answered is itself the evidence the school may be asked
+ * for.
+ */
+export const DATA_REQUEST_NOTICE: ConsentNotice = {
+  version: '2026-09-v1',
+  purpose: 'data_request',
+  checkboxLabel:
+    'I confirm this request is about my own details, or my child’s, and that SIWS may contact me about it.',
+  items: {
+    whatWeCollect:
+      'Your name, your email address, an optional phone number, and what you are asking us to do.',
+    whyWeCollect:
+      'So that our Data Protection Officer can find the records you are asking about, check the request is yours, and reply to you.',
+    howLongWeKeepIt:
+      'For three years after the request is closed, as a record that it was answered. Then it is deleted.',
+    yourRights:
+      'You can ask about this request, or complain about how it was handled, by writing to our Data Protection Officer.',
+  },
+}
+
 /** Every notice, keyed by purpose — used by the consent register. */
 export const CONSENT_NOTICES = {
   [ADMISSION_ENQUIRY_NOTICE.purpose]: ADMISSION_ENQUIRY_NOTICE,
   [FEEDBACK_NOTICE.purpose]: FEEDBACK_NOTICE,
+  [DATA_REQUEST_NOTICE.purpose]: DATA_REQUEST_NOTICE,
 } as const
 
 export type ConsentPurpose = keyof typeof CONSENT_NOTICES

@@ -40,6 +40,8 @@ export const Enquiries: CollectionConfig = {
     // Nothing about a submission is previewable on the public site.
     preview: () => null,
     components: {
+      // BR-DPA-02 — records past their retention period are flagged here.
+      beforeList: ['@/components/admin/RetentionNotice#RetentionNotice'],
       beforeListTable: ['@/components/admin/ExportEnquiries#ExportEnquiriesButton'],
     },
   },

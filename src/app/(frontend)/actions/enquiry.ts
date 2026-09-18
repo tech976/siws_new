@@ -7,6 +7,7 @@ import config from '@payload-config'
 
 import { CAMPUS_LABELS, CAMPUS_VALUES, type Campus } from '@/fields/campus'
 import { ADMISSION_ENQUIRY_NOTICE } from '@/lib/consent-notices'
+import { recordConsent } from '@/lib/consent-register'
 import type { FormState } from '@/lib/form-state'
 import { HONEYPOT_FIELD, guardSubmission } from '@/lib/form-guard'
 
@@ -230,6 +231,18 @@ export const submitEnquiry = async (
         // person's device or network.
         consentSource: referer.slice(0, 250),
       } as never,
+    })
+
+    // BR-DPA-01 — the same consent, in the register the DPO reads.
+    await recordConsent(payload, {
+      subject: values.email.length > 0 ? values.email.toLowerCase() : values.phone,
+      subjectName: `${values.parentFirstName} ${values.parentLastName}`.trim(),
+      purpose: 'admission_enquiry',
+      noticeVersion: ADMISSION_ENQUIRY_NOTICE.version,
+      source: referer,
+      relatedCollection: 'enquiries',
+      relatedId: created.id,
+      unit: unit.id,
     })
 
     // FR-ADM-03 — route to the inbox this card is for, falling through the

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+import { EmergencyNoticeBanner } from '@/components/emergency/EmergencyNoticeBanner'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { getNavItems, getQuickLinks, getUnits } from '@/lib/site'
@@ -48,6 +49,8 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
 
   return (
     <>
+      <EmergencyNoticeBanner unitId={null} units={units} />
+
       <SiteHeader units={units} navItems={navItems} quickLinks={quickLinks} />
 
       <main id="main-content">

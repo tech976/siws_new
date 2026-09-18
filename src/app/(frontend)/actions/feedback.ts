@@ -6,6 +6,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 import { FEEDBACK_NOTICE } from '@/lib/consent-notices'
+import { recordConsent } from '@/lib/consent-register'
 import { FEEDBACK_RELATIONSHIPS, FEEDBACK_SUBJECTS } from '@/lib/feedback-options'
 import type { FormState } from '@/lib/form-state'
 import { HONEYPOT_FIELD, guardSubmission } from '@/lib/form-guard'
@@ -177,6 +178,18 @@ export const submitFeedback = async (
         // person's device or network.
         consentSource: referer.slice(0, 250),
       } as never,
+    })
+
+    // BR-DPA-01 — the same consent, in the register the DPO reads.
+    await recordConsent(payload, {
+      subject: values.email.toLowerCase(),
+      subjectName: values.name,
+      purpose: 'feedback',
+      noticeVersion: FEEDBACK_NOTICE.version,
+      source: referer,
+      relatedCollection: 'feedback',
+      relatedId: created.id,
+      unit: unit.id,
     })
 
     /*

@@ -13,11 +13,16 @@ import { AuditLogs } from './collections/AuditLogs'
 import { Enquiries } from './collections/Enquiries'
 import { Feedback } from './collections/Feedback'
 import { Faculty } from './collections/Faculty'
+import { ConsentRecords } from '@/collections/ConsentRecords'
+import { DataRequests } from '@/collections/DataRequests'
+import { EmergencyNotices } from '@/collections/EmergencyNotices'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Units } from './collections/Units'
 import { Users } from './collections/Users'
+import { CookieInventory } from '@/globals/CookieInventory'
+import { DataProtection } from '@/globals/DataProtection'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -67,6 +72,11 @@ export default buildConfig({
   },
 
   collections: [
+    /*
+     * First, so its "Urgent" group heads the admin sidebar: somebody raising a
+     * closure notice is in a hurry (FR-EMG-02).
+     */
+    EmergencyNotices,
     Posts,
     Announcements,
     Pages,
@@ -77,7 +87,13 @@ export default buildConfig({
     Units,
     Users,
     AuditLogs,
+    // SRS 6.9 — data protection.
+    ConsentRecords,
+    DataRequests,
   ],
+
+  // SRS 6.9 — retention (BR-DPA-02) and the cookie inventory (BR-DPA-06).
+  globals: [DataProtection, CookieInventory],
 
   editor: lexicalEditor(),
 

@@ -13,12 +13,13 @@ import {
   PencilLine,
   School,
   Search,
+  Siren,
   Users as UsersIcon,
 } from 'lucide-react'
 import Link from 'next/link'
 import type { Payload, TypedUser } from 'payload'
 
-import { ROLES, hasRole, isAdmin, isDPO, isHod, unitIdsOf } from '@/access'
+import { ROLES, canRaiseEmergency, hasRole, isAdmin, isDPO, isHod, unitIdsOf } from '@/access'
 import type { AccessUser } from '@/access'
 import { REVIEW_STATUS } from '@/fields/publishing'
 
@@ -340,6 +341,18 @@ export const Dashboard = async ({ payload, user }: DashboardProps) => {
         </div>
 
         <div className="siws-dash__topright">
+          {/*
+            FR-EMG-02 — a notice in no more than three steps. From here it is
+            this button, the message, and Save. Shown only to the people who may
+            raise one, so it is never an invitation somebody cannot accept.
+          */}
+          {canRaiseEmergency(accessUser) ? (
+            <Link href={`${ADMIN_BASE}/emergency-notices/create`} className="siws-urgentbtn">
+              <Siren size={17} strokeWidth={2.2} aria-hidden="true" />
+              <span>Emergency notice</span>
+            </Link>
+          ) : null}
+
           <Link
             href={`${ADMIN_BASE}/pages`}
             className="siws-iconbtn"

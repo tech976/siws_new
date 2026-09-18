@@ -36,6 +36,8 @@ export const RESERVED_SLUGS = new Set([
   'admin',
   'api',
   'search',
+  // FR-PRV-12 — the data-rights request form, a route of its own.
+  'data-request',
   'sitemap.xml',
   'robots.txt',
   'alumni',
