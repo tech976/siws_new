@@ -8,6 +8,7 @@ import type { CollectionBeforeChangeHook } from 'payload'
 import { ROLES, hasRole, isActiveUser, isAdmin, unitIdsOf } from '@/access'
 import type { AccessUser } from '@/access'
 import { campusField } from '@/fields/campus'
+import { hideFromHod } from '@/fields/hod-simple'
 import { auditChange, auditDelete } from '@/hooks/audit'
 import { constrainUnitToScope } from '@/hooks/workflow'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
@@ -365,6 +366,13 @@ export const Media: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description: 'Leave empty to share this with all four schools.',
+        /*
+         * Hidden from an HOD, as it is on News & Events and the ticker. Every
+         * school was offered, and only the save refused the wrong one; an HOD
+         * uploads for one school, and `keepHodUploadsInTheirSchool` files it
+         * there without asking.
+         */
+        condition: hideFromHod,
       },
     },
     campusField({

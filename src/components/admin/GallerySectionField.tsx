@@ -1,6 +1,6 @@
 'use client'
 
-import { FieldLabel, useField, useFormFields } from '@payloadcms/ui'
+import { FieldLabel, useAuth, useField, useFormFields } from '@payloadcms/ui'
 import type { TextFieldClientComponent } from 'payload'
 import { useEffect, useId, useMemo, useState } from 'react'
 
@@ -39,8 +39,18 @@ export const GallerySectionField: TextFieldClientComponent = ({ field, path }) =
   /*
    * The unit chosen in "Belongs to". Read from the form rather than passed in,
    * so changing the school re-filters the list immediately instead of on save.
+   *
+   * An HOD never sees "Belongs to" — their upload is filed under their own
+   * school when it is saved — so on a new upload the form has no unit yet.
+   * Their own school stands in, or they would be offered only the shared
+   * sections and none of the ones their school actually uses.
    */
-  const unit = useFormFields(([fields]) => fields?.unit?.value)
+  const chosen = useFormFields(([fields]) => fields?.unit?.value)
+  const { user } = useAuth()
+  const ownUnits = ((user as { units?: unknown[] } | null)?.units ?? []).map((entry) =>
+    entry && typeof entry === 'object' && 'id' in entry ? (entry as { id: unknown }).id : entry,
+  )
+  const unit = chosen || (ownUnits.length === 1 ? ownUnits[0] : null)
 
   const [sections, setSections] = useState<string[]>([])
 
