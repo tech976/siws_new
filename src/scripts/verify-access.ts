@@ -235,21 +235,40 @@ const main = async () => {
 
     await check({
       name: 'Content Manager CANNOT create institution-wide content (SRS 3.4)',
-      run: () =>
-        expectRejection(
-          () =>
-            payload.create({
-              collection: 'pages',
-              data: {
-                title: 'Institution attempt',
-                slug: `institution-attempt-${stamp}`,
-                layout: [],
-              } as never,
-              user: contentManager,
-              overrideAccess: false,
-            }),
-          'institution-wide content is reserved to Administrators',
-        ),
+      run: async () => {
+        /*
+         * A page saved with no unit is either refused or filed under the
+         * manager's own unit (`constrainUnitToScope` defaults a single-unit
+         * author to it). What it must never become is a page belonging to no
+         * unit — the portal's, which is an Administrator's.
+         *
+         * This used to expect a refusal, and got one only because the default
+         * wrote the unit id as a string and the relationship rejected it: the
+         * test passed on a bug that also refused every legitimate blank-unit
+         * save by a single-unit author.
+         */
+        let page: { id: number | string; unit?: unknown } | null = null
+        try {
+          page = (await payload.create({
+            collection: 'pages',
+            data: {
+              title: 'Institution attempt',
+              slug: `verify-institution-attempt-${stamp}`,
+              layout: [],
+            } as never,
+            user: contentManager,
+            overrideAccess: false,
+          })) as unknown as { id: number | string; unit?: unknown }
+        } catch {
+          return
+        }
+        createdPages.push(page.id as number)
+        const unit = page.unit as number | { id: number } | null | undefined
+        const unitId = unit && typeof unit === 'object' ? unit.id : unit
+        if (String(unitId) !== String(kg.id)) {
+          throw new Error(`The page was saved under ${unitId ?? 'no unit — institution-wide'}.`)
+        }
+      },
     })
 
     // ---- 4. Editor section limits (SRS 8.1) ------------------------------
@@ -733,6 +752,123 @@ const main = async () => {
         )
       },
     })
+
+    // ---- HOD and the media library ---------------------------------------
+    //
+    // An HOD publishes news, events, achievements and the gallery — all of
+    // them pictures. The role was once missing from the media library's
+    // create rule, so an HOD could see photographs but never add one.
+    const { default: sharp } = await import('sharp')
+    const png = await sharp({
+      create: { width: 12, height: 12, channels: 3, background: '#2d3a8c' },
+    })
+      .png()
+      .toBuffer()
+    const picture = (name: string) => ({
+      data: png,
+      mimetype: 'image/png',
+      name: `verify-${name}-${stamp}.png`,
+      size: png.length,
+    })
+    const createdMedia: (number | string)[] = []
+
+    try {
+      await check({
+        name: 'An HOD can upload a picture, and it is filed under their own school',
+        run: async () => {
+          const item = await payload.create({
+            collection: 'media',
+            data: { alt: 'Verify HOD upload' } as never,
+            file: picture('hod-upload'),
+            overrideAccess: false,
+            user: hod,
+          })
+          createdMedia.push(item.id)
+          const unit = (item as unknown as { unit?: number | { id: number } | null }).unit
+          const unitId = unit && typeof unit === 'object' ? unit.id : unit
+          if (String(unitId) !== String(primary.id)) {
+            throw new Error(`The upload was filed under ${unitId ?? 'every school'}, not the HOD's own.`)
+          }
+        },
+      })
+
+      await check({
+        name: 'An HOD cannot upload a picture for another school',
+        run: () =>
+          expectRejection(
+            async () => {
+              const item = await payload.create({
+                collection: 'media',
+                data: { alt: 'Verify HOD elsewhere', unit: kg.id } as never,
+                file: picture('hod-elsewhere'),
+                overrideAccess: false,
+                user: hod,
+              })
+              createdMedia.push(item.id)
+            },
+            'an HOD uploaded a picture to another school',
+          ),
+      })
+
+      await check({
+        name: 'An HOD edits their own school’s pictures — not another school’s or shared ones',
+        run: async () => {
+          const own = await payload.create({
+            collection: 'media',
+            data: { alt: 'Verify primary picture', unit: primary.id } as never,
+            file: picture('primary'),
+            overrideAccess: true,
+          })
+          const other = await payload.create({
+            collection: 'media',
+            data: { alt: 'Verify kindergarten picture', unit: kg.id } as never,
+            file: picture('kg'),
+            overrideAccess: true,
+          })
+          const shared = await payload.create({
+            collection: 'media',
+            data: { alt: 'Verify shared picture' } as never,
+            file: picture('shared'),
+            overrideAccess: true,
+          })
+          createdMedia.push(own.id, other.id, shared.id)
+
+          const edited = await payload.update({
+            collection: 'media',
+            id: own.id,
+            data: { alt: 'Verify primary picture, edited', unit: null } as never,
+            overrideAccess: false,
+            user: hod,
+          })
+          const unit = (edited as unknown as { unit?: number | { id: number } | null }).unit
+          const unitId = unit && typeof unit === 'object' ? unit.id : unit
+          if (String(unitId) !== String(primary.id)) {
+            throw new Error('Clearing "Belongs to" made the HOD’s picture shared with every school.')
+          }
+
+          for (const [doc, what] of [
+            [other, 'another school’s'],
+            [shared, 'a shared'],
+          ] as const) {
+            await expectRejection(
+              () =>
+                payload.update({
+                  collection: 'media',
+                  id: doc.id,
+                  data: { alt: 'Verify edited by HOD' } as never,
+                  overrideAccess: false,
+                  user: hod,
+                }),
+              `an HOD edited ${what} picture`,
+            )
+          }
+        },
+      })
+    } finally {
+      for (const id of createdMedia) {
+        await payload.delete({ collection: 'media', id, overrideAccess: true }).catch(() => undefined)
+      }
+    }
 
     await check({
       name: 'Every staff role can actually open the admin panel',

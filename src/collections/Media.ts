@@ -3,11 +3,13 @@ import { fileURLToPath } from 'url'
 
 import type { CollectionConfig, Where } from 'payload'
 import { APIError } from 'payload'
+import type { CollectionBeforeChangeHook } from 'payload'
 
 import { ROLES, hasRole, isActiveUser, isAdmin, unitIdsOf } from '@/access'
 import type { AccessUser } from '@/access'
 import { campusField } from '@/fields/campus'
 import { auditChange, auditDelete } from '@/hooks/audit'
+import { constrainUnitToScope } from '@/hooks/workflow'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 import { IMAGE_AND_DOCUMENT_TYPES, validateFileContent } from '@/utilities/file-signature'
 import { describeMediaUsage } from '@/utilities/media-usage'
@@ -15,6 +17,30 @@ import { describeMediaUsage } from '@/utilities/media-usage'
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /** BR-MED-04 — file-size ceilings, applied per kind rather than one blanket cap. */
+/**
+ * An HOD and nothing broader. Someone who also holds an editor or manager role
+ * keeps that role's reach; this narrows only the HOD who is just an HOD.
+ */
+const isHodOnly = (user: AccessUser | null): boolean =>
+  hasRole(user, ROLES.hod) &&
+  !isAdmin(user) &&
+  !hasRole(user, ROLES.unitHead, ROLES.contentManager, ROLES.editor)
+
+/**
+ * An HOD's upload belongs to their own school. Left blank, "Belongs to" means
+ * shared with all four schools — an HOD publishes for one department, so a
+ * blank is filled with their school, another school is refused, and clearing
+ * it on an existing picture puts back what was there.
+ */
+const keepHodUploadsInTheirSchool: CollectionBeforeChangeHook = (args) => {
+  const { data, originalDoc, operation, req } = args
+  if (!data || !isHodOnly(req.user as AccessUser | null)) return data
+  if (operation === 'update' && 'unit' in data && data.unit == null && originalDoc?.unit) {
+    data.unit = originalDoc.unit
+  }
+  return constrainUnitToScope(args)
+}
+
 const MAX_IMAGE_BYTES = 12 * 1024 * 1024 // 12 MB
 const MAX_PDF_BYTES = 25 * 1024 * 1024 // 25 MB
 
@@ -140,18 +166,35 @@ export const Media: CollectionConfig = {
     // is ever stored in this collection — see `protected-media`.
     read: () => true,
 
+    /*
+     * HODs upload too. They were left off this list, so the role built to
+     * publish news, events, achievements and the gallery could not add a
+     * single picture to any of them: no upload in the Media library, and no
+     * "Create new" when attaching photographs to a story.
+     */
     create: ({ req }) => {
       const user = req.user as AccessUser | null
-      return isAdmin(user) || hasRole(user, ROLES.unitHead, ROLES.contentManager, ROLES.editor)
+      return (
+        isAdmin(user) ||
+        hasRole(user, ROLES.unitHead, ROLES.contentManager, ROLES.editor, ROLES.hod)
+      )
     },
 
     update: ({ req }) => {
       const user = req.user as AccessUser | null
       if (isAdmin(user)) return true
       if (!isActiveUser(user)) return false
-      if (!hasRole(user, ROLES.unitHead, ROLES.contentManager, ROLES.editor)) return false
 
       const ids = unitIdsOf(user)
+      // An HOD edits their own school's pictures and their own uploads — not
+      // the shared ones every school uses, which are an administrator's.
+      if (isHodOnly(user)) {
+        const clauses: Where[] = [{ uploadedBy: { equals: user.id } }]
+        if (ids.length > 0) clauses.push({ unit: { in: ids } })
+        return { or: clauses }
+      }
+
+      if (!hasRole(user, ROLES.unitHead, ROLES.contentManager, ROLES.editor)) return false
       // Staff may edit items belonging to their unit, plus shared items that
       // carry no unit, plus anything they uploaded themselves.
       const clauses: Where[] = [{ unit: { exists: false } }, { uploadedBy: { equals: user.id } }]
@@ -203,6 +246,7 @@ export const Media: CollectionConfig = {
     ],
 
     beforeChange: [
+      keepHodUploadsInTheirSchool,
       ({ data, operation, req }) => {
         if (operation === 'create' && req.user) {
           data.uploadedBy = req.user.id

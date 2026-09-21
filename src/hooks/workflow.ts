@@ -251,7 +251,10 @@ export const constrainUnitToScope: CollectionBeforeChangeHook = ({ data, operati
     // Default to the author's unit when they belong to exactly one; ambiguity
     // is surfaced rather than guessed.
     if (assigned.length === 1) {
-      data.unit = assigned[0]
+      // `unitIdsOf` normalises ids to strings for comparison; the relationship
+      // wants the number Postgres stores, and refuses "3" as not a valid unit.
+      const only = assigned[0]!
+      data.unit = /^\d+$/.test(only) ? Number(only) : only
       return data
     }
     throw new APIError('Choose which unit this content belongs to.', 400)
