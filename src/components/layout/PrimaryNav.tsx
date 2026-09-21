@@ -71,6 +71,37 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
   const navRef = useRef<HTMLElement>(null)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const toggleRef = useRef<HTMLButtonElement>(null)
+  const clusterRef = useRef<HTMLDivElement>(null)
+  /*
+    The width the floated spacer holds for the cluster, measured. `null` until
+    the first measurement, when an estimate from the CTA label stands in.
+
+    It was a fixed 19.5rem, sized for Quick links and the enquiry button
+    before Search joined them. The cluster is really ~15.5rem without a CTA
+    and ~30.5rem with "Enquire about admission", so on a nine-item menu the
+    links ran underneath Search. A fixed number cannot be right anyway: the
+    CTA label differs by section, Google Translate changes every label's
+    length, and the A+ text-size control scales the lot.
+  */
+  const [reserve, setReserve] = useState<number | null>(null)
+
+  useEffect(() => {
+    const nav = navRef.current
+    const cluster = clusterRef.current
+    if (!nav || !cluster) return
+    const measure = () => {
+      // Below 1200px the menu is hidden and the cluster is in normal flow.
+      if (nav.offsetParent === null) return
+      const gap = 8
+      const width = Math.ceil(nav.getBoundingClientRect().right - cluster.getBoundingClientRect().left)
+      setReserve(Math.max(0, width) + gap)
+    }
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(nav)
+    observer.observe(cluster)
+    return () => observer.disconnect()
+  }, [])
 
   // A route change must close the panel, or it stays open over the new page.
   useEffect(() => {
@@ -215,15 +246,28 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
           className="hidden gap-x-0.5 gap-y-1 min-[1200px]:block min-[1200px]:basis-full [&>*]:align-middle min-[1200px]:[&>*]:inline-block"
         >
           {/*
-            Reserves the top-right corner for Quick links + the enquiry
-            button. Width is generous enough for the longest CTA label
-            ("Enquire about admission") plus Quick links and their gap;
-            height matches the 48px control row so only the first line of
+            Reserves the top-right corner for Search, Quick links and the
+            enquiry button — as wide as they measure (see `reserve`).
+
+            Before the first measurement, an estimate close enough that the
+            links do not jump when it lands: Search and Quick links take
+            15.5rem, the button ~0.5rem a character plus padding. The cluster
+            is pinned 20px from the WINDOW's edge while the menu stops at the
+            75rem container's, so past 75rem it overhangs the menu by half the
+            extra width and needs that much less of it.
+
+            Height matches the 48px control row so only the first line of
             links is shortened.
           */}
           <div
             aria-hidden="true"
-            className="float-right h-12 w-[19.5rem] min-[1200px]:block"
+            className="float-right h-12 min-[1200px]:block"
+            style={{
+              width:
+                reserve !== null
+                  ? `${reserve}px`
+                  : `calc(${cta ? `19.75rem + ${cta.label.length} * 0.5rem` : '16rem'} - max(0px, (100vw - 75rem) / 2))`,
+            }}
           />
           {items.map((item) => {
             const hasChildren = (item.children?.length ?? 0) > 0
@@ -363,7 +407,10 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
         menu the flexible one, which is the right way round: the CTA keeps its
         full label rather than truncating mid-word, and the links reflow.
       */}
-      <div className="ml-auto flex min-w-0 shrink-0 items-center gap-2 self-start sm:gap-3 min-[1200px]:absolute min-[1200px]:top-2.5 min-[1200px]:right-5">
+      <div
+        ref={clusterRef}
+        className="ml-auto flex min-w-0 shrink-0 items-center gap-2 self-start sm:gap-3 min-[1200px]:absolute min-[1200px]:top-2.5 min-[1200px]:right-5"
+      >
         {/*
           FR-SR-01 — search reaches every page, so its way in is in the header
           rather than on a page a visitor has to find first.

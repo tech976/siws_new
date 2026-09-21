@@ -154,27 +154,27 @@ const UNIT: Entry[] = [
     label: 'Student Life',
     srs: '5.5',
     children: [
-      /*
-       * SPORTS, in every section's drop-down (2026-09-02).
-       *
-       * It sits under Student Life rather than on the top row because that is
-       * what it is — the part of the day that is not the timetable — and
-       * because the top row is already seven or eight entries wide on three of
-       * the four sections.
-       *
-       * In the shared template rather than four `UNIT_EXTRA` lines, so all
-       * four sections carry it in the same place and a later change moves them
-       * together. Each section writes its OWN page: `seed/kindergarten.ts`,
-       * `seed/primary.ts`, `seed/secondary.ts` and `seed/junior-college.ts`
-       * each author a `sports` slug from what that section actually runs, and
-       * all four run before `seed:nav`, so `ensure()` below finds a written
-       * page and never falls back to creating the placeholder.
-       */
-      { slug: 'sports', label: 'Sports', srs: '5.5' },
       { slug: 'student-wall', label: 'Student Wall', srs: '5.5' },
       { slug: 'transport', label: 'Transport', srs: '5.11' },
     ],
   },
+  /*
+   * SPORTS, on the top row beside Student Life in every section (2026-09-21).
+   *
+   * It began inside the Student Life drop-down (2026-09-02), to keep the top
+   * row short. SIWS asked for it on the bar itself, next to Student Life. On
+   * Kindergarten and Primary that leaves Student Life with no drop-down — both
+   * omit Student Wall and Transport — so it becomes a plain link.
+   *
+   * In the shared template rather than four `UNIT_EXTRA` lines, so all four
+   * sections carry it in the same place and a later change moves them
+   * together. Each section writes its OWN page: `seed/kindergarten.ts`,
+   * `seed/primary.ts`, `seed/secondary.ts` and `seed/junior-college.ts` each
+   * author a `sports` slug from what that section actually runs, and all four
+   * run before `seed:nav`, so `ensure()` below finds a written page and never
+   * falls back to creating the placeholder.
+   */
+  { slug: 'sports', label: 'Sports', srs: '5.5' },
   { slug: 'faq', label: 'FAQ', srs: '5.17' },
   {
     slug: 'contact',

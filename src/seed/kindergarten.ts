@@ -1565,11 +1565,9 @@ const main = async () => {
       intro:
         'Movement every day in the play area, and the section’s own sports day once a year — with a podium, trophies and a prize distribution to close it.',
       /*
-       * OFF the menu here, and `seed:nav` puts it back INSIDE the Student Life
-       * drop-down. Sports is a child entry in the shared unit template, and
-       * `show_in_nav` set from a page seed makes it a TOP-LEVEL item — so on a
-       * machine where this seed ran last, the section would carry Sports twice:
-       * once in the bar and once under Student Life.
+       * OFF the menu here, and `seed:nav` puts it on the top row beside
+       * Student Life. The menu's order is `seed:nav`'s to set: a position set
+       * here would fight it, and whichever seed ran last would win.
        */
       showInNav: false,
       navLabel: 'Sports',
