@@ -28,6 +28,7 @@ type Page = {
   showInNav?: boolean | null
   navOrder?: number | null
   navParent?: number | { id: number } | null
+  _status?: string | null
   updatedAt: string
 }
 
@@ -49,6 +50,10 @@ const main = async () => {
       depth: 0,
       overrideAccess: true,
     })) as unknown as { docs: Page[] }
+
+    // Positions are worked out among what the menu actually shows: an
+    // unpublished page with "Show in the main menu" ticked is not in it.
+    const live = docs.filter((page) => page._status === 'published')
 
     const sports = docs.find((page) => page.slug === 'sports')
     const studentLife = docs.find((page) => page.slug === 'student-life')
@@ -77,11 +82,11 @@ const main = async () => {
     }
 
     // Straight after Student Life and whatever stays in its drop-down.
-    const children = docs.filter(
+    const children = live.filter(
       (page) => page.showInNav && idOf(page.navParent) === studentLife.id && page.id !== sports.id,
     )
     const order = Math.max(studentLife.navOrder ?? 0, ...children.map((page) => page.navOrder ?? 0)) + 1
-    const next = docs
+    const next = live
       .filter(
         (page) =>
           page.showInNav &&
@@ -113,9 +118,9 @@ const main = async () => {
       /*
        * A save re-checks the whole page — for example that every photograph of
        * a child has permission recorded — and can refuse for reasons nothing
-       * to do with the menu. The menu fields alone are then written directly,
-       * to the page AND to its latest version, so the next save from the
-       * admin panel does not quietly put Sports back in the drop-down.
+       * to do with the menu. The menu fields alone are then written directly:
+       * to the page, which is what the site and the admin form read, and to
+       * its latest version, so the version history agrees with it.
        */
       const reason = error instanceof Error ? error.message : String(error)
       await pool.query(

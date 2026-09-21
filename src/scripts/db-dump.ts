@@ -26,7 +26,7 @@ loadEnv()
  *
  * WHAT IT LEAVES OUT, AND WHY
  * ---------------------------
- * The structure of every table comes across; the ROWS of four do not.
+ * The structure of every table comes across; the ROWS of these do not.
  *
  *   users              — password hashes. A credential does not belong in a
  *                        git repository, and a teammate could not use it
@@ -35,6 +35,12 @@ loadEnv()
  *                        submitted to a school in confidence. Publishing them
  *                        to every clone of the repo is exactly the kind of
  *                        onward disclosure the DPDPA 2023 exists to prevent.
+ *   feedback, consent_records, data_requests
+ *                      — the same kind of thing, added with the feedback form
+ *                        and the DPDPA registers: parents' messages, who
+ *                        consented to what, and requests to see or erase their
+ *                        data. A data request in a public history is the
+ *                        disclosure it was written to prevent.
  *   audit_logs         — the compliance record of consent decisions
  *                        (FR-PRV-11); it belongs to the live installation that
  *                        made them, not to a checkout.
@@ -48,6 +54,9 @@ const EXCLUDED = [
   'public.users',
   'public.users_*',
   'public.enquiries',
+  'public.feedback',
+  'public.consent_records*',
+  'public.data_requests*',
   'public.audit_logs',
   'public.payload_preferences*',
 ]
