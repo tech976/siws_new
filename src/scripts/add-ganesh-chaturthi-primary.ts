@@ -13,22 +13,25 @@ const { headingAnchor } = await import('@/lib/anchor')
  * its photographs to the Primary gallery (SIWS, 2026-09-21).
  *
  * THE SAME SHAPE AS ONAM. On the Events page Onam is a card in "What we have
- * been celebrating" — the banner, a description, and "See the photographs",
- * which opens the Onam group on the gallery page. Ganesh Chaturthi gets a card
- * in the same grid, straight after Onam, and a "Ganesh Chaturthi" group on the
- * gallery page for the other four photographs.
+ * been celebrating" — its invitation, a description, and "See the
+ * photographs", which opens the Onam group on the gallery page. Ganesh
+ * Chaturthi gets a card in the same grid, straight after Onam, with the Ganesh
+ * Pooja invitation, and a "Ganesh Chaturthi" group on the gallery page for the
+ * five photographs.
  *
  * THE DESCRIPTION IS SIWS'S, as sent. Only the line break and a doubled space
  * from the message are tidied.
  *
- * THE BANNER STAYS OUT OF THE GALLERY. It is the card's picture — the
- * classroom display under the school's name — so, like the Onam invitation, it
- * is not repeated among the photographs the card opens.
+ * THE BANNER IS THE INVITATION, AND STAYS OUT OF THE GALLERY — like Onam's,
+ * it announces the day rather than being a picture of it. The first run used
+ * the classroom display as the banner; SIWS then sent the invitation for it.
+ * The display moved into the gallery group and keeps its original filename
+ * (`…-banner.jpg`), since the live library already held it under that name.
+ * Re-running brings a site in either state to this one.
  *
  * THE CARDS SHARE ONE FRAME. The grid switches to its "Poster" frame, which
- * shows each picture whole in the same 4:3 window, so the upright Onam
- * invitation and the landscape display make two matching cards instead of a
- * narrow one and a wide one.
+ * shows each picture whole in the same 4:3 window, so the two cards come out
+ * the same size whatever the shape of their pictures.
  *
  * ALSO FIXES THE ONAM LINK. Its "See the photographs" pointed at `#onam`, but
  * the gallery group is headed "Onam Event", so the address is `#onam-event`
@@ -61,12 +64,20 @@ interface Photo {
 }
 
 const BANNER: Photo = {
-  filename: 'primary-ganesh-chaturthi-2026-banner.jpg',
-  alt: 'The Ganesh Chaturthi display at S.I.W.S English Primary School, Matunga: a large paper Ganesha face garlanded with marigolds, a “Happy Ganesh Chaturthi” sign, paper flowers and Ganesha crafts on the wall.',
+  filename: 'primary-ganesh-chaturthi-2026-invitation.jpg',
+  alt: 'An invitation from S.I.W.S Eng. Primary School, Matunga, to the Ganesh Pooja on Monday 21st September from 1.15 p.m. in the school premises, with a Ganesha idol at its centre framed by marigold garlands and bells.',
+  caption: 'The invitation to our Ganesh Pooja, 21st September 2026.',
   inGallery: false,
 }
 
 const PHOTOS: Photo[] = [
+  {
+    // The first banner, now the first photograph — see the note above on why
+    // the filename still says "banner".
+    filename: 'primary-ganesh-chaturthi-2026-banner.jpg',
+    alt: 'The Ganesh Chaturthi display at S.I.W.S English Primary School, Matunga: a large paper Ganesha face garlanded with marigolds, a “Happy Ganesh Chaturthi” sign, paper flowers and Ganesha crafts on the wall.',
+    inGallery: true,
+  },
   {
     filename: 'primary-ganesh-chaturthi-2026-mangala-gauri.jpg',
     alt: 'The Mangala Gauri altar: a Ganesha idol garlanded with orchids before a lit backdrop, with fruit, a brass lamp and a kalash on a red-draped table hung with marigold garlands, beneath a painting of Durga on a tiger.',
@@ -145,9 +156,23 @@ const main = async () => {
       depth: 0,
       overrideAccess: true,
     })
-    if (docs[0]) {
-      ids.set(photo.filename, docs[0].id as number)
-      console.log(`  photo    ${photo.filename} — already in the library (id ${docs[0].id})`)
+    const found = docs[0] as unknown as { id: number; category?: string | null; showInGallery?: boolean } | undefined
+    if (found) {
+      ids.set(photo.filename, found.id)
+      // Only the two settings that decide whether it is grouped in the
+      // gallery — its description and caption may have been edited since.
+      const wanted = photo.inGallery
+        ? { category: SECTION, showInGallery: true }
+        : { category: null, showInGallery: false }
+      if ((found.category ?? null) === wanted.category && Boolean(found.showInGallery) === wanted.showInGallery) {
+        console.log(`  photo    ${photo.filename} — already in the library (id ${found.id})`)
+        continue
+      }
+      const move = photo.inGallery ? 'into the gallery group' : 'out of the gallery'
+      if (APPLY) {
+        await payload.update({ collection: 'media', id: found.id, data: wanted as never, overrideAccess: true })
+      }
+      console.log(`  photo    ${photo.filename} — ${APPLY ? 'moved' : 'would move'} ${move} (id ${found.id})`)
       continue
     }
     if (!APPLY) {
@@ -180,8 +205,33 @@ const main = async () => {
   let galleryChanged = false
   const galleryBlocks = () => galleryLayout.filter((block) => block.blockType === 'gallery')
 
-  if (galleryBlocks().some((block) => block.heading?.trim() === SECTION)) {
-    console.log(`  gallery  "${SECTION}" group — already there`)
+  let added = 0
+  const groupAt = galleryLayout.findIndex(
+    (block) => block.blockType === 'gallery' && block.heading?.trim() === SECTION,
+  )
+  if (groupAt >= 0) {
+    /*
+     * The group exists: make sure every photograph is in it, each in its
+     * place in PHOTOS, and leave anything staff have added where it is.
+     */
+    const group = { ...galleryLayout[groupAt]! }
+    const images = [...((group.images as { image?: unknown; caption?: string | null }[] | undefined) ?? [])]
+    const idOf = (value: unknown) =>
+      value && typeof value === 'object' && 'id' in value ? (value as { id: unknown }).id : value
+    PHOTOS.forEach((photo, position) => {
+      const id = ids.get(photo.filename)
+      if (id != null && images.some((entry) => idOf(entry.image) === id)) return
+      images.splice(Math.min(position, images.length), 0, { image: id, caption: photo.caption ?? null })
+      added += 1
+      console.log(`  gallery  "${SECTION}" group — ${WILL} ${photo.filename}`)
+    })
+    if (added > 0) {
+      group.images = images
+      galleryLayout[groupAt] = group
+      galleryChanged = true
+    } else {
+      console.log(`  gallery  "${SECTION}" group — already there, with every photograph`)
+    }
   } else {
     const onamAt = galleryLayout.findIndex(
       (block) => block.blockType === 'gallery' && /onam/i.test(block.heading ?? ''),
@@ -209,6 +259,7 @@ const main = async () => {
       block.background = galleryLayout[i - 1]!.background === 'sea' ? 'white' : 'sea'
     }
     galleryChanged = true
+    added = PHOTOS.length
     console.log(
       `  gallery  "${SECTION}" group — ${WILL} after "${before?.heading ?? 'the start'}", ${PHOTOS.length} photographs (${background})`,
     )
@@ -216,8 +267,8 @@ const main = async () => {
 
   const count = gallery.page.metaDescription?.match(/(\d+) photographs\./)
   const metaDescription =
-    galleryChanged && count
-      ? gallery.page.metaDescription!.replace(count[0], `${Number(count[1]) + PHOTOS.length} photographs.`)
+    added > 0 && count
+      ? gallery.page.metaDescription!.replace(count[0], `${Number(count[1]) + added} photographs.`)
       : gallery.page.metaDescription
 
   /* ---------------------------------------------------------- Events card */
@@ -232,15 +283,24 @@ const main = async () => {
   const cards = [...((grid.cards as Card[] | undefined) ?? [])]
   let eventsChanged = false
 
-  if (cards.some((card) => card.title?.trim() === SECTION)) {
-    console.log(`  events   "${SECTION}" card — already there`)
+  const existing = cards.find((card) => card.title?.trim() === SECTION)
+  const bannerId = ids.get(BANNER.filename)
+  if (existing) {
+    const current = existing.image && typeof existing.image === 'object' ? (existing.image as { id: unknown }).id : existing.image
+    if (bannerId != null && current === bannerId) {
+      console.log(`  events   "${SECTION}" card — already there, with the invitation`)
+    } else {
+      existing.image = bannerId
+      eventsChanged = true
+      console.log(`  events   "${SECTION}" card — ${APPLY ? 'switching' : 'would switch'} its picture to the invitation`)
+    }
   } else {
     const onamAt = cards.findIndex((card) => card.title?.trim().toLowerCase() === 'onam')
     cards.splice(onamAt + 1, 0, {
       title: SECTION,
-      image: ids.get(BANNER.filename),
-      // As Onam's: the display carries writing at both edges, which a crop
-      // would cut.
+      image: bannerId,
+      // As Onam's: an invitation carries its date, time and venue at the top
+      // and bottom, which a crop would cut. (The grid's frame is set below.)
       fit: 'whole',
       description: DESCRIPTION,
       cta: [
@@ -259,12 +319,11 @@ const main = async () => {
   }
 
   /*
-   * ONE FRAME FOR BOTH CARDS. Onam's invitation is upright and was set to
-   * "show the whole picture", which sizes the card to the picture — 20rem
-   * across. Beside it, the landscape display took the full column, and the
-   * row became a narrow card and a wide one. The grid's "Poster" frame shows
-   * every picture whole inside the same 4:3 window on a tinted ground, so the
-   * two cards come out identical and neither picture loses its lettering.
+   * ONE FRAME FOR EVERY CARD. "Show the whole picture" sizes a card to its
+   * picture — 20rem across for an upright one, the full column for a wide one
+   * — so a row of them came out a narrow card and a wide one. The grid's
+   * "Poster" frame shows every picture whole inside the same 4:3 window on a
+   * tinted ground, so the cards come out identical and no lettering is cut.
    */
   if (grid.imageFrame !== 'poster' || cards.some((card) => card.fit === 'whole')) {
     grid.imageFrame = 'poster'
