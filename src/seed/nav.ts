@@ -723,6 +723,11 @@ const run = async () => {
         (unitId === null ? 'unit_id IS NULL' : 'unit_id = $1'),
       unitId === null ? [] : [unitId],
     )
+    await pool.query(
+      'UPDATE _pages_v v SET version_nav_mirror_parent_id = NULL FROM pages p WHERE v.parent_id = p.id AND v.latest = TRUE AND ' +
+        (unitId === null ? 'p.unit_id IS NULL' : 'p.unit_id = $1'),
+      unitId === null ? [] : [unitId],
+    )
 
     for (const entry of mirror) {
       const childId = idBySlug.get(entry.slug)
@@ -737,6 +742,10 @@ const run = async () => {
         parentId,
         childId,
       ])
+      await pool.query(
+        'UPDATE _pages_v SET version_nav_mirror_parent_id = $1 WHERE parent_id = $2 AND latest = TRUE',
+        [parentId, childId],
+      )
       payload.logger.info(`${scopeName}: "${entry.slug}" also appears under "${entry.under}".`)
     }
 
@@ -834,16 +843,32 @@ const run = async () => {
    * `nav_order` and `nav_parent_id` already do. The page's own `title` is not
    * touched — only the words the menu prints.
    */
-  const setNav = (
+  /*
+   * EVERY menu write goes to the page AND to its latest version.
+   *
+   * These used to update `pages` alone. The site reads that table, so the menu
+   * looked right — but Payload's update operation starts from the latest
+   * version whenever it is at least as new as the page, and that version still
+   * held the settings from before. Any later save that did not send the menu
+   * fields (a script adding a story or a photograph to a page) wrote them back,
+   * and nine live pages fell out of the menu that way in September 2026.
+   * `npm run nav:sync-versions` repairs a database the old version wrote.
+   */
+  const setNav = async (
     id: number | string,
     order: number,
     parent: number | string | null,
     label: string,
-  ) =>
-    pool.query(
+  ) => {
+    await pool.query(
       'UPDATE pages SET show_in_nav = TRUE, nav_order = $1, nav_parent_id = $2, nav_label = $3 WHERE id = $4',
       [order, parent, label, id],
     )
+    await pool.query(
+      'UPDATE _pages_v SET version_show_in_nav = TRUE, version_nav_order = $1, version_nav_parent_id = $2, version_nav_label = $3 WHERE parent_id = $4 AND latest = TRUE',
+      [order, parent, label, id],
+    )
+  }
 
   /*
    * The counterpart to `setNav`, written the same way and for the same reason.
@@ -854,8 +879,12 @@ const run = async () => {
    * top-level entry at the end of the bar. The page's content and `_status`
    * are untouched either way.
    */
-  const clearNav = (id: number | string) =>
-    pool.query('UPDATE pages SET show_in_nav = FALSE WHERE id = $1', [id])
+  const clearNav = async (id: number | string) => {
+    await pool.query('UPDATE pages SET show_in_nav = FALSE WHERE id = $1', [id])
+    await pool.query('UPDATE _pages_v SET version_show_in_nav = FALSE WHERE parent_id = $1 AND latest = TRUE', [
+      id,
+    ])
+  }
 
   await applyScope('(portal)', null, PORTAL, [], true)
   for (const unit of units) {
