@@ -75,6 +75,22 @@ const BENTO_SPAN_FIVE = [
   'sm:col-span-1 sm:row-span-1',
 ]
 
+/*
+ * SIX TILES EXACTLY TOO. The repeating pattern gives six entries 4+1+1+2+2+1
+ * = eleven cells, one short of three rows of four, and the hole lands in the
+ * bottom corner. Making the last tile tall instead of small — 4+1+1+2+2+2 —
+ * fills all twelve. Six is what an achievements wall reached first: a prize,
+ * its performance and trophy, and a second and third honour beside them.
+ */
+const BENTO_SPAN_SIX = [
+  'sm:col-span-2 sm:row-span-2',
+  'sm:col-span-1 sm:row-span-1',
+  'sm:col-span-1 sm:row-span-1',
+  'sm:col-span-1 sm:row-span-2',
+  'sm:col-span-2 sm:row-span-1',
+  'sm:col-span-1 sm:row-span-2',
+]
+
 const BENTO_SIZES_FIVE = [
   '(min-width: 1024px) 50vw, (min-width: 640px) 66vw, 100vw',
   '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
@@ -120,9 +136,10 @@ const BentoGallery = ({ images }: { images: NonNullable<GalleryBlock['images']> 
     {images.map((entry, index) => {
       const media = entry.image as MediaDoc
       const caption = entry.caption || media.caption
-      const exact = images.length === 5
-      const spans = exact ? BENTO_SPAN_FIVE : BENTO_SPAN
-      const sizes = exact ? BENTO_SIZES_FIVE : BENTO_SIZES
+      const spans =
+        images.length === 5 ? BENTO_SPAN_FIVE : images.length === 6 ? BENTO_SPAN_SIX : BENTO_SPAN
+      // Six keeps the repeating pattern's widths, so its sizes serve both.
+      const sizes = images.length === 5 ? BENTO_SIZES_FIVE : BENTO_SIZES
       const slot = index % spans.length
 
       return (
