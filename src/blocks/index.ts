@@ -13,6 +13,7 @@ import { FacultyBlock } from './FacultyBlock'
 import { FeatureListBlock } from './FeatureListBlock'
 import { FeedbackBlock } from './FeedbackBlock'
 import { GalleryBlock } from './GalleryBlock'
+import { GalleryRestBlock } from './GalleryRestBlock'
 import { PhotoLibraryBlock } from './PhotoLibraryBlock'
 import { VideoGalleryBlock } from './VideoGalleryBlock'
 import { HeroBlock } from './HeroBlock'
@@ -55,6 +56,7 @@ export const contentBlocks: Block[] = [
   FeatureListBlock,
   FacultyBlock,
   GalleryBlock,
+  GalleryRestBlock,
   VideoGalleryBlock,
   PhotoLibraryBlock,
   AchievementWallBlock,
@@ -96,6 +98,7 @@ export {
   FeatureListBlock,
   FeedbackBlock,
   GalleryBlock,
+  GalleryRestBlock,
   VideoGalleryBlock,
   PhotoLibraryBlock,
   HeroBlock,

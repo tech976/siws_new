@@ -47,7 +47,7 @@ export const Posts: CollectionConfig = {
 
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'date', 'unit', '_status'],
+    defaultColumns: ['title', 'kind', 'date', 'unit', '_status'],
     /*
      * The two preview controls Payload puts in the header are icons with no
      * visible label — an eye and an arrow. They are perfectly discoverable to
@@ -110,6 +110,39 @@ export const Posts: CollectionConfig = {
   },
 
   fields: [
+    /*
+     * Chooses "Event" when the form was opened from the dashboard's "Add an
+     * event" link. Renders nothing; see the component.
+     */
+    {
+      name: 'openedAs',
+      type: 'ui',
+      admin: { components: { Field: '@/components/admin/PrefillKind#PrefillKind' } },
+    },
+    /*
+     * NEWS OR EVENT, and it is the first thing asked because it decides where
+     * the item appears: the News page lists one, the Events page the other.
+     *
+     * It was one undivided list. The website has shown News and Events as two
+     * tabs since 2026-09-02, and the panel showing a single "News & Events"
+     * meant an HOD had no way to say which they were writing — everything
+     * landed on News. Existing items were all news, and are set to it.
+     */
+    {
+      name: 'kind',
+      type: 'select',
+      required: true,
+      defaultValue: 'news',
+      index: true,
+      options: [
+        { label: 'News — something that has happened', value: 'news' },
+        { label: 'Event — a celebration, competition or special day', value: 'event' },
+      ],
+      label: 'Step 1 — Is this news or an event?',
+      admin: {
+        description: 'News appears on the News page, events on the Events page.',
+      },
+    },
     {
       name: 'template',
       type: 'select',
@@ -120,7 +153,7 @@ export const Posts: CollectionConfig = {
         { label: 'Photo album — the photographs first, text underneath', value: 'album' },
         { label: 'Notice — text only, for a short announcement', value: 'notice' },
       ],
-      label: 'Step 1 — How should the page look?',
+      label: 'Step 2 — How should the page look?',
       admin: {
         description: 'You can change this later and look again.',
       },
@@ -130,7 +163,7 @@ export const Posts: CollectionConfig = {
       type: 'text',
       required: true,
       maxLength: 140,
-      label: 'Step 2 — What is it called?',
+      label: 'Step 3 — What is it called?',
       admin: { description: 'For example: Independence Day Celebrations 2026' },
     },
     {
@@ -138,7 +171,7 @@ export const Posts: CollectionConfig = {
       type: 'date',
       required: true,
       defaultValue: () => new Date().toISOString(),
-      label: 'Step 3 — When was it?',
+      label: 'Step 4 — When was it?',
       admin: {
         description: 'The day it happened, or the day it is happening.',
         date: { pickerAppearance: 'dayOnly', displayFormat: 'd MMMM yyyy' },
@@ -148,7 +181,7 @@ export const Posts: CollectionConfig = {
       name: 'summary',
       type: 'textarea',
       maxLength: 300,
-      label: 'Step 4 — In one or two sentences, what happened?',
+      label: 'Step 5 — In one or two sentences, what happened?',
       admin: {
         description:
           'This is what people read first, and what shows up on Google. Plain sentences are best.',
@@ -157,7 +190,7 @@ export const Posts: CollectionConfig = {
     richTextField({
       name: 'body',
       simple: true,
-      label: 'Step 5 — The full write-up (optional)',
+      label: 'Step 6 — The full write-up (optional)',
       admin: {
         description:
           'Only if you want to say more. A photo album often needs nothing here at all.',
@@ -168,7 +201,7 @@ export const Posts: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       hasMany: true,
-      label: 'Step 6 — Photographs',
+      label: 'Step 7 — Photographs',
       admin: {
         description:
           'Drag them in, as many as you like. Each one needs a line saying what is in it — that line is what a blind visitor hears instead of the picture.',
@@ -177,7 +210,7 @@ export const Posts: CollectionConfig = {
     {
       name: 'video',
       type: 'group',
-      label: 'Step 7 — Video (optional)',
+      label: 'Step 8 — Video (optional)',
       admin: { description: 'Paste a YouTube link, or upload a file. Leave it empty if none.' },
       fields: [
         {

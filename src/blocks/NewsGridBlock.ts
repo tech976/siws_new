@@ -42,6 +42,25 @@ export const NewsGridBlock: Block = {
   admin: blockAdmin(BLOCK_GROUPS.lists),
   fields: [
     headingField,
+    /*
+     * WHICH OF THE TWO THIS BLOCK LISTS. News & Events is one collection with
+     * a News/Event choice on each item; a News page wants one and an Events
+     * page the other. Defaults to news, which is what every block placed
+     * before this field existed was showing.
+     */
+    {
+      name: 'shows',
+      type: 'select',
+      defaultValue: 'news',
+      options: [
+        { label: 'News', value: 'news' },
+        { label: 'Events', value: 'event' },
+      ],
+      label: 'Which of News & Events to list',
+      admin: {
+        description: 'Items published in News & Events with this choice are added under the stories below.',
+      },
+    },
     richTextField({
       name: 'intro',
       simple: true,

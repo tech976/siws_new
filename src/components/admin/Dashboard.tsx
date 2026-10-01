@@ -125,12 +125,22 @@ export const Dashboard = async ({ payload, user }: DashboardProps) => {
   const accessUser = (user ?? null) as AccessUser | null
 
   /*
-   * An HOD gets a different screen entirely, not a trimmed version of this one.
-   * Every panel below — the review queue, the enquiry inbox, page counts — is
-   * something they cannot act on, and a dashboard of figures a person is not
-   * responsible for is precisely the complexity the trustees objected to.
+   * An HOD or a teacher gets a different screen entirely, not a trimmed
+   * version of this one. Every panel below — the review queue, the enquiry
+   * inbox, page counts — is something they cannot act on, and a dashboard of
+   * figures a person is not responsible for is precisely the complexity the
+   * trustees objected to.
+   *
+   * Not a Unit Head or a Content Manager, even one who also holds one of these
+   * roles: they approve pages and read enquiries, and the simple screen has
+   * nowhere to do either.
    */
-  if (!isAdmin(accessUser) && isHod(accessUser)) {
+  const simpleScreen =
+    !isAdmin(accessUser) &&
+    (isHod(accessUser) || hasRole(accessUser, ROLES.editor)) &&
+    !hasRole(accessUser, ROLES.unitHead, ROLES.contentManager)
+
+  if (simpleScreen) {
     const unitIds = unitIdsOf(accessUser)
     let unitName: string | null = null
     if (unitIds[0]) {

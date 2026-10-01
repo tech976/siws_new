@@ -346,7 +346,8 @@ const main = async () => {
        * Festivals, Annual Day — and a single 70-image grid throws that away,
        * leaving a parent to scroll looking for the sports day.
        */
-      layout: (() => {
+      layout: [
+        ...(() => {
         /**
          * Grouped by CATEGORY only.
          *
@@ -544,8 +545,19 @@ const main = async () => {
           ...(index === 0 ? { intro: richText([intro]) } : {}),
           images: group.map(gallery),
         }))
-      })(),
+        })(),
+        /*
+         * AND A CATCH-ALL AT THE FOOT. The blocks above are one per section
+         * as the library stands when this runs; `galleryRest` renders a group
+         * for any section added afterwards, so a photograph filed under a new
+         * heading appears on this page without this seed — which must never
+         * run on the live site — being run again.
+         */
+        { blockType: 'galleryRest' },
+      ],
     }
+
+
 
     const existing = await payload.find({
       collection: 'pages',

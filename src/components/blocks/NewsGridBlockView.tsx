@@ -55,6 +55,8 @@ export const NewsGridBlockView = async ({
   unit?: Unit | null
 }) => {
   const stored = (block.items ?? []).filter((item) => item.photo && typeof item.photo === 'object')
+  // Blocks placed before the setting existed carry no value, and were listing news.
+  const shows = block.shows ?? 'news'
 
   /**
    * STORIES PUBLISHED IN NEWS & EVENTS.
@@ -82,7 +84,17 @@ export const NewsGridBlockView = async ({
 
       const { docs } = await payload.find({
         collection: 'posts',
-        where: unit ? { unit: { equals: unit.id } } : {},
+        /*
+         * `kind` is null on items published before the News/Event choice
+         * existed, and those were all news — so "news" means "not an event"
+         * rather than an exact match, or the News page would empty itself.
+         */
+        where: {
+          and: [
+            ...(unit ? [{ unit: { equals: unit.id } }] : []),
+            shows === 'event' ? { kind: { equals: 'event' } } : { kind: { not_equals: 'event' } },
+          ],
+        },
         sort: '-date',
         limit: 24,
         depth: 1,
@@ -111,7 +123,6 @@ export const NewsGridBlockView = async ({
             photo: photo as MediaDoc | null,
           }
         })
-        .filter((entry) => entry.photo && typeof entry.photo === 'object')
     } catch {
       /*
        * A failed lookup leaves the page showing exactly what it showed before.
@@ -153,16 +164,26 @@ export const NewsGridBlockView = async ({
          * below it — at a phone's width a half-width photograph is a strip,
          * and half-width type is four words a line.
          */
-        <article className="group grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
-          <div className="relative aspect-16/10 overflow-hidden rounded-3xl bg-brand-tint ring-1 ring-line/60">
-            <Media
-              resource={lead.photo as MediaDoc}
-              fill
-              sizes="(min-width: 1024px) 48vw, 100vw"
-              priority
-              className="object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.03]"
-            />
-          </div>
+        <article
+          className={`group grid items-center gap-8 lg:gap-12${lead.photo ? ' lg:grid-cols-2' : ''}`}
+        >
+          {/*
+            A STORY WITHOUT A PHOTOGRAPH STILL APPEARS. An item published with
+            no picture used to be dropped, so a teacher who wrote up an event
+            and saved it saw nothing on the page and no reason why. It runs the
+            full width instead, as a notice does.
+          */}
+          {lead.photo ? (
+            <div className="relative aspect-16/10 overflow-hidden rounded-3xl bg-brand-tint ring-1 ring-line/60">
+              <Media
+                resource={lead.photo as MediaDoc}
+                fill
+                sizes="(min-width: 1024px) 48vw, 100vw"
+                priority
+                className="object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.03]"
+              />
+            </div>
+          ) : null}
 
           <div className="min-w-0">
             {lead.date ? <DateLabel value={lead.date} className="mb-3" /> : null}
@@ -194,14 +215,16 @@ export const NewsGridBlockView = async ({
                 the wider frame keeps the photograph the biggest thing in the
                 card, which is the point of the layout.
               */}
-              <div className="relative aspect-3/2 overflow-hidden bg-brand-tint">
-                <Media
-                  resource={item.photo as MediaDoc}
-                  fill
-                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-                  className="object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.04]"
-                />
-              </div>
+              {item.photo ? (
+                <div className="relative aspect-3/2 overflow-hidden bg-brand-tint">
+                  <Media
+                    resource={item.photo as MediaDoc}
+                    fill
+                    sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
+                    className="object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.04]"
+                  />
+                </div>
+              ) : null}
 
               <div className="flex flex-1 flex-col p-6">
                 {item.date ? <DateLabel value={item.date} className="mb-2" /> : null}

@@ -14,6 +14,7 @@ import { FacultyBlockView } from './FacultyBlockView'
 import { FeatureListBlockView } from './FeatureListBlockView'
 import { FeedbackBlockView } from './FeedbackBlockView'
 import { GalleryBlockView } from './GalleryBlockView'
+import { GalleryRestBlockView } from './GalleryRestBlockView'
 import { PhotoLibraryBlockView } from './PhotoLibraryBlockView'
 import { VideoGalleryBlockView } from './VideoGalleryBlockView'
 import { HeroBlockView } from './HeroBlockView'
@@ -78,6 +79,20 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
    */
   const hasFeedback = blocks.some((entry) => entry.blockType === 'feedback')
 
+  /*
+   * The sections this page already has a gallery for, and the colour of the
+   * last band before "Every other section" — both are facts about the layout
+   * as a whole, which a block cannot see from inside itself.
+   */
+  const galleries = blocks.filter((entry) => entry.blockType === 'gallery')
+  const covered = galleries
+    .map((entry) => ('heading' in entry && typeof entry.heading === 'string' ? entry.heading : ''))
+    .filter(Boolean)
+  const lastBackground =
+    galleries.length > 0 && 'background' in galleries[galleries.length - 1]!
+      ? (galleries[galleries.length - 1] as { background?: string }).background
+      : undefined
+
   return (
     <>
       {blocks.map((block, index) => {
@@ -122,6 +137,15 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
             return <FacultyBlockView key={key} block={block} unit={unit} />
           case 'gallery':
             return <GalleryBlockView key={key} block={block} unit={unit} />
+          case 'galleryRest':
+            return (
+              <GalleryRestBlockView
+                key={key}
+                unit={unit}
+                covered={covered}
+                startBackground={lastBackground === 'sea' ? 'white' : 'sea'}
+              />
+            )
 
           case 'videoGallery':
             return <VideoGalleryBlockView key={key} block={block} />

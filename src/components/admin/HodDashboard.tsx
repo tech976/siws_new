@@ -1,20 +1,26 @@
-import { Images, Megaphone, Newspaper } from 'lucide-react'
+import { Images, Medal, Megaphone, Newspaper, Trophy } from 'lucide-react'
 import Link from 'next/link'
 import type { CSSProperties } from 'react'
-import type { Payload, TypedUser } from 'payload'
+import type { Payload, TypedUser, Where } from 'payload'
 
 /**
- * What a Head of Department sees when they sign in.
+ * What a Head of Department or a teacher sees when they sign in.
  *
- * The trustees' complaint was not that the panel lacked anything — it was that
- * "this will be too complex for our HODs". The general dashboard shows page
- * counts, a review queue and an enquiry inbox, none of which an HOD can act on,
- * and Payload's default shows every collection as an equal card. Both leave a
- * teacher hunting for the two things they came to do.
+ * THE SAME FOUR WORDS AS THE WEBSITE'S MENU — Updates, Sports, Achievements,
+ * Campus Gallery — because that is the structure they already know (SIWS,
+ * 2026-10-01: "the header would be same as it is displayed in the website, so
+ * it would be easy for them to connect"). Updates opens onto News and Events,
+ * exactly as the menu does.
  *
- * So this is those two things, as large buttons, in the order they would be
- * used, under the department's own name so it is obvious whose site is being
- * edited.
+ * The trustees' complaint was never that the panel lacked anything — it was
+ * "this will be too complex for our HODs". Payload's own dashboard shows every
+ * collection as an equal card; the general one adds page counts, a review queue
+ * and an enquiry inbox, none of which a teacher can act on.
+ *
+ * Each box is a place on the website, not a database table: "Sports" is the
+ * photographs filed under Sports, which is what appears in that group on the
+ * gallery page. The "Add" link beside it opens the upload form with the
+ * section already chosen.
  *
  * STYLES ARE INLINE, NOT TAILWIND. The admin panel is Payload's own SCSS build
  * and does not load the site's stylesheet — the first version used Tailwind
@@ -43,6 +49,7 @@ const card: CSSProperties = {
   background: 'var(--theme-elevation-0)',
   textDecoration: 'none',
   color: 'inherit',
+  height: '100%',
 }
 
 const cardTitle: CSSProperties = {
@@ -76,12 +83,31 @@ const quickLink: CSSProperties = {
   color: 'var(--theme-text)',
 }
 
+/** The "Add" link under a box, which is the thing they came to do. */
+const addLink: CSSProperties = {
+  display: 'inline-block',
+  marginTop: '0.75rem',
+  fontWeight: 600,
+  color: 'var(--theme-success-600, #1f7a4d)',
+  textDecoration: 'none',
+}
+
+const grid: CSSProperties = {
+  display: 'grid',
+  gap: '1rem',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(17rem, 1fr))',
+}
+
+const countLine = (n: number, one: string, many: string) =>
+  n === 1 ? `1 ${one}` : `${n} ${many}`
+
 export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProps) => {
   /** Counts scoped by the user's own access, so they only ever see their own. */
-  const count = async (collection: 'posts' | 'announcements') => {
+  const count = async (collection: 'posts' | 'announcements' | 'media', where?: Where) => {
     try {
       const result = await payload.count({
         collection,
+        ...(where ? { where } : {}),
         overrideAccess: false,
         user: user ?? undefined,
       })
@@ -91,7 +117,15 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
     }
   }
 
-  const [posts, announcements] = await Promise.all([count('posts'), count('announcements')])
+  const [news, events, sports, achievements, photos, announcements] = await Promise.all([
+    // Items published before the News/Event choice existed were all news.
+    count('posts', { kind: { not_equals: 'event' } }),
+    count('posts', { kind: { equals: 'event' } }),
+    count('media', { category: { equals: 'Sports' } }),
+    count('media', { category: { equals: 'Achievements' } }),
+    count('media', { showInGallery: { equals: true } }),
+    count('announcements'),
+  ])
 
   /*
    * The department leads, not the person. A seeded account is called "SIWS
@@ -102,51 +136,91 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
   const heading = unitName ?? 'Your department'
 
   return (
-    <div style={{ padding: '2.5rem 2rem', maxWidth: '50rem' }}>
+    <div style={{ padding: '2.5rem 2rem', maxWidth: '62rem' }}>
       <h1 style={{ margin: 0 }}>{heading}</h1>
       <p style={{ marginTop: '0.5rem', color: 'var(--theme-elevation-600)', fontSize: '1.05rem' }}>
-        Anything you publish here appears on your school&rsquo;s pages.
+        The four parts of your school&rsquo;s website you can add to. Anything you publish here
+        appears on those pages.
       </p>
 
-      <h2 style={sectionLabel}>What would you like to do?</h2>
+      <h2 style={sectionLabel}>Your sections</h2>
 
-      <div style={{ display: 'grid', gap: '1rem' }}>
-        <Link href="/admin/collections/posts/create" style={card}>
+      <div style={grid}>
+        {/*
+          UPDATES holds News and Events, as the website's menu does. Both are
+          written the same way and land in the same list in the panel; the
+          first question on the form is which of the two it is.
+        */}
+        <div style={card}>
           <Newspaper size={28} strokeWidth={1.7} aria-hidden="true" style={{ flexShrink: 0 }} />
           <span>
-            <span style={cardTitle}>Write about something that happened</span>
-            <span style={cardBody}>
-              A celebration, a competition, a trip. Add photographs and a video, and the page is
-              made for you.
+            <span style={cardTitle}>Updates</span>
+            <span style={cardBody}>Write up what has happened, or what is coming.</span>
+            <span style={{ display: 'block', marginTop: '0.75rem' }}>
+              <Link href="/admin/collections/posts?where[kind][equals]=news" style={quickLink}>
+                News — {countLine(news, 'item', 'items')}
+              </Link>
+              <br />
+              <Link href="/admin/collections/posts?where[kind][equals]=event" style={quickLink}>
+                Events — {countLine(events, 'item', 'items')}
+              </Link>
             </span>
+            <Link href="/admin/collections/posts/create" style={addLink}>
+              + Add news
+            </Link>
+            <br />
+            <Link href="/admin/collections/posts/create?kind=event" style={addLink}>
+              + Add an event
+            </Link>
+          </span>
+        </div>
+
+        <Link href="/admin/collections/media?where[category][equals]=Sports" style={card}>
+          <Trophy size={28} strokeWidth={1.7} aria-hidden="true" style={{ flexShrink: 0 }} />
+          <span>
+            <span style={cardTitle}>Sports</span>
+            <span style={cardBody}>
+              Photographs filed under Sports — {countLine(sports, 'photograph', 'photographs')}.
+            </span>
+            <span style={addLink}>+ Add photographs</span>
           </span>
         </Link>
 
-        <Link href="/admin/collections/announcements/create" style={card}>
-          <Megaphone size={28} strokeWidth={1.7} aria-hidden="true" style={{ flexShrink: 0 }} />
+        <Link href="/admin/collections/media?where[category][equals]=Achievements" style={card}>
+          <Medal size={28} strokeWidth={1.7} aria-hidden="true" style={{ flexShrink: 0 }} />
           <span>
-            <span style={cardTitle}>Put one line on the news ticker</span>
+            <span style={cardTitle}>Achievements</span>
             <span style={cardBody}>
-              A single sentence that scrolls across the top of the website.
+              Prizes, trophies and certificates —{' '}
+              {countLine(achievements, 'photograph', 'photographs')}.
             </span>
+            <span style={addLink}>+ Add photographs</span>
+          </span>
+        </Link>
+
+        <Link href="/admin/collections/media?where[showInGallery][equals]=true" style={card}>
+          <Images size={28} strokeWidth={1.7} aria-hidden="true" style={{ flexShrink: 0 }} />
+          <span>
+            <span style={cardTitle}>Campus Gallery</span>
+            <span style={cardBody}>
+              Every photograph on your gallery page, whichever section it is filed under —{' '}
+              {countLine(photos, 'photograph', 'photographs')}.
+            </span>
+            <span style={addLink}>+ Add photographs</span>
           </span>
         </Link>
       </div>
 
-      <h2 style={sectionLabel}>Or look at what you have already</h2>
+      <h2 style={sectionLabel}>Also</h2>
 
       <div style={{ display: 'flex', gap: '1.75rem', flexWrap: 'wrap' }}>
-        <Link href="/admin/collections/posts" style={quickLink}>
-          <Newspaper size={17} aria-hidden="true" />
-          {posts === 1 ? '1 write-up' : `${posts} write-ups`}
-        </Link>
         <Link href="/admin/collections/announcements" style={quickLink}>
           <Megaphone size={17} aria-hidden="true" />
-          {announcements === 1 ? '1 ticker line' : `${announcements} ticker lines`}
+          Ticker — {countLine(announcements, 'line', 'lines')}
         </Link>
-        <Link href="/admin/collections/media" style={quickLink}>
-          <Images size={17} aria-hidden="true" />
-          Photographs
+        <Link href="/admin/collections/announcements/create" style={quickLink}>
+          <Megaphone size={17} aria-hidden="true" />
+          Put one line on the ticker
         </Link>
       </div>
 

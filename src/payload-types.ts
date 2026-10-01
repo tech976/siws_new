@@ -513,6 +513,10 @@ export interface User {
 export interface Post {
   id: number;
   /**
+   * News appears on the News page, events on the Events page.
+   */
+  kind: 'news' | 'event';
+  /**
    * You can change this later and look again.
    */
   template: 'story' | 'album' | 'notice';
@@ -612,6 +616,7 @@ export interface Page {
         | FeatureListBlock
         | FacultyBlock
         | GalleryBlock
+        | GalleryRestBlock
         | VideoGalleryBlock
         | PhotoLibraryBlock
         | AchievementWallBlock
@@ -1555,6 +1560,15 @@ export interface GalleryBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GalleryRestBlock".
+ */
+export interface GalleryRestBlock {
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'galleryRest';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "VideoGalleryBlock".
  */
 export interface VideoGalleryBlock {
@@ -1938,6 +1952,10 @@ export interface NewsGridBlock {
    * Optional.
    */
   heading?: string | null;
+  /**
+   * Items published in News & Events with this choice are added under the stories below.
+   */
+  shows?: ('news' | 'event') | null;
   /**
    * A line or two under the heading, above the stories.
    */
@@ -3227,6 +3245,7 @@ export interface EmergencyNoticesSelect<T extends boolean = true> {
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
+  kind?: T;
   template?: T;
   title?: T;
   date?: T;
@@ -3283,6 +3302,7 @@ export interface PagesSelect<T extends boolean = true> {
         featureList?: T | FeatureListBlockSelect<T>;
         faculty?: T | FacultyBlockSelect<T>;
         gallery?: T | GalleryBlockSelect<T>;
+        galleryRest?: T | GalleryRestBlockSelect<T>;
         videoGallery?: T | VideoGalleryBlockSelect<T>;
         photoLibrary?: T | PhotoLibraryBlockSelect<T>;
         achievementWall?: T | AchievementWallBlockSelect<T>;
@@ -3664,6 +3684,14 @@ export interface GalleryBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GalleryRestBlock_select".
+ */
+export interface GalleryRestBlockSelect<T extends boolean = true> {
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "VideoGalleryBlock_select".
  */
 export interface VideoGalleryBlockSelect<T extends boolean = true> {
@@ -3824,6 +3852,7 @@ export interface AnnouncementsBlockSelect<T extends boolean = true> {
  */
 export interface NewsGridBlockSelect<T extends boolean = true> {
   heading?: T;
+  shows?: T;
   intro?: T;
   items?:
     | T

@@ -1,8 +1,16 @@
 'use client'
 
-import { FieldLabel, ReactSelect, useAuth, useField, useFormFields } from '@payloadcms/ui'
+import {
+  FieldLabel,
+  ReactSelect,
+  useAuth,
+  useField,
+  useFormFields,
+  useFormInitializing,
+} from '@payloadcms/ui'
 import type { TextFieldClientComponent } from 'payload'
-import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 /**
  * The "Section" box on a photograph — the heading it appears under on the
@@ -130,6 +138,24 @@ export const GallerySectionField: TextFieldClientComponent = ({ field, path }) =
    */
   const [typed, setTyped] = useState('')
   const current = (value ?? '').trim()
+
+  /*
+   * Filled in when the upload form was opened from a section's box on the
+   * dashboard ("Sports → + Add photographs"), so the photograph lands where
+   * the person was looking. Once only, and never over a value already set.
+   */
+  const params = useSearchParams()
+  const initialising = useFormInitializing()
+  const prefilled = useRef(false)
+  useEffect(() => {
+    // Not before the form has its own state, or Payload overwrites this with
+    // the empty value it loads a moment later.
+    if (prefilled.current || initialising) return
+    const wanted = (params.get('section') ?? '').trim()
+    if (!wanted) return
+    prefilled.current = true
+    if (!current) setValue(wanted)
+  }, [params, current, setValue, initialising])
 
   const options = useMemo(() => {
     const names = new Set(sections)
