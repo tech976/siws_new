@@ -1,5 +1,5 @@
 import config from '@payload-config'
-import type { Unit } from '@/payload-types'
+import type { Media as MediaDoc, Unit } from '@/payload-types'
 import { getPayload } from 'payload'
 import type { Where } from 'payload'
 
@@ -22,15 +22,18 @@ import { GalleryBlockView } from './GalleryBlockView'
 export const GalleryRestBlockView = async ({
   unit,
   covered = [],
+  shown = [],
   startBackground = 'white',
 }: {
   unit?: Unit | null
   /** Headings of the gallery blocks already on this page. */
   covered?: string[]
+  /** Ids of photographs the page already shows, in any block. */
+  shown?: number[]
   /** So the bands keep alternating from whatever came before. */
   startBackground?: 'sea' | 'white'
 }) => {
-  const sections = await (async () => {
+  const groups = await (async () => {
     try {
       const payload = await getPayload({ config })
 
@@ -55,15 +58,26 @@ export const GalleryRestBlockView = async ({
       })
 
       /*
+       * Left out: anything the page already shows. On a page built from a
+       * photo library the tabs carry every photograph, and without this the
+       * whole wall appeared a second time underneath them.
+       */
+      const already = new Set(shown)
+      const seen = new Set(covered.map((heading) => headingAnchor(heading)).filter(Boolean))
+
+      /*
        * Newest section first: a group added this term belongs above one from
        * two years ago, and `-createdAt` already has them in that order.
        */
-      const names: string[] = []
+      const byName = new Map<string, MediaDoc[]>()
       for (const doc of docs) {
         const name = typeof doc.category === 'string' ? doc.category.trim() : ''
-        if (name && !names.includes(name)) names.push(name)
+        if (!name || already.has(doc.id as number) || seen.has(headingAnchor(name))) continue
+        const list = byName.get(name)
+        if (list) list.push(doc as MediaDoc)
+        else byName.set(name, [doc as MediaDoc])
       }
-      return names
+      return [...byName.entries()]
     } catch {
       /*
        * A failed lookup leaves the page exactly as its own blocks render it.
@@ -74,16 +88,15 @@ export const GalleryRestBlockView = async ({
     }
   })()
 
-  const seen = new Set(covered.map((heading) => headingAnchor(heading)).filter(Boolean))
-  const remaining = sections.filter((name) => !seen.has(headingAnchor(name)))
-  if (remaining.length === 0) return null
+  if (groups.length === 0) return null
 
   return (
     <>
-      {remaining.map((name, index) => (
+      {groups.map(([name, images], index) => (
         <GalleryBlockView
           key={name}
           unit={unit}
+          includeExtras={false}
           block={{
             id: `rest-${headingAnchor(name)}`,
             blockType: 'gallery',
@@ -91,9 +104,8 @@ export const GalleryRestBlockView = async ({
             headingLevel: 'h2',
             layout: 'bento',
             perPage: '12',
-            images: [],
-            background:
-              (index % 2 === 0) === (startBackground === 'sea') ? 'sea' : 'white',
+            images: images.map((doc) => ({ id: `rest-${doc.id}`, image: doc, caption: doc.caption })),
+            background: (index % 2 === 0) === (startBackground === 'sea') ? 'sea' : 'white',
           }}
         />
       ))}

@@ -93,6 +93,30 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
       ? (galleries[galleries.length - 1] as { background?: string }).background
       : undefined
 
+  /*
+   * Every photograph the page already shows, from a gallery block or a photo
+   * library's tabs. "Every other section" leaves these out, or a page built
+   * from a library would repeat its whole wall underneath itself.
+   */
+  const shown: number[] = []
+  const collectImage = (value: unknown) => {
+    if (typeof value === 'number') shown.push(value)
+    else if (value && typeof value === 'object' && 'id' in value) {
+      const id = (value as { id: unknown }).id
+      if (typeof id === 'number') shown.push(id)
+    }
+  }
+  for (const entry of blocks) {
+    if (entry.blockType === 'gallery') {
+      for (const row of (entry as { images?: { image?: unknown }[] }).images ?? []) collectImage(row.image)
+    }
+    if (entry.blockType === 'photoLibrary') {
+      for (const group of (entry as { groups?: { images?: { image?: unknown }[] }[] }).groups ?? []) {
+        for (const row of group.images ?? []) collectImage(row.image)
+      }
+    }
+  }
+
   return (
     <>
       {blocks.map((block, index) => {
@@ -143,6 +167,7 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
                 key={key}
                 unit={unit}
                 covered={covered}
+                shown={shown}
                 startBackground={lastBackground === 'sea' ? 'white' : 'sea'}
               />
             )

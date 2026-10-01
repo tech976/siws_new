@@ -181,9 +181,17 @@ const BentoGallery = ({ images }: { images: NonNullable<GalleryBlock['images']> 
 export const GalleryBlockView = async ({
   block,
   unit,
+  includeExtras = true,
 }: {
   block: GalleryBlock
   unit?: Unit | null
+  /**
+   * Whether to add photographs filed under this heading that the block does
+   * not list. "Every other section" turns it off: it has already worked out
+   * which photographs belong in each group, and letting the lookup run again
+   * would put back the ones it deliberately left out.
+   */
+  includeExtras?: boolean
 }) => {
   const stored = (block.images ?? []).filter(
     (entry) => entry.image && typeof entry.image === 'object',
@@ -208,7 +216,7 @@ export const GalleryBlockView = async ({
    */
   const extra = await (async () => {
     const section = block.heading?.trim()
-    if (!section) return []
+    if (!section || !includeExtras) return []
 
     const known = new Set(
       stored
