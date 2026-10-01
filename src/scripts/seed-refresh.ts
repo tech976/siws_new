@@ -184,6 +184,17 @@ const STEPS: Step[] = [
    */
   { script: 'seed:galleries', does: 'the gallery pages' },
   { script: 'seed:nav', does: 'the menus' },
+
+  /*
+   * LAST, because it adds to pages the steps above rebuild.
+   *
+   * The News and Events pages are written by their section's seed, which
+   * knows nothing of the listing block that shows what staff publish in the
+   * panel — so a refresh dropped it and a seeded database had no way to show
+   * a published story. This puts it back, and leaves a page that already has
+   * one alone.
+   */
+  { script: 'setup:sections', does: 'the News, Events and gallery listings staff publish into' },
 ]
 
 /*
