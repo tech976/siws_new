@@ -79,7 +79,17 @@ export const FacultyBlockView = async ({
     ? [
         {
           key: '',
-          head: teachers.find(isHead) ?? null,
+          /*
+           * EVERY head teacher, not the first one.
+           *
+           * Primary has two — the roster was two lists, one per campus, each
+           * led by its own head — and when the lists were merged this took
+           * `find(isHead)` for the lead and filtered ALL heads out of the
+           * rest. The second head, Mrs. Sreedevi Prasanna Bagayatkar, was
+           * then in neither and vanished from the page while her ten
+           * colleagues stayed on it.
+           */
+          heads: teachers.filter(isHead),
           rest: teachers.filter((person) => !isHead(person)),
         },
       ]
@@ -202,11 +212,20 @@ export const FacultyBlockView = async ({
         >
           {teams.map((team) => (
             <div key={team.key}>
-              {team.head ? (
-                <article className="flex items-start gap-4 rounded-2xl bg-brand-tint p-5 ring-1 ring-brand/20">
-                  {face(team.head, true)}
-                  {details(team.head)}
-                </article>
+              {team.heads.length > 0 ? (
+                // Side by side where a section has two heads, so neither
+                // reads as the other's deputy.
+                <div className={`grid gap-3 ${team.heads.length > 1 ? 'sm:grid-cols-2' : ''}`}>
+                  {team.heads.map((head) => (
+                    <article
+                      key={head.id}
+                      className="flex items-start gap-4 rounded-2xl bg-brand-tint p-5 ring-1 ring-brand/20"
+                    >
+                      {face(head, true)}
+                      {details(head)}
+                    </article>
+                  ))}
+                </div>
               ) : null}
 
               {team.rest.length > 0 ? (
