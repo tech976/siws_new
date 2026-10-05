@@ -165,6 +165,23 @@ export const Units: CollectionConfig = {
               },
               validate: validatePhone,
             },
+            /*
+             * The header prints the address and the office number on one
+             * line. Junior College asked for its number off that line
+             * (2026-10-05) while keeping it on the contact page, where a
+             * parent goes looking for it — so this hides it in the header
+             * only, and nowhere else.
+             */
+            {
+              name: 'hidePhoneInHeader',
+              type: 'checkbox',
+              defaultValue: false,
+              label: 'Keep the telephone number out of the header',
+              admin: {
+                description:
+                  'The number still appears on the contact page and in the footer. Tick this to leave it off the line beside the address at the top of every page.',
+              },
+            },
             {
               name: 'email',
               type: 'email',

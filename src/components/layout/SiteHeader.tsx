@@ -60,9 +60,9 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
    * Both office numbers, in the order the school gives them, with the
    * blanks dropped so a section carrying one prints one.
    */
-  const phones = [unit?.phone, unit?.phoneAlt].filter(
-    (value): value is string => typeof value === 'string' && value.length > 0,
-  )
+  const phones = (
+    unit?.hidePhoneInHeader ? [] : [unit?.phone, unit?.phoneAlt]
+  ).filter((value): value is string => typeof value === 'string' && value.length > 0)
 
   return (
     <>

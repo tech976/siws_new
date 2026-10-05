@@ -245,6 +245,10 @@ export interface Unit {
    */
   phoneAlt?: string | null;
   /**
+   * The number still appears on the contact page and in the footer. Tick this to leave it off the line beside the address at the top of every page.
+   */
+  hidePhoneInHeader?: boolean | null;
+  /**
    * The email address shown publicly on the website.
    */
   email?: string | null;
@@ -4360,6 +4364,7 @@ export interface UnitsSelect<T extends boolean = true> {
   postalCode?: T;
   phone?: T;
   phoneAlt?: T;
+  hidePhoneInHeader?: T;
   email?: T;
   mapEmbedUrl?: T;
   admissionsEmail?: T;
