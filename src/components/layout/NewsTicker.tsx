@@ -126,7 +126,15 @@ export const NewsTicker = ({ items }: NewsTickerProps) => {
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      <div className="siws-container flex items-center gap-3 py-1.5">
+      {/*
+        THE FULL WIDTH, not the page container (SIWS, 2026-10-06: "keep it
+        broad, very short margins left and right"). Everything else on the
+        page is held to 75rem and centred, which on a wide screen left the
+        strip stopping a long way short of both edges with the headlines
+        bunched in the middle. A band of colour across the window is the point
+        of a ticker; only enough padding to keep the type off the glass.
+      */}
+      <div className="flex items-center gap-3 px-3 py-1.5 sm:px-4">
         <button
             type="button"
             onClick={() => setPaused((value) => !value)}
