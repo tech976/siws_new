@@ -6,7 +6,16 @@ import { RenderBlocks } from '@/components/blocks/RenderBlocks'
 import { EmergencyNoticeBanner } from '@/components/emergency/EmergencyNoticeBanner'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
-import { getInstitutionPage, getNavItems, getQuickLinks, getUnits } from '@/lib/site'
+import { NewsTicker } from '@/components/layout/NewsTicker'
+import {
+  getAnnouncements,
+  getInstitutionPage,
+  getLatestUpdates,
+  getNavItems,
+  getQuickLinks,
+  getUnits,
+} from '@/lib/site'
+import { tickerItems } from '@/lib/ticker'
 import { organisationSchema, serialise } from '@/lib/structured-data'
 
 /**
@@ -34,11 +43,19 @@ const TAGLINE = 'From KG to PG — Inspiring Excellence Since 1934'
 const PortalHome = async () => {
   const { isEnabled: draft } = await draftMode()
 
-  const [units, navItems, quickLinks, page] = await Promise.all([
+  const [units, navItems, quickLinks, page, announcements, updates] = await Promise.all([
     getUnits(),
     getNavItems(null, null),
     getQuickLinks(null, null),
     getInstitutionPage('home', draft),
+    getAnnouncements(null),
+    /*
+     * Every school's, because the portal's job is to show that the
+     * institution is busy — the front page had no strip at all until SIWS
+     * asked for one, so a parent landing here saw none of what the sections
+     * had published.
+     */
+    getLatestUpdates(null),
   ])
 
   const footerUnits = units.map(({ id, slug, shortName }) => ({ id, slug, shortName }))
@@ -55,6 +72,8 @@ const PortalHome = async () => {
       <EmergencyNoticeBanner unitId={null} units={units} />
 
       <SiteHeader units={units} navItems={navItems} quickLinks={quickLinks} infoText={TAGLINE} />
+
+      <NewsTicker items={tickerItems(announcements, updates, units)} />
 
       <main id="main-content">
         {page ? (

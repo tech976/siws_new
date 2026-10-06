@@ -6,9 +6,10 @@ import { notFound, permanentRedirect } from 'next/navigation'
 
 import { PostView } from '@/components/blocks/PostView'
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
+import { tickerItems } from '@/lib/ticker'
 import { EmergencyNoticeBanner } from '@/components/emergency/EmergencyNoticeBanner'
 import { findRedirect } from '@/lib/redirects'
-import { NewsTicker, type TickerItem } from '@/components/layout/NewsTicker'
+import { NewsTicker } from '@/components/layout/NewsTicker'
 import {
   breadcrumbSchema,
   faqSchema,
@@ -26,7 +27,7 @@ import {
   getUnits,
   resolveRoute,
 } from '@/lib/site'
-import type { Announcement, Media, Page, Post, Unit } from '@/payload-types'
+import type { Media, Page, Unit } from '@/payload-types'
 
 /**
  * Turns announcement documents into the plain rows the ticker renders.
@@ -36,61 +37,6 @@ import type { Announcement, Media, Page, Post, Unit } from '@/payload-types'
  * attempt passed one and crashed every page with "Functions cannot be passed
  * directly to Client Components".
  */
-const toTickerItems = (items: Announcement[], units: Unit[]): TickerItem[] =>
-  items.map((item) => {
-    const link = item.link
-    let href: string | null = null
-
-    if (link && typeof link === 'object' && 'value' in link) {
-      const target = link.value
-      if (target && typeof target === 'object') {
-        const slug = 'slug' in target && typeof target.slug === 'string' ? target.slug : null
-        if (slug) {
-          const unitRef = 'unit' in target ? target.unit : null
-          const unitSlug =
-            typeof unitRef === 'object' && unitRef !== null && 'slug' in unitRef
-              ? (unitRef.slug as string)
-              : (units.find((u) => u.id === unitRef)?.slug ?? null)
-          href = unitSlug ? `/${unitSlug}/${slug}` : `/${slug}`
-        }
-      }
-    }
-
-    return {
-      id: String(item.id),
-      message: item.message,
-      tone: item.tone ?? 'news',
-      href,
-    }
-  })
-
-/**
- * The sections' own News & Events in the ticker, newest first.
- *
- * SIWS asked for the strip to carry what teachers publish, linked to the item
- * itself, so a school that has never typed a ticker line still has a live
- * strip. Manual announcements come first: somebody wrote those FOR the ticker,
- * usually because they are time-critical.
- */
-const postsToTickerItems = (posts: Post[], units: Unit[]): TickerItem[] =>
-  posts
-    .map((post): TickerItem | null => {
-      const unitRef = post.unit
-      const unitSlug =
-        typeof unitRef === 'object' && unitRef !== null && 'slug' in unitRef
-          ? (unitRef.slug as string)
-          : (units.find((u) => u.id === unitRef)?.slug ?? null)
-      if (!post.slug) return null
-      return {
-        id: `post-${post.id}`,
-        message: post.title,
-        // The same two words the panel asks for on each item.
-        tone: post.kind === 'event' ? 'event' : 'news',
-        href: unitSlug ? `/${unitSlug}/${post.slug}` : `/${post.slug}`,
-      }
-    })
-    .filter((item): item is TickerItem => item !== null)
-
 interface RouteProps {
   params: Promise<{ segments: string[] }>
 }
@@ -207,12 +153,7 @@ const DynamicRoute = async ({ params }: RouteProps) => {
         }
       />
 
-      <NewsTicker
-        items={[...toTickerItems(announcements, units), ...postsToTickerItems(updates, units)].slice(
-          0,
-          12,
-        )}
-      />
+      <NewsTicker items={tickerItems(announcements, updates, units)} />
 
       <main id="main-content">
         {/* A department write-up, laid out by the template its author chose. */}
