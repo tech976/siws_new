@@ -84,7 +84,15 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
     <header className="relative z-40 bg-white">
 
       {/* --- Band 2: identity ------------------------------------------- */}
-      <div className="siws-container flex items-center gap-5 py-5 sm:gap-7">
+      {/*
+        A SHALLOWER BAND than it was (SIWS, 2026-10-06: "reduce the size of the
+        header a bit"). `py-5` with a 6rem crest put the first words of a page
+        well below the fold on a laptop. `py-2.5`, a 5rem crest and tighter
+        gaps between the four lines of type take about 40px off every page —
+        roughly what the news strip below costs — without shrinking the
+        school's name, which is the one thing here a visitor reads at a glance.
+      */}
+      <div className="siws-container flex items-center gap-5 py-2.5 sm:gap-7">
         <Link href={home} className="shrink-0" aria-label={`${title} — home`}>
           <Image
             src="/brand/logo.png"
@@ -92,7 +100,7 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
             width={220}
             height={220}
             priority
-            className="h-16 w-auto sm:h-20 lg:h-24"
+            className="h-14 w-auto sm:h-16 lg:h-20"
           />
         </Link>
 
@@ -114,12 +122,12 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
             >
               SIWS
             </span>
-            <span className="mt-1.5 block text-sm leading-snug font-bold text-brand uppercase sm:text-base">
+            <span className="mt-1 block text-sm leading-snug font-bold text-brand uppercase sm:text-base">
               {title}
             </span>
           </Link>
 
-          {tagline ? <p className="mt-1 truncate text-sm text-ink-soft">{tagline}</p> : null}
+          {tagline ? <p className="mt-0.5 truncate text-sm text-ink-soft">{tagline}</p> : null}
 
           {place ? (
             <p className="mt-0.5 text-xs text-ink-muted sm:text-sm">
@@ -158,7 +166,7 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
             menu and left the enquiry button floating well below the links it
             belongs beside — the thing SIWS flagged on 2026-09-02.
           */}
-          <div className="siws-container flex flex-wrap items-start gap-x-4 gap-y-2 py-2.5">
+          <div className="siws-container flex flex-wrap items-start gap-x-4 gap-y-2 py-2">
             <PrimaryNav items={navItems} quickLinks={quickLinks} cta={cta} />
           </div>
         </div>

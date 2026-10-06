@@ -394,6 +394,31 @@ export const resolveRoute = cache(
  * outside its dates is filtered by the same rule the rest of the site uses,
  * rather than by anything written here.
  */
+/**
+ * The newest News & Events items, for the ticker.
+ *
+ * SIWS asked for the strip to carry what the sections publish — "when teachers
+ * and HODs add theirs, the ticker rotates them and links to the particular
+ * page" — so a school with nothing typed into Ticker announcements still has a
+ * live strip, and nobody has to write the same headline twice.
+ *
+ * A unit page shows its own school's; the portal shows every school's.
+ * `overrideAccess: false` keeps drafts and scheduled items out by the same
+ * rule the rest of the site reads by.
+ */
+export const getLatestUpdates = cache(async (unitId: number | null): Promise<Post[]> => {
+  const payload = await payloadClient()
+  const { docs } = await payload.find({
+    collection: 'posts',
+    where: unitId === null ? {} : { unit: { equals: unitId } },
+    sort: '-date',
+    limit: 8,
+    depth: 1,
+    overrideAccess: false,
+  })
+  return docs as Post[]
+})
+
 export const getAnnouncements = cache(async (unitId: number | null): Promise<Announcement[]> => {
   const payload = await payloadClient()
   const { docs } = await payload.find({

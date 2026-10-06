@@ -20,12 +20,13 @@ import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import {
   getAnnouncements,
+  getLatestUpdates,
   getNavItems,
   getQuickLinks,
   getUnits,
   resolveRoute,
 } from '@/lib/site'
-import type { Announcement, Media, Page, Unit } from '@/payload-types'
+import type { Announcement, Media, Page, Post, Unit } from '@/payload-types'
 
 /**
  * Turns announcement documents into the plain rows the ticker renders.
@@ -62,6 +63,33 @@ const toTickerItems = (items: Announcement[], units: Unit[]): TickerItem[] =>
       href,
     }
   })
+
+/**
+ * The sections' own News & Events in the ticker, newest first.
+ *
+ * SIWS asked for the strip to carry what teachers publish, linked to the item
+ * itself, so a school that has never typed a ticker line still has a live
+ * strip. Manual announcements come first: somebody wrote those FOR the ticker,
+ * usually because they are time-critical.
+ */
+const postsToTickerItems = (posts: Post[], units: Unit[]): TickerItem[] =>
+  posts
+    .map((post): TickerItem | null => {
+      const unitRef = post.unit
+      const unitSlug =
+        typeof unitRef === 'object' && unitRef !== null && 'slug' in unitRef
+          ? (unitRef.slug as string)
+          : (units.find((u) => u.id === unitRef)?.slug ?? null)
+      if (!post.slug) return null
+      return {
+        id: `post-${post.id}`,
+        message: post.title,
+        // The same two words the panel asks for on each item.
+        tone: post.kind === 'event' ? 'event' : 'news',
+        href: unitSlug ? `/${unitSlug}/${post.slug}` : `/${post.slug}`,
+      }
+    })
+    .filter((item): item is TickerItem => item !== null)
 
 interface RouteProps {
   params: Promise<{ segments: string[] }>
@@ -100,6 +128,7 @@ const DynamicRoute = async ({ params }: RouteProps) => {
 
   const footerUnits = units.map(({ id, slug, shortName }) => ({ id, slug, shortName }))
   const announcements = await getAnnouncements(unit?.id ?? null)
+  const updates = await getLatestUpdates(unit?.id ?? null)
 
   /*
    * BR-SEO-03 — schema.org data for this page, as JSON-LD.
@@ -178,7 +207,12 @@ const DynamicRoute = async ({ params }: RouteProps) => {
         }
       />
 
-      <NewsTicker items={toTickerItems(announcements, units)} />
+      <NewsTicker
+        items={[...toTickerItems(announcements, units), ...postsToTickerItems(updates, units)].slice(
+          0,
+          12,
+        )}
+      />
 
       <main id="main-content">
         {/* A department write-up, laid out by the template its author chose. */}
