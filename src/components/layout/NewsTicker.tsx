@@ -32,10 +32,11 @@ export interface TickerItem {
  * all.
  *
  * Three things keep a moving strip conformant:
- *  - a real pause button, always visible, not a hover-only trick that a
- *    keyboard or touch user can never reach. Hovering pauses as well, which is
- *    what SIWS asked for, but hover alone would leave a phone with no way to
- *    stop it;
+ *  - hovering pauses it, which is what SIWS asked for; a tap pauses it on a
+ *    phone, where there is no hover; and a pause button is still there for a
+ *    keyboard or a screen reader — hidden until it is focused, because SIWS
+ *    asked twice for it not to sit on the strip. Something must be able to
+ *    stop it or SC 2.2.2 is simply failed;
  *  - `prefers-reduced-motion`, which stops it before the first frame for anyone
  *    who has asked their system for less movement — vestibular disorders are
  *    the reason that setting exists;
@@ -120,9 +121,11 @@ export const NewsTicker = ({ items }: NewsTickerProps) => {
        */
       className="border-b border-brand-deep bg-brand text-white"
       // Stops under the cursor so a reader can finish the line they are on,
-      // and starts again when it leaves. Focus does the same for a keyboard.
+      // and starts again when it leaves. Focus does the same for a keyboard,
+      // and a tap for a phone, where neither hover nor focus happens.
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onTouchStart={() => setPaused((value) => !value)}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
@@ -141,11 +144,14 @@ export const NewsTicker = ({ items }: NewsTickerProps) => {
             aria-pressed={paused}
             aria-controls={regionId}
             /*
-              36px: comfortably past the 24px minimum of SC 2.5.8 and small
-              enough that the strip stays a strip. It was 44px, which set the
-              height of the whole band.
+              OUT OF SIGHT UNTIL IT IS FOCUSED. SIWS asked for the button off
+              the strip; a keyboard or screen-reader user still needs a way to
+              stop moving text, and `sr-only` keeps it reachable by Tab and
+              announced by a reader. Focus brings it back into view at 36px —
+              past the 24px minimum of SC 2.5.8 — so whoever lands on it can
+              see what they have.
             */
-            className="grid size-9 shrink-0 place-items-center rounded-full text-white hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="sr-only focus:not-sr-only focus:grid focus:size-9 focus:shrink-0 focus:place-items-center focus:rounded-full focus:text-white focus:outline-2 focus:outline-offset-2 focus:outline-white"
           >
             {paused ? (
               <Play size={17} fill="currentColor" />

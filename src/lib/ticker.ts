@@ -13,6 +13,14 @@ import type { Announcement, Post, Unit } from '@/payload-types'
  * are time-critical; the sections' own News & Events follow, newest first, so
  * a school that has never typed a ticker line still has a live strip.
  */
+/** A relationship is an id at depth 0 and an object at depth 1. */
+const idOf = (value: unknown): number | null =>
+  value && typeof value === 'object' && 'id' in value
+    ? ((value as { id: number }).id ?? null)
+    : typeof value === 'number'
+      ? value
+      : null
+
 const toTickerItems = (items: Announcement[], units: Unit[]): TickerItem[] =>
   items.map((item) => {
     const link = item.link
@@ -61,16 +69,35 @@ const postsToTickerItems = (posts: Post[], units: Unit[]): TickerItem[] =>
       return {
         id: `post-${post.id}`,
         message: post.title,
-        // The same two words the panel asks for on each item.
-        tone: post.kind === 'event' ? 'event' : 'news',
+        // The choice made on the item, which is also what colours its tag.
+        tone: post.kind === 'event' || post.kind === 'achievement' ? post.kind : 'news',
         href: unitSlug ? `/${unitSlug}/${post.slug}` : `/${post.slug}`,
       }
     })
     .filter((item): item is TickerItem => item !== null)
 
-/** Manual ticker lines first, then what the sections have published. */
+/**
+ * Manual ticker lines first, then what the sections have published.
+ *
+ * `onUnit` is the school whose page this is. An item from ANOTHER school is
+ * named — "… — Kindergarten" — so a parent reading the Primary strip is never
+ * told a Kindergarten outing happened at Primary. Those appear only when a
+ * section has published nothing of its own and the caller has handed over the
+ * institution's news instead, which is what keeps a strip on Primary,
+ * Secondary and Junior College while they have yet to publish a word.
+ */
 export const tickerItems = (
   announcements: Announcement[],
   posts: Post[],
   units: Unit[],
-): TickerItem[] => [...toTickerItems(announcements, units), ...postsToTickerItems(posts, units)].slice(0, 12)
+  onUnit?: Unit | null,
+): TickerItem[] => {
+  const named = posts.map((post) => {
+    const unitId = idOf(post.unit)
+    if (!onUnit || unitId === onUnit.id) return post
+    const from = units.find((unit) => unit.id === unitId)
+    return from ? { ...post, title: `${post.title} — ${from.shortName}` } : post
+  })
+
+  return [...toTickerItems(announcements, units), ...postsToTickerItems(named, units)].slice(0, 12)
+}

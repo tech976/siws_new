@@ -137,10 +137,18 @@ export const Posts: CollectionConfig = {
       options: [
         { label: 'News — something that has happened', value: 'news' },
         { label: 'Event — a celebration, competition or special day', value: 'event' },
+        /*
+         * A prize or award. It belongs on the News page with the rest — only
+         * the Events page is separate — but the news strip gives it its own
+         * gold tag, so a parent scanning the strip can tell a win from a
+         * notice without reading either.
+         */
+        { label: 'Achievement — a prize or an award', value: 'achievement' },
       ],
       label: 'Step 1 — Is this news or an event?',
       admin: {
-        description: 'News appears on the News page, events on the Events page.',
+        description:
+          'News and achievements appear on the News page, events on the Events page. Each shows a coloured tag in the news strip at the top of the site.',
       },
     },
     {

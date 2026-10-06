@@ -74,7 +74,14 @@ const DynamicRoute = async ({ params }: RouteProps) => {
 
   const footerUnits = units.map(({ id, slug, shortName }) => ({ id, slug, shortName }))
   const announcements = await getAnnouncements(unit?.id ?? null)
-  const updates = await getLatestUpdates(unit?.id ?? null)
+  /*
+   * This school's own news, and the whole institution's only if it has none:
+   * a section that has published nothing would otherwise have no strip at all,
+   * and SIWS asked for one on every section. Items from elsewhere are named
+   * after their school by `tickerItems`.
+   */
+  const own = await getLatestUpdates(unit?.id ?? null)
+  const updates = own.length > 0 || !unit ? own : await getLatestUpdates(null)
 
   /*
    * BR-SEO-03 — schema.org data for this page, as JSON-LD.
@@ -153,7 +160,7 @@ const DynamicRoute = async ({ params }: RouteProps) => {
         }
       />
 
-      <NewsTicker items={tickerItems(announcements, updates, units)} />
+      <NewsTicker items={tickerItems(announcements, updates, units, unit)} />
 
       <main id="main-content">
         {/* A department write-up, laid out by the template its author chose. */}
