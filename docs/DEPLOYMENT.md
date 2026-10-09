@@ -330,7 +330,15 @@ answer. Run it without `--apply` to see what tonight would do.
 ## Adding tables (until migrations exist)
 
 Production does not push schema changes on its own. When a release adds a
-collection or field, back up first and let one script run push it:
+collection, a field **or one more option on a `select` field**, back up first
+and let one script run push it.
+
+A NEW OPTION IS A SCHEMA CHANGE, and the easiest one to forget. Postgres holds
+a `select` as an enum, so adding "Achievement" to News & Events shipped fine
+and then threw `invalid input value for enum enum_posts_kind` the moment a
+teacher chose it — 500, "Something went wrong", and their write-up lost
+(2026-10-09). A field's options live in two enums, the table's and its
+`_v` versions twin; the push below updates both.
 
 ```bash
 pg_dump "$DATABASE_URI" | gzip > ~/backup-before-release.sql.gz && chmod 600 ~/backup-before-release.sql.gz
