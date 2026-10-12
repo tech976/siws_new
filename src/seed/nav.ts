@@ -100,6 +100,16 @@ const PORTAL: Entry[] = [
   // Top level and no drop-down: the scholarships page is written and is the
   // one thing on this menu a parent is most likely to have come looking for.
   { slug: 'scholarships', label: 'Scholarships' },
+  /*
+   * SPORTS AND FINE ARTS ACROSS THE INSTITUTION (SIWS, 2026-10-12), asked for
+   * as tabs first and content later: each gets its own page, created with the
+   * same "we are preparing this page" line every other placeholder carries,
+   * so a parent who clicks is told where they are rather than meeting a blank
+   * screen. They sit after Scholarships because the four sections' own sports
+   * pages are reached from their own menus; these two are the institution's.
+   */
+  { slug: 'sports', label: 'Sports' },
+  { slug: 'fine-arts', label: 'Fine Arts' },
   { slug: 'contact', label: 'Contact', srs: '5.13' },
 ]
 
