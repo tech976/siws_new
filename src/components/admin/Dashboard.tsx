@@ -24,6 +24,7 @@ import type { AccessUser } from '@/access'
 import { REVIEW_STATUS } from '@/fields/publishing'
 
 import { HodDashboard } from './HodDashboard'
+import { MainHomepagePanel } from './MainHomepagePanel'
 
 /**
  * The SIWS admin dashboard, replacing Payload's default collection grid.
@@ -522,6 +523,12 @@ export const Dashboard = async ({ payload, user }: DashboardProps) => {
           </div>
         </section>
       </div>
+
+      {/*
+        The administrator's section for the main SIWS homepage. Nobody else
+        chooses what runs there, so nobody else is shown it.
+      */}
+      {isAdmin(accessUser) ? <MainHomepagePanel payload={payload} user={user} /> : null}
 
       {/* --- Manage content --------------------------------------------- */}
       <section aria-labelledby="siws-manage-heading">

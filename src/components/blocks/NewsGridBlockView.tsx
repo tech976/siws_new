@@ -95,7 +95,12 @@ export const NewsGridBlockView = async ({
          */
         where: {
           and: [
-            ...(unit ? [{ unit: { equals: unit.id } }] : []),
+            /*
+             * A school's page lists that school's. A page of the main site
+             * lists only what an administrator has ticked for it — never
+             * every school's, unpicked.
+             */
+            unit ? { unit: { equals: unit.id } } : { showOnHome: { equals: true } },
             shows === 'news' ? { kind: { not_equals: 'event' } } : { kind: { equals: shows } },
           ],
         },

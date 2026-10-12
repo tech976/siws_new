@@ -10,6 +10,8 @@ import { SECTIONS } from '@/access/roles'
 import { isAdmin, type AccessUser } from '@/access/user'
 import { scheduledUnless } from '@/fields/publishing'
 import { hideFromHod } from '@/fields/hod-simple'
+import { mainHomepageField } from '@/fields/main-homepage'
+import { mainHomepageEndpoint } from '@/endpoints/main-homepage'
 import { constrainUnitToScope } from '@/hooks/workflow'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 
@@ -38,13 +40,15 @@ export const Announcements: CollectionConfig = {
 
   admin: {
     useAsTitle: 'message',
-    defaultColumns: ['message', 'tone', 'unit', 'unpublishAt', '_status'],
+    defaultColumns: ['message', 'tone', 'unit', 'showOnHome', 'unpublishAt', '_status'],
     description:
       'Short lines that scroll across the top of the site. Keep each one to a single sentence.',
     group: 'Content',
   },
 
   versions: { drafts: true, maxPerDoc: 10 },
+
+  endpoints: [mainHomepageEndpoint('announcements')],
 
   hooks: {
     beforeChange: [constrainUnitToScope],
@@ -102,7 +106,7 @@ export const Announcements: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description:
-          'Which school this is from. Yours is filled in for you. Announcements from every school appear on the main SIWS ticker.',
+          'Which school this is from. Yours is filled in for you. It runs on that school’s pages; left empty, it runs on every school’s and on the main SIWS site.',
         condition: hideFromHod,
       },
       access: {
@@ -112,6 +116,7 @@ export const Announcements: CollectionConfig = {
         },
       },
     },
+    mainHomepageField('line'),
     /*
      * `unpublishAt` matters more here than anywhere else on the site: a ticker
      * still announcing last term's sports day is worse than an empty one, and

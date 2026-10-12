@@ -16,6 +16,8 @@ import { constrainUnitToScope } from '@/hooks/workflow'
 import { ensureUniqueSlugPerUnit } from '@/hooks/unique-slug'
 import { richTextField } from '@/fields/richText'
 import { hideFromHod } from '@/fields/hod-simple'
+import { mainHomepageField } from '@/fields/main-homepage'
+import { mainHomepageEndpoint } from '@/endpoints/main-homepage'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 import { recordRedirectOnMove } from '@/lib/redirects'
 
@@ -47,7 +49,7 @@ export const Posts: CollectionConfig = {
 
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'kind', 'date', 'unit', '_status'],
+    defaultColumns: ['title', 'kind', 'date', 'unit', 'showOnHome', '_status'],
     /*
      * The two preview controls Payload puts in the header are icons with no
      * visible label — an eye and an arrow. They are perfectly discoverable to
@@ -109,6 +111,8 @@ export const Posts: CollectionConfig = {
     afterDelete: [revalidateAfterDelete],
   },
 
+  endpoints: [mainHomepageEndpoint('posts')],
+
   fields: [
     /*
      * Chooses "Event" when the form was opened from the dashboard's "Add an
@@ -148,7 +152,7 @@ export const Posts: CollectionConfig = {
       label: 'Step 1 — Is this news or an event?',
       admin: {
         description:
-          'News appears on your News page, events on your Events page, and achievements on your Achievements page as well as under News. Each shows a coloured tag in the news strip at the top of the site.',
+          'News appears on your News page, events on your Events page, and achievements on your Achievements page as well as under News. Each shows a coloured tag in the news strip at the top of your school’s pages.',
       },
     },
     {
@@ -265,6 +269,7 @@ export const Posts: CollectionConfig = {
         },
       },
     },
+    mainHomepageField('item'),
     /*
      * Built from the title, and shown read-only. The trustees were explicit
      * that an HOD should not be handling addresses; leaving the field visible

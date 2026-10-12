@@ -385,10 +385,9 @@ export const resolveRoute = cache(
 /**
  * The lines currently running in the news ticker.
  *
- * A unit page shows its own school's announcements; the main portal shows every
- * school's, which is what makes the ticker worth having on the front page —
- * the trustees asked for one place where a visitor sees that the institution is
- * busy, not four.
+ * A unit page shows its own school's announcements and the institution's; the
+ * main portal shows the institution's and whichever of the schools' an
+ * administrator has ticked for it.
  *
  * `overrideAccess: false` keeps the scheduling window honest: an announcement
  * outside its dates is filtered by the same rule the rest of the site uses,
@@ -402,7 +401,10 @@ export const resolveRoute = cache(
  * page" — so a school with nothing typed into Ticker announcements still has a
  * live strip, and nobody has to write the same headline twice.
  *
- * A unit page shows its own school's; the portal shows every school's.
+ * A unit page shows its own school's and nobody else's. The main site shows
+ * only what an administrator has ticked for it (`fields/main-homepage.ts`) —
+ * it carried every school's until SIWS asked for "selected and precise
+ * selections on the home page" (2026-10-12).
  * `overrideAccess: false` keeps drafts and scheduled items out by the same
  * rule the rest of the site reads by.
  */
@@ -410,7 +412,7 @@ export const getLatestUpdates = cache(async (unitId: number | null): Promise<Pos
   const payload = await payloadClient()
   const { docs } = await payload.find({
     collection: 'posts',
-    where: unitId === null ? {} : { unit: { equals: unitId } },
+    where: unitId === null ? { showOnHome: { equals: true } } : { unit: { equals: unitId } },
     sort: '-date',
     limit: 8,
     depth: 1,
@@ -423,8 +425,17 @@ export const getAnnouncements = cache(async (unitId: number | null): Promise<Ann
   const payload = await payloadClient()
   const { docs } = await payload.find({
     collection: 'announcements',
-    where:
-      unitId === null ? {} : { or: [{ unit: { equals: unitId } }, { unit: { exists: false } }] },
+    /*
+     * A line with no school is the institution's own and runs everywhere. A
+     * school's line runs on that school's pages, and on the main site only if
+     * an administrator has ticked it.
+     */
+    where: {
+      or: [
+        unitId === null ? { showOnHome: { equals: true } } : { unit: { equals: unitId } },
+        { unit: { exists: false } },
+      ],
+    },
     sort: '-publishAt',
     limit: 12,
     depth: 1,

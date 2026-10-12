@@ -517,7 +517,7 @@ export interface User {
 export interface Post {
   id: number;
   /**
-   * News appears on your News page, events on your Events page, and achievements on your Achievements page as well as under News. Each shows a coloured tag in the news strip at the top of the site.
+   * News appears on your News page, events on your Events page, and achievements on your Achievements page as well as under News. Each shows a coloured tag in the news strip at the top of your school’s pages.
    */
   kind: 'news' | 'event' | 'achievement';
   /**
@@ -572,6 +572,10 @@ export interface Post {
    * Which school this belongs to. Yours is filled in for you.
    */
   unit?: (number | null) | Unit;
+  /**
+   * Tick to run this item on the main SIWS homepage as well. Left unticked, it stays on its own school’s pages. Nothing appears anywhere until it is published.
+   */
+  showOnHome?: boolean | null;
   /**
    * The web address, made from the title. Filled in automatically.
    */
@@ -2701,9 +2705,13 @@ export interface Announcement {
         value: number | Page;
       } | null);
   /**
-   * Which school this is from. Yours is filled in for you. Announcements from every school appear on the main SIWS ticker.
+   * Which school this is from. Yours is filled in for you. It runs on that school’s pages; left empty, it runs on every school’s and on the main SIWS site.
    */
   unit?: (number | null) | Unit;
+  /**
+   * Tick to run this line on the main SIWS homepage as well. Left unticked, it stays on its own school’s pages. Nothing appears anywhere until it is published.
+   */
+  showOnHome?: boolean | null;
   /**
    * Optional. Keeps this hidden until the date and time you choose, even after you publish it.
    */
@@ -3263,6 +3271,7 @@ export interface PostsSelect<T extends boolean = true> {
         file?: T;
       };
   unit?: T;
+  showOnHome?: T;
   slug?: T;
   publishAt?: T;
   unpublishAt?: T;
@@ -3279,6 +3288,7 @@ export interface AnnouncementsSelect<T extends boolean = true> {
   tone?: T;
   link?: T;
   unit?: T;
+  showOnHome?: T;
   publishAt?: T;
   unpublishAt?: T;
   updatedAt?: T;

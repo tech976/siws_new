@@ -596,6 +596,100 @@ const main = async () => {
       },
     })
 
+    /*
+     * A school's news stays on that school's pages. It reaches the main SIWS
+     * homepage only when an administrator ticks it — the HOD who wrote it has
+     * no say, and an administrator choosing what runs on the front page must
+     * not be able to change, publish or unpublish the item by doing so.
+     */
+    await check({
+      name: 'An HOD cannot put their own news on the main SIWS homepage',
+      run: async () => {
+        const post = await payload.create({
+          collection: 'posts',
+          data: {
+            title: `Verify HOD homepage ${stamp}`,
+            date: new Date().toISOString(),
+            template: 'notice',
+            showOnHome: true,
+            _status: 'published',
+          } as never,
+          overrideAccess: false,
+          user: hod,
+        })
+        createdPosts.push(post.id as number)
+        assert((post as { showOnHome?: boolean | null }).showOnHome !== true, 'The tick was accepted on create.')
+
+        const edited = await payload.update({
+          collection: 'posts',
+          id: post.id,
+          data: { showOnHome: true, _status: 'published' } as never,
+          overrideAccess: false,
+          user: hod,
+        })
+        assert((edited as { showOnHome?: boolean | null }).showOnHome !== true, 'The tick was accepted on update.')
+      },
+    })
+
+    await check({
+      name: 'An administrator’s tick survives the author’s next save, and changes nothing else',
+      run: async () => {
+        const { setOnMainHomepage } = await import('@/utilities/main-homepage')
+
+        const post = await payload.create({
+          collection: 'posts',
+          data: {
+            title: `Verify picked ${stamp}`,
+            date: new Date().toISOString(),
+            template: 'notice',
+            summary: 'As published.',
+            _status: 'published',
+          } as never,
+          overrideAccess: false,
+          user: hod,
+        })
+        createdPosts.push(post.id as number)
+
+        // The author starts an edit and leaves it as a draft.
+        await payload.update({
+          collection: 'posts',
+          id: post.id,
+          data: { summary: 'Half-written.' } as never,
+          draft: true,
+          overrideAccess: false,
+          user: hod,
+        })
+
+        assert(
+          await setOnMainHomepage({ payload, collection: 'posts', id: post.id, show: true }),
+          'The item was not found to tick.',
+        )
+
+        const live = (await payload.findByID({
+          collection: 'posts',
+          id: post.id,
+          depth: 0,
+          overrideAccess: true,
+        })) as { _status?: string; summary?: string; showOnHome?: boolean | null }
+        assert(live.showOnHome === true, 'The tick did not reach the live item.')
+        assert(live._status === 'published', 'Ticking unpublished the item.')
+        assert(live.summary === 'As published.', 'Ticking published the author’s unfinished edit.')
+
+        // The author finishes and publishes — and tries to clear the tick.
+        const finished = await payload.update({
+          collection: 'posts',
+          id: post.id,
+          data: { summary: 'Finished.', showOnHome: false, _status: 'published' } as never,
+          overrideAccess: false,
+          user: hod,
+        })
+        assert(
+          (finished as { showOnHome?: boolean | null }).showOnHome === true,
+          'The author’s next save cleared the administrator’s tick.',
+        )
+      },
+    })
+
     await check({
       name: 'An HOD CANNOT publish into another unit',
       run: () =>

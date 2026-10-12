@@ -50,10 +50,8 @@ const PortalHome = async () => {
     getInstitutionPage('home', draft),
     getAnnouncements(null),
     /*
-     * Every school's, because the portal's job is to show that the
-     * institution is busy — the front page had no strip at all until SIWS
-     * asked for one, so a parent landing here saw none of what the sections
-     * had published.
+     * What an administrator has ticked for the main homepage, from any
+     * school. It was every school's, unpicked; SIWS asked for a selection.
      */
     getLatestUpdates(null),
   ])
