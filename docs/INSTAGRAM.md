@@ -30,9 +30,13 @@ The section is **already live and updating itself**. No token, no Meta developer
 app, no access to the school's Instagram account, and no third-party service.
 
 It reads the latest six posts from the account's own public embed page and
-renders them in SIWS styling: 4:5 portrait tiles, six across on a desktop and
-three on a phone. When SIWS posts something new it appears here on its own,
+renders them in SIWS styling: 4:5 portrait tiles, three across at every screen
+size, in two rows. When SIWS posts something new it appears here on its own,
 within fifteen minutes.
+
+Six is the most this route can show. Instagram's page carries six posts, so the
+section shows six even where **How many posts to show** is set higher; more than six
+needs one of the API routes further down.
 
 **There is nothing to maintain.** No links to paste, no token to refresh, no
 subscription.
@@ -45,9 +49,14 @@ nothing, it falls back automatically to Instagram's own profile embed — a
 supported, stable feature that keeps working.
 
 The worst realistic outcome is therefore that the tiles revert to Instagram's
-square grid in Instagram's styling. The section cannot break the page, and it
-cannot show an empty frame. If you ever see square tiles with Instagram's own
-header, that is what has happened, and it is worth telling a developer.
+square grid in Instagram's styling. The section cannot break the page. If you
+ever see square tiles with Instagram's own header, that is what has happened,
+and it is worth telling a developer.
+
+That fallback is Instagram's own frame, which sets Meta's cookies. It is shown
+only to a visitor who has accepted **embedded media** in the cookie banner;
+anyone else sees a short notice saying the feed was not loaded, with a link to
+the profile. The normal tiles are plain pictures and are shown to everybody.
 
 To point the section at a different account, change **Account name** in the
 admin panel.
@@ -61,7 +70,9 @@ Set under **Where the posts come from** on the section.
 **Chosen posts** — paste a link per post, when you want to control exactly which
 six appear (say, to keep an exam-results post at the top). Each embedded post
 still pulls its picture, caption and likes live from Instagram; only the choice
-of posts is yours. Open a post on Instagram, copy the address bar, paste.
+of posts is yours. Open a post on Instagram, copy the address bar, paste. These
+are Instagram's own frames, so they too wait for the visitor to accept embedded
+media.
 
 **Pictures uploaded here** — an ordinary picture grid that links to Instagram.
 For when you want a fixed, hand-designed row that does not change.
@@ -77,16 +88,22 @@ from a public username without account access, from about $5/month.
 free — and they are worth actively avoiding for a school site. None of them can
 use an official Meta API for arbitrary public profiles, so they scrape, which
 breaches Meta's terms and can break without warning. Elfsight also caches for up
-to 48 hours, so a new post can take two days to appear; the profile embed is
-immediate.
+to 48 hours, so a new post can take two days to appear; here it takes fifteen
+minutes at most.
 
 ---
 
 ## The API routes
 
-**Not needed for a working feed** — the profile embed above already updates
-itself. These exist only if you want the posts rendered in the site's own design
-rather than inside Instagram's frame, which requires reading the posts as data.
+**Not needed for a working feed** — the grid above already updates itself, in
+the site's own design. A token adds three things:
+
+- **Reels that play on the page.** The front page has a second Instagram
+  section, "SIWS in motion", which stays hidden until a token is set: the public
+  page shows that a post is a video but does not hand over the video.
+- **More than six posts.**
+- **A documented source.** The token routes use Meta's published API rather
+  than a page Meta could change without notice.
 
 Both need a Meta developer app.
 
@@ -144,10 +161,11 @@ Business Discovery uses the Facebook login path, so a Page is required.
 2. Pick your app, then **Generate Access Token** and log in.
 3. Add these permissions:
    - `instagram_basic`
+   - `instagram_manage_insights`
    - `pages_show_list`
    - `pages_read_engagement`
    - `business_management`
-4. Generate, and copy the token.
+4. Generate, and copy the token. It begins `EAA`.
 
 ## A5. Find your own Instagram user id
 
@@ -193,6 +211,8 @@ INSTAGRAM_ACCESS_TOKEN=EAAG...your long-lived token...
 INSTAGRAM_USER_ID=17841400000000000
 INSTAGRAM_TARGET_USERNAME=siws_wadala
 ```
+
+All three, or the site treats the token as a route B one and Meta refuses it.
 
 Then `pm2 restart siws`. Done.
 
@@ -245,8 +265,8 @@ Then restart the app:
 pm2 restart siws
 ```
 
-The grid switches to live posts within 15 minutes (see "Caching" below), or
-immediately after a restart.
+The grid switches to the API's posts, and "SIWS in motion" appears, within 15
+minutes (see "Caching" below), or immediately after a restart.
 
 **Never commit this token.** `.env` is in `.gitignore` and must stay there. A
 leaked token lets anyone read the account's media until it is revoked.
@@ -256,8 +276,8 @@ leaked token lets anyone read the account's media until it is revoked.
 ## Keeping it alive
 
 A long-lived token expires after **60 days**. When it does, the grid quietly
-falls back to the CMS posts — the page keeps working, which is deliberate, but
-it also means nobody notices.
+goes back to reading Instagram's public page and "SIWS in motion" disappears —
+the page keeps working, which is deliberate, but it also means nobody notices.
 
 **Do this now, while you are thinking about it:**
 
@@ -288,10 +308,11 @@ expired, start again from B3 (route B) or A4 (route A).
 ## Checking it worked
 
 Visit the front page and look at "Life at SIWS". If those are the account's real
-recent posts, it is working.
+recent posts, the feed is working — with or without a token.
 
-If they are the posts entered in the admin panel — or the section is missing —
-check the application log:
+To tell whether a **token** is working, look for "SIWS in motion" lower down the
+page: it only appears when the API is answering. If you have set a token and it
+is not there, check the application log:
 
 ```bash
 pm2 logs siws --lines 100 | grep instagram
@@ -299,8 +320,8 @@ pm2 logs siws --lines 100 | grep instagram
 
 | What the log says | What it means |
 |---|---|
-| Nothing at all | No token is set. The grid is using CMS posts. |
-| `[instagram] 400 Bad Request` | The token has expired or been revoked. Generate a new one (Step 3). |
+| Nothing at all | No token is set. The grid is reading Instagram's public page, which is the normal state. |
+| `[instagram] 400 Bad Request` | The token has expired or been revoked: generate a new one (A4 on route A, B3 on route B). On route A it also means one of the three variables is missing or wrong. |
 | `[instagram] 429` | Rate limited. Rare; it clears by itself. |
 | `[instagram] feed unavailable` | Meta was slow or unreachable. Clears by itself. |
 
@@ -320,15 +341,15 @@ school that posts a few times a week.
 
 ---
 
-## The fallback posts
+## What shows when a source is unavailable
 
-In the admin panel, open the front page and find the **Instagram feed** section.
-Its **Posts** list is what shows when the live connection is unavailable.
+There is nothing to fill in. On **Automatic**, the section tries each source in
+turn and uses the first that answers:
 
-It is worth filling in with six recent posts even after the token is working. It
-costs ten minutes and is what stands between a token expiry and an empty space
-on the front page.
+1. the API, if a token is set;
+2. Instagram's public page;
+3. Instagram's own profile frame.
 
-For each post: upload the picture, paste the post's caption, and paste the
-address of that individual post (open the post on Instagram and copy the URL
-from the address bar).
+The **Posts** list in the admin panel is not part of that. It only appears, and
+is only used, when **Where the posts come from** is set to **Pictures uploaded
+here**.

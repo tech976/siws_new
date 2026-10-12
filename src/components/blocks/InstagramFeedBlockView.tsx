@@ -15,8 +15,9 @@ import { EmbedGate } from '@/components/consent/EmbedGate'
 /**
  * The Instagram grid.
  *
- * Live posts when a token is configured, the CMS-curated posts otherwise —
- * the reasoning for that arrangement is in `blocks/InstagramFeedBlock.ts`.
+ * Posts from the Graph API when a token is configured, and from the account's
+ * public page when it is not — the reasoning for that arrangement is in
+ * `blocks/InstagramFeedBlock.ts`.
  *
  * The whole section is omitted when there is nothing to show, rather than
  * rendering an empty frame. A heading over six grey boxes reads as a broken
@@ -153,6 +154,14 @@ export const InstagramFeedBlockView = async ({ block }: { block: InstagramFeedBl
   const isLinks = mode === 'links' && embedUrls.length > 0
 
   /*
+   * Instagram's own frame is the LAST resort: only when neither source
+   * returned a post. This asked about the public reader alone, which is never
+   * run once a token works — so setting a token, the one step meant to improve
+   * the section, replaced the tiles with Instagram's frame.
+   */
+  const needsFrame = isProfile && live.length === 0 && publicPosts.length === 0
+
+  /*
    * The films, for the rail. A tile qualifies only if it actually has an MP4:
    * `isVideo` is true for a reel read off the public page too, and that one
    * has a cover and nothing to play.
@@ -253,7 +262,7 @@ export const InstagramFeedBlockView = async ({ block }: { block: InstagramFeedBl
       */}
       {wantsReels ? (
         <InstagramReels reels={reels} />
-      ) : isProfile && publicPosts.length === 0 ? (
+      ) : needsFrame ? (
         <EmbedGate label="Instagram feed" provider="Instagram" href={block.profileUrl}>
           <InstagramProfileEmbed handle={block.handle} />
         </EmbedGate>

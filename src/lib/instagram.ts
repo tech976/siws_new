@@ -29,8 +29,8 @@ import { cache } from 'react'
  *
  * THE CONTRACT WITH THE BLOCK. This module never throws and never blocks a
  * page. Any failure — no token, an expired token, a Meta outage, a slow
- * response — returns an empty array, and the block falls back to the posts
- * curated in the CMS. A social media section is the least important thing on a
+ * response — returns an empty array, and the block reads the account's public
+ * page instead (`instagram-public.ts`). A social media section is the least important thing on a
  * school's front page; it must never be the reason the page is down.
  */
 
@@ -65,6 +65,27 @@ interface GraphMedia {
 }
 
 const GRAPH_HOST = 'https://graph.instagram.com'
+
+/**
+ * Business Discovery is answered by the FACEBOOK host, and only by it.
+ *
+ * The two routes hold different kinds of token. The school's own account
+ * signs in with Instagram and gets an Instagram token (`IGAA…`), which
+ * `graph.instagram.com` accepts. Business Discovery is reached through
+ * Facebook Login — the token in docs/INSTAGRAM.md comes out of the Graph API
+ * Explorer and begins `EAA…` — and the Instagram host cannot parse one of
+ * those at all.
+ *
+ * Both routes were sent to the Instagram host, so route A answered 400
+ * however carefully it had been set up, and the log line for a 400 said the
+ * token had expired. Step A6 of the guide passed all the while, because the
+ * Explorer it is run in talks to this host.
+ *
+ * No version in the path: an unversioned call is served by the oldest version
+ * Meta still supports, so this does not stop working on the day a named
+ * version is retired.
+ */
+const FACEBOOK_GRAPH_HOST = 'https://graph.facebook.com'
 
 /**
  * How long a fetched feed is reused.
@@ -142,7 +163,7 @@ const buildRequest = (
   const selfUserId = process.env.INSTAGRAM_USER_ID?.trim()
 
   if (targetUsername && selfUserId) {
-    const url = new URL(`${GRAPH_HOST}/${selfUserId}`)
+    const url = new URL(`${FACEBOOK_GRAPH_HOST}/${selfUserId}`)
     url.searchParams.set(
       'fields',
       `business_discovery.username(${targetUsername}){media.limit(${count}){${fields}}}`,
@@ -188,15 +209,16 @@ export const getInstagramPosts = cache(async (limit: number): Promise<InstagramP
       /*
        * Worth a log line, unlike the missing-token case. A 400 here almost
        * always means the long-lived token passed its 60-day life without being
-       * refreshed, and the symptom on the page — the grid quietly reverting to
-       * the CMS posts — gives nobody a reason to go looking.
+       * refreshed, and the symptom on the page — the grid quietly reading the
+       * public page again, and the films gone — gives nobody a reason to go
+       * looking.
        *
        * On the Business Discovery route it can also mean the target account
        * stopped being public or professional, which is outside our control and
        * equally invisible without this line.
        */
       console.error(
-        `[instagram] ${response.status} ${response.statusText} — the feed has fallen back to CMS posts. Check INSTAGRAM_ACCESS_TOKEN has not expired, and that the target account is still public and professional.`,
+        `[instagram] ${response.status} ${response.statusText} — the feed has fallen back to Instagram's public page. Check INSTAGRAM_ACCESS_TOKEN has not expired, and that the target account is still public and professional.`,
       )
       return []
     }
@@ -211,7 +233,7 @@ export const getInstagramPosts = cache(async (limit: number): Promise<InstagramP
       .slice(0, limit)
   } catch (error) {
     // Includes the timeout above. The page still renders; the section falls back.
-    console.error('[instagram] feed unavailable, falling back to CMS posts:', error)
+    console.error("[instagram] feed unavailable, falling back to Instagram's public page:", error)
     return []
   }
 })
