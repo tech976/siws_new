@@ -28,8 +28,12 @@ import { MainHomepageToggle } from './MainHomepageToggle'
  * and a draft never is.
  *
  * SECTIONS, as asked: what is on the main homepage now, then what is live on
- * the schools' own pages, by kind — achievements, news, events, ticker lines.
+ * the schools' own pages, by kind — achievements, news, events, announcements.
  * Pressing a button moves the item from one to the other.
+ *
+ * News & Events only. "Ticker announcements" had a section here until SIWS
+ * asked for that collection to go; a notice is an Announcement now, and is
+ * listed with the rest.
  *
  * Custom admin views are not protected by Payload, so the check is here: an
  * administrator, or nothing.
@@ -37,14 +41,11 @@ import { MainHomepageToggle } from './MainHomepageToggle'
 
 interface Row {
   key: string
-  collection: 'posts' | 'announcements'
   id: number | string
   title: string
   school: string
   when: string | null
   shown: boolean
-  /** A ticker line with no school runs everywhere, ticked or not. */
-  always: boolean
 }
 
 const ADMIN_BASE = '/admin/collections'
@@ -74,7 +75,7 @@ const List = ({ rows, empty }: { rows: Row[]; empty: string }) =>
         <li key={row.key}>
           <div className="siws-row">
             <span className="siws-row__body">
-              <Link href={`${ADMIN_BASE}/${row.collection}/${row.id}`} className="siws-row__title">
+              <Link href={`${ADMIN_BASE}/posts/${row.id}`} className="siws-row__title">
                 {row.title}
               </Link>
               <span className="siws-row__meta">
@@ -82,11 +83,7 @@ const List = ({ rows, empty }: { rows: Row[]; empty: string }) =>
                 {row.when ? ` · ${row.when}` : ''}
               </span>
             </span>
-            {row.always ? (
-              <span className="siws-badge siws-badge--review">Always showing</span>
-            ) : (
-              <MainHomepageToggle collection={row.collection} id={row.id} shown={row.shown} />
-            )}
+            <MainHomepageToggle collection="posts" id={row.id} shown={row.shown} />
           </div>
         </li>
       ))}
@@ -123,12 +120,12 @@ export const MainHomepageView = async ({ initPageResult, params, searchParams }:
 
   const allowed = isAdmin(user as AccessUser)
 
-  const live = async (collection: 'posts' | 'announcements', sort: string) =>
+  const live = async () =>
     payload
       .find({
-        collection,
+        collection: 'posts',
         where: publishedWhere(),
-        sort,
+        sort: '-date',
         limit: LIMIT,
         depth: 1,
         // The rule is in the query. Access is not what decides this list.
@@ -137,9 +134,7 @@ export const MainHomepageView = async ({ initPageResult, params, searchParams }:
       .then((result) => result.docs as unknown as Record<string, unknown>[])
       .catch(() => [] as Record<string, unknown>[])
 
-  const [posts, lines] = allowed
-    ? await Promise.all([live('posts', '-date'), live('announcements', '-updatedAt')])
-    : [[], []]
+  const posts = allowed ? await live() : []
 
   const postRows = (kind: string): Row[] =>
     posts
@@ -147,34 +142,18 @@ export const MainHomepageView = async ({ initPageResult, params, searchParams }:
       .filter((doc) => (doc.kind ?? 'news') === kind)
       .map((doc) => ({
         key: `post-${doc.id}`,
-        collection: 'posts' as const,
         id: doc.id as number,
         title: String(doc.title ?? 'Untitled'),
         school: schoolOf(doc.unit) ?? 'Institution-wide',
         when: day(doc.date),
         shown: doc.showOnHome === true,
-        always: false,
       }))
-
-  const lineRows: Row[] = lines.map((doc) => {
-    const school = schoolOf(doc.unit)
-    return {
-      key: `line-${doc.id}`,
-      collection: 'announcements' as const,
-      id: doc.id as number,
-      title: String(doc.message ?? 'Untitled'),
-      school: school ?? 'Institution-wide',
-      when: null,
-      shown: doc.showOnHome === true || school === null,
-      always: school === null,
-    }
-  })
 
   const groups: { id: string; title: string; rows: Row[] }[] = [
     { id: 'achievements', title: 'Achievements', rows: postRows('achievement') },
     { id: 'news', title: 'News', rows: postRows('news') },
     { id: 'events', title: 'Events', rows: postRows('event') },
-    { id: 'lines', title: 'Ticker lines', rows: lineRows },
+    { id: 'announcements', title: 'Announcements', rows: postRows('announcement') },
   ]
 
   const showing = groups.flatMap((group) => group.rows.filter((row) => row.shown))
@@ -249,7 +228,7 @@ export const MainHomepageView = async ({ initPageResult, params, searchParams }:
 
               {total >= LIMIT ? (
                 <p style={{ color: 'var(--theme-elevation-600)' }}>
-                  Only the newest {LIMIT} of each are listed here.
+                  Only the newest {LIMIT} are listed here.
                 </p>
               ) : null}
             </>

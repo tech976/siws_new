@@ -1,4 +1,4 @@
-import { Images, Medal, Megaphone, Newspaper, Trophy } from 'lucide-react'
+import { Images, Medal, Newspaper, Trophy } from 'lucide-react'
 import Link from 'next/link'
 import type { CSSProperties } from 'react'
 import type { Payload, TypedUser, Where } from 'payload'
@@ -125,7 +125,7 @@ const countLine = (n: number, one: string, many: string) =>
 
 export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProps) => {
   /** Counts scoped by the user's own access, so they only ever see their own. */
-  const count = async (collection: 'posts' | 'announcements' | 'media', where?: Where) => {
+  const count = async (collection: 'posts' | 'media', where?: Where) => {
     try {
       const result = await payload.count({
         collection,
@@ -160,14 +160,14 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
           ],
         }
 
-  const [news, events, written, sports, achievements, photos, announcements] = await Promise.all([
+  const [news, events, notices, written, sports, achievements, photos] = await Promise.all([
     count('posts', { kind: { equals: 'news' } }),
     count('posts', { kind: { equals: 'event' } }),
+    count('posts', { kind: { equals: 'announcement' } }),
     count('posts', { kind: { equals: 'achievement' } }),
     count('media', inMyLibrary({ category: { equals: 'Sports' } })),
     count('media', inMyLibrary({ category: { equals: 'Achievements' } })),
     count('media', inMyLibrary({ showInGallery: { equals: true } })),
-    count('announcements'),
   ])
 
   /*
@@ -207,6 +207,13 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
               <Link href="/admin/collections/posts?where[kind][equals]=event" style={quickLink}>
                 Events — {countLine(events, 'item', 'items')}
               </Link>
+              <br />
+              <Link
+                href="/admin/collections/posts?where[kind][equals]=announcement"
+                style={quickLink}
+              >
+                Announcements — {countLine(notices, 'item', 'items')}
+              </Link>
             </span>
             <Link href="/admin/collections/posts/create" style={addLink}>
               + Add news
@@ -214,6 +221,15 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
             <br />
             <Link href="/admin/collections/posts/create?kind=event" style={addLink}>
               + Add an event
+            </Link>
+            <br />
+            {/*
+              A notice — "examinations begin on the 26th". It was a line typed
+              into a separate Ticker list; it is written here now, and runs in
+              the news strip like everything else in this box.
+            */}
+            <Link href="/admin/collections/posts/create?kind=announcement" style={addLink}>
+              + Add an announcement
             </Link>
           </span>
         </div>
@@ -281,19 +297,6 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
             </Link>
           </span>
         </div>
-      </div>
-
-      <h2 style={sectionLabel}>Also</h2>
-
-      <div style={{ display: 'flex', gap: '1.75rem', flexWrap: 'wrap' }}>
-        <Link href="/admin/collections/announcements" style={quickLink}>
-          <Megaphone size={17} aria-hidden="true" />
-          Ticker — {countLine(announcements, 'line', 'lines')}
-        </Link>
-        <Link href="/admin/collections/announcements/create" style={quickLink}>
-          <Megaphone size={17} aria-hidden="true" />
-          Put one line on the ticker
-        </Link>
       </div>
 
       <p

@@ -28,7 +28,7 @@ export const PrefillKind = () => {
     // the default ("News") it loads a moment later.
     if (done.current || initialising) return
     const wanted = params.get('kind')
-    if (wanted !== 'event' && wanted !== 'achievement') return
+    if (wanted !== 'event' && wanted !== 'achievement' && wanted !== 'announcement') return
     done.current = true
     if (value !== wanted) setValue(wanted)
   }, [params, value, setValue, initialising])

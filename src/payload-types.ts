@@ -517,9 +517,9 @@ export interface User {
 export interface Post {
   id: number;
   /**
-   * News appears on your News page, events on your Events page, and achievements on your Achievements page as well as under News. Each shows a coloured tag in the news strip at the top of your school’s pages.
+   * News and announcements appear on your News page, events on your Events page, and achievements on your Achievements page as well as under News. Each shows a coloured tag in the news strip at the top of your school’s pages.
    */
-  kind: 'news' | 'event' | 'achievement';
+  kind: 'news' | 'event' | 'achievement' | 'announcement';
   /**
    * You can change this later and look again.
    */

@@ -5,7 +5,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import type { NavItem } from '@/components/layout/PrimaryNav'
-import type { Announcement, Page, Post, Unit } from '@/payload-types'
+import type { Page, Post, Unit } from '@/payload-types'
 import type { QuickLink } from '@/components/layout/QuickLinks'
 
 /**
@@ -383,23 +383,12 @@ export const resolveRoute = cache(
 )
 
 /**
- * The lines currently running in the news ticker.
- *
- * A unit page shows its own school's announcements and the institution's; the
- * main portal shows the institution's and whichever of the schools' an
- * administrator has ticked for it.
- *
- * `overrideAccess: false` keeps the scheduling window honest: an announcement
- * outside its dates is filtered by the same rule the rest of the site uses,
- * rather than by anything written here.
- */
-/**
- * The newest News & Events items, for the ticker.
+ * The newest News & Events items, which are the whole of the news strip.
  *
  * SIWS asked for the strip to carry what the sections publish — "when teachers
  * and HODs add theirs, the ticker rotates them and links to the particular
- * page" — so a school with nothing typed into Ticker announcements still has a
- * live strip, and nobody has to write the same headline twice.
+ * page" — and then for the separate "Ticker announcements" to go, so this is
+ * the only thing the strip is made from. Eight at most, newest first.
  *
  * A unit page shows its own school's and nobody else's. The main site shows
  * only what an administrator has ticked for it (`fields/main-homepage.ts`) —
@@ -419,27 +408,4 @@ export const getLatestUpdates = cache(async (unitId: number | null): Promise<Pos
     overrideAccess: false,
   })
   return docs as Post[]
-})
-
-export const getAnnouncements = cache(async (unitId: number | null): Promise<Announcement[]> => {
-  const payload = await payloadClient()
-  const { docs } = await payload.find({
-    collection: 'announcements',
-    /*
-     * A line with no school is the institution's own and runs everywhere. A
-     * school's line runs on that school's pages, and on the main site only if
-     * an administrator has ticked it.
-     */
-    where: {
-      or: [
-        unitId === null ? { showOnHome: { equals: true } } : { unit: { equals: unitId } },
-        { unit: { exists: false } },
-      ],
-    },
-    sort: '-publishAt',
-    limit: 12,
-    depth: 1,
-    overrideAccess: false,
-  })
-  return docs as Announcement[]
 })

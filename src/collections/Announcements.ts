@@ -39,6 +39,17 @@ export const Announcements: CollectionConfig = {
   },
 
   admin: {
+    /*
+     * OUT OF THE PANEL, FOR EVERYBODY (SIWS, 2026-10-12: "remove ticker
+     * section, it's not needed"). A notice is now an Announcement in News &
+     * Events, and the news strip no longer reads this collection at all.
+     *
+     * Hidden rather than deleted from the config. Removing a collection makes
+     * the next schema push want to drop its tables, and the lines the schools
+     * typed here are theirs; `ticker-lines-to-announcements.ts` carries the
+     * live ones across, and this keeps the originals where they were.
+     */
+    hidden: true,
     useAsTitle: 'message',
     defaultColumns: ['message', 'tone', 'unit', 'showOnHome', 'unpublishAt', '_status'],
     description:

@@ -59,6 +59,9 @@ const TONE: Record<string, { label: string; chip: string }> = {
   news: { label: 'News', chip: 'bg-white text-brand' },
   achievement: { label: 'Achievement', chip: 'bg-accent text-brand' },
   event: { label: 'Event', chip: 'bg-[#3ddc84] text-[#0c3b22]' },
+  // A notice, which is neither a win nor a date in the diary: pale sky, the
+  // one light colour on the band the other three have not taken.
+  announcement: { label: 'Announcement', chip: 'bg-[#bfe3ff] text-[#0b3a5e]' },
   urgent: { label: 'Important', chip: 'bg-[#ff6b7d] text-[#4a0510]' },
 }
 

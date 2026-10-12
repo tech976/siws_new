@@ -8,7 +8,6 @@ import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { NewsTicker } from '@/components/layout/NewsTicker'
 import {
-  getAnnouncements,
   getInstitutionPage,
   getLatestUpdates,
   getNavItems,
@@ -43,12 +42,11 @@ const TAGLINE = 'From KG to PG — Inspiring Excellence Since 1934'
 const PortalHome = async () => {
   const { isEnabled: draft } = await draftMode()
 
-  const [units, navItems, quickLinks, page, announcements, updates] = await Promise.all([
+  const [units, navItems, quickLinks, page, updates] = await Promise.all([
     getUnits(),
     getNavItems(null, null),
     getQuickLinks(null, null),
     getInstitutionPage('home', draft),
-    getAnnouncements(null),
     /*
      * What an administrator has ticked for the main homepage, from any
      * school. It was every school's, unpicked; SIWS asked for a selection.
@@ -71,7 +69,7 @@ const PortalHome = async () => {
 
       <SiteHeader units={units} navItems={navItems} quickLinks={quickLinks} infoText={TAGLINE} />
 
-      <NewsTicker items={tickerItems(announcements, updates, units)} />
+      <NewsTicker items={tickerItems(updates, units)} />
 
       <main id="main-content">
         {page ? (

@@ -148,11 +148,21 @@ export const Posts: CollectionConfig = {
          * can tell a win from a notice without reading either.
          */
         { label: 'Achievement — a prize or an award', value: 'achievement' },
+        /*
+         * A notice: examinations begin on the 26th, the school is closed on
+         * Friday. These were "Ticker announcements", a collection of their own
+         * with a list of their own, and SIWS asked for that to go (2026-10-12:
+         * "remove ticker section, it's not needed… add another option for the
+         * announcement"). It is the same thing as the three above — a line in
+         * the strip that opens onto a page — so it is written in the same
+         * place. Listed on the News page with the rest.
+         */
+        { label: 'Announcement — a notice for parents and students', value: 'announcement' },
       ],
-      label: 'Step 1 — Is this news or an event?',
+      label: 'Step 1 — What kind of item is this?',
       admin: {
         description:
-          'News appears on your News page, events on your Events page, and achievements on your Achievements page as well as under News. Each shows a coloured tag in the news strip at the top of your school’s pages.',
+          'News and announcements appear on your News page, events on your Events page, and achievements on your Achievements page as well as under News. Each shows a coloured tag in the news strip at the top of your school’s pages.',
       },
     },
     {

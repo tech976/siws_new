@@ -20,7 +20,6 @@ import {
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import {
-  getAnnouncements,
   getLatestUpdates,
   getNavItems,
   getQuickLinks,
@@ -73,7 +72,6 @@ const DynamicRoute = async ({ params }: RouteProps) => {
   const quickLinks = await getQuickLinks(unit?.id ?? null, unit?.slug ?? null)
 
   const footerUnits = units.map(({ id, slug, shortName }) => ({ id, slug, shortName }))
-  const announcements = await getAnnouncements(unit?.id ?? null)
   /*
    * This school's own news and nobody else's — or, on a page of the main
    * site, what an administrator has picked for it. A school that had published
@@ -161,7 +159,7 @@ const DynamicRoute = async ({ params }: RouteProps) => {
         }
       />
 
-      <NewsTicker items={tickerItems(announcements, updates, units)} />
+      <NewsTicker items={tickerItems(updates, units)} />
 
       <main id="main-content">
         {/* A department write-up, laid out by the template its author chose. */}
