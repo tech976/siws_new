@@ -10,7 +10,7 @@ const { default: config } = await import('@payload-config')
  * panel appears on the site without anyone editing a page (SIWS, 2026-10-01:
  * "I want to make it easy for the HODs and teachers").
  *
- * FIVE STEPS, each safe to repeat:
+ * SIX STEPS, each safe to repeat:
  *
  *  1. NEWS OR EVENT. Every item published before the choice existed was news,
  *     and is set to it. Written to the item and to its latest version, or the
@@ -46,6 +46,15 @@ const { default: config } = await import('@payload-config')
  *     each school's News, Events and Achievements page, and on Achievements
  *     the photographs filed under it follow directly. Nothing else on the
  *     page changes order, and an empty list still renders nothing.
+ *
+ *  6. SO DOES A SPORTS PHOTOGRAPH (SIWS, 2026-10-12: "in Sports section, if
+ *     added, not show in the sport section"). It did show — at the foot of the
+ *     Sports page, under the closing section, where step 4 had put the gallery
+ *     and where nobody who had just uploaded a photograph thought to look.
+ *     Step 5 left the Sports pages alone because nobody had asked; now they
+ *     have. The photographs filed under Sports move to the top of each
+ *     school's Sports page, newest first. With none filed, nothing renders
+ *     and the page is exactly as it was.
  *
  * WHY A SCRIPT AND NOT `seed:nav` / `seed:galleries`: those rebuild a page from
  * the template and would undo what the schools have written. This adds a
@@ -381,6 +390,21 @@ const main = async () => {
       }
 
       await lift(page, picks, `${slug.padEnd(12)}  ${unit.slug}: what is published`)
+    }
+
+    /* --------- 6. a photograph filed under Sports opens the Sports page ---- */
+    const sports = await pageOf(unit.id, 'sports')
+    if (sports) {
+      await lift(
+        sports,
+        [
+          (block: Block) =>
+            block.blockType === 'gallery' &&
+            typeof block.heading === 'string' &&
+            block.heading.trim() === 'Sports',
+        ],
+        `sports        ${unit.slug}: photographs filed under Sports`,
+      )
     }
   }
 
