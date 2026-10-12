@@ -8,9 +8,11 @@ import { MainHomepageToggle } from './MainHomepageToggle'
  * The "On the main SIWS homepage" column in a list: the tick-and-cross for
  * that row. See `MainHomepageToggle`.
  *
- * No longer one of the lists' default columns — the choosing moved to the
- * "Main homepage" screen, which lists live items only. It is still here for
- * anybody who adds the column back from the Columns menu.
+ * In the lists as well as on the "Main homepage" screen. It was taken out of
+ * the lists when that screen was added, on the reasoning that one place to
+ * choose is clearer than two, and SIWS asked for it back the same day
+ * (2026-10-12: "don't remove it"). An administrator working down News &
+ * Events wants to tick the item in front of them, not go and find it again.
  *
  * PUBLISHED ITEMS ONLY. Every row had the button at first, and SIWS asked for
  * it on published items alone (2026-10-12): a draft is not on any page, so

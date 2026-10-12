@@ -10,7 +10,8 @@ import { MainHomepageToggle } from './MainHomepageToggle'
  *
  * SIWS asked for "a tick and cross option" and "proper sections for that"
  * (2026-10-12). The choosing is done on the "Main homepage" screen
- * (`MainHomepageView`), which lists everything that is live. This is the
+ * (`MainHomepageView`), which lists everything that is live, or from the
+ * column in News & Events and Ticker announcements. This is the
  * glance from the dashboard — the answer to "what have I put on the front
  * page?" — with the button to take something off again, and the way in.
  *
