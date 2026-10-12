@@ -42,8 +42,7 @@ export const mainHomepageField = (what: string): Field => ({
     /*
      * Shown in the form to an administrator only. A head of department has no
      * say in it, and a tick box that refuses to stay ticked is worse than no
-     * tick box. The list column stays visible to them, read-only, so they can
-     * see when something of theirs has been picked.
+     * tick box.
      */
     condition: administratorOnPublished,
     description: `Tick to run this ${what} on the main SIWS homepage as well. Left unticked, it stays on its own school’s pages.`,

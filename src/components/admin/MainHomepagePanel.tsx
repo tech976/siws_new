@@ -9,10 +9,10 @@ import { MainHomepageToggle } from './MainHomepageToggle'
  * in its news strip now, and where to choose more.
  *
  * SIWS asked for "a tick and cross option" and "proper sections for that"
- * (2026-10-12). The tick itself sits in the lists of News & Events and Ticker
- * announcements, one per row. This is the other half — the answer to "what
- * have I put on the front page?" without filtering two lists to find out, and
- * the place to take something off again.
+ * (2026-10-12). The choosing is done on the "Main homepage" screen
+ * (`MainHomepageView`), which lists everything that is live. This is the
+ * glance from the dashboard — the answer to "what have I put on the front
+ * page?" — with the button to take something off again, and the way in.
  *
  * A Server Component, like the dashboard it sits in. Published items only:
  * this is the list of what is on the main homepage, and something that is not
@@ -101,8 +101,8 @@ export const MainHomepagePanel = async ({ payload, user }: PanelProps) => {
             <span className="siws-panel__empty-mark" aria-hidden="true">
               <Megaphone size={24} strokeWidth={2} />
             </span>
-            Nothing from the schools is on the main homepage yet. Open News &amp; Events and press
-            the cross beside a published item to put it there.
+            Nothing from the schools is on the main homepage yet. Open the list of everything
+            that is live and press the cross beside an item to put it there.
           </p>
         ) : (
           <ul className="siws-rows">
@@ -126,8 +126,7 @@ export const MainHomepagePanel = async ({ payload, user }: PanelProps) => {
         )}
 
         <p style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', padding: '0.4rem 0.7rem 0.9rem' }}>
-          <Link href={`${ADMIN_BASE}/posts?sort=-date`}>Choose from News &amp; Events</Link>
-          <Link href={`${ADMIN_BASE}/announcements`}>Choose from Ticker announcements</Link>
+          <Link href="/admin/main-homepage">Choose from everything that is live</Link>
         </p>
       </div>
     </section>

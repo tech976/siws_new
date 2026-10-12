@@ -62,12 +62,23 @@ export default buildConfig({
        */
       views: {
         dashboard: { Component: '@/components/admin/Dashboard#Dashboard' },
+        /*
+         * The administrator's list of everything live, for choosing what runs
+         * on the main SIWS homepage. Published items only — see the component.
+         */
+        mainHomepage: {
+          Component: '@/components/admin/MainHomepageView#MainHomepageView',
+          path: '/main-homepage',
+        },
       },
       graphics: {
         Logo: '@/components/admin/Branding#Logo',
         Icon: '@/components/admin/Branding#Icon',
       },
-      beforeNavLinks: ['@/components/admin/Branding#NavBrand'],
+      beforeNavLinks: [
+        '@/components/admin/Branding#NavBrand',
+        '@/components/admin/MainHomepageNavLink#MainHomepageNavLink',
+      ],
       // `afterNavLinks` places the card above the logout row; `afterNav` would
       // put it below, where it reads as detached from the menu.
       afterNavLinks: ['@/components/admin/Branding#NavFooterCard'],

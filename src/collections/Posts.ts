@@ -49,7 +49,7 @@ export const Posts: CollectionConfig = {
 
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'kind', 'date', 'unit', 'showOnHome', '_status'],
+    defaultColumns: ['title', 'kind', 'date', 'unit', '_status'],
     /*
      * The two preview controls Payload puts in the header are icons with no
      * visible label — an eye and an arrow. They are perfectly discoverable to

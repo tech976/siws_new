@@ -40,7 +40,7 @@ export const Announcements: CollectionConfig = {
 
   admin: {
     useAsTitle: 'message',
-    defaultColumns: ['message', 'tone', 'unit', 'showOnHome', 'unpublishAt', '_status'],
+    defaultColumns: ['message', 'tone', 'unit', 'unpublishAt', '_status'],
     description:
       'Short lines that scroll across the top of the site. Keep each one to a single sentence.',
     group: 'Content',
