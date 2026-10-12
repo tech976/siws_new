@@ -13,7 +13,7 @@ import { auditChange, auditDelete } from '@/hooks/audit'
 import { constrainUnitToScope } from '@/hooks/workflow'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 import { IMAGE_AND_DOCUMENT_TYPES, validateFileContent } from '@/utilities/file-signature'
-import { describeMediaUsage } from '@/utilities/media-usage'
+import { describeMediaUsage, removeFromPictureLists } from '@/utilities/media-usage'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -26,6 +26,18 @@ const isHodOnly = (user: AccessUser | null): boolean =>
   hasRole(user, ROLES.hod) &&
   !isAdmin(user) &&
   !hasRole(user, ROLES.unitHead, ROLES.contentManager, ROLES.editor)
+
+/**
+ * What an HOD may change or remove: their own school's pictures and their own
+ * uploads — not the shared ones every school uses, which are an
+ * administrator's.
+ */
+const hodPictures = (user: AccessUser): Where => {
+  const clauses: Where[] = [{ uploadedBy: { equals: user.id } }]
+  const ids = unitIdsOf(user)
+  if (ids.length > 0) clauses.push({ unit: { in: ids } })
+  return { or: clauses }
+}
 
 /**
  * An HOD's upload belongs to their own school. Left blank, "Belongs to" means
@@ -186,15 +198,9 @@ export const Media: CollectionConfig = {
       if (isAdmin(user)) return true
       if (!isActiveUser(user)) return false
 
-      const ids = unitIdsOf(user)
-      // An HOD edits their own school's pictures and their own uploads — not
-      // the shared ones every school uses, which are an administrator's.
-      if (isHodOnly(user)) {
-        const clauses: Where[] = [{ uploadedBy: { equals: user.id } }]
-        if (ids.length > 0) clauses.push({ unit: { in: ids } })
-        return { or: clauses }
-      }
+      if (isHodOnly(user)) return hodPictures(user)
 
+      const ids = unitIdsOf(user)
       if (!hasRole(user, ROLES.unitHead, ROLES.contentManager, ROLES.editor)) return false
       // Staff may edit items belonging to their unit, plus shared items that
       // carry no unit, plus anything they uploaded themselves.
@@ -207,10 +213,18 @@ export const Media: CollectionConfig = {
     delete: ({ req }) => {
       const user = req.user as AccessUser | null
       if (isAdmin(user)) return true
+      if (hasRole(user, ROLES.unitHead, ROLES.contentManager)) {
+        const ids = unitIdsOf(user)
+        return ids.length > 0 ? { unit: { in: ids } } : false
+      }
+      /*
+       * HODs delete what they may edit. They were given upload and never its
+       * undo: the wrong photograph, or the same one twice, stayed in the
+       * gallery until an administrator was asked to take it out.
+       */
+      if (user && hasRole(user, ROLES.hod)) return hodPictures(user)
       // Editors get "limited updates" under SRS 8.1, not deletion.
-      if (!hasRole(user, ROLES.unitHead, ROLES.contentManager)) return false
-      const ids = unitIdsOf(user)
-      return ids.length > 0 ? { unit: { in: ids } } : false
+      return false
     },
   },
 
@@ -302,10 +316,14 @@ export const Media: CollectionConfig = {
     beforeDelete: [
       /**
        * BR-MED-07 — "warn before deleting a media item that is in use, and
-       * indicate where it is used". Deleting a referenced file would leave
-       * broken images across published pages, so the delete is refused and the
-       * usages are named. An administrator can still remove it after clearing
-       * the references.
+       * indicate where it is used". Deleting the picture of a banner or a card
+       * would leave a hole in a published page, so that delete is refused and
+       * the usages are named. An administrator can still remove it after
+       * clearing the references.
+       *
+       * A photograph that is only one of many in a gallery is not refused: it
+       * is taken off those lists and then deleted, which is what deleting a
+       * photograph is for. See `media-usage.ts`.
        */
       async ({ id, req }) => {
         if (req.context?.forceMediaDelete === true && isAdmin(req.user as AccessUser | null)) {
@@ -324,6 +342,8 @@ export const Media: CollectionConfig = {
             409,
           )
         }
+
+        await removeFromPictureLists({ req, collection: 'media', id })
       },
     ],
   },

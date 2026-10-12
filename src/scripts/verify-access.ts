@@ -864,7 +864,150 @@ const main = async () => {
           }
         },
       })
+
+      // An HOD was given upload and never its undo: the wrong photograph stayed
+      // in the gallery until an administrator was asked to take it out.
+      await check({
+        name: 'An HOD deletes their own school’s pictures — not another school’s or shared ones',
+        run: async () => {
+          const make = (name: string, unit?: number | string) =>
+            payload.create({
+              collection: 'media',
+              data: { alt: `Verify ${name} picture to delete`, ...(unit ? { unit } : {}) } as never,
+              file: picture(`delete-${name}`),
+              overrideAccess: true,
+            })
+          const own = await make('primary', primary.id)
+          const other = await make('kg', kg.id)
+          const shared = await make('shared')
+          createdMedia.push(own.id, other.id, shared.id)
+
+          for (const [doc, what] of [
+            [other, 'another school’s'],
+            [shared, 'a shared'],
+          ] as const) {
+            await expectRejection(
+              () =>
+                payload.delete({
+                  collection: 'media',
+                  id: doc.id,
+                  overrideAccess: false,
+                  user: hod,
+                }),
+              `an HOD deleted ${what} picture`,
+            )
+          }
+
+          await payload.delete({
+            collection: 'media',
+            id: own.id,
+            overrideAccess: false,
+            user: hod,
+          })
+        },
+      })
+
+      /*
+       * Gallery pages list their photographs one by one, so nearly every
+       * picture in the library was "in use" and could not be deleted by
+       * anybody. A photograph in a list is taken off the list instead — from
+       * the live page and from its saved versions, which is what the page
+       * editor opens.
+       */
+      await check({
+        name: 'Deleting a photograph takes it off the galleries it was in',
+        run: async () => {
+          const make = (name: string) =>
+            payload.create({
+              collection: 'media',
+              data: { alt: `Verify gallery ${name}`, unit: primary.id } as never,
+              file: picture(`gallery-${name}`),
+              overrideAccess: true,
+            })
+          const going = await make('going')
+          const staying = await make('staying')
+          createdMedia.push(going.id, staying.id)
+
+          const page = await payload.create({
+            collection: 'pages',
+            data: {
+              title: 'Verify gallery page',
+              slug: `verify-gallery-${stamp}`,
+              unit: primary.id,
+              layout: [
+                {
+                  blockType: 'gallery',
+                  images: [{ image: going.id }, { image: staying.id }],
+                },
+              ],
+            } as never,
+            overrideAccess: true,
+          })
+          createdPages.push(page.id as number)
+
+          await payload.delete({
+            collection: 'media',
+            id: going.id,
+            overrideAccess: false,
+            user: hod,
+          })
+
+          for (const draft of [false, true]) {
+            const after = await payload.findByID({
+              collection: 'pages',
+              id: page.id,
+              depth: 0,
+              draft,
+              overrideAccess: true,
+            })
+            const layout = (after as unknown as { layout?: { images?: { image?: unknown }[] }[] })
+              .layout
+            const images = layout?.[0]?.images ?? []
+            const where = draft ? 'the page’s latest saved version' : 'the live page'
+            if (images.length !== 1 || String(images[0]?.image) !== String(staying.id)) {
+              throw new Error(
+                `${where} lists ${JSON.stringify(images.map((row) => row.image))}, not just the photograph that was kept.`,
+              )
+            }
+          }
+        },
+      })
+
+      await check({
+        name: 'A picture that is THE picture of something still cannot be deleted',
+        run: async () => {
+          const item = await payload.create({
+            collection: 'media',
+            data: { alt: 'Verify share picture', unit: primary.id } as never,
+            file: picture('share'),
+            overrideAccess: true,
+          })
+          createdMedia.push(item.id)
+
+          const page = await payload.create({
+            collection: 'pages',
+            data: {
+              title: 'Verify share-picture page',
+              slug: `verify-share-${stamp}`,
+              unit: primary.id,
+              layout: [],
+              ogImage: item.id,
+            } as never,
+            overrideAccess: true,
+          })
+          createdPages.push(page.id as number)
+
+          await expectRejection(
+            () => payload.delete({ collection: 'media', id: item.id, overrideAccess: true }),
+            'a picture a page shares with was deleted',
+          )
+        },
+      })
     } finally {
+      // Pages first: a picture a page still points at refuses to go.
+      for (const id of createdPages) {
+        await payload.delete({ collection: 'pages', id, overrideAccess: true }).catch(() => undefined)
+      }
       for (const id of createdMedia) {
         await payload.delete({ collection: 'media', id, overrideAccess: true }).catch(() => undefined)
       }

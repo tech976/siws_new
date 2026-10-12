@@ -1,6 +1,7 @@
 import type { Block } from 'payload'
 
 import { richTextField } from '@/fields/richText'
+import { PICTURE_LIST } from '@/utilities/media-usage'
 
 import { BLOCK_GROUPS, blockAdmin, headingField, sectionOptions } from './shared'
 
@@ -64,6 +65,8 @@ export const PhotoLibraryBlock: Block = {
           maxRows: 60,
           labels: { singular: 'Photograph', plural: 'Photographs' },
           admin: { initCollapsed: true },
+          // Deleting a photograph from the library takes it off this list.
+          custom: PICTURE_LIST,
           fields: [
             { name: 'image', type: 'upload', relationTo: 'media', required: true },
             {

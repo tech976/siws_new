@@ -1,6 +1,7 @@
 import type { Block } from 'payload'
 
 import { richTextField } from '@/fields/richText'
+import { PICTURE_LIST } from '@/utilities/media-usage'
 
 import { BLOCK_GROUPS, blockAdmin, headingField, sectionOptions } from './shared'
 
@@ -32,6 +33,8 @@ export const GalleryBlock: Block = {
       maxRows: 40,
       labels: { singular: 'Photograph', plural: 'Photographs' },
       admin: { initCollapsed: true },
+      // Deleting a photograph from the library takes it off this list.
+      custom: PICTURE_LIST,
       fields: [
         {
           name: 'image',

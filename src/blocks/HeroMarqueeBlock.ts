@@ -4,6 +4,7 @@ import path from 'path'
 import type { Block } from 'payload'
 
 import { linkField } from '@/fields/link'
+import { PICTURE_LIST } from '@/utilities/media-usage'
 
 import { BLOCK_GROUPS, blockAdmin, sectionOptions } from './shared'
 
@@ -125,6 +126,12 @@ export const HeroMarqueeBlock: Block = {
         description:
           'The photographs that slide behind the words, in this order. Each fills the whole banner, so use landscape pictures — an upright one is cropped to a band through its middle. Eight to twelve is right: enough that the banner does not repeat while somebody is reading it, few enough that they are not all downloaded for nothing.',
       },
+      /*
+       * Deleting a photograph from the library takes it off this list. It has
+       * to be marked wherever the gallery is: the two share the query path
+       * `images.image`, and a path counts as a list only if both say so.
+       */
+      custom: PICTURE_LIST,
       fields: [
         {
           name: 'image',
