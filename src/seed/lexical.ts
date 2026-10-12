@@ -89,5 +89,33 @@ export const orderedList = (entries: ListEntry[]) =>
     })),
   }) as unknown
 
+/**
+ * The same, unnumbered — for a set of things where the order carries no
+ * meaning: the events in a school year, what a sports day consists of.
+ *
+ * A plain string is an ordinary item. A `{ term, detail }` entry reads as the
+ * numbered list's do, the term in bold and the detail after an em dash, so a
+ * list of facilities and a list of funds look like the same family.
+ */
+export const bulletList = (entries: (string | ListEntry)[]) =>
+  ({
+    type: 'list',
+    listType: 'bullet' as const,
+    tag: 'ul' as const,
+    start: 1,
+    ...common,
+    children: entries.map((entry, index) => {
+      const item = typeof entry === 'string' ? { term: entry } : entry
+      return {
+        type: 'listitem',
+        value: index + 1,
+        ...common,
+        children: item.detail
+          ? [text(item.term, true), text(` — ${item.detail}`)]
+          : [text(item.term)],
+      }
+    }),
+  }) as unknown
+
 /** A standalone paragraph node, for mixing with lists in `richTextNodes`. */
 export const para = (body: string) => paragraph([text(body)])
