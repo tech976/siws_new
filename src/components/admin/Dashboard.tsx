@@ -19,7 +19,7 @@ import {
 import Link from 'next/link'
 import type { Payload, TypedUser } from 'payload'
 
-import { ROLES, canRaiseEmergency, hasRole, isAdmin, isDPO, isHod, unitIdsOf } from '@/access'
+import { ROLES, canRaiseEmergency, hasRole, isAdmin, isDPO, unitIdsOf, usesSimpleScreen } from '@/access'
 import type { AccessUser } from '@/access'
 import { REVIEW_STATUS } from '@/fields/publishing'
 
@@ -136,10 +136,7 @@ export const Dashboard = async ({ payload, user }: DashboardProps) => {
    * roles: they approve pages and read enquiries, and the simple screen has
    * nowhere to do either.
    */
-  const simpleScreen =
-    !isAdmin(accessUser) &&
-    (isHod(accessUser) || hasRole(accessUser, ROLES.editor)) &&
-    !hasRole(accessUser, ROLES.unitHead, ROLES.contentManager)
+  const simpleScreen = usesSimpleScreen(accessUser)
 
   if (simpleScreen) {
     const unitIds = unitIdsOf(accessUser)

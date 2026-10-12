@@ -351,9 +351,15 @@ const UNIT_OMIT: Record<string, string[]> = {
   secondary: ['annual-calendar', 'admissions', 'admissions-faq', 'achievements'],
   /*
    * Junior College drops three, at SIWS's request (2026-08-29). Annual
-   * Calendar, Rules & Uniform and Achievements: none has been written, and the
-   * section does not want them promised while they say only that content is
+   * Calendar, Rules & Uniform and Achievements: none had been written, and the
+   * section did not want them promised while they said only that content was
    * coming.
+   *
+   * ACHIEVEMENTS IS STILL NAMED HERE, FOR A DIFFERENT REASON SINCE 2026-10-12.
+   * The College published its first achievement that day and asked where its
+   * Achievements section was. It comes out of the Updates drop-down here so
+   * that `UNIT_EXTRA` can put it on the top row, exactly as Primary's and
+   * Secondary's are — and it is no longer in `UNIT_UNPUBLISH` below.
    *
    * OUR TEACHERS CAME OFF THIS LIST on 2026-09-02. It was dropped because the
    * roster had not been supplied and a teachers page with no teachers on it is
@@ -411,6 +417,18 @@ const UNIT_EXTRA: Record<
    * drop-down it leaves keeps News, Events and Download Centre.
    */
   secondary: [
+    {
+      parent: null,
+      after: 'academics',
+      item: { slug: 'achievements', label: 'Achievements' },
+    },
+  ],
+  /*
+   * AND THE SAME AGAIN, from 2026-10-12, when the College had an achievement
+   * to put on it. `src/scripts/add-jc-achievements-page.ts` makes this change
+   * on the live site without rewriting the rest of the menu.
+   */
+  'junior-college': [
     {
       parent: null,
       after: 'academics',
@@ -545,8 +563,11 @@ const UNIT_UNPUBLISH: Record<string, string[]> = {
    * here unpublished it again on the next `seed:nav` — which runs at step 26,
    * seventeen steps after `seed:jc` writes it. The page was correct in the
    * database and gone by the time the run finished.
+   *
+   * `achievements` CAME OFF IT on 2026-10-12 for the same reason: the College
+   * has published one, and its page lists what the College publishes.
    */
-  'junior-college': ['annual-calendar', 'school-rules', 'achievements'],
+  'junior-college': ['annual-calendar', 'school-rules'],
 }
 
 const UNIT_RELABEL: Record<string, Record<string, string>> = {

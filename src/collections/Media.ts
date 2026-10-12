@@ -1,14 +1,13 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-import type { CollectionConfig, Where } from 'payload'
+import type { CollectionConfig, Condition, Where } from 'payload'
 import { APIError } from 'payload'
 import type { CollectionBeforeChangeHook } from 'payload'
 
-import { ROLES, hasRole, isActiveUser, isAdmin, unitIdsOf } from '@/access'
+import { ROLES, hasRole, isActiveUser, isAdmin, unitIdsOf, usesSimpleScreen } from '@/access'
 import type { AccessUser } from '@/access'
 import { campusField } from '@/fields/campus'
-import { hideFromHod } from '@/fields/hod-simple'
 import { auditChange, auditDelete } from '@/hooks/audit'
 import { constrainUnitToScope } from '@/hooks/workflow'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
@@ -40,18 +39,41 @@ const hodPictures = (user: AccessUser): Where => {
 }
 
 /**
- * An HOD's upload belongs to their own school. Left blank, "Belongs to" means
- * shared with all four schools — an HOD publishes for one department, so a
+ * A school's upload belongs to that school. Left blank, "Belongs to" means
+ * shared with all four schools — a teacher publishes for one department, so a
  * blank is filled with their school, another school is refused, and clearing
  * it on an existing picture puts back what was there.
+ *
+ * FOR EVERYONE ON THE SIMPLE SCREEN, not the HOD who is only an HOD. That was
+ * the test here until 2026-10-12, and the schools' accounts did not pass it:
+ * an Editor, or an HOD who is also an Editor, got the simple screen and an
+ * upload that belonged to nobody. Forty-three photographs went in that way in
+ * a week. A photograph with no school is one every school shares, so each one
+ * filed under a section appeared on all four schools' pages, and none of them
+ * was counted as the school's own — the Junior College published a fencing
+ * medal and found nothing under Sports or Achievements.
+ *
+ * Sharing a photograph with every school is an administrator's decision, or a
+ * Unit Head's or Content Manager's, who see "Belongs to" and can leave it
+ * empty on purpose.
  */
-const keepHodUploadsInTheirSchool: CollectionBeforeChangeHook = (args) => {
+const keepStaffUploadsInTheirSchool: CollectionBeforeChangeHook = (args) => {
   const { data, originalDoc, operation, req } = args
-  if (!data || !isHodOnly(req.user as AccessUser | null)) return data
+  if (!data || !usesSimpleScreen(req.user as AccessUser | null)) return data
   if (operation === 'update' && 'unit' in data && data.unit == null && originalDoc?.unit) {
     data.unit = originalDoc.unit
   }
   return constrainUnitToScope(args)
+}
+
+/**
+ * "Belongs to" is not shown to someone whose upload is filed for them: every
+ * school was offered, and only the save refused the wrong one. Somebody who
+ * works for two schools still has to say which, so they keep the field.
+ */
+const hideWhenFiledForThem: Condition = (_data, _siblingData, { user }) => {
+  const account = user as AccessUser | null
+  return !(usesSimpleScreen(account) && unitIdsOf(account).length === 1)
 }
 
 const MAX_IMAGE_BYTES = 12 * 1024 * 1024 // 12 MB
@@ -261,7 +283,7 @@ export const Media: CollectionConfig = {
     ],
 
     beforeChange: [
-      keepHodUploadsInTheirSchool,
+      keepStaffUploadsInTheirSchool,
       ({ data, operation, req }) => {
         if (operation === 'create' && req.user) {
           data.uploadedBy = req.user.id
@@ -387,12 +409,11 @@ export const Media: CollectionConfig = {
         position: 'sidebar',
         description: 'Leave empty to share this with all four schools.',
         /*
-         * Hidden from an HOD, as it is on News & Events and the ticker. Every
-         * school was offered, and only the save refused the wrong one; an HOD
-         * uploads for one school, and `keepHodUploadsInTheirSchool` files it
-         * there without asking.
+         * Hidden from a school's own staff, as it is on News & Events and the
+         * ticker: they upload for one school, and
+         * `keepStaffUploadsInTheirSchool` files it there without asking.
          */
-        condition: hideFromHod,
+        condition: hideWhenFiledForThem,
       },
     },
     campusField({

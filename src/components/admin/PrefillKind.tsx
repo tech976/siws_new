@@ -5,8 +5,8 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 
 /**
- * Chooses "Event" on a new item when the form was opened from the dashboard's
- * "Add an event".
+ * Chooses "Event" or "Achievement" on a new item when the form was opened from
+ * the dashboard's "Add an event" or "Add an achievement".
  *
  * The dashboard offers News and Events separately, as the website's menu does,
  * but both are the same form — so without this, "Add an event" opened a form
@@ -27,9 +27,10 @@ export const PrefillKind = () => {
     // Not before the form has its own state, or Payload overwrites this with
     // the default ("News") it loads a moment later.
     if (done.current || initialising) return
-    if (params.get('kind') !== 'event') return
+    const wanted = params.get('kind')
+    if (wanted !== 'event' && wanted !== 'achievement') return
     done.current = true
-    if (value !== 'event') setValue('event')
+    if (value !== wanted) setValue(wanted)
   }, [params, value, setValue, initialising])
 
   return null

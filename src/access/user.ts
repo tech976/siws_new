@@ -62,6 +62,23 @@ export const isDPO = (user: AccessUser | null | undefined): boolean => hasRole(u
 /** True when the user is a Head of Department. */
 export const isHod = (user: AccessUser | null | undefined): boolean => hasRole(user, ROLES.hod)
 
+/**
+ * Someone who works on the simple screen: a Head of Department or an Editor
+ * who is not also an Administrator, a Unit Head or a Content Manager.
+ *
+ * It is the dashboard's own rule, stated once, because more than the dashboard
+ * has to agree with it. The simple screen hides "Belongs to" and promises that
+ * a photograph is filed under the person's own school; the rule that did the
+ * filing asked a narrower question — HOD and nothing else — so a teacher's
+ * account that was an Editor, or an HOD and an Editor, got the simple screen
+ * and none of the filing. Every photograph the schools uploaded for a week
+ * went into the library belonging to no school at all.
+ */
+export const usesSimpleScreen = (user: AccessUser | null | undefined): boolean =>
+  !isAdmin(user) &&
+  (isHod(user) || hasRole(user, ROLES.editor)) &&
+  !hasRole(user, ROLES.unitHead, ROLES.contentManager)
+
 /** IDs of the units a user is assigned to, de-duplicated and normalised. */
 export const unitIdsOf = (user: AccessUser | null | undefined): string[] => {
   if (!isActiveUser(user) || !Array.isArray(user.units)) return []

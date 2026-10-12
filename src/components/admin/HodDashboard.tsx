@@ -3,6 +3,9 @@ import Link from 'next/link'
 import type { CSSProperties } from 'react'
 import type { Payload, TypedUser, Where } from 'payload'
 
+import { unitIdsOf } from '@/access'
+import type { AccessUser } from '@/access'
+
 /**
  * What a Head of Department or a teacher sees when they sign in.
  *
@@ -21,6 +24,25 @@ import type { Payload, TypedUser, Where } from 'payload'
  * photographs filed under Sports, which is what appears in that group on the
  * gallery page. The "Add" link beside it opens the upload form with the
  * section already chosen.
+ *
+ * THAT LAST SENTENCE WAS NOT TRUE UNTIL 2026-10-12. The whole box was one link
+ * to the list of photographs, with "+ Add photographs" written inside it, so
+ * pressing Add opened the list; the upload form reached from there knew
+ * nothing about Sports, and the photograph was filed under no section. It then
+ * appeared in neither the box it was added from nor the page of that name —
+ * the Junior College's "sports images are not visible". Add is its own link
+ * now, and carries the section.
+ *
+ * A NUMBER HERE IS THE LENGTH OF THE LIST IT OPENS. The library lets anybody
+ * read any photograph — the public site has to — so a plain count of "Sports"
+ * was every school's: the College was told it had twenty-two and shown none.
+ * Photographs are counted by the rule the library lists them by.
+ *
+ * ACHIEVEMENTS ARE WRITTEN AS WELL AS PHOTOGRAPHED. "Achievement" has been a
+ * third kind of item since 2026-10-06, and nothing on this screen said so: it
+ * could only be reached by pressing "Add news" and changing the first answer,
+ * and once published it was counted under News and shown under nothing. Its
+ * box lists them and adds one.
  *
  * STYLES ARE INLINE, NOT TAILWIND. The admin panel is Payload's own SCSS build
  * and does not load the site's stylesheet — the first version used Tailwind
@@ -117,13 +139,34 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
     }
   }
 
-  const [news, events, sports, achievements, photos, announcements] = await Promise.all([
-    // Items published before the News/Event choice existed were all news.
-    count('posts', { kind: { not_equals: 'event' } }),
+  /*
+   * The photographs the library lists for this person — `baseFilter` on the
+   * Media collection, restated, because a count does not pass through it.
+   */
+  const ownUnits = unitIdsOf(user as AccessUser | null | undefined)
+  const inMyLibrary = (where: Where): Where =>
+    ownUnits.length === 0 || !user
+      ? where
+      : {
+          and: [
+            where,
+            {
+              or: [
+                { unit: { in: ownUnits } },
+                { unit: { exists: false } },
+                { uploadedBy: { equals: user.id } },
+              ],
+            },
+          ],
+        }
+
+  const [news, events, written, sports, achievements, photos, announcements] = await Promise.all([
+    count('posts', { kind: { equals: 'news' } }),
     count('posts', { kind: { equals: 'event' } }),
-    count('media', { category: { equals: 'Sports' } }),
-    count('media', { category: { equals: 'Achievements' } }),
-    count('media', { showInGallery: { equals: true } }),
+    count('posts', { kind: { equals: 'achievement' } }),
+    count('media', inMyLibrary({ category: { equals: 'Sports' } })),
+    count('media', inMyLibrary({ category: { equals: 'Achievements' } })),
+    count('media', inMyLibrary({ showInGallery: { equals: true } })),
     count('announcements'),
   ])
 
@@ -175,40 +218,69 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
           </span>
         </div>
 
-        <Link href="/admin/collections/media?where[category][equals]=Sports" style={card}>
+        <div style={card}>
           <Trophy size={28} strokeWidth={1.7} aria-hidden="true" style={{ flexShrink: 0 }} />
           <span>
             <span style={cardTitle}>Sports</span>
-            <span style={cardBody}>
-              Photographs filed under Sports — {countLine(sports, 'photograph', 'photographs')}.
+            <span style={cardBody}>Photographs for your Sports page.</span>
+            <span style={{ display: 'block', marginTop: '0.75rem' }}>
+              <Link href="/admin/collections/media?where[category][equals]=Sports" style={quickLink}>
+                Filed under Sports — {countLine(sports, 'photograph', 'photographs')}
+              </Link>
             </span>
-            <span style={addLink}>+ Add photographs</span>
+            <Link href="/admin/collections/media/create?section=Sports" style={addLink}>
+              + Add a Sports photograph
+            </Link>
           </span>
-        </Link>
+        </div>
 
-        <Link href="/admin/collections/media?where[category][equals]=Achievements" style={card}>
+        <div style={card}>
           <Medal size={28} strokeWidth={1.7} aria-hidden="true" style={{ flexShrink: 0 }} />
           <span>
             <span style={cardTitle}>Achievements</span>
-            <span style={cardBody}>
-              Prizes, trophies and certificates —{' '}
-              {countLine(achievements, 'photograph', 'photographs')}.
+            <span style={cardBody}>Prizes, trophies and certificates.</span>
+            <span style={{ display: 'block', marginTop: '0.75rem' }}>
+              <Link
+                href="/admin/collections/posts?where[kind][equals]=achievement"
+                style={quickLink}
+              >
+                Written up — {countLine(written, 'item', 'items')}
+              </Link>
+              <br />
+              <Link
+                href="/admin/collections/media?where[category][equals]=Achievements"
+                style={quickLink}
+              >
+                Filed under Achievements — {countLine(achievements, 'photograph', 'photographs')}
+              </Link>
             </span>
-            <span style={addLink}>+ Add photographs</span>
+            <Link href="/admin/collections/posts/create?kind=achievement" style={addLink}>
+              + Add an achievement
+            </Link>
+            <br />
+            <Link href="/admin/collections/media/create?section=Achievements" style={addLink}>
+              + Add an Achievements photograph
+            </Link>
           </span>
-        </Link>
+        </div>
 
-        <Link href="/admin/collections/media?where[showInGallery][equals]=true" style={card}>
+        <div style={card}>
           <Images size={28} strokeWidth={1.7} aria-hidden="true" style={{ flexShrink: 0 }} />
           <span>
             <span style={cardTitle}>Campus Gallery</span>
             <span style={cardBody}>
-              Every photograph on your gallery page, whichever section it is filed under —{' '}
-              {countLine(photos, 'photograph', 'photographs')}.
+              Every photograph on your gallery page, whichever section it is filed under.
             </span>
-            <span style={addLink}>+ Add photographs</span>
+            <span style={{ display: 'block', marginTop: '0.75rem' }}>
+              <Link href="/admin/collections/media?where[showInGallery][equals]=true" style={quickLink}>
+                In the gallery — {countLine(photos, 'photograph', 'photographs')}
+              </Link>
+            </span>
+            <Link href="/admin/collections/media/create" style={addLink}>
+              + Add photographs
+            </Link>
           </span>
-        </Link>
+        </div>
       </div>
 
       <h2 style={sectionLabel}>Also</h2>
