@@ -10,7 +10,7 @@ const { default: config } = await import('@payload-config')
  * panel appears on the site without anyone editing a page (SIWS, 2026-10-01:
  * "I want to make it easy for the HODs and teachers").
  *
- * FOUR STEPS, each safe to repeat:
+ * FIVE STEPS, each safe to repeat:
  *
  *  1. NEWS OR EVENT. Every item published before the choice existed was news,
  *     and is set to it. Written to the item and to its latest version, or the
@@ -37,9 +37,19 @@ const { default: config } = await import('@payload-config')
  *     under Achievements; its Sports page gets the same gallery for Sports.
  *     Both render nothing until there is something new to show.
  *
+ *  5. THE LATEST IS AT THE TOP OF ITS PAGE (SIWS, 2026-10-12: "for all
+ *     sections the latest news, achievement should be on the top of the page…
+ *     latest, then below the older and older"). Steps 2 and 4 added their
+ *     lists to the END of each page, under everything written when the site
+ *     was built — so a prize published this week was the last thing on the
+ *     Achievements page. The list of what is published moves to the top of
+ *     each school's News, Events and Achievements page, and on Achievements
+ *     the photographs filed under it follow directly. Nothing else on the
+ *     page changes order, and an empty list still renders nothing.
+ *
  * WHY A SCRIPT AND NOT `seed:nav` / `seed:galleries`: those rebuild a page from
- * the template and would undo what the schools have written. This adds one
- * block to the end of a page and leaves everything else alone.
+ * the template and would undo what the schools have written. This adds a
+ * block to a page, or moves one it added, and leaves everything else alone.
  *
  * Usage:  npx tsx src/scripts/hod-sections-setup.ts [--apply]
  * Without --apply it prints what it would do and writes nothing.
@@ -165,6 +175,77 @@ const main = async () => {
     console.log(`  ${what} — added`)
   }
 
+  /**
+   * Moves blocks to the top of a page, in the order given — under its banner,
+   * if it opens with one. The rest keep their order.
+   *
+   * The moved blocks are recoloured, upwards from the block they now sit on,
+   * so the page's white and blue bands still alternate: a block that was
+   * coloured to follow the page's last section is no longer following it.
+   *
+   * EXCEPT THE ONE THAT NOW OPENS THE PAGE, which is always white. The page's
+   * title is printed on white, and a white first section reads on from it as
+   * one column of type; a blue one draws an edge straight under the title and
+   * the stylesheet closes its top padding, leaving the heading against the
+   * edge. Two white sections meeting further down share one band of padding,
+   * which the stylesheet already allows for.
+   */
+  const lift = async (page: Page, picks: ((block: Block) => boolean)[], what: string) => {
+    const layout = page.layout ?? []
+    const lifted = picks.flatMap((pick) => layout.filter(pick))
+    if (lifted.length === 0) return
+
+    const rest = layout.filter((block) => !lifted.includes(block))
+    let banners = 0
+    while (rest[banners]?.blockType?.startsWith('hero')) banners++
+
+    // Already there: leave it alone, colours included. Somebody may have chosen them.
+    const order = [...rest.slice(0, banners), ...lifted, ...rest.slice(banners)]
+    if (order.every((block, at) => block === layout[at])) {
+      console.log(`  ${what} — already at the top`)
+      return
+    }
+
+    let below = rest[banners]?.background
+    const coloured = [...lifted]
+      .reverse()
+      .map((block): Block => {
+        below = below === 'sea' ? 'white' : 'sea'
+        return { ...block, background: below }
+      })
+      .reverse()
+    if (banners === 0 && coloured[0]) coloured[0] = { ...coloured[0], background: 'white' }
+
+    const next = [...rest.slice(0, banners), ...coloured, ...rest.slice(banners)]
+    if (!(await safeToSave(page))) {
+      console.log(`  SKIPPED ${what} — unpublished edits waiting, or its menu settings differ from its latest version`)
+      return
+    }
+    if (!APPLY) {
+      console.log(`  ${what} — would move to the top`)
+      return
+    }
+    try {
+      await payload.update({
+        collection: 'pages',
+        id: page.id,
+        data: { layout: next } as never,
+        overrideAccess: true,
+      })
+      page.layout = next
+      console.log(`  ${what} — moved to the top`)
+    } catch (error) {
+      /*
+       * One page that will not save must not stop the other eleven. The usual
+       * cause is a photograph on it awaiting its permission record, which is
+       * for the school to settle and has nothing to do with the order.
+       */
+      const nested = (error as { data?: { errors?: unknown[] } })?.data?.errors
+      console.log(`  SKIPPED ${what} — the page would not save: ${error instanceof Error ? error.message : error}`)
+      if (Array.isArray(nested)) for (const item of nested) console.log('    •', JSON.stringify(item))
+    }
+  }
+
   /** The band colour that alternates against whatever the page ends with. */
   const nextBackground = (page: Page) => {
     const last = (page.layout ?? [])[(page.layout ?? []).length - 1]
@@ -273,6 +354,33 @@ const main = async () => {
           `${slug.padEnd(12)}  ${unit.slug}: photographs filed under ${section}`,
         )
       }
+    }
+
+    /* ----------------- 5. what is published sits at the top of its page ---- */
+    for (const [slug, shows] of [
+      ['news', 'news'],
+      ['events', 'event'],
+      ['achievements', 'achievement'],
+    ] as const) {
+      // Read again: steps 2 and 4 may have just written this page.
+      const page = await pageOf(unit.id, slug)
+      if (!page) continue
+
+      const picks = [
+        (block: Block) =>
+          block.blockType === 'newsGrid' && ((block.shows as string | undefined) ?? 'news') === shows,
+      ]
+      // The photographs filed under Achievements are achievements too.
+      if (slug === 'achievements') {
+        picks.push(
+          (block: Block) =>
+            block.blockType === 'gallery' &&
+            typeof block.heading === 'string' &&
+            block.heading.trim() === 'Achievements',
+        )
+      }
+
+      await lift(page, picks, `${slug.padEnd(12)}  ${unit.slug}: what is published`)
     }
   }
 

@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 
 import { Media } from '@/components/Media'
 import { RichText } from '@/components/RichText'
+import { newestFirst } from '@/lib/newest-first'
 import type { NewsGridBlock, Media as MediaDoc, Unit } from '@/payload-types'
 
 import { Section, SectionHeading, type BlockBackground } from './Section'
@@ -67,10 +68,17 @@ export const NewsGridBlockView = async ({
    * Neither knew about the other, so the panel showed nothing of what was
    * published and anything published in the panel was invisible.
    *
-   * The block's own stories are treated as the floor: they render exactly as
-   * before, in the order somebody chose, and posts from the collection follow
-   * them newest first. A story that has been migrated into the collection is
-   * matched by title and shown once, not twice.
+   * THE LATEST IS AT THE TOP (SIWS, 2026-10-12: "the latest news,
+   * achievement should be on the top of the page… latest, then below the
+   * older and older"). What is published comes newest first, each item above
+   * any typed story that is older than it or has no date — see
+   * `newestFirst`. It used to follow the typed stories, all of them, so a
+   * prize won last week sat under a story from July.
+   *
+   * The block's own stories keep the order somebody chose among themselves,
+   * and a page with nothing published reads exactly as before. A story that
+   * has been migrated into the collection is matched by title and shown once,
+   * not twice.
    */
   const fromCollection = await (async () => {
     try {
@@ -120,6 +128,8 @@ export const NewsGridBlockView = async ({
           const photo = Array.isArray(doc.photos) ? doc.photos[0] : null
           return {
             id: `post-${doc.id}`,
+            /** For placing it among the typed stories; not rendered. */
+            at: new Date(doc.date).getTime(),
             title: doc.title,
             date: doc.date
               ? new Date(doc.date).toLocaleDateString('en-GB', {
@@ -142,7 +152,7 @@ export const NewsGridBlockView = async ({
     }
   })()
 
-  const items = [...stored, ...fromCollection] as typeof stored
+  const items = newestFirst(stored, fromCollection) as typeof stored
   if (items.length === 0) return null
 
   const [lead, ...rest] = items

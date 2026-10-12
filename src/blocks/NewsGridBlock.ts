@@ -64,7 +64,8 @@ export const NewsGridBlock: Block = {
       ],
       label: 'Which of News & Events to list',
       admin: {
-        description: 'Items published in News & Events with this choice are added under the stories below.',
+        description:
+          'Items published in News & Events with this choice are listed here newest first, above any story below that is older or has no date.',
       },
     },
     richTextField({
@@ -88,7 +89,7 @@ export const NewsGridBlock: Block = {
       admin: {
         initCollapsed: true,
         description:
-          'Newest first. The first one is shown large, across the width — so put the story you want read first at the top.',
+          'Newest first. The first one is shown large, across the width — so put the story you want read first at the top. Anything newer published in News & Events is placed above these.',
       },
       fields: [
         {
