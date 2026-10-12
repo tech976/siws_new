@@ -4,18 +4,27 @@ loadEnv()
 
 const { getPayload } = await import('payload')
 const { default: config } = await import('@payload-config')
-const { bulletList, para, richText, richTextNodes } = await import('@/seed/lexical')
+const { richText } = await import('@/seed/lexical')
 
 /**
  * Writes the institution's Sports page from the brief SIWS sent (2026-10-12),
  * a numbered Q&A on two sheets.
  *
+ * PROSE, NOT POINTS. The first version set the brief as tick lists, a figures
+ * band and an accordion, and SIWS rejected it on sight: "just pointers and
+ * tickers… I need more texty info… keep it in paragraph format". Every section
+ * is now paragraphs — the lists read as paragraphs anyway, since a list of
+ * fourteen sports is a sentence with commas in it.
+ *
+ * CENTRED AND JUSTIFIED, as asked. A `richText` section at normal width is
+ * exactly that: `SectionSplit` centres the heading and the column under it,
+ * and `.siws-prose` justifies the type. The first section's heading is the
+ * page's title, which is what makes the route drop its own left-ranged
+ * header — so the top of the page is centred too, and that heading is an h1.
+ *
  * EVERY FIGURE AND NAME IS THEIRS. Nothing is rounded, upgraded or invented:
  * where the sheet says "More than 85%" the page says more than 85%, and where
- * it names Raigad, MSSA or a BCCI-certified coach, so does the page. The
- * wording is tightened for reading on a screen — the sheet is written as
- * answers to questions, and a visitor arrives with no questions in front of
- * them — but no claim is added or dropped.
+ * it names Raigad, MSSA or a BCCI-certified coach, so does the page.
  *
  * TWO ANSWERS ARE DELIBERATELY NOT PUBLISHED:
  *   - the photo and video archive "available for media, website and brochure
@@ -41,256 +50,112 @@ const FORCE = process.argv.includes('--force')
 const INTRO =
   'Sport is part of the school day at SIWS, not an add-on. Our philosophy is “Healthy Body, Healthy Mind”, and our “Sports for All” policy means every child plays.'
 
+/** White and sea alternate down the page, so each section reads as its own. */
+const section = (
+  heading: string,
+  accentWord: string | null,
+  paragraphs: string[],
+  index: number,
+  level: 'h1' | 'h2' = 'h2',
+) => ({
+  blockType: 'richText',
+  heading,
+  ...(accentWord ? { accentWord } : {}),
+  headingLevel: level,
+  width: 'normal',
+  background: index % 2 === 0 ? 'white' : 'sea',
+  content: richText(paragraphs),
+})
+
 const layout = [
-  {
-    blockType: 'richText',
-    heading: 'Healthy body, healthy mind',
-    accentWord: 'healthy mind',
-    headingLevel: 'h2',
-    background: 'white',
-    content: richText([
-      'We believe sport is integral to education, not an add-on. Through it children develop discipline, teamwork, leadership and resilience.',
+  /*
+   * The page's own heading, which is why it carries the title exactly: the
+   * route prints its plain left-ranged header only when the first section
+   * does not already say the same thing.
+   */
+  section(
+    'Sports',
+    null,
+    [
+      'Sport is part of the school day at SIWS, not an add-on. Our philosophy is “Healthy Body, Healthy Mind”: we believe sport is integral to education, and that through it children develop discipline, teamwork, leadership and resilience.',
       'Our “Sports for All” policy means every child plays — not only the children who win.',
-    ]),
-  },
-  {
-    blockType: 'statistics',
-    heading: 'Sport at SIWS',
-    headingLevel: 'h2',
-    background: 'sea',
-    stats: [
-      { value: '85%+', label: 'of children from Std 1 to 10 take part' },
-      { value: '300+', label: 'enrolled in after-school coaching' },
-      { value: '100+', label: 'medals in three years, district and inter-school' },
-      { value: '40+', label: 'individual medals in the last two years' },
     ],
-  },
-  {
-    blockType: 'featureList',
-    heading: 'The sports we play',
-    headingLevel: 'h2',
-    background: 'white',
-    layout: 'list',
-    marker: 'tick',
-    columns: '3',
-    items: [
-      'Football',
-      'Cricket',
-      'Basketball',
-      'Volleyball',
-      'Athletics',
-      'Kho-Kho',
-      'Kabaddi',
-      'Badminton',
-      'Table tennis',
-      'Chess',
-      'Carrom',
-      'Yoga',
-      'Karate',
-      'Skating',
-    ].map((title) => ({ title })),
-  },
-  {
-    blockType: 'featureList',
-    heading: 'Regular coaching',
-    headingLevel: 'h2',
-    background: 'sea',
-    layout: 'list',
-    marker: 'tick',
-    columns: '3',
-    intro: richText(['Coaching runs four days a week after school in seven sports.']),
-    items: [
-      'Football',
-      'Cricket',
-      'Basketball',
-      'Athletics',
-      'Badminton',
-      'Table tennis',
-      'Chess',
-    ].map((title) => ({ title })),
-  },
-  {
-    blockType: 'featureList',
-    heading: 'Our facilities',
-    headingLevel: 'h2',
-    background: 'white',
-    layout: 'list',
-    marker: 'tick',
-    columns: '2',
-    items: [
-      { title: 'Football ground' },
-      { title: 'Two basketball courts' },
-      { title: 'Cricket practice nets' },
-      { title: 'Indoor badminton hall', description: 'Four courts.' },
-      { title: 'Table tennis hall', description: 'Six tables.' },
-      { title: '200m athletics track' },
-      { title: 'Yoga room' },
-      { title: 'Sports room', description: 'Fully equipped.' },
+    0,
+    'h1',
+  ),
+  section(
+    'The sports we play',
+    'we play',
+    [
+      'Fourteen sports are played here: football, cricket, basketball, volleyball, athletics, kho-kho, kabaddi, badminton, table tennis, chess, carrom, yoga, karate and skating.',
+      'Seven of them — football, cricket, basketball, athletics, badminton, table tennis and chess — are coached regularly, four days a week after school.',
     ],
-  },
-  {
-    blockType: 'featureList',
-    heading: 'School teams',
-    headingLevel: 'h2',
-    background: 'sea',
-    layout: 'list',
-    marker: 'tick',
-    columns: '3',
-    items: [
-      { title: 'Football', description: 'Boys and girls.' },
-      { title: 'Cricket' },
-      { title: 'Basketball', description: 'Boys and girls.' },
-      { title: 'Athletics' },
-      { title: 'Badminton' },
-      { title: 'Table tennis' },
-      { title: 'Chess' },
-      { title: 'Volleyball' },
-      { title: 'Kho-Kho' },
+    1,
+  ),
+  section(
+    'Taking part',
+    'part',
+    [
+      'More than 85% of the children from Std 1 to Std 10 take part in sport, and more than three hundred are enrolled in regular after-school coaching.',
+      'The school fields teams in football and basketball for both boys and girls, and in cricket, athletics, badminton, table tennis, chess, volleyball and kho-kho, with squads in the under-10, under-12, under-14 and under-16 age groups.',
     ],
-    footnote: 'Teams are formed for the under-10, under-12, under-14 and under-16 age groups.',
-  },
-  {
-    blockType: 'featureList',
-    heading: 'Where our children compete',
-    headingLevel: 'h2',
-    background: 'white',
-    layout: 'list',
-    marker: 'tick',
-    columns: '2',
-    items: [
-      { title: 'Inter-house', description: 'Our own championship, within the school.' },
-      { title: 'MSSA', description: 'Mumbai Schools Sports Association.' },
-      { title: 'DSO', description: 'District Sports Office, Raigad.' },
-      { title: 'ZP inter-school tournaments' },
-      {
-        title: 'Private inter-school tournaments',
-        description: 'In the Navi Mumbai and Panvel region.',
-      },
+    2,
+  ),
+  section(
+    'Our facilities',
+    'facilities',
+    [
+      'Children train on a football ground, two basketball courts and cricket practice nets, in an indoor badminton hall of four courts and a table tennis hall of six tables, and on a 200-metre athletics track.',
+      'There is a yoga room, and a sports room equipped for everything else.',
     ],
-  },
-  {
-    blockType: 'featureList',
-    heading: 'Recent results',
-    accentWord: 'results',
-    headingLevel: 'h2',
-    background: 'sea',
-    layout: 'list',
-    marker: 'icon',
-    columns: '2',
-    items: [
-      {
-        title: 'Overall champions, DSO Athletics 2023–24',
-        icon: 'trophy',
-      },
-      {
-        title: 'DSO Basketball, under-16 girls',
-        description: 'Winners three years running.',
-        icon: 'trophy',
-      },
-      {
-        title: 'MSSA Football, under-14, 2024',
-        description: 'Runners-up.',
-        icon: 'medal',
-      },
-      {
-        title: 'Five children played for the district',
-        description:
-          'Raigad District and Mumbai Division, in football, basketball and athletics.',
-        icon: 'merit',
-      },
-      {
-        title: 'Two children played for Maharashtra',
-        description: 'Chess, at the State Level Championship in 2024.',
-        icon: 'merit',
-      },
-      {
-        title: 'Over 40 individual medals in two years',
-        description:
-          'Including gold in the 100m and 200m, gold in chess at district level, and Best Player awards in football and basketball at MSSA tournaments.',
-        icon: 'medal',
-      },
+    3,
+  ),
+  section(
+    'Where our children compete',
+    'compete',
+    [
+      'Every child competes first at home, in the inter-house championship.',
+      'Beyond the school our teams play in the tournaments of the Mumbai Schools Sports Association, the District Sports Office competitions in Raigad, ZP inter-school tournaments, and private inter-school tournaments in the Navi Mumbai and Panvel region.',
     ],
-  },
-  {
-    blockType: 'accordion',
-    heading: 'More about sport at SIWS',
-    headingLevel: 'h2',
-    background: 'white',
-    items: [
-      {
-        question: 'What are the major sporting events through the year?',
-        answer: richTextNodes([
-          bulletList([
-            'Inter-house sports championship',
-            'Annual Sports Day',
-            'Inter-class football league',
-            'Cricket premier league',
-            'Chess and carrom championship',
-            'International Yoga Day celebration',
-          ]),
-        ]),
-      },
-      {
-        question: 'Tell me about Annual Sports Day.',
-        answer: richTextNodes([
-          para(
-            'Our flagship event, held every December, with 100% participation from children and parents.',
-          ),
-          bulletList([
-            'March past',
-            'Torch lighting',
-            'Oath ceremony',
-            'Aerobic dance',
-            'Pyramid formation',
-            'Track and field events',
-            'Prize distribution',
-          ]),
-        ]),
-      },
-      {
-        question: 'Who coaches the children?',
-        answer: richTextNodes([
-          para(
-            'Three full-time physical education teachers, with external professional coaches alongside them.',
-          ),
-          bulletList([
-            'A BCCI-certified coach for cricket',
-            'MSSA-certified coaches for football and basketball',
-            'A FIDE-rated coach for chess',
-          ]),
-        ]),
-      },
-      {
-        question: 'What training is offered beyond the school day?',
-        answer: richTextNodes([
-          bulletList([
-            'Regular evening coaching',
-            'A summer sports camp, fifteen days in April',
-            'Fitness and conditioning sessions',
-            'A talent identification camp from Std 3 upwards',
-            'Special training for the DSO and MSSA teams',
-          ]),
-        ]),
-      },
-      {
-        question: 'Have former pupils gone on in sport?',
-        answer: richText([
-          'Yes. Our alumni have represented the district in cricket at under-19 level, won state-level medals in athletics, and gone on to sports scholarships. Two are now certified sports coaches.',
-        ]),
-      },
-      {
-        question: 'What is planned for 2025–26?',
-        answer: richTextNodes([
-          bulletList([
-            'Lawn tennis, as a new sport',
-            'An inter-school basketball tournament hosted here',
-            'Cricket nets upgraded with a bowling machine',
-            'Entry to the CBSE and State Nationals for athletics and chess',
-          ]),
-        ]),
-      },
+    4,
+  ),
+  section(
+    'Recent results',
+    'results',
+    [
+      'In the last few years our children have been overall champions in DSO Athletics 2023–24, winners of the DSO Basketball under-16 girls’ title three years running, and runners-up in MSSA Football under-14 in 2024. More than a hundred medals have been won at district and inter-school level in three years.',
+      'Five children have represented Raigad District and the Mumbai Division in football, basketball and athletics, and two represented Maharashtra in chess at the State Level Championship in 2024.',
+      'Individually they have won more than forty medals in two years, among them gold in the 100 metres and the 200 metres, gold in chess at district level, and Best Player awards in football and basketball at MSSA tournaments.',
     ],
-  },
+    5,
+  ),
+  section(
+    'Through the year',
+    'the year',
+    [
+      'The sporting year runs from the inter-house sports championship through the inter-class football league, the cricket premier league, the chess and carrom championship, and the celebration of International Yoga Day.',
+      'Annual Sports Day is the flagship, held every December: the march past, the lighting of the torch and the oath ceremony, aerobic dance and pyramid formation, the track and field events, and the prize distribution to close. Every child takes part, and so do the parents.',
+    ],
+    6,
+  ),
+  section(
+    'Coaching and training',
+    'training',
+    [
+      'Three full-time physical education teachers lead the programme, with external professional coaches alongside them: a BCCI-certified coach for cricket, MSSA-certified coaches for football and basketball, and a FIDE-rated coach for chess.',
+      'Beyond the regular evening coaching there is a summer sports camp of fifteen days in April, fitness and conditioning sessions, a talent identification camp from Std 3 upwards, and special training for the children chosen for the DSO and MSSA teams.',
+    ],
+    7,
+  ),
+  section(
+    'Former pupils, and what comes next',
+    'what comes next',
+    [
+      'Former pupils have represented the district in cricket at under-19 level and won state-level medals in athletics; some have gone on to sports scholarships, and two are now certified sports coaches.',
+      'For 2025–26 the school plans to introduce lawn tennis, to host an inter-school basketball tournament, to upgrade the cricket nets with a bowling machine, and to enter the CBSE and State Nationals for athletics and chess.',
+    ],
+    8,
+  ),
 ]
 
 const main = async () => {
