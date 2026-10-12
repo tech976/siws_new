@@ -529,15 +529,16 @@ const main = async () => {
           heading,
           headingLevel: 'h2',
           /*
-           * A COLLAGE, not an even grid.
+           * A WALL, not an even grid.
            *
            * This is the gallery page — the photographs are the point of it,
            * not an illustration beside something else — and that is exactly
-           * the case the bento layout exists for. An even chequerboard of
+           * the case this layout exists for. An even chequerboard of
            * identical tiles is right for an album a visitor pages through and
-           * flat for a wall meant to show a school off. The mixed sizes give
-           * the wall a shape, and `grid-flow-dense` backfills so it still
-           * finishes square.
+           * flat for a wall meant to show a school off, and it crops every
+           * picture to make them identical. The wall shows each photograph
+           * whole, at its own shape, in rows that still finish square.
+           * (`bento` is what the layout was called when it was a collage.)
            */
           layout: 'bento',
           // Alternating so the groups read as separate sections.

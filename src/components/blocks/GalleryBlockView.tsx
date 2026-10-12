@@ -9,6 +9,7 @@ import type { GalleryBlock, Media as MediaDoc, Unit } from '@/payload-types'
 import { GalleryCarousel } from './GalleryCarousel'
 import { GalleryPager } from './GalleryPager'
 import { headingAnchor } from '@/lib/anchor'
+import { layWall } from '@/lib/photo-wall'
 
 import { Section, SectionHeading, type BlockBackground } from './Section'
 
@@ -28,155 +29,87 @@ import { Section, SectionHeading, type BlockBackground } from './Section'
  * and a mouse-drag handler; the touch feel, the momentum and the scrolling
  * itself are all still the browser's.
  */
-/*
- * The shape of each tile in the collage, by position.
- *
- * A repeating pattern rather than a size chosen per photograph: an editor
- * uploading to a gallery page is not deciding which picture deserves a big
- * tile, and asking them to would leave most galleries all one size anyway.
- * Six is long enough that the rhythm is not obvious over a dozen tiles and
- * short enough to stay even.
- *
- * `grid-flow-dense` then backfills any hole a tall tile leaves, so a gallery
- * of any length finishes square instead of trailing off with a gap.
- */
-const BENTO_SPAN = [
-  'sm:col-span-2 sm:row-span-2',
-  'sm:col-span-1 sm:row-span-1',
-  'sm:col-span-1 sm:row-span-1',
-  'sm:col-span-1 sm:row-span-2',
-  'sm:col-span-2 sm:row-span-1',
-  'sm:col-span-1 sm:row-span-1',
-]
-
-/*
- * What the browser is told to download for each tile. A two-column tile on a
- * desktop is genuinely twice the width of a one-column tile, and telling it
- * otherwise is how a collage ends up either soft or four times heavier than
- * it needs to be.
- */
-/*
- * A FIVE-PICTURE WALL TILES EXACTLY; the repeating pattern above does not.
- *
- * Those six spans cover 4+1+1+2+2 = ten cells over their first five entries,
- * and ten does not divide into a four-column grid: the collage came out two
- * cells short of square with a hole in the bottom corner, which reads as a
- * picture that failed to load rather than as a considered shape.
- *
- * One big tile and four small ones is 4+1+1+1+1 = eight, which is two full
- * rows of four. Five is a common enough set — a prize-giving and the pictures
- * around it — to be worth its own arrangement.
- */
-const BENTO_SPAN_FIVE = [
-  'sm:col-span-2 sm:row-span-2',
-  'sm:col-span-1 sm:row-span-1',
-  'sm:col-span-1 sm:row-span-1',
-  'sm:col-span-1 sm:row-span-1',
-  'sm:col-span-1 sm:row-span-1',
-]
-
-/*
- * SIX TILES EXACTLY TOO. The repeating pattern gives six entries 4+1+1+2+2+1
- * = eleven cells, one short of three rows of four, and the hole lands in the
- * bottom corner. Making the last tile tall instead of small — 4+1+1+2+2+2 —
- * fills all twelve. Six is what an achievements wall reached first: a prize,
- * its performance and trophy, and a second and third honour beside them.
- */
-const BENTO_SPAN_SIX = [
-  'sm:col-span-2 sm:row-span-2',
-  'sm:col-span-1 sm:row-span-1',
-  'sm:col-span-1 sm:row-span-1',
-  'sm:col-span-1 sm:row-span-2',
-  'sm:col-span-2 sm:row-span-1',
-  'sm:col-span-1 sm:row-span-2',
-]
-
-const BENTO_SIZES_FIVE = [
-  '(min-width: 1024px) 50vw, (min-width: 640px) 66vw, 100vw',
-  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
-  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
-  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
-  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
-]
-
-const BENTO_SIZES = [
-  '(min-width: 1024px) 50vw, (min-width: 640px) 66vw, 100vw',
-  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
-  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
-  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
-  '(min-width: 1024px) 50vw, (min-width: 640px) 66vw, 100vw',
-  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
-]
-
 /**
- * The collage layout: mixed-size tiles on a dense grid.
+ * The wall layout: rows of photographs, each tile the shape of its picture.
  *
- * For a gallery page, where the photographs ARE the page. The grid layout is
- * an even chequerboard, which is right for an album a visitor scans and flat
- * for a page whose whole job is to show a school off.
+ * For a gallery page, where the photographs ARE the page. Nothing is cropped
+ * to fit — `layWall` gives every tile its photograph's own proportions and
+ * fills each row to both edges. See `src/lib/photo-wall.ts` for how, and for
+ * the collage of fixed shapes this replaced.
+ *
+ * It is still stored as `bento`, the name the layout had as a collage. A
+ * select's value is a column in the database, and renaming one for the sake
+ * of the code would be a migration on a live site for no visible gain.
  *
  * Captions sit over the foot of each tile under a gradient rather than on a
- * card below it. On a collage the card would be the thing with the varying
- * height, and a wall of tiles whose white strips all end at different points
+ * card below it. On a wall the card would be the thing with the varying
+ * height, and a row of tiles whose white strips all end at different points
  * reads as broken. The gradient is dark enough for white text at every tile
- * size and only covers the bottom third, so the photograph is still the tile.
+ * size and only covers the foot, so the photograph is still the tile.
  */
-const BentoGallery = ({ images }: { images: NonNullable<GalleryBlock['images']> }) => (
-  /*
-   * The row height is TALLER on a phone, not shorter.
-   *
-   * Below `sm` the spans do not apply, so every tile is one column by one
-   * row — and at 9rem that made eleven 350x144 letterboxes with the caption
-   * filling a third of each. A single-column collage is really a stack of
-   * photographs, and a photograph wants height. 13rem gives roughly 3:2, and
-   * the rows can shrink again from `sm` up, where a two-row span is available
-   * to compensate.
-   */
-  <ul className="grid auto-rows-[13rem] grid-flow-dense grid-cols-1 gap-4 sm:auto-rows-[10rem] sm:grid-cols-3 lg:auto-rows-[11rem] lg:grid-cols-4">
-    {images.map((entry, index) => {
-      const media = entry.image as MediaDoc
-      const caption = entry.caption || media.caption
-      const spans =
-        images.length === 5 ? BENTO_SPAN_FIVE : images.length === 6 ? BENTO_SPAN_SIX : BENTO_SPAN
-      // Six keeps the repeating pattern's widths, so its sizes serve both.
-      const sizes = images.length === 5 ? BENTO_SIZES_FIVE : BENTO_SIZES
-      const slot = index % spans.length
+const WallGallery = ({ images }: { images: NonNullable<GalleryBlock['images']> }) => {
+  const tiles = layWall(images.map((entry) => ({ media: entry.image as MediaDoc })))
 
-      return (
-        <li
-          key={entry.id ?? index}
-          className={`group relative overflow-hidden rounded-3xl bg-brand-tint ring-1 ring-line/60 shadow-[0_1px_2px_rgba(36,39,111,0.04),0_10px_28px_-14px_rgba(36,39,111,0.22)] transition-shadow duration-300 hover:shadow-[0_2px_6px_rgba(36,39,111,0.08),0_22px_46px_-18px_rgba(36,39,111,0.34)] ${spans[slot]}`}
-        >
-          <Media
-            resource={media}
-            sizes={sizes[slot]}
-            priority={index < 2}
-            fill
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
-          />
+  return (
+    <ul className="siws-wall">
+      {images.map((entry, index) => {
+        const media = entry.image as MediaDoc
+        const caption = entry.caption || media.caption
+        const tile = tiles[index]!
 
-          {/*
-            THE SCRIM, SOFTENED (2026-09-02) — kept rather than removed. It was
-            85% brand at the foot falling through 45%, which on the smaller
-            tiles read as a painted band with an edge rather than as a fade.
+        return (
+          <li
+            key={entry.id ?? index}
+            style={tile.style}
+            className="@container group relative overflow-hidden rounded-2xl bg-brand-tint ring-1 ring-line/60 shadow-[0_1px_2px_rgba(36,39,111,0.04),0_10px_28px_-14px_rgba(36,39,111,0.22)] transition-shadow duration-300 hover:shadow-[0_2px_6px_rgba(36,39,111,0.08),0_22px_46px_-18px_rgba(36,39,111,0.34)]"
+          >
+            {/*
+              No zoom on hover. The tile is exactly the photograph's shape, so
+              scaling the picture inside it would push its edges out of the
+              frame — cropping, for as long as the pointer rested, the one
+              thing this layout exists not to crop.
+            */}
+            <Media
+              resource={media}
+              sizes={tile.sizes}
+              priority={index < 2}
+              fill
+              className={tile.measured ? 'object-cover' : 'object-contain'}
+            />
 
-            72% still carries white type over any photograph in the library —
-            it is a contrast floor, not a taste decision, so it does not go
-            lower — and the taller `pt-14` is what does the real work: the same
-            ink spread over more distance has no visible edge to it.
-          */}
-          {caption ? (
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-deep/72 via-brand-deep/30 to-transparent p-4 pt-14">
-              <p className="text-[0.9375rem] leading-snug font-medium text-balance text-white">
-                {caption}
-              </p>
-            </div>
-          ) : null}
-        </li>
-      )
-    })}
-  </ul>
-)
+            {/*
+              THE SCRIM, SOFTENED (2026-09-02) — kept rather than removed. It was
+              85% brand at the foot falling through 45%, which on the smaller
+              tiles read as a painted band with an edge rather than as a fade.
+
+              72% still carries white type over any photograph in the library —
+              it is a contrast floor, not a taste decision, so it does not go
+              lower — and the tall padding above the text is what does the real
+              work: the same ink spread over more distance has no visible edge
+              to it.
+
+              SIZED TO THE TILE, not to the screen. An upright photograph gets
+              a tile a third the width of a group photograph's in the same
+              row, and a caption set for the wide one would bury the narrow
+              one under six lines of type. So the tile is the container: a
+              narrow tile gets smaller type held to four lines — which is the
+              whole of nearly every caption in the library — and shows the
+              rest under the pointer, and one too narrow to carry a caption
+              at all keeps it for a screen reader only.
+            */}
+            {caption ? (
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-deep/72 via-brand-deep/30 to-transparent p-3 pt-10 @max-[8rem]:sr-only @[14rem]:p-4 @[14rem]:pt-14">
+                <p className="line-clamp-4 t-caption leading-snug font-medium text-balance text-white group-hover:line-clamp-none @[14rem]:line-clamp-none @[14rem]:text-[0.9375rem]">
+                  {caption}
+                </p>
+              </div>
+            ) : null}
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
 
 export const GalleryBlockView = async ({
   block,
@@ -421,7 +354,7 @@ export const GalleryBlockView = async ({
       ) : null}
 
       {block.layout === 'bento' ? (
-        <BentoGallery images={images} />
+        <WallGallery images={images} />
       ) : isGrid ? (
         images.length > perPage ? (
           <GalleryPager items={gridCards} perPage={perPage} />

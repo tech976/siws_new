@@ -456,15 +456,18 @@ export const Media: CollectionConfig = {
     },
     {
       /**
-       * Gallery tiles crop. That is right for a photograph — a wall of
-       * pictures all cropped to the same shapes is what makes it read as a
-       * wall — and wrong for anything whose edges carry the meaning.
+       * Marks a document rather than a photograph.
        *
        * The #SwachhtaMonitor certificate is the case that forced this: cropped
-       * to a bento tile it lost the word CERTIFICATE off the top and the
+       * to a gallery tile it lost the word CERTIFICATE off the top and the
        * signature off the foot, leaving a band of text in the middle of a
        * white rectangle. A certificate is READ, not admired, and the whole of
        * it has to be on screen or it is not the certificate any more.
+       *
+       * The gallery wall no longer crops anything — every tile is the shape
+       * of its picture (`src/lib/photo-wall.ts`) — so there the flag now only
+       * chooses the presentation: a document sits on a white ground with a
+       * margin round it, where a photograph runs to the edge of its tile.
        *
        * The same decision already exists on card grids, where it is called
        * "Show the whole picture".
@@ -472,11 +475,11 @@ export const Media: CollectionConfig = {
       name: 'showWhole',
       type: 'checkbox',
       defaultValue: false,
-      label: 'Show the whole picture, never cropped',
+      label: 'This is a document, not a photograph',
       admin: {
         position: 'sidebar',
         description:
-          'Turn this on for a certificate, a notice or an invitation — anything with writing at its edges. It is shown whole on a plain ground instead of being cropped to fit its tile.',
+          'Turn this on for a certificate, a notice or an invitation — anything with writing at its edges. It is shown on a plain white ground with a margin round it. Photographs do not need it: the gallery shows every picture whole.',
       },
     },
     {

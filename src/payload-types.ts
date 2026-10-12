@@ -347,7 +347,7 @@ export interface Media {
    */
   showInGallery?: boolean | null;
   /**
-   * Turn this on for a certificate, a notice or an invitation — anything with writing at its edges. It is shown whole on a plain ground instead of being cropped to fit its tile.
+   * Turn this on for a certificate, a notice or an invitation — anything with writing at its edges. It is shown on a plain white ground with a margin round it. Photographs do not need it: the gallery shows every picture whole.
    */
   showWhole?: boolean | null;
   /**
@@ -1547,7 +1547,7 @@ export interface GalleryBlock {
    */
   perPage?: ('9' | '12' | '24' | '0') | null;
   /**
-   * A scrolling row suits a handful of photographs; a grid is better for a full album. A collage suits a gallery page that is the point of the page — it gives some photographs more room than others, so the wall has a shape instead of being an even chequerboard.
+   * A scrolling row suits a handful of photographs; a grid is better for a full album, and crops each picture to a square. A wall suits a gallery page that is the point of the page — every photograph is shown whole, at its own shape, whatever size it was uploaded at.
    */
   layout?: ('carousel' | 'grid' | 'bento') | null;
   /**
@@ -1666,7 +1666,7 @@ export interface PhotoLibraryBlock {
                */
               caption?: string | null;
               /**
-               * A marquee photograph — a prize-giving, an annual day — takes a double-width, double-height tile. Use it sparingly: if everything is a feature, nothing is.
+               * A marquee photograph — a prize-giving, an annual day — is given a taller row, so it and the pictures beside it stand larger than the rest. Use it sparingly: if everything is a feature, nothing is.
                */
               feature?: boolean | null;
               id?: string | null;

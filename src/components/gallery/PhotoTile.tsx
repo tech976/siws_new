@@ -1,73 +1,41 @@
 'use client'
 
 import { Media } from '@/components/Media'
+import type { WallTile } from '@/lib/photo-wall'
 
 import type { GalleryPhoto } from './types'
 
 /**
- * The tile shapes, by position in the row.
+ * One photograph on the wall, in a tile that is exactly its own shape.
  *
- * A repeating six-slot pattern rather than a size chosen per photograph. An
- * editor adding to a gallery is not deciding which picture deserves a big
- * tile, and asking them to would leave most walls all one size. Six is long
- * enough that the rhythm is not obvious over a dozen tiles and short enough to
- * stay even. `grid-flow-dense` then backfills whatever hole a tall tile leaves,
- * so a wall of any length finishes square instead of trailing off.
- *
- * A photograph marked as a feature overrides its slot and takes 2x2 wherever
- * it lands — that is the one per-picture decision worth offering.
+ * The shape and the width come from `layWall` as custom properties and are
+ * turned into a size by `.siws-wall`; nothing here decides how big the tile
+ * is, and nothing here crops the picture to make it fit.
  */
-const SPAN = [
-  'sm:col-span-2 sm:row-span-2',
-  'sm:col-span-1 sm:row-span-1',
-  'sm:col-span-1 sm:row-span-1',
-  'sm:col-span-1 sm:row-span-2',
-  'sm:col-span-2 sm:row-span-1',
-  'sm:col-span-1 sm:row-span-1',
-]
-
-/**
- * What the browser is told to download for each tile. A two-column tile is
- * genuinely twice the width of a one-column tile, and telling it otherwise is
- * how a wall ends up either soft or four times heavier than it needs to be.
- */
-const SIZES = [
-  '(min-width: 1024px) 50vw, (min-width: 640px) 66vw, 100vw',
-  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
-  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
-  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
-  '(min-width: 1024px) 50vw, (min-width: 640px) 66vw, 100vw',
-  '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw',
-]
-
-const FEATURE_SPAN = 'sm:col-span-2 sm:row-span-2'
-const FEATURE_SIZES = '(min-width: 1024px) 50vw, (min-width: 640px) 66vw, 100vw'
-
-export const BentoCard = ({
+export const PhotoTile = ({
   photo,
-  slot,
+  tile,
   onOpen,
   /** The first few tiles are above the fold and are not lazily loaded. */
   eager,
 }: {
   photo: GalleryPhoto
-  slot: number
+  tile: WallTile
   onOpen: () => void
   eager: boolean
 }) => {
-  const span = photo.feature ? FEATURE_SPAN : SPAN[slot % SPAN.length]
-  const sizes = photo.feature ? FEATURE_SIZES : SIZES[slot % SIZES.length]
-
   return (
     <li
       /*
        * The id is what the layout animation matches tiles by across a filter
-       * change — see `BentoGridContainer`. Without it the animation would have
+       * change — see `PhotoWall`. Without it the animation would have
        * nothing to tell "this tile moved" from "a different tile appeared".
        */
       data-photo={photo.id}
+      style={tile.style}
       className={[
-        'group relative overflow-hidden rounded-3xl',
+        // The tile is the container its caption is sized against.
+        '@container group relative overflow-hidden rounded-2xl',
         // A document sits on white; a photograph on the tint that shows while
         // it loads and is then covered by the picture itself.
         photo.showWhole ? 'bg-white' : 'bg-brand-tint',
@@ -75,12 +43,11 @@ export const BentoCard = ({
         'transition-[transform,box-shadow] duration-300 ease-out',
         'hover:scale-[1.02] hover:shadow-[0_2px_8px_rgba(36,39,111,0.10),0_26px_50px_-18px_rgba(36,39,111,0.38)]',
         'focus-within:scale-[1.02]',
-        span,
       ].join(' ')}
     >
       <Media
         resource={photo.media}
-        sizes={sizes}
+        sizes={tile.sizes}
         /*
          * `next/image` lazy-loads everything it is not told to prioritise, so
          * this one flag covers both halves of the requirement: the first four
@@ -90,15 +57,21 @@ export const BentoCard = ({
         priority={eager}
         fill
         /*
-         * A document is shown WHOLE, and padded off the tile edge so it reads
-         * as a thing lying on a surface rather than as a photograph that has
-         * failed to fill its frame. Everything else covers, which is what
-         * gives the wall its shapes.
+         * A document is padded off the tile edge, on white, so it reads as a
+         * thing lying on a surface. A photograph fills its tile — which crops
+         * nothing, because the tile is the photograph's own shape. Only a
+         * record with no dimensions is fitted inside a tile whose shape had
+         * to be guessed.
+         *
+         * The photograph does not zoom on hover: scaled up inside a tile its
+         * own size, its edges would leave the frame.
          */
         className={
           photo.showWhole
             ? 'object-contain p-3 transition-transform duration-700 ease-out group-hover:scale-[1.03]'
-            : 'object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]'
+            : tile.measured
+              ? 'object-cover'
+              : 'object-contain'
         }
       />
 
@@ -114,13 +87,13 @@ export const BentoCard = ({
 
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 p-5 opacity-0 transition-[opacity,transform] duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100"
+        className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 p-3 opacity-0 transition-[opacity,transform] duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 @[14rem]:p-5"
       >
         <span className="block text-xs font-bold uppercase tracking-[0.14em] text-accent">
           {photo.category}
         </span>
         {photo.caption ? (
-          <span className="mt-1 block t-small leading-snug font-medium text-balance text-white">
+          <span className="mt-1 line-clamp-4 t-small leading-snug font-medium text-balance text-white @[14rem]:line-clamp-none">
             {photo.caption}
           </span>
         ) : null}
@@ -138,7 +111,7 @@ export const BentoCard = ({
       <button
         type="button"
         onClick={onOpen}
-        className="absolute inset-0 size-full cursor-pointer rounded-3xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent focus-visible:ring-inset"
+        className="absolute inset-0 size-full cursor-pointer rounded-2xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent focus-visible:ring-inset"
       >
         <span className="sr-only">
           {photo.caption ? `View: ${photo.caption}` : `View photograph from ${photo.category}`}

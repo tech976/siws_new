@@ -1264,6 +1264,67 @@ main > header + section[data-ground]:not([data-ground='white']) {
 }
 
 /* ==========================================================================
+   THE PHOTO WALL  —  rows of photographs, each at its own proportions
+
+   The other half of `src/lib/photo-wall.ts`, which decides which photographs
+   share a row and gives every tile three numbers: `--r`, the picture's width
+   over its height; `--s`, its part of the row's width; and `--n`, how many
+   tiles are in the row with it. The last two come once per breakpoint
+   (`--s0`/`--n0` on a phone, `1` from 640px, `2` from 1024px), because a row
+   that holds four photographs on a desktop holds one or two on a phone.
+
+   The width takes the gutters out FIRST and the share second. A row of n
+   tiles has n − 1 gutters whatever the tiles' sizes, so every tile in it
+   comes out the same height to the pixel. Taking a flat percentage and
+   letting the gutter come out of each tile instead would cost a narrow tile
+   more of its width than a wide one, and the row would finish ragged along
+   the bottom.
+
+   The 0.05px is the allowance `.siws-flow` makes, for the same reason: flex
+   wraps on the widths before any shrinking, so a row that sums to exactly
+   100% loses its last tile to the next line whenever sub-pixel rounding goes
+   the wrong way.
+
+   `justify-content: center` only ever shows on a last row too short to
+   stretch, which then sits on the wall's axis like every other partial row
+   on the site.
+   ========================================================================== */
+
+.siws-wall {
+  --wall-gap: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--wall-gap);
+}
+
+.siws-wall > * {
+  --s: var(--s0);
+  --n: var(--n0);
+  flex: none;
+  width: calc((100% - (var(--n) - 1) * var(--wall-gap)) * var(--s) - 0.05px);
+  aspect-ratio: var(--r);
+}
+
+@media (min-width: 40rem) {
+  .siws-wall {
+    --wall-gap: 1rem;
+  }
+
+  .siws-wall > * {
+    --s: var(--s1);
+    --n: var(--n1);
+  }
+}
+
+@media (min-width: 64rem) {
+  .siws-wall > * {
+    --s: var(--s2);
+    --n: var(--n2);
+  }
+}
+
+/* ==========================================================================
    THE TYPE SCALE  —  the one place a font size is decided
    See docs/MASTER-LAYOUT.md.
 

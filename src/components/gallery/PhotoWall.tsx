@@ -1,12 +1,19 @@
 'use client'
 
-import { useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useMemo, useRef } from 'react'
 
-import { BentoCard } from './BentoCard'
+import { layWall } from '@/lib/photo-wall'
+
+import { PhotoTile } from './PhotoTile'
 import type { GalleryPhoto } from './types'
 
 /**
- * The asymmetric wall, and the animation that carries tiles between filters.
+ * The wall of photographs, and the animation that carries tiles between
+ * filters.
+ *
+ * Every tile is the shape of its own photograph — `layWall` works out which
+ * pictures share a row and how wide each one is, and is run again whenever
+ * the filter changes what is on the wall. See `src/lib/photo-wall.ts`.
  *
  * WHY THIS IS FLIP AND NOT AN ANIMATION LIBRARY
  * ---------------------------------------------
@@ -23,7 +30,7 @@ import type { GalleryPhoto } from './types'
  * that survives a filter change is animated from where it was, while one that
  * has just appeared simply fades in rather than flying from the corner.
  */
-export const BentoGridContainer = ({
+export const PhotoWall = ({
   photos,
   onOpen,
 }: {
@@ -32,6 +39,11 @@ export const BentoGridContainer = ({
 }) => {
   const grid = useRef<HTMLUListElement>(null)
   const previous = useRef<Map<string, DOMRect>>(new Map())
+
+  const placed = useMemo(
+    () => layWall(photos.map((photo) => ({ media: photo.media, feature: photo.feature }))),
+    [photos],
+  )
 
   useLayoutEffect(() => {
     const node = grid.current
@@ -96,22 +108,12 @@ export const BentoGridContainer = ({
   }, [photos])
 
   return (
-    <ul
-      ref={grid}
-      /*
-       * The row height is TALLER on a phone, not shorter. Below `sm` the spans
-       * do not apply, so every tile is one column by one row — and a
-       * single-column wall is really a stack of photographs, which want
-       * height. 13rem gives roughly 3:2; from `sm` up the rows can shrink
-       * again, where a two-row span is available to compensate.
-       */
-      className="grid auto-rows-[13rem] grid-flow-dense grid-cols-1 gap-4 sm:auto-rows-[10rem] sm:grid-cols-3 sm:gap-5 lg:auto-rows-[11rem] lg:grid-cols-4"
-    >
+    <ul ref={grid} className="siws-wall">
       {photos.map((photo, index) => (
-        <BentoCard
+        <PhotoTile
           key={photo.id}
           photo={photo}
-          slot={index}
+          tile={placed[index]!}
           eager={index < 4}
           onOpen={() => onOpen(photo)}
         />

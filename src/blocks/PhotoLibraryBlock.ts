@@ -84,7 +84,7 @@ export const PhotoLibraryBlock: Block = {
               label: 'Give this one a big tile',
               admin: {
                 description:
-                  'A marquee photograph — a prize-giving, an annual day — takes a double-width, double-height tile. Use it sparingly: if everything is a feature, nothing is.',
+                  'A marquee photograph — a prize-giving, an annual day — is given a taller row, so it and the pictures beside it stand larger than the rest. Use it sparingly: if everything is a feature, nothing is.',
               },
             },
           ],

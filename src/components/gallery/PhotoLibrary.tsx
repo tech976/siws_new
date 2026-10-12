@@ -2,9 +2,9 @@
 
 import { useCallback, useMemo, useState } from 'react'
 
-import { BentoGridContainer } from './BentoGridContainer'
 import { GalleryHeader } from './GalleryHeader'
 import { LightboxModal } from './LightboxModal'
+import { PhotoWall } from './PhotoWall'
 import type { GalleryPhoto } from './types'
 
 /**
@@ -80,7 +80,7 @@ export const PhotoLibrary = ({
         {children}
       </GalleryHeader>
 
-      <BentoGridContainer photos={shown} onOpen={(photo) => setOpenId(photo.id)} />
+      <PhotoWall photos={shown} onOpen={(photo) => setOpenId(photo.id)} />
 
       <LightboxModal
         photo={open}
