@@ -20,6 +20,29 @@ import { VideoEmbedView } from '@/components/richtext/VideoEmbedView'
  */
 const converters: JSXConvertersFunction = ({ defaultConverters }) => ({
   ...defaultConverters,
+  /*
+   * A PARAGRAPH THE EDITOR CENTRED IS CENTRED HERE.
+   *
+   * The editor has an alignment button and Payload's own converter ignores
+   * what it sets, so a line centred in the panel came out justified with the
+   * rest. Centre is the one alignment honoured, because it is the one with a
+   * use: a strapline under a title, a closing line. Left and justify are what
+   * the page does anyway (`prose.css`), and a right-aligned paragraph on this
+   * site is a mistake nobody should be able to publish.
+   *
+   * An inline style, because the prose rules sit in a cascade layer that a
+   * class added here would lose to. Balanced, as centred text has to be: an
+   * orphaned last word under a centred line reads as a second, shorter line.
+   */
+  paragraph: ({ node, nodesToJSX }) => {
+    const children = nodesToJSX({ nodes: node.children })
+    const style =
+      node.format === 'center'
+        ? ({ textAlign: 'center', hyphens: 'manual', textWrap: 'balance' } as const)
+        : undefined
+
+    return <p style={style}>{children?.length ? children : <br />}</p>
+  },
   blocks: {
     videoEmbed: ({ node }: { node: { fields: { url?: string; title?: string; caption?: string } } }) => (
       <VideoEmbedView fields={node.fields} />

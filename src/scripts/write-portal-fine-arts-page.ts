@@ -4,54 +4,53 @@ loadEnv()
 
 const { getPayload } = await import('payload')
 const { default: config } = await import('@payload-config')
-const { richText } = await import('@/seed/lexical')
+const { bulletList, richTextNodes } = await import('@/seed/lexical')
 
 /**
- * Writes the Fine Arts page from the three sheets SIWS sent (2026-10-12): the
- * Centre's own description of itself and its annual report, both signed by its
- * Head, Mrs. Bhavana Narayanan.
+ * Writes the Fine Arts page from the Centre's own website text — "SIWS Arts
+ * Website Intro", the two-page document SIWS sent on 2026-10-12 with the
+ * instruction "use this as the intro for the fine art section".
  *
- * THE SAME PAGE AS SPORTS, for the same reasons — see
- * `write-portal-sports-page.ts`, whose three rounds with SIWS settled the
- * form: paragraphs rather than points, centred and justified, written and not
- * merely transcribed. A `richText` section at normal width is all of that.
+ * THIS REPLACES THE FIRST VERSION, written the same morning from the Centre's
+ * description of itself and its annual report. That one was ours: five
+ * sections of prose in the Sports page's form, argued from their facts. This
+ * one is theirs, and the difference decides everything below.
  *
- * THE HEADING IS THE CENTRE'S NAME. The tab says "Fine Arts", which is what
- * SIWS asked for on the menu, but the Centre also teaches three languages and
- * the Bhagavad Gita, and a page headed "Fine Arts" that opens on Tamil reads
- * as the wrong page. So the title becomes the name on the sheets, the menu
- * label and the address stay as they were, and the first section carries the
- * title exactly — which is what makes the route drop its own left-ranged
- * header.
+ * THEIR WORDS, THEIR HEADINGS, THEIR LISTS. Nothing is rewritten. The Sports
+ * page was turned from points into paragraphs because SIWS asked for that of
+ * a brief; here they have sent finished copy, with the subjects and the
+ * reasons to join set as lists, and a list of seven subjects made into a
+ * sentence would be us editing their document. The headings are set in the
+ * site's sentence case and the lists stay lists.
  *
- * EVERY FACT IS THEIRS. The argument is ours; a sentence may say what a fact
- * means and may not supply a year, a name or a claim the sheets do not make.
- * Where the two sheets differ, the narrower statement is the one published:
- * one says the courses are "accessible to everyone", the other that they are
- * "free of cost to the students of our SIWS", and the page says the second.
- * "Bhagwat Gita" and "Bharat Natyam" are set as the sheets' own list sets
- * them, Bhagavad Gita and Bharatanatyam.
+ * WHAT IS NOW PUBLISHED THAT WAS HELD BACK. The first version left out the
+ * "48 students" who have completed the course, because the annual report gave
+ * no year, and the six proposals at the end of that report, because they were
+ * recommendations to the Society and not things the Centre did. Both are in
+ * this text in SIWS's own framing — forty-eight "have successfully completed",
+ * and the proposals are what "the Centre plans to" do — so both are on the
+ * page. Whether to say them was theirs to decide, and they have.
  *
- * THREE THINGS ARE DELIBERATELY NOT PUBLISHED:
- *   - that enrolment "has gradually decreased year by year which is a matter
- *     of concern". The annual report is written to the Society, and that
- *     sentence is the Head telling the management what worries her. It is not
- *     something a parent choosing a class needs to be told, and no school
- *     prints it over its own door;
- *   - the six recommendations that follow it — more awareness, workshops,
- *     flexible timings, modern methods, awards, parental involvement. They are
- *     proposals, not things the Centre does, and a page that listed them would
- *     be promising what nobody has yet agreed to;
- *   - "48 students successfully completed the three years programme and were
- *     awarded certificates", because the sheet does not say in which year.
- *     Undated, on the page of a Centre founded in 1997–98, it reads as
- *     forty-eight in twenty-eight years. It goes in the last section the day
- *     SIWS says which year it counts.
+ * TWO THINGS ARE NOT AS THE DOCUMENT HAS THEM:
+ *   - "The South Indian Welfare Society" is set as the Society's name is on
+ *     every other page of its own site, the South Indians’ Welfare Society;
+ *   - "Free Saturday classes for SIWS School students" is bold and not
+ *     underlined. On a web page an underline is a link.
  *
- * REFUSES A PAGE SOMEBODY HAS WRITTEN. It fills the placeholder created on
- * 2026-10-12 and stops if the page has sections on it, so it can never
- * overwrite the school's own work. `--force` is there for a re-run after a
- * change to this script.
+ * THE NAME. The document calls it the Arts, Fine Arts & PHILOSOPHY Centre; the
+ * sheets signed by its Head said PHILOSOPHICAL. The page follows the document
+ * it was told to use, title included. The tab still says "Fine Arts" and the
+ * address is unchanged. The first section carries the title exactly, which is
+ * what makes the route drop its own left-ranged header.
+ *
+ * THE TWO LINES UNDER THE TITLE ARE CENTRED, as they are a strapline and not
+ * prose. That is a paragraph with Lexical's own centre alignment on it, which
+ * `components/RichText.tsx` renders; everything else is justified like the
+ * rest of the site.
+ *
+ * REFUSES A PAGE SOMEBODY HAS WRITTEN. It stops if the page has sections on
+ * it, so it can never overwrite the school's own work. `--force` is there for
+ * a re-run after a change to this script — which is what this is.
  *
  * Usage:  npx tsx src/scripts/write-portal-fine-arts-page.ts [--apply] [--force]
  */
@@ -62,17 +61,68 @@ const FORCE = process.argv.includes('--force')
 /** The address and the menu label, neither of which this script changes. */
 const SLUG = 'fine-arts'
 
-/** The Centre's name as its own sheets head it. */
-const TITLE = 'SIWS Arts, Fine Arts & Philosophical Centre'
+/** The Centre's name as the document heads it. */
+const TITLE = 'SIWS Arts, Fine Arts & Philosophy Centre'
 
-const INTRO =
-  'The SIWS Arts, Fine Arts & Philosophical Centre has taught languages, classical music, dance and the Bhagavad Gita since 1997–98. Every course is optional and free of cost to the students of SIWS.'
+const STRAPLINE = 'Nurturing young minds through language, music, dance and timeless wisdom'
+const FREE_CLASSES = 'Free Saturday classes for SIWS School students'
+
+/** Under the title on a search result, and wherever the page is summarised. */
+const INTRO = `${STRAPLINE}. ${FREE_CLASSES}.`
+
+/* --- Lexical, as much of it as this page needs ---------------------------- */
+
+const BOLD = 1
+const ITALIC = 2
+
+/** Shared shape for every element node. Lexical rejects nodes missing these. */
+const element = { format: '' as const, indent: 0, version: 1, direction: 'ltr' as const }
+
+const t = (body: string, format = 0) => ({
+  type: 'text',
+  detail: 0,
+  format,
+  mode: 'normal',
+  style: '',
+  text: body,
+  version: 1,
+})
+const b = (body: string) => t(body, BOLD)
+
+type Inline = ReturnType<typeof t>
+
+const p = (children: string | Inline[]) => ({
+  type: 'paragraph',
+  ...element,
+  textFormat: 0,
+  children: typeof children === 'string' ? [t(children)] : children,
+})
+
+/** A line set in the middle: the strapline, not a paragraph of prose. */
+const centred = (children: Inline[]) => ({ ...p(children), format: 'center' as const })
+
+const h3 = (body: string) => ({ type: 'heading', tag: 'h3', ...element, children: [t(body)] })
+
+/** A list whose items open on a bold term and a colon, as the document sets them. */
+const termList = (entries: [term: string, detail: string][]) => ({
+  type: 'list',
+  listType: 'bullet' as const,
+  tag: 'ul' as const,
+  start: 1,
+  ...element,
+  children: entries.map(([term, detail], index) => ({
+    type: 'listitem',
+    value: index + 1,
+    ...element,
+    children: [b(`${term}:`), t(` ${detail}`)],
+  })),
+})
 
 /** White and sea alternate down the page, so each section reads as its own. */
 const section = (
   heading: string,
   accentWord: string | null,
-  paragraphs: string[],
+  nodes: unknown[],
   index: number,
   level: 'h1' | 'h2' = 'h2',
 ) => ({
@@ -82,56 +132,122 @@ const section = (
   headingLevel: level,
   width: 'normal',
   background: index % 2 === 0 ? 'white' : 'sea',
-  content: richText(paragraphs),
+  content: richTextNodes(nodes),
 })
 
 const layout = [
+  section(TITLE, null, [centred([t(STRAPLINE, ITALIC)]), centred([b(FREE_CLASSES)])], 0, 'h1'),
   section(
-    TITLE,
-    null,
+    'About the Centre',
+    'the Centre',
     [
-      'The SIWS Arts, Fine Arts & Philosophical Centre was established in the academic year 1997–98 under the South Indians’ Welfare Society, with the aim of nurturing young minds through culture, creativity and values. From its inception the Centre has been dedicated to a holistic education, one that brings together the arts, languages, music and philosophy.',
-      'Its purpose is to enhance the intellectual and emotional growth of our students by promoting self-expression, by developing analytical skills, and by fostering a deeper appreciation of culture, of ideas and of the human condition. This is an education that complements the work of the classroom, and the Society founded the Centre so that it might be open to every student who wishes to pursue it.',
-    ],
-    0,
-    'h1',
-  ),
-  section(
-    'What the Centre teaches',
-    'teaches',
-    [
-      'The teaching of the Centre falls into three parts. The first is the study of languages, which is one of its distinctive features. Classes are held in Tamil, Malayalam and Sanskrit, and through them students learn to appreciate linguistic diversity and the cultural richness that accompanies it.',
-      'The second is the Fine Arts section, which offers training in classical music and in dance. Students may learn vocal music, the violin or the veena, and may study Bharatanatyam. Each is a discipline in which progress comes only through regular practice under the guidance of a teacher, and the patience and attention it demands serve a student well in every other field of study.',
-      'The third is the Philosophical Centre, which introduces students to Indian philosophy and culture, above all through the Bhagavad Gita. Students learn to chant the text and to understand its teachings, which guide them towards moral values and a disciplined way of living.',
+      p(
+        'Started in the academic year 1997–98 under the South Indians’ Welfare Society, the SIWS Arts, Fine Arts & Philosophy Centre was founded with a noble aim: to nurture young minds through culture, creativity and values. We seek to enhance each student’s intellectual and emotional growth by encouraging self-expression, building analytical skills and fostering a deeper appreciation of culture, ideas and the human condition.',
+      ),
+      p([
+        t(
+          'Since its inception, the Centre has offered a holistic education that blends languages, music, dance and philosophy. Classes are held ',
+        ),
+        b('every Saturday'),
+        t(
+          ' throughout the academic year, so students can balance their studies with cultural learning. Every course is optional and ',
+        ),
+        b('completely free of cost'),
+        t(' for SIWS students.'),
+      ]),
     ],
     1,
   ),
   section(
-    'How the courses are run',
-    'courses',
+    'What we teach',
+    'teach',
     [
-      'Every course is optional, and every course is offered entirely free of cost to the students of SIWS. It is a remarkable feature of the Centre, for it places a cultural education of quality within the reach of all.',
-      'Classes are held every Saturday throughout the academic year, an arrangement that allows students to follow their chosen subject while keeping a proper balance with their regular studies. Each course follows a structured programme of three years, which ensures that learning is systematic and that skill is built steadily from one year to the next. A student who completes the course successfully is awarded the Centre’s own certificate.',
-      'The quality of such teaching depends upon the teacher. For each subject the Society appoints eminent, experienced and dedicated teachers, who guide their students through every stage of the course.',
+      h3('Arts – Classical Languages'),
+      p(
+        'A unique feature of the Centre is its focus on multilingual exposure. Learning Tamil, Malayalam and Sanskrit helps students appreciate India’s linguistic diversity and cultural richness.',
+      ),
+      bulletList(['Tamil', 'Malayalam', 'Sanskrit']),
+      h3('Fine Arts – Music & Dance'),
+      p(
+        'Students train in classical music, instruments and dance under experienced, dedicated teachers.',
+      ),
+      bulletList(['Carnatic Vocal', 'Veena', 'Violin', 'Bharatanatyam']),
+      h3('Philosophy'),
+      p(
+        'The Centre places special emphasis on Indian philosophy and culture through the teachings of the Bhagavad Gita, guiding students towards moral values and disciplined living.',
+      ),
+      bulletList(['Bhagavad Gita: recitation, meaning and life lessons']),
     ],
     2,
   ),
   section(
-    'Competitions and recognition',
-    'recognition',
+    'Why join the Centre?',
+    'the Centre?',
     [
-      'The Centre does more than provide a foundation. It encourages its students to test what they have learned, and they take part in competitions and examinations conducted by well-known organisations, as well as in cultural events. There they present their work in Tamil, Malayalam and Sanskrit, in music, in Bharatanatyam, on the veena and the violin, and in the recitation of the Bhagavad Gita.',
-      'Over the years a number of our students have gone on to excel in their chosen fields. Their effort is recognised within the Centre as well: every year an award for the best outgoing student of each section is presented by our sponsors.',
+      termList([
+        ['Free of cost', 'quality cultural education for every SIWS student, fully supported by the Society.'],
+        ['Experienced, dedicated teachers', 'learn from accomplished teachers in each subject.'],
+        [
+          'Structured three-year course',
+          'systematic learning, with a certificate from the Centre on completion.',
+        ],
+        ['Every Saturday', 'classes designed to fit around regular studies.'],
+        [
+          'Stage and competition opportunities',
+          'students take part in competitions, examinations and cultural events run by well-known organisations.',
+        ],
+        [
+          'Recognition',
+          'annual awards for the best outgoing students in each section, sponsored by our well-wishers.',
+        ],
+        [
+          'Values and confidence',
+          'the arts build discipline, focus, self-expression and pride in one’s culture.',
+        ],
+      ]),
     ],
     3,
   ),
   section(
-    'Preserving our heritage',
-    'heritage',
+    'Our journey',
+    'journey',
     [
-      'Over the years the Centre has contributed significantly to the cultural and moral development of the students who have passed through it. Under its Head, Mrs. Bhavana Narayanan, it stands as a beacon of cultural education and of learning founded upon values, and its purpose remains what it has always been: to inspire each new generation of students while preserving our rich heritage.',
+      p(
+        'For more than 25 years, the Centre has contributed significantly to the cultural and moral development of SIWS students. Our students regularly take part in competitions, examinations and cultural events conducted by well-known organisations, showcasing their talent in languages, Carnatic music, veena, violin, Bharatanatyam and Bhagavad Gita recitation.',
+      ),
+      p([
+        t('Many have gone on to excel in their chosen fields. '),
+        b('48 students'),
+        t(
+          ' have successfully completed the full three-year programme and received the Centre’s certificate, and each year our sponsors present awards to the best outgoing student in every section.',
+        ),
+      ]),
+      p([
+        t('The Centre is led by '),
+        b('Mrs. Bhavana Narayanan, Head'),
+        t(', together with a team of eminent, experienced and dedicated teachers.'),
+      ]),
     ],
     4,
+  ),
+  section(
+    'Looking ahead',
+    'ahead',
+    [
+      p('We are expanding. With renewed energy, the Centre plans to:'),
+      bulletList([
+        'add new subjects and programmes to the ones we teach today',
+        'hold demonstrations, workshops and cultural events open to students and parents',
+        'offer flexible timings and additional classes where needed',
+        'bring modern teaching methods alongside traditional practice',
+        'introduce more recognition, awards and scholarships for dedicated students',
+        'welcome greater involvement from parents and the wider community',
+      ]),
+      p(
+        'The Centre will continue to inspire and shape future generations while preserving our rich heritage.',
+      ),
+    ],
+    5,
   ),
 ]
 
@@ -175,7 +291,7 @@ const main = async () => {
       intro: INTRO,
       layout,
       metaDescription:
-        'The SIWS Arts, Fine Arts & Philosophical Centre: free Saturday classes in Tamil, Malayalam and Sanskrit, vocal music, violin, veena, Bharatanatyam and the Bhagavad Gita.',
+        'Free Saturday classes for SIWS students in Tamil, Malayalam and Sanskrit, Carnatic vocal, veena, violin, Bharatanatyam and the Bhagavad Gita.',
       _status: 'published',
     } as never,
     overrideAccess: true,
