@@ -36,6 +36,18 @@ const { richText } = await import('@/seed/lexical')
  * The plans are published under the year the sheet gives them, 2025–26, so
  * they date themselves rather than reading as this year's promises.
  *
+ * WRITTEN, NOT LISTED. The prose version was still the brief with full stops
+ * in it, and SIWS said so the same day: "information only… act as a content
+ * writer, use standard and high-level English and write that section
+ * properly." Each section now makes its point before it gives its figures —
+ * why sport matters to the school, why the range is as wide as it is, why
+ * participation is counted before trophies.
+ *
+ * The rule above still holds, and it is what the writing has to be checked
+ * against: the argument is ours, the facts are theirs. A sentence may say what
+ * a figure means; it may not supply a figure, a name, a date or a claim the
+ * sheet does not make. (The one expansion is ZP, to Zilla Parishad.)
+ *
  * REFUSES A PAGE SOMEBODY HAS WRITTEN. It fills the placeholder created on
  * 2026-10-12 and stops if the page has sections on it, so it can never
  * overwrite the school's own work. `--force` is there for a re-run after a
@@ -48,7 +60,7 @@ const APPLY = process.argv.includes('--apply')
 const FORCE = process.argv.includes('--force')
 
 const INTRO =
-  'Sport is part of the school day at SIWS, not an add-on. Our philosophy is “Healthy Body, Healthy Mind”, and our “Sports for All” policy means every child plays.'
+  'At SIWS, sport is an essential part of a child’s education. Guided by the principle of “Healthy Body, Healthy Mind” and a “Sports for All” policy, the school gives every student the opportunity, the coaching and the encouragement to play.'
 
 /** White and sea alternate down the page, so each section reads as its own. */
 const section = (
@@ -77,8 +89,9 @@ const layout = [
     'Sports',
     null,
     [
-      'Sport is part of the school day at SIWS, not an add-on. Our philosophy is “Healthy Body, Healthy Mind”: we believe sport is integral to education, and that through it children develop discipline, teamwork, leadership and resilience.',
-      'Our “Sports for All” policy means every child plays — not only the children who win.',
+      'At SIWS, sport is regarded as an essential part of a child’s education and never as a diversion from it. Our guiding principle, “Healthy Body, Healthy Mind”, expresses a simple conviction: that physical vigour and intellectual growth advance together, and that a school which cares for the one must care equally for the other.',
+      'The playing field teaches lessons that no textbook can fully convey. It is there that our students acquire discipline through regular practice, learn teamwork through shared effort, grow into leadership by accepting responsibility, and develop resilience by meeting both victory and defeat with composure. These qualities remain with a young person long after the final whistle, and we count their cultivation among the most important work that the school undertakes.',
+      'This belief finds its practical expression in our “Sports for All” policy. Sport at SIWS is not the preserve of the naturally gifted. Every child is encouraged to take part, to discover an activity suited to their ability and temperament, and to enjoy the confidence that comes with steady improvement.',
     ],
     0,
     'h1',
@@ -87,17 +100,17 @@ const layout = [
     'The sports we play',
     'we play',
     [
-      'Fourteen sports are played here: football, cricket, basketball, volleyball, athletics, kho-kho, kabaddi, badminton, table tennis, chess, carrom, yoga, karate and skating.',
-      'Seven of them — football, cricket, basketball, athletics, badminton, table tennis and chess — are coached regularly, four days a week after school.',
+      'The breadth of our programme reflects the variety of the children it serves. Fourteen sports are offered across the school: football, cricket, basketball, volleyball, athletics, kho-kho, kabaddi, badminton, table tennis, chess, carrom, yoga, karate and skating. The range is deliberate. It brings together the major team games, the traditional sports of India, contests of strategy and concentration, and disciplines that build balance, flexibility and self-control, so that every student may find a pursuit of their own.',
+      'Seven of these sports, namely football, cricket, basketball, athletics, badminton, table tennis and chess, are supported by structured coaching, which is held after school on four days of every week. Such regular and sustained instruction enables students to progress from early enthusiasm to genuine proficiency, and gives those who show particular promise the foundation they need to compete at a higher level.',
     ],
     1,
   ),
   section(
-    'Taking part',
-    'part',
+    'Participation and school teams',
+    'school teams',
     [
-      'More than 85% of the children from Std 1 to Std 10 take part in sport, and more than three hundred are enrolled in regular after-school coaching.',
-      'The school fields teams in football and basketball for both boys and girls, and in cricket, athletics, badminton, table tennis, chess, volleyball and kho-kho, with squads in the under-10, under-12, under-14 and under-16 age groups.',
+      'We judge the strength of our sporting culture first by the number of students who take part in it. More than 85% of students from Std 1 to Std 10 participate actively in sport, and more than three hundred are enrolled in regular after-school coaching. These figures matter to us more than any single result, for they show that sport at SIWS belongs to the many and not to a select few.',
+      'For those who wish to test themselves in competition, the school fields representative teams in a wide range of sports. Football and basketball are played by both boys’ and girls’ teams, and the school is also represented in cricket, athletics, badminton, table tennis, chess, volleyball and kho-kho. Squads are organised in the under-10, under-12, under-14 and under-16 age groups, so that students compete alongside their peers and advance steadily, year by year, as their skill and confidence grow.',
     ],
     2,
   ),
@@ -105,36 +118,36 @@ const layout = [
     'Our facilities',
     'facilities',
     [
-      'Children train on a football ground, two basketball courts and cricket practice nets, in an indoor badminton hall of four courts and a table tennis hall of six tables, and on a 200-metre athletics track.',
-      'There is a yoga room, and a sports room equipped for everything else.',
+      'Good sport depends upon good provision, and our students train in facilities set aside for the purpose. Outdoors, the school offers a football ground, two basketball courts, cricket practice nets and a 200-metre athletics track. Indoors, there is a badminton hall with four courts and a table tennis hall furnished with six tables.',
+      'A dedicated yoga room provides a calm setting for a discipline that calls for stillness and concentration, while a fully equipped sports room supplies everything else that our teachers and coaches require. Taken together, these facilities ensure that every student has the space and the equipment to practise properly.',
     ],
     3,
   ),
   section(
-    'Where our children compete',
+    'Where our students compete',
     'compete',
     [
-      'Every child competes first at home, in the inter-house championship.',
-      'Beyond the school our teams play in the tournaments of the Mumbai Schools Sports Association, the District Sports Office competitions in Raigad, ZP inter-school tournaments, and private inter-school tournaments in the Navi Mumbai and Panvel region.',
+      'Competition at SIWS begins at home. In the inter-house championship, every child experiences the excitement of representing a team, the discipline of preparing for an event and the satisfaction of contributing to a common cause. It is the foundation upon which all further competition is built.',
+      'Beyond the school gates, our teams take part in a full calendar of external fixtures. They compete in the tournaments of the Mumbai Schools Sports Association (MSSA), in the District Sports Office (DSO) competitions in Raigad, in Zilla Parishad (ZP) inter-school tournaments, and in private inter-school tournaments across the Navi Mumbai and Panvel region. These occasions allow our students to measure themselves against able opponents from other schools and to acquire the composure that only genuine competition can give.',
     ],
     4,
   ),
   section(
-    'Recent results',
-    'results',
+    'Recent achievements',
+    'achievements',
     [
-      'In the last few years our children have been overall champions in DSO Athletics 2023–24, winners of the DSO Basketball under-16 girls’ title three years running, and runners-up in MSSA Football under-14 in 2024. More than a hundred medals have been won at district and inter-school level in three years.',
-      'Five children have represented Raigad District and the Mumbai Division in football, basketball and athletics, and two represented Maharashtra in chess at the State Level Championship in 2024.',
-      'Individually they have won more than forty medals in two years, among them gold in the 100 metres and the 200 metres, gold in chess at district level, and Best Player awards in football and basketball at MSSA tournaments.',
+      'The commitment of our students and their coaches has been rewarded with a record of which the school is justly proud. SIWS was overall champion in DSO Athletics in 2023–24, has won the DSO Basketball under-16 girls’ title in three consecutive years, and was runner-up in MSSA Football at under-14 level in 2024. In the past three years our students have won more than a hundred medals at district and inter-school level.',
+      'A number of students have earned selection beyond the school. Five have represented Raigad District and the Mumbai Division in football, basketball and athletics, and two had the distinction of representing Maharashtra in chess at the State Level Championship in 2024.',
+      'Individual achievement has been equally notable. In the past two years our students have won more than forty individual medals, among them gold in the 100 metres and the 200 metres and gold in chess at district level, together with Best Player awards in football and basketball at MSSA tournaments.',
     ],
     5,
   ),
   section(
-    'Through the year',
-    'the year',
+    'The sporting year',
+    'year',
     [
-      'The sporting year runs from the inter-house sports championship through the inter-class football league, the cricket premier league, the chess and carrom championship, and the celebration of International Yoga Day.',
-      'Annual Sports Day is the flagship, held every December: the march past, the lighting of the torch and the oath ceremony, aerobic dance and pyramid formation, the track and field events, and the prize distribution to close. Every child takes part, and so do the parents.',
+      'The sporting calendar gives the school year much of its rhythm. It begins with the inter-house sports championship and continues with the inter-class football league, the cricket premier league and the chess and carrom championship, and it includes the school’s celebration of International Yoga Day.',
+      'The highlight of the year is Annual Sports Day, held every December. The occasion opens with a ceremonial march past, the lighting of the torch and the oath ceremony, and proceeds to displays of aerobic dance and pyramid formation before the track and field events take centre stage. The day concludes with the distribution of prizes. Every child takes part, and parents join in as well, which makes Sports Day a celebration shared by the whole school community.',
     ],
     6,
   ),
@@ -142,17 +155,17 @@ const layout = [
     'Coaching and training',
     'training',
     [
-      'Three full-time physical education teachers lead the programme, with external professional coaches alongside them: a BCCI-certified coach for cricket, MSSA-certified coaches for football and basketball, and a FIDE-rated coach for chess.',
-      'Beyond the regular evening coaching there is a summer sports camp of fifteen days in April, fitness and conditioning sessions, a talent identification camp from Std 3 upwards, and special training for the children chosen for the DSO and MSSA teams.',
+      'Behind every achievement stands careful teaching. The programme is led by three full-time physical education teachers, whose work is complemented by external professional coaches of recognised standing: a BCCI-certified coach for cricket, MSSA-certified coaches for football and basketball, and a FIDE-rated coach for chess. Our students therefore receive instruction that is both expert and consistent.',
+      'Regular after-school coaching is supplemented by a number of specialised programmes. A fifteen-day summer sports camp is held each April, and fitness and conditioning sessions build the strength and stamina on which sound technique depends. A talent identification camp, open to students from Std 3 upwards, helps us to recognise ability at an early age, while those selected for the DSO and MSSA teams receive special training in preparation for competition.',
     ],
     7,
   ),
   section(
-    'Former pupils, and what comes next',
-    'what comes next',
+    'Our alumni and the road ahead',
+    'the road ahead',
     [
-      'Former pupils have represented the district in cricket at under-19 level and won state-level medals in athletics; some have gone on to sports scholarships, and two are now certified sports coaches.',
-      'For 2025–26 the school plans to introduce lawn tennis, to host an inter-school basketball tournament, to upgrade the cricket nets with a bowling machine, and to enter the CBSE and State Nationals for athletics and chess.',
+      'The value of a school’s sporting education is seen most clearly in those who have passed through it. Former students of SIWS have gone on to represent the district in cricket at under-19 level and to win medals in athletics at state level. Some have been awarded sports scholarships, and two have made sport their profession as certified coaches.',
+      'We continue to build upon this foundation. For 2025–26 the school plans to introduce lawn tennis, to host an inter-school basketball tournament, to upgrade the cricket nets with a bowling machine, and to enter students in the CBSE and State Nationals for athletics and chess. Each of these steps reflects our commitment to offer every student wider opportunity and a higher standard of sport.',
     ],
     8,
   ),
@@ -199,7 +212,7 @@ const main = async () => {
       intro: INTRO,
       layout,
       metaDescription:
-        'Sport at South Indians’ Welfare Society — the sports we play, our coaching and facilities, school teams, the competitions our children enter and what they have won.',
+        'Sport at South Indians’ Welfare Society: fourteen sports, professional coaching, school teams, and achievements at district, division and state level.',
       _status: 'published',
     } as never,
     overrideAccess: true,
