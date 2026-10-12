@@ -117,6 +117,30 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
     }
   }
 
+  /*
+   * Every photograph anywhere on the page, whatever holds it — a gallery, an
+   * achievement wall, a picture beside a paragraph. A gallery adds what is
+   * filed under its heading, and leaves these out so that nothing is shown
+   * twice. Found by shape rather than by block, so a block added later is
+   * covered without being listed here.
+   */
+  const pictured = new Set<number>()
+  const findPictures = (value: unknown, depth = 0) => {
+    if (!value || typeof value !== 'object' || depth > 12) return
+    if (Array.isArray(value)) {
+      for (const entry of value) findPictures(entry, depth + 1)
+      return
+    }
+    const record = value as Record<string, unknown>
+    if (typeof record.id === 'number' && typeof record.filename === 'string' && 'mimeType' in record) {
+      pictured.add(record.id)
+      return
+    }
+    for (const entry of Object.values(record)) findPictures(entry, depth + 1)
+  }
+  findPictures(blocks)
+  const onThePage = Array.from(pictured)
+
   return (
     <>
       {blocks.map((block, index) => {
@@ -160,7 +184,7 @@ export const RenderBlocks = ({ blocks, unit = null, units = [] }: RenderBlocksPr
           case 'faculty':
             return <FacultyBlockView key={key} block={block} unit={unit} />
           case 'gallery':
-            return <GalleryBlockView key={key} block={block} unit={unit} />
+            return <GalleryBlockView key={key} block={block} unit={unit} shown={onThePage} />
           case 'galleryRest':
             return (
               <GalleryRestBlockView

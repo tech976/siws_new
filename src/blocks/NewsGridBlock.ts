@@ -43,10 +43,15 @@ export const NewsGridBlock: Block = {
   fields: [
     headingField,
     /*
-     * WHICH OF THE TWO THIS BLOCK LISTS. News & Events is one collection with
-     * a News/Event choice on each item; a News page wants one and an Events
-     * page the other. Defaults to news, which is what every block placed
-     * before this field existed was showing.
+     * WHICH OF THE THREE THIS BLOCK LISTS. News & Events is one collection
+     * with a News/Event/Achievement choice on each item; a News page wants
+     * one, an Events page another. Defaults to news, which is what every block
+     * placed before this field existed was showing.
+     *
+     * ACHIEVEMENTS were the one choice with no page of their own: an item
+     * published as an achievement was listed under News and nowhere on the
+     * school's Achievements page, which is where its author went to look for
+     * it. A block set to this on that page is what puts it there.
      */
     {
       name: 'shows',
@@ -55,6 +60,7 @@ export const NewsGridBlock: Block = {
       options: [
         { label: 'News', value: 'news' },
         { label: 'Events', value: 'event' },
+        { label: 'Achievements', value: 'achievement' },
       ],
       label: 'Which of News & Events to list',
       admin: {

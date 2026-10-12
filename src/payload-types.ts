@@ -517,7 +517,7 @@ export interface User {
 export interface Post {
   id: number;
   /**
-   * News and achievements appear on the News page, events on the Events page. Each shows a coloured tag in the news strip at the top of the site.
+   * News appears on your News page, events on your Events page, and achievements on your Achievements page as well as under News. Each shows a coloured tag in the news strip at the top of the site.
    */
   kind: 'news' | 'event' | 'achievement';
   /**
@@ -1959,7 +1959,7 @@ export interface NewsGridBlock {
   /**
    * Items published in News & Events with this choice are added under the stories below.
    */
-  shows?: ('news' | 'event') | null;
+  shows?: ('news' | 'event' | 'achievement') | null;
   /**
    * A line or two under the heading, above the stories.
    */

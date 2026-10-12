@@ -182,9 +182,18 @@ export const GalleryBlockView = async ({
   block,
   unit,
   includeExtras = true,
+  shown = [],
 }: {
   block: GalleryBlock
   unit?: Unit | null
+  /**
+   * Photographs the rest of the page already shows, in any kind of block.
+   *
+   * A Sports page is built from the school's sports photographs, and those are
+   * also filed under Sports — so a gallery added to it to catch new uploads
+   * would open by repeating the page above it.
+   */
+  shown?: number[]
   /**
    * Whether to add photographs filed under this heading that the block does
    * not list. "Every other section" turns it off: it has already worked out
@@ -218,11 +227,12 @@ export const GalleryBlockView = async ({
     const section = block.heading?.trim()
     if (!section || !includeExtras) return []
 
-    const known = new Set(
-      stored
+    const known = new Set([
+      ...shown,
+      ...stored
         .map((entry) => (typeof entry.image === 'object' ? entry.image?.id : null))
         .filter((id): id is number => typeof id === 'number'),
-    )
+    ])
 
     try {
       const payload = await getPayload({ config })

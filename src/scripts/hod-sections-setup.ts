@@ -10,7 +10,7 @@ const { default: config } = await import('@payload-config')
  * panel appears on the site without anyone editing a page (SIWS, 2026-10-01:
  * "I want to make it easy for the HODs and teachers").
  *
- * THREE STEPS, each safe to repeat:
+ * FOUR STEPS, each safe to repeat:
  *
  *  1. NEWS OR EVENT. Every item published before the choice existed was news,
  *     and is set to it. Written to the item and to its latest version, or the
@@ -28,6 +28,15 @@ const { default: config } = await import('@payload-config')
  *     appeared nowhere. `galleryRest` at the foot of each page renders a group
  *     for whatever is not already shown, including sections invented later.
  *
+ *  4. ACHIEVEMENTS AND SPORTS APPEAR ON THEIR OWN PAGES (SIWS, 2026-10-12:
+ *     "anything updated from the CMS should go under the particular
+ *     section"). An item published as an achievement was listed under News
+ *     only, and a photograph filed under Achievements or Sports reached the
+ *     gallery and never the page of that name. Each school's Achievements page
+ *     gets a list of its achievements and a gallery of the photographs filed
+ *     under Achievements; its Sports page gets the same gallery for Sports.
+ *     Both render nothing until there is something new to show.
+ *
  * WHY A SCRIPT AND NOT `seed:nav` / `seed:galleries`: those rebuild a page from
  * the template and would undo what the schools have written. This adds one
  * block to the end of a page and leaves everything else alone.
@@ -39,6 +48,15 @@ const { default: config } = await import('@payload-config')
 const APPLY = process.argv.includes('--apply')
 const EVENTS_HEADING = 'What’s happening'
 const NEWS_HEADING = 'Latest news'
+const ACHIEVEMENTS_HEADING = 'Latest achievements'
+/**
+ * The pages named after a section photographs are filed under. The heading has
+ * to be that section's name exactly: it is what a gallery matches on.
+ */
+const SECTION_PAGES = [
+  ['achievements', 'Achievements'],
+  ['sports', 'Sports'],
+] as const
 
 type Block = Record<string, unknown> & { blockType?: string; background?: string }
 type Page = {
@@ -142,7 +160,15 @@ const main = async () => {
       data: { layout: [...layout, block] } as never,
       overrideAccess: true,
     })
+    // So a second block added to the same page starts from this one.
+    page.layout = [...layout, block]
     console.log(`  ${what} — added`)
+  }
+
+  /** The band colour that alternates against whatever the page ends with. */
+  const nextBackground = (page: Page) => {
+    const last = (page.layout ?? [])[(page.layout ?? []).length - 1]
+    return last?.background === 'sea' ? 'white' : 'sea'
   }
 
   for (const unit of units as unknown as { id: number; slug: string }[]) {
@@ -192,6 +218,61 @@ const main = async () => {
       console.log(`  gallery ${unit.slug} already shows every section`)
     } else {
       await append(gallery, { blockType: 'galleryRest' }, `gallery ${unit.slug}: every other section`)
+    }
+
+    /* ------------- 4. achievements and sports appear on their own pages ---- */
+    for (const [slug, section] of SECTION_PAGES) {
+      const page = await pageOf(unit.id, slug)
+      if (!page) {
+        console.log(`  ${slug.padEnd(12)}  ${unit.slug} has no ${slug} page — skipped`)
+        continue
+      }
+
+      if (slug === 'achievements') {
+        const listed = (page.layout ?? []).some(
+          (block) => block.blockType === 'newsGrid' && block.shows === 'achievement',
+        )
+        if (listed) {
+          console.log(`  ${slug.padEnd(12)}  ${unit.slug} already lists its achievements`)
+        } else {
+          await append(
+            page,
+            {
+              blockType: 'newsGrid',
+              shows: 'achievement',
+              heading: ACHIEVEMENTS_HEADING,
+              headingLevel: 'h2',
+              background: nextBackground(page),
+              items: [],
+            },
+            `${slug.padEnd(12)}  ${unit.slug}: a list of achievements published in the panel`,
+          )
+        }
+      }
+
+      const collected = (page.layout ?? []).some(
+        (block) =>
+          block.blockType === 'gallery' &&
+          typeof block.heading === 'string' &&
+          block.heading.trim() === section,
+      )
+      if (collected) {
+        console.log(`  ${slug.padEnd(12)}  ${unit.slug} already shows photographs filed under ${section}`)
+      } else {
+        await append(
+          page,
+          {
+            blockType: 'gallery',
+            heading: section,
+            headingLevel: 'h2',
+            layout: 'bento',
+            perPage: '12',
+            background: nextBackground(page),
+            images: [],
+          },
+          `${slug.padEnd(12)}  ${unit.slug}: photographs filed under ${section}`,
+        )
+      }
     }
   }
 

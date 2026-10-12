@@ -88,11 +88,15 @@ export const NewsGridBlockView = async ({
          * `kind` is null on items published before the News/Event choice
          * existed, and those were all news — so "news" means "not an event"
          * rather than an exact match, or the News page would empty itself.
+         *
+         * That also keeps an achievement under News, as well as on the
+         * Achievements page: a prize is news, and a school with no
+         * Achievements page yet still has somewhere its wins appear.
          */
         where: {
           and: [
             ...(unit ? [{ unit: { equals: unit.id } }] : []),
-            shows === 'event' ? { kind: { equals: 'event' } } : { kind: { not_equals: 'event' } },
+            shows === 'news' ? { kind: { not_equals: 'event' } } : { kind: { equals: shows } },
           ],
         },
         sort: '-date',

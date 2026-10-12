@@ -29,7 +29,12 @@ export const GalleryBlock: Block = {
     {
       name: 'images',
       type: 'array',
-      minRows: 1,
+      /*
+       * NO MINIMUM. A gallery also shows every photograph filed under its
+       * heading, so one placed on a Sports or Achievements page to collect
+       * what teachers upload starts with none of its own — and `minRows: 1`
+       * would refuse to save that page at all.
+       */
       maxRows: 40,
       labels: { singular: 'Photograph', plural: 'Photographs' },
       admin: { initCollapsed: true },
