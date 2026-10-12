@@ -555,26 +555,26 @@ const main = async () => {
   let facultyUpdated = 0
 
   /**
-   * ONE ROSTER, TWO TEAMS.
+   * ONE ROSTER, TWO LISTS.
    *
    * SIWS supplies the staff as two lists, each under its own head teacher,
-   * and asked for the page to show them that way. The faculty block's
-   * `teams` layout does the grouping, and `campus` is the only field on a
-   * faculty record that says which team somebody belongs to — so the tag is
-   * set here rather than cleared, which is what this seed used to do.
+   * and asked for the page to show them that way: Mrs. Bagayatkar and her
+   * teachers on the left, Mrs. Geeta Raja and hers on the right.
    *
-   * IT IS NOT A CAMPUS LABEL. Nothing renders the value: the block groups
-   * by it and prints no heading for it, so the section is still published as
-   * one school. The word is the field's, not the page's.
+   * THE ORDER IS WHAT SAYS WHOSE LIST SOMEBODY IS IN. The faculty block's
+   * `teams` layout gives each head teacher whoever follows her in the
+   * roster's order, up to the next head teacher (`src/lib/faculty-teams.ts`),
+   * so Mrs. Bagayatkar's list is numbered first and that puts it on the
+   * left. This ran the other way round — Mrs. Geeta Raja's list at 1 — while
+   * the block grouped by the `campus` tag and sorted the tags.
    *
-   * Teams are ordered by that key, and 'matunga' sorts before 'wadala' —
-   * which is the order SIWS listed them in, Mrs. Bagayatkar's team first.
-   * `order` still runs 1..n across the whole roster so the sequence inside
-   * each team is stable.
+   * The tag is still written, because the column still holds it for every
+   * other teacher, but nothing reads it: it is not a campus label and it no
+   * longer decides anything a visitor sees.
    */
   const roster = [
-    ...FACULTY.map((teacher) => ({ ...teacher, campus: 'wadala' })),
     ...MATUNGA_FACULTY.map((teacher) => ({ ...teacher, campus: 'matunga' })),
+    ...FACULTY.map((teacher) => ({ ...teacher, campus: 'wadala' })),
   ].map((teacher, index) => ({
     ...teacher,
     order: index + 1,
@@ -2518,9 +2518,9 @@ const main = async () => {
             description:
               /*
                * Mrs. Bagayatkar first, which is the order the roster runs in:
-               * her team is tagged 'matunga' and sorts ahead of 'wadala', so
-               * she leads the left-hand column on the teachers page. The
-               * sentence naming them was the other way round.
+               * her list is numbered ahead of Mrs. Geeta Raja's, so she leads
+               * the left-hand column on the teachers page. The sentence
+               * naming them was the other way round.
                */
               'Mrs. Sreedevi Prasanna Bagayatkar is Head Teacher and Mrs. Geeta Raja is I/C Head Teacher. Each leads her own teaching team.',
           },

@@ -147,7 +147,8 @@ export const Faculty: CollectionConfig = {
       admin: {
         position: 'sidebar',
         step: 1,
-        description: 'Lower numbers appear first. Put the head teacher at 1.',
+        description:
+          'Lower numbers appear first. Put the head teacher at 1. Where a school has two head teachers, each one leads the teachers numbered after her, up to the next head teacher — so a teacher’s number also decides whose list she is in.',
       },
     },
     ...workflowFields,

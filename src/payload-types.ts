@@ -1484,7 +1484,7 @@ export interface FacultyBlock {
   } | null;
   campus?: ('all' | 'wadala' | 'matunga') | null;
   /**
-   * “Led by the head teacher” puts the head teacher at the top with the rest of the roster beneath her. The school is one place now, so this is a single group rather than one column per campus.
+   * “Led by the head teacher” puts the head teacher at the top with the rest of the roster beneath her. A school with two head teachers gets two lists side by side: each leads the teachers whose Order numbers follow hers, up to the next head teacher.
    */
   layout?: ('grid' | 'teams') | null;
   cardLayout?: ('beside' | 'centred') | null;
@@ -2775,7 +2775,7 @@ export interface Faculty {
    */
   campus?: ('wadala' | 'matunga') | null;
   /**
-   * Lower numbers appear first. Put the head teacher at 1.
+   * Lower numbers appear first. Put the head teacher at 1. Where a school has two head teachers, each one leads the teachers numbered after her, up to the next head teacher — so a teacher’s number also decides whose list she is in.
    */
   order: number;
   /**

@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 
 import { Media } from '@/components/Media'
 import { RichText } from '@/components/RichText'
+import { intoTeams } from '@/lib/faculty-teams'
 import type { Faculty, FacultyBlock, Unit } from '@/payload-types'
 
 import { Section, SectionHeading, type BlockBackground } from './Section'
@@ -31,10 +32,10 @@ export const FacultyBlockView = async ({
 
   /**
    * The school is published as a single entity, so the roster is never narrowed
-   * by campus and never split by it. The block's own campus setting is ignored
-   * rather than honoured: Wadala and Matunga are no longer presented as
-   * separate places, and a filter that quietly hid two thirds of the teachers
-   * would be the one visible trace of a distinction the school has dropped.
+   * by campus. The block's own campus setting is ignored rather than honoured:
+   * Wadala and Matunga are no longer presented as separate places, and a
+   * filter that quietly hid two thirds of the teachers would be the one
+   * visible trace of a distinction the school has dropped.
    */
   const grouped = block.layout === 'teams'
 
@@ -64,36 +65,21 @@ export const FacultyBlockView = async ({
 
   if (teachers.length === 0) return null
 
-  const isHead = (person: { designation?: string | null }) =>
-    /head teacher/i.test(person.designation ?? '')
-
   /**
-   * The roster as one team, led by its head teacher.
+   * The roster as lists, each led by its head teacher.
    *
-   * This used to split on the `campus` field, putting Wadala and Matunga in
-   * separate groups. The school is published as a single entity now, so the
-   * whole roster is one group and the stored campus value is not read here —
-   * the records keep it, but it no longer decides what a visitor sees.
+   * Primary has two head teachers and SIWS lists its staff under each (asked
+   * again, 2026-10-12: Mrs. Bagayatkar and her teachers on the left, Mrs.
+   * Geeta Raja and hers on the right). When the campuses stopped being shown
+   * the two lists were pooled into one column under both heads, which is not
+   * the same thing: whose teachers were whose went with the campus name.
+   *
+   * `intoTeams` splits on the roster's own order — a head teacher leads
+   * whoever follows her, up to the next head teacher — so the lists are back
+   * and the stored campus value is still not read. A section with one head
+   * teacher is one list, exactly as it was.
    */
-  const teams = grouped
-    ? [
-        {
-          key: '',
-          /*
-           * EVERY head teacher, not the first one.
-           *
-           * Primary has two — the roster was two lists, one per campus, each
-           * led by its own head — and when the lists were merged this took
-           * `find(isHead)` for the lead and filtered ALL heads out of the
-           * rest. The second head, Mrs. Sreedevi Prasanna Bagayatkar, was
-           * then in neither and vanished from the page while her ten
-           * colleagues stayed on it.
-           */
-          heads: teachers.filter(isHead),
-          rest: teachers.filter((person) => !isHead(person)),
-        },
-      ]
-    : []
+  const teams = grouped ? intoTeams(teachers) : []
 
   /** The monogram or photograph. Bigger for a head teacher, bigger again when stacked. */
   const face = (teacher: (typeof teachers)[number], lead: boolean, stacked = false) =>
@@ -201,19 +187,23 @@ export const FacultyBlockView = async ({
            *
            * Primary is the section this layout was built for and it has two
            * lists, so the columns were hard-coded. Every other section has one
-           * — Secondary's roster is a single team, and Kindergarten's and the
-           * Junior College's carry no team key at all — and a lone column in a
+           * — Kindergarten has a single head teacher, and Secondary and the
+           * Junior College none by that title — and a lone column in a
            * two-column grid leaves half the page blank beside it.
            *
            * One team therefore runs full width, which is the same page in one
            * column rather than a narrow strip with a hole to its right.
+           *
+           * `items-start` because the two lists are not the same length: left
+           * to stretch, the shorter column's cards would be spread down to
+           * the foot of the longer one.
            */
-          className={`grid gap-10 lg:gap-8 ${teams.length > 1 ? 'lg:grid-cols-2' : ''}`}
+          className={`grid items-start gap-10 lg:gap-8 ${teams.length > 1 ? 'lg:grid-cols-2' : ''}`}
         >
-          {teams.map((team) => (
-            <div key={team.key}>
+          {teams.map((team, at) => (
+            <div key={team.heads[0]?.id ?? `team-${at}`}>
               {team.heads.length > 0 ? (
-                // Side by side where a section has two heads, so neither
+                // Side by side where two heads share one list, so neither
                 // reads as the other's deputy.
                 <div className={`grid gap-3 ${team.heads.length > 1 ? 'sm:grid-cols-2' : ''}`}>
                   {team.heads.map((head) => (
@@ -229,7 +219,19 @@ export const FacultyBlockView = async ({
               ) : null}
 
               {team.rest.length > 0 ? (
-                <ul className="mt-4 grid gap-3">
+                <ul
+                  className="mt-4 grid gap-3"
+                  /*
+                   * Two lists that look alike need telling apart by ear as
+                   * well as by eye: without a name each is announced only as
+                   * "list, nine items".
+                   */
+                  aria-label={
+                    teams.length > 1 && team.heads[0]
+                      ? `Teachers led by ${team.heads.map((head) => head.name).join(' and ')}`
+                      : undefined
+                  }
+                >
                   {team.rest.map((teacher, index) => {
                     const Mark = cornerMark(teacher, index)
                     return (

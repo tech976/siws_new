@@ -58,7 +58,7 @@ export const FacultyBlock: Block = {
       ],
       admin: {
         description:
-          '“Led by the head teacher” puts the head teacher at the top with the rest of the roster beneath her. The school is one place now, so this is a single group rather than one column per campus.',
+          '“Led by the head teacher” puts the head teacher at the top with the rest of the roster beneath her. A school with two head teachers gets two lists side by side: each leads the teachers whose Order numbers follow hers, up to the next head teacher.',
       },
     },
     {
