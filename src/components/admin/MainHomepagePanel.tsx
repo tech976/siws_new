@@ -1,6 +1,6 @@
 import { Megaphone } from 'lucide-react'
 import Link from 'next/link'
-import type { Payload, TypedUser } from 'payload'
+import type { Payload, TypedUser, Where } from 'payload'
 
 import { MainHomepageToggle } from './MainHomepageToggle'
 
@@ -14,9 +14,9 @@ import { MainHomepageToggle } from './MainHomepageToggle'
  * have I put on the front page?" without filtering two lists to find out, and
  * the place to take something off again.
  *
- * A Server Component, like the dashboard it sits in. An item that is ticked
- * but not published is listed and marked, because that is the one case where
- * a tick has no effect and its owner would otherwise wonder why.
+ * A Server Component, like the dashboard it sits in. Published items only:
+ * this is the list of what is on the main homepage, and something that is not
+ * published is not on it, ticked or not.
  */
 interface PanelProps {
   payload: Payload
@@ -29,7 +29,6 @@ interface Row {
   id: number | string
   title: string
   meta: string
-  live: boolean
 }
 
 const ADMIN_BASE = '/admin/collections'
@@ -47,7 +46,9 @@ const schoolOf = (unit: unknown): string =>
     : 'Institution-wide'
 
 export const MainHomepagePanel = async ({ payload, user }: PanelProps) => {
-  const ticked = { showOnHome: { equals: true } }
+  const ticked: Where = {
+    and: [{ showOnHome: { equals: true } }, { _status: { equals: 'published' } }],
+  }
   const find = (collection: 'posts' | 'announcements', sort: string) =>
     payload
       .find({
@@ -72,7 +73,6 @@ export const MainHomepagePanel = async ({ payload, user }: PanelProps) => {
       id: doc.id as number,
       title: String(doc.message ?? 'Untitled'),
       meta: `${schoolOf(doc.unit)} · Ticker line`,
-      live: doc._status === 'published',
     })),
     ...posts.map((doc) => ({
       key: `post-${doc.id}`,
@@ -80,7 +80,6 @@ export const MainHomepagePanel = async ({ payload, user }: PanelProps) => {
       id: doc.id as number,
       title: String(doc.title ?? 'Untitled'),
       meta: `${schoolOf(doc.unit)} · ${KIND[String(doc.kind)] ?? 'News'}`,
-      live: doc._status === 'published',
     })),
   ]
 
@@ -103,7 +102,7 @@ export const MainHomepagePanel = async ({ payload, user }: PanelProps) => {
               <Megaphone size={24} strokeWidth={2} />
             </span>
             Nothing from the schools is on the main homepage yet. Open News &amp; Events and press
-            the cross beside an item to put it there.
+            the cross beside a published item to put it there.
           </p>
         ) : (
           <ul className="siws-rows">
@@ -117,10 +116,7 @@ export const MainHomepagePanel = async ({ payload, user }: PanelProps) => {
                     >
                       {row.title}
                     </Link>
-                    <span className="siws-row__meta">
-                      {row.meta}
-                      {row.live ? '' : ' · not published yet, so not showing'}
-                    </span>
+                    <span className="siws-row__meta">{row.meta}</span>
                   </span>
                   <MainHomepageToggle collection={row.collection} id={row.id} shown />
                 </div>

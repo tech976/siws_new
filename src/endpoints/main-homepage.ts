@@ -35,6 +35,24 @@ const handler =
       return Response.json({ error: 'Say whether to show it: { "show": true } or false.' }, { status: 400 })
     }
 
+    /*
+     * Only what is live can be put on the main homepage. Taking something off
+     * is always allowed, so an item unpublished after it was ticked can still
+     * be cleared.
+     */
+    if (body.show) {
+      const item = (await req.payload
+        .findByID({ collection, id, depth: 0, overrideAccess: true, disableErrors: true })
+        .catch(() => null)) as { _status?: string } | null
+      if (!item) return Response.json({ error: 'That item no longer exists.' }, { status: 404 })
+      if (item._status !== 'published') {
+        return Response.json(
+          { error: 'Publish it first. Only a published item can run on the main SIWS homepage.' },
+          { status: 409 },
+        )
+      }
+    }
+
     const found = await setOnMainHomepage({ payload: req.payload, collection, id, show: body.show })
     if (!found) return Response.json({ error: 'That item no longer exists.' }, { status: 404 })
 

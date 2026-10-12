@@ -22,8 +22,12 @@ import { isAdmin, type AccessUser } from '@/access/user'
  * filter on a field the caller may not read. Nothing about the tick is private;
  * what is restricted is setting it, here and in `endpoints/main-homepage.ts`.
  */
-const administratorsOnly: Condition = (_data, _siblingData, { user }) =>
-  isAdmin(user as AccessUser | null)
+/**
+ * An administrator, looking at something that is published. A draft is not on
+ * any page, so there is nothing yet to put on the main one.
+ */
+const administratorOnPublished: Condition = (data, _siblingData, { user }) =>
+  isAdmin(user as AccessUser | null) && data?._status === 'published'
 
 export const mainHomepageField = (what: string): Field => ({
   name: 'showOnHome',
@@ -41,8 +45,8 @@ export const mainHomepageField = (what: string): Field => ({
      * tick box. The list column stays visible to them, read-only, so they can
      * see when something of theirs has been picked.
      */
-    condition: administratorsOnly,
-    description: `Tick to run this ${what} on the main SIWS homepage as well. Left unticked, it stays on its own school’s pages. Nothing appears anywhere until it is published.`,
+    condition: administratorOnPublished,
+    description: `Tick to run this ${what} on the main SIWS homepage as well. Left unticked, it stays on its own school’s pages.`,
     components: {
       Cell: '@/components/admin/MainHomepageCell#MainHomepageCell',
     },

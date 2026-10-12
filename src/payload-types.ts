@@ -573,7 +573,7 @@ export interface Post {
    */
   unit?: (number | null) | Unit;
   /**
-   * Tick to run this item on the main SIWS homepage as well. Left unticked, it stays on its own school’s pages. Nothing appears anywhere until it is published.
+   * Tick to run this item on the main SIWS homepage as well. Left unticked, it stays on its own school’s pages.
    */
   showOnHome?: boolean | null;
   /**
@@ -2709,7 +2709,7 @@ export interface Announcement {
    */
   unit?: (number | null) | Unit;
   /**
-   * Tick to run this line on the main SIWS homepage as well. Left unticked, it stays on its own school’s pages. Nothing appears anywhere until it is published.
+   * Tick to run this line on the main SIWS homepage as well. Left unticked, it stays on its own school’s pages.
    */
   showOnHome?: boolean | null;
   /**
