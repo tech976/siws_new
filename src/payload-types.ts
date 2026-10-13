@@ -509,7 +509,7 @@ export interface User {
   collection: 'users';
 }
 /**
- * Fill in the steps below, then use the eye icon at the top to see the page beside your writing, or the arrow to open it in a new tab. Nothing is public until you press Publish.
+ * Fill in the steps below, then use the eye icon at the top to see the page beside your writing, or the arrow to open it in a new tab. Nothing is public until you press Publish. To take a published item off the website again, open the ⋮ menu beside the Publish button and choose Unpublish.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts".

@@ -5,6 +5,7 @@ import { Media } from '@/components/Media'
 import { RichText } from '@/components/RichText'
 import { newestFirst } from '@/lib/newest-first'
 import type { NewsGridBlock, Media as MediaDoc, Unit } from '@/payload-types'
+import { hiddenTwins, sameTitle } from '@/utilities/typed-news'
 
 import { Section, SectionHeading, type BlockBackground } from './Section'
 
@@ -55,9 +56,50 @@ export const NewsGridBlockView = async ({
   block: NewsGridBlock
   unit?: Unit | null
 }) => {
-  const stored = (block.items ?? []).filter((item) => item.photo && typeof item.photo === 'object')
+  const typed = (block.items ?? []).filter((item) => item.photo && typeof item.photo === 'object')
   // Blocks placed before the setting existed carry no value, and were listing news.
   const shows = block.shows ?? 'news'
+
+  /**
+   * A TYPED STORY ANSWERS TO ITS ITEM IN THE PANEL.
+   *
+   * Some stories are here twice: typed into this block when the site was
+   * built, and as an item in News & Events made from it. The typed copy is the
+   * one shown, and it was shown whatever became of the item — so a teacher who
+   * unpublished a story in the panel still found it on the page, on the
+   * Kindergarten's News page for every one of its seven.
+   *
+   * A typed story with an item of the same name in this school is therefore
+   * shown only while that item is live. One with no item is the page's own,
+   * and is shown as before. See `typed-news.ts`.
+   *
+   * Every state is read here, drafts included, which is the one thing the
+   * listing below must not do — it is only ever used to leave a story OUT.
+   */
+  const hidden =
+    typed.length === 0
+      ? new Set<string>()
+      : await (async () => {
+          try {
+            const payload = await getPayload({ config })
+            const { docs } = await payload.find({
+              collection: 'posts',
+              where: unit ? { unit: { equals: unit.id } } : { unit: { exists: false } },
+              limit: 500,
+              depth: 0,
+              select: { title: true, _status: true, publishAt: true, unpublishAt: true },
+              overrideAccess: true,
+            })
+            return hiddenTwins(
+              typed.map((item) => item.title),
+              docs,
+            )
+          } catch {
+            // Unsure is not a reason to take a story down.
+            return new Set<string>()
+          }
+        })()
+  const stored = typed.filter((item) => !hidden.has(sameTitle(item.title)))
 
   /**
    * STORIES PUBLISHED IN NEWS & EVENTS.

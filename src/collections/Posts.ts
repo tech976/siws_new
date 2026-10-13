@@ -20,6 +20,7 @@ import { mainHomepageField } from '@/fields/main-homepage'
 import { mainHomepageEndpoint } from '@/endpoints/main-homepage'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 import { recordRedirectOnMove } from '@/lib/redirects'
+import { removeTypedTwins } from '@/utilities/typed-news'
 
 /**
  * A department update — "Independence Day Celebrations 2026" — written by the
@@ -57,7 +58,7 @@ export const Posts: CollectionConfig = {
      * it for the first time, so the description names them.
      */
     description:
-      'Fill in the steps below, then use the eye icon at the top to see the page beside your writing, or the arrow to open it in a new tab. Nothing is public until you press Publish.',
+      'Fill in the steps below, then use the eye icon at the top to see the page beside your writing, or the arrow to open it in a new tab. Nothing is public until you press Publish. To take a published item off the website again, open the ⋮ menu beside the Publish button and choose Unpublish.',
     group: 'Content',
 
     /*
@@ -108,7 +109,33 @@ export const Posts: CollectionConfig = {
      * same reason.
      */
     afterChange: [recordRedirectOnMove, revalidateAfterChange],
-    afterDelete: [revalidateAfterDelete],
+    afterDelete: [
+      /*
+       * A deleted story is deleted from the page as well. Some stories are on
+       * a News page twice — as this item, and typed into the page when the
+       * site was built — and the typed copy is the one a visitor sees. Without
+       * this, deleting the item took it out of the panel and left it on the
+       * site, with nothing left in the panel to unpublish. See `typed-news.ts`.
+       *
+       * Never the reason a delete fails: the item is gone either way.
+       */
+      async ({ doc, req }) => {
+        try {
+          const unit = (doc as { unit?: unknown }).unit
+          const unitId =
+            unit && typeof unit === 'object' && 'id' in unit
+              ? ((unit as { id: number | string }).id ?? null)
+              : typeof unit === 'number' || typeof unit === 'string'
+                ? unit
+                : null
+          await removeTypedTwins({ req, unitId, title: (doc as { title?: unknown }).title })
+        } catch (error) {
+          req.payload.logger.error({ err: error }, 'Could not remove the typed copy of a deleted story')
+        }
+        return doc
+      },
+      revalidateAfterDelete,
+    ],
   },
 
   endpoints: [mainHomepageEndpoint('posts')],

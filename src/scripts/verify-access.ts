@@ -690,6 +690,103 @@ const main = async () => {
       },
     })
 
+    /*
+     * Some news stories are on a page twice: typed into the page's news block
+     * when the site was built, and as an item in News & Events. The typed copy
+     * is the one a visitor sees, so it has to follow the item — or unpublishing
+     * and deleting in the panel change nothing on the site, which is what the
+     * Kindergarten's seven stories did.
+     */
+    await check({
+      name: 'A typed news story is hidden while its item is unpublished, and goes when it is deleted',
+      run: async () => {
+        const { hiddenTwins } = await import('@/utilities/typed-news')
+
+        const title = `Verify twin ${stamp}`
+        const lone = `Verify page-only ${stamp}`
+        const typed = [title, lone]
+        const day = 24 * 60 * 60 * 1000
+        const at = (offset: number) => new Date(Date.now() + offset).toISOString()
+
+        // The rule the page renders by.
+        const cases: [string, Parameters<typeof hiddenTwins>[1], boolean][] = [
+          ['published', [{ title, _status: 'published' }], false],
+          ['unpublished', [{ title: title.toUpperCase(), _status: 'draft' }], true],
+          ['scheduled for tomorrow', [{ title, _status: 'published', publishAt: at(day) }], true],
+          ['past its unpublish date', [{ title, _status: 'published', unpublishAt: at(-day) }], true],
+          ['a draft copy beside a live one', [{ title, _status: 'draft' }, { title, _status: 'published' }], false],
+          ['no item at all', [], false],
+        ]
+        for (const [what, items, expected] of cases) {
+          const hidden = hiddenTwins(typed, items)
+          assert(hidden.has(title.toLowerCase()) === expected, `With its item ${what}, the typed story was ${expected ? 'shown' : 'hidden'}.`)
+          assert(!hidden.has(lone.toLowerCase()), `A story with no item was hidden (${what}).`)
+        }
+
+        // Deleting the item takes the typed copy out of the page and its versions.
+        const { docs: photos } = await payload.find({
+          collection: 'media',
+          where: { 'parentalConsent.obtained': { equals: true } },
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        })
+        const photo = photos[0]?.id
+        assert(photo !== undefined, 'No photograph in the library to build the page with.')
+
+        const page = await payload.create({
+          collection: 'pages',
+          data: {
+            title: 'Verify typed news',
+            slug: `verify-typed-${stamp}`,
+            unit: primary.id,
+            layout: [
+              {
+                blockType: 'newsGrid',
+                shows: 'news',
+                items: [
+                  { photo, title },
+                  { photo, title: lone },
+                ],
+              },
+            ],
+          } as never,
+          overrideAccess: true,
+        })
+        createdPages.push(page.id as number)
+
+        const item = await payload.create({
+          collection: 'posts',
+          data: {
+            title,
+            date: new Date().toISOString(),
+            template: 'notice',
+            _status: 'published',
+          } as never,
+          overrideAccess: false,
+          user: hod,
+        })
+        await payload.delete({ collection: 'posts', id: item.id, overrideAccess: false, user: hod })
+
+        for (const draft of [false, true]) {
+          const after = await payload.findByID({
+            collection: 'pages',
+            id: page.id,
+            depth: 0,
+            draft,
+            overrideAccess: true,
+          })
+          const titles = (
+            (after as unknown as { layout?: { items?: { title?: string }[] }[] }).layout?.[0]?.items ?? []
+          ).map((row) => row.title)
+          assert(
+            titles.length === 1 && titles[0] === lone,
+            `${draft ? 'The page’s latest saved version' : 'The live page'} still lists ${JSON.stringify(titles)} after the item was deleted.`,
+          )
+        }
+      },
+    })
+
     await check({
       name: 'An HOD CANNOT publish into another unit',
       run: () =>
