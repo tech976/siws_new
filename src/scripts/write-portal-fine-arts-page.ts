@@ -48,6 +48,23 @@ const { bulletList, richTextNodes } = await import('@/seed/lexical')
  * `components/RichText.tsx` renders; everything else is justified like the
  * rest of the site.
  *
+ * THE CENTRE'S TEACHERS, from "S.I.W.S School staffs Information (Fine Arts)",
+ * the sheet SIWS sent on 2026-10-13 with "please upload these on our site":
+ * the Head and eight teachers, each with a post and qualifications. They are
+ * added as Teacher records, the same kind every school's Teachers page is made
+ * of, so they look the same and the office can add a photograph or a new
+ * teacher from the panel. They have no school — the Centre is the Society's —
+ * and a teachers block on a page of the main site lists exactly those.
+ *
+ * The sheet's own order is kept, which is also its grouping: the Head, the
+ * three language teachers of the Arts section, then the five of the Fine Arts
+ * section. The qualifications are theirs, set consistently (M.A., B.Ed., PhD)
+ * and otherwise untouched; "Bharatnatyam" is spelt as the Centre's own text
+ * above spells it. Mr. Tanjorkar's line is the corrected one sent with the
+ * sheet. A teacher already in the panel under the same name is LEFT ALONE —
+ * once a record exists the panel is where it is edited, and this must never
+ * put back an old qualification over a corrected one.
+ *
  * REFUSES A PAGE SOMEBODY HAS WRITTEN. It stops if the page has sections on
  * it, so it can never overwrite the school's own work. `--force` is there for
  * a re-run after a change to this script — which is what this is.
@@ -69,6 +86,49 @@ const FREE_CLASSES = 'Free Saturday classes for SIWS School students'
 
 /** Under the title on a search result, and wherever the page is summarised. */
 const INTRO = `${STRAPLINE}. ${FREE_CLASSES}.`
+
+/**
+ * The Centre's staff, in the order of the sheet. `order` is their place in the
+ * list, as on every school's roster.
+ */
+const TEACHERS: { name: string; designation: string; qualifications: string }[] = [
+  { name: 'Mrs. Bhavana Narayanan', designation: 'Head', qualifications: 'M.A., B.Ed. in Sanskrit' },
+  // Arts section — languages
+  { name: 'Mrs. Priya Rohit Neroy', designation: 'Sanskrit Teacher', qualifications: 'M.A. in Sanskrit' },
+  {
+    name: 'Dr. Mahalakshmi V.',
+    designation: 'Tamil Teacher',
+    qualifications:
+      'PhD in Economics, M.A. in Econometrics, MPhil in Economics, M.Ed. in Economics, MBA (HR), Diploma in Labour Law, Diploma in Tamil',
+  },
+  {
+    name: 'Mrs. Rekha Raveendran',
+    designation: 'Malayalam Teacher',
+    qualifications: 'M.A. in Malayalam Language & Literature',
+  },
+  // Fine Arts section
+  { name: 'Mrs. Ramalakshmi', designation: 'Vocal Teacher', qualifications: 'B.Sc. (B.Music), Diploma in Music' },
+  {
+    name: 'Mr. Vinit Sawant',
+    designation: 'Veena Teacher',
+    qualifications: 'Shanmukhananda Exam (3 Years) | 4 Years’ Experience',
+  },
+  {
+    name: 'Miss Kimaya Shantaram Kamble',
+    designation: 'Bharatanatyam Teacher',
+    qualifications: 'Masters in Performing Arts (Bharatanatyam)',
+  },
+  {
+    name: 'Sampada Shivani Rajesh Tambe',
+    designation: 'Bharatanatyam Teacher',
+    qualifications: 'M.A. in Bharatanatyam, B.A. Visharad in Bharatanatyam',
+  },
+  {
+    name: 'Mr. Sekhar Janardhan Tanjorkar',
+    designation: 'Violin Teacher',
+    qualifications: 'Training Through – Guru–Shishya Parampara | National & International Awardee',
+  },
+]
 
 /* --- Lexical, as much of it as this page needs ---------------------------- */
 
@@ -230,6 +290,22 @@ const layout = [
     ],
     4,
   ),
+  /*
+   * The teachers "Our journey" has just spoken of. A teachers block on the
+   * main site lists the teachers with no school, which are the Centre's; a
+   * plain grid, because the Centre has one Head and not a head teacher with a
+   * list under her.
+   */
+  {
+    blockType: 'faculty',
+    heading: 'Our teachers',
+    accentWord: 'teachers',
+    headingLevel: 'h2',
+    layout: 'grid',
+    cardLayout: 'centred',
+    showQualifications: true,
+    background: 'sea',
+  },
   section(
     'Looking ahead',
     'ahead',
@@ -247,7 +323,7 @@ const layout = [
         'The Centre will continue to inspire and shape future generations while preserving our rich heritage.',
       ),
     ],
-    5,
+    6,
   ),
 ]
 
@@ -272,7 +348,34 @@ const main = async () => {
     process.exit(0)
   }
 
-  console.log(`  ${APPLY ? 'Writing' : 'Would write'} ${layout.length} sections to the Fine Arts page:`)
+  /* --- the Centre's teachers ---------------------------------------------- */
+  const { docs: listed } = await payload.find({
+    collection: 'faculty',
+    where: { unit: { exists: false } },
+    limit: 200,
+    depth: 0,
+    draft: true,
+    overrideAccess: true,
+  })
+  const known = new Set(listed.map((doc) => String((doc as { name?: unknown }).name ?? '').trim()))
+  const missing = TEACHERS.map((teacher, at) => ({ ...teacher, order: at + 1 })).filter(
+    (teacher) => !known.has(teacher.name),
+  )
+  console.log(
+    `  Teachers: ${TEACHERS.length - missing.length} of ${TEACHERS.length} already in the panel` +
+      (missing.length > 0 ? `, ${APPLY ? 'adding' : 'would add'} ${missing.length}:` : ' — left as they are.'),
+  )
+  for (const teacher of missing) {
+    console.log(`    ${teacher.order}. ${teacher.name} — ${teacher.designation}`)
+    if (!APPLY) continue
+    await payload.create({
+      collection: 'faculty',
+      data: { ...teacher, _status: 'published', reviewStatus: 'approved' } as never,
+      overrideAccess: true,
+    })
+  }
+
+  console.log(`\n  ${APPLY ? 'Writing' : 'Would write'} ${layout.length} sections to the Fine Arts page:`)
   for (const block of layout) console.log(`    ${block.heading}`)
   if (page.title !== TITLE) console.log(`\n  Title: “${page.title}” → “${TITLE}” (menu label and address unchanged)`)
 

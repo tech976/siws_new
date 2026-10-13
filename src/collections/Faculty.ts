@@ -4,9 +4,11 @@ import {
   SECTIONS,
   createScoped,
   deleteScoped,
+  isAdmin,
   readPublishedOrScoped,
   updateScoped,
 } from '@/access'
+import type { AccessUser } from '@/access'
 import { campusField } from '@/fields/campus'
 import { schedulingFields, workflowFields } from '@/fields/publishing'
 import { richTextField } from '@/fields/richText'
@@ -123,15 +125,37 @@ export const Faculty: CollectionConfig = {
     // Sidebar
     // -----------------------------------------------------------------------
     {
+      /*
+       * A TEACHER BELONGS TO A SCHOOL — except those of the Arts, Fine Arts &
+       * Philosophy Centre, which belongs to the Society and not to any one of
+       * its four schools. SIWS sent the Centre's staff list on 2026-10-13 to go
+       * on the site, and the nine of them had nowhere to be put: this was
+       * `required`, and the Centre is not a school.
+       *
+       * So the field may be empty, and a teacher with no school is listed on
+       * the main site (`FacultyBlockView`), which today means the Fine Arts
+       * page. Only an administrator may leave it empty. A school's own staff
+       * get their school filled in for them on a new teacher
+       * (`constrainUnitToScope`), and the check below stops them clearing it
+       * on an existing one — which would take her off her school's page and
+       * put her on the Centre's.
+       */
       name: 'unit',
       type: 'relationship',
       relationTo: 'units',
-      required: true,
       index: true,
       label: 'School',
+      validate: (value: unknown, { req }: { req?: { user?: unknown } }) => {
+        if (value) return true
+        // The seed and the scripts carry no user, and are trusted as an
+        // administrator is.
+        const user = (req?.user ?? null) as AccessUser | null
+        return !user || isAdmin(user) ? true : 'Choose the school this teacher belongs to.'
+      },
       admin: {
         position: 'sidebar',
-        description: 'Which school this teacher belongs to.',
+        description:
+          'Which school this teacher belongs to. Leave it empty only for a teacher of the Arts, Fine Arts & Philosophy Centre, who is listed on the main site’s Fine Arts page.',
       },
     },
     campusField({

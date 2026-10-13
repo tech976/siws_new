@@ -2767,9 +2767,9 @@ export interface Faculty {
     [k: string]: unknown;
   } | null;
   /**
-   * Which school this teacher belongs to.
+   * Which school this teacher belongs to. Leave it empty only for a teacher of the Arts, Fine Arts & Philosophy Centre, who is listed on the main site’s Fine Arts page.
    */
-  unit: number | Unit;
+  unit?: (number | null) | Unit;
   /**
    * Which campus this teacher works at. Leave blank if your school is at one location only.
    */

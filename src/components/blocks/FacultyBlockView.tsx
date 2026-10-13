@@ -24,10 +24,6 @@ export const FacultyBlockView = async ({
   block: FacultyBlock
   unit: Unit | null
 }) => {
-  // Profiles belong to a school; on the institution-wide portal there is no
-  // roster to show.
-  if (!unit) return null
-
   const payload = await getPayload({ config })
 
   /**
@@ -52,10 +48,16 @@ export const FacultyBlockView = async ({
    * well left the column with two competing centres.
    */
   const centred = block.cardLayout === 'centred'
+  /*
+   * A school's page lists that school's teachers. A page of the main site
+   * lists the teachers who belong to no school — the Arts, Fine Arts &
+   * Philosophy Centre's, the one part of the Society that teaches and is not
+   * one of the four. This block used to render nothing there.
+   */
   const { docs: teachers } = await payload
     .find({
       collection: 'faculty',
-      where: { unit: { equals: unit.id } },
+      where: unit ? { unit: { equals: unit.id } } : { unit: { exists: false } },
       sort: 'order',
       limit: 100,
       depth: 1,
