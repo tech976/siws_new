@@ -1,7 +1,5 @@
 import {
   ArrowRight,
-  Building2,
-  Check,
   ChessKnight,
   ClipboardCheck,
   Dumbbell,
@@ -56,15 +54,20 @@ const ROOT_ID = 'sp-root'
 const toneOf = (background: unknown): Tone =>
   background === 'sea' ? 'dark' : background === 'brand' ? 'amber' : background === 'tint' ? 'light' : 'white'
 
+/*
+ * NO OUTLINED WORD BEHIND THE HEADINGS. Every section once carried its accent
+ * word again, giant and outlined, behind its heading — ten times down the
+ * Sports page. Repeated that often it stopped reading as a scoreboard and
+ * started reading as a template, and on the dark grounds it ran under the
+ * intro text. The slanted edges and the amber ticker carry the theme alone.
+ */
 const Shell = ({
   tone,
-  watermark,
   slant = tone === 'dark',
   className,
   children,
 }: {
   tone: Tone
-  watermark?: string | null
   slant?: boolean
   className?: string
   children: ReactNode
@@ -73,14 +76,15 @@ const Shell = ({
     className={['sp-section', `sp-${tone}`, slant ? 'sp-slant' : '', className].filter(Boolean).join(' ')}
     data-invert={tone === 'dark' ? 'true' : undefined}
   >
-    {watermark ? (
-      <span className="sp-watermark" aria-hidden="true">
-        {watermark}
-      </span>
-    ) : null}
     <div className="siws-container">{children}</div>
   </section>
 )
+
+/**
+ * The order of an item in a ruled list, as a scoreboard shows it: "01".
+ * Only where the items are a set, never as a rank.
+ */
+const ordinal = (index: number) => String(index + 1).padStart(2, '0')
 
 /** A heading with one word in accent, as the site's own headings do. */
 const Accented = ({ text, accent }: { text: string; accent?: string | null }) => {
@@ -223,9 +227,9 @@ const Hero = ({ block, ticker }: { block: Of<'hero'>; ticker: string[] }) => (
         </div>
 
         {block.highlights?.length ? (
-          <dl className="mt-12 grid max-w-4xl gap-3 sm:grid-cols-3" data-reveal style={delay(4, 120)}>
+          <dl className="sp-tally mt-12 max-w-4xl sm:grid-cols-3" data-reveal style={delay(4, 120)}>
             {block.highlights.map((fact, i) => (
-              <div key={fact.id ?? i} className="sp-score">
+              <div key={fact.id ?? i} className="sp-tally__cell">
                 <dt className="sr-only">{fact.label ?? fact.value}</dt>
                 <dd>
                   <Count value={fact.value} className="sp-score__value" />
@@ -263,7 +267,7 @@ const Split = ({ block }: { block: Of<'mediaText'> }) => {
   const tone = toneOf(block.background)
   const imageLeft = block.imagePosition === 'left'
   return (
-    <Shell tone={tone} watermark={block.accentWord}>
+    <Shell tone={tone}>
       <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <div
           className={`sp-frame ${imageLeft ? 'sp-frame--left lg:order-1' : 'lg:order-2'}`}
@@ -324,7 +328,7 @@ const SportTiles = ({ block }: { block: Of<'featureList'> }) => {
   const items = block.items ?? []
   const tone = toneOf(block.background)
   return (
-    <Shell tone={tone} watermark={block.accentWord}>
+    <Shell tone={tone}>
       <Heading
         heading={block.heading}
         accent={block.accentWord}
@@ -400,27 +404,31 @@ const FigureTiles = ({ block }: { block: Of<'featureList'> }) => {
   const items = block.items ?? []
   const tone = toneOf(block.background)
   return (
-    <Shell tone={tone} watermark={block.accentWord}>
+    <Shell tone={tone}>
       <Heading
         heading={block.heading}
         accent={block.accentWord}
         level={block.headingLevel}
         aside={block.intro ? <RichText data={block.intro} /> : null}
       />
-      <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      {/*
+       * A ledger, not a set of boxes: the count where the name has one, and
+       * where it has none the sport's own drawing at the same height, so the
+       * row still lines up — "Yoga room" shows the yoga figure, not a generic
+       * building.
+       */}
+      <ul className="sp-ledger grid grid-cols-2 lg:grid-cols-4">
         {items.map((item, i) => {
           const figure = facilityFigure(item.title)
-          const Icon = item.title.match(/room/i) ? Building2 : sportIcon(item.title, Building2)
+          const Icon = sportIcon(item.title, Dumbbell)
           return (
-            <li key={item.id ?? i} className="sp-card flex min-h-40 flex-col justify-between p-5 sm:p-6" data-reveal="pop" style={delay(i, 60)}>
+            <li key={item.id ?? i} className="sp-ledger__cell" data-reveal style={delay(i, 60)}>
               {figure ? (
                 <Count value={figure.figure} className="sp-figure" />
               ) : (
-                <span className="sp-icon" aria-hidden="true">
-                  <Icon size={22} strokeWidth={2} />
-                </span>
+                <Icon className="sp-ledger__art" size={52} strokeWidth={1.5} aria-hidden="true" />
               )}
-              <p className="mt-4 text-[1.02rem] leading-snug font-semibold text-brand first-letter:uppercase">
+              <p className="mt-3 text-[1.02rem] leading-snug font-semibold text-brand first-letter:uppercase">
                 {figure ? figure.label : item.title}
               </p>
             </li>
@@ -434,10 +442,16 @@ const FigureTiles = ({ block }: { block: Of<'featureList'> }) => {
 const Cards = ({ block }: { block: Of<'featureList'> }) => {
   const items = block.items ?? []
   const tone = toneOf(block.background)
+  /*
+   * Numbered only when the points are bare titles — a list of plans, say.
+   * Points with an explanation are usually people or things (a coach, a
+   * player), and "01" beside a name reads as a ranking.
+   */
+  const numbered = !items.some((item) => item.description)
   const columns =
     items.length === 2 ? 'md:grid-cols-2' : items.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-4'
   return (
-    <Shell tone={tone} watermark={block.accentWord}>
+    <Shell tone={tone}>
       <Heading
         heading={block.heading}
         accent={block.accentWord}
@@ -445,24 +459,29 @@ const Cards = ({ block }: { block: Of<'featureList'> }) => {
         small={block.headingLevel === 'h3'}
         aside={block.intro ? <RichText data={block.intro} /> : null}
       />
-      <ul className={`grid gap-5 ${columns}`}>
-        {items.map((item, i) => {
-          const Icon = iconFor(item)
-          return (
-            <li key={item.id ?? i} className="sp-card flex flex-col p-6 sm:p-7" data-reveal="pop" style={delay(i, 90)}>
-              <span className="sp-icon" aria-hidden="true">
-                <Icon size={24} strokeWidth={2} />
+      {/*
+       * A team sheet: each point under a rule, numbered as a fixture list is.
+       * These were boxed cards, each with an icon chosen from a short list —
+       * a stick figure for "Cricket", a building for "Upgrade the cricket
+       * nets" — that said less than the words beside it.
+       */}
+      <ol className={`grid gap-x-8 gap-y-10 ${columns}`}>
+        {items.map((item, i) => (
+          <li key={item.id ?? i} className="sp-rule" data-reveal style={delay(i, 90)}>
+            {numbered ? (
+              <span className="sp-rule__index mb-3" aria-hidden="true">
+                {ordinal(i)}
               </span>
-              <h3 className={`mt-5 text-xl leading-snug font-bold ${tone === 'dark' ? 'text-white' : 'text-brand'}`}>
-                {item.title}
-              </h3>
-              {item.description ? (
-                <p className={`mt-2 leading-relaxed ${tone === 'dark' ? 'text-white/75' : 'text-ink-muted'}`}>{item.description}</p>
-              ) : null}
-            </li>
-          )
-        })}
-      </ul>
+            ) : null}
+            <h3 className={`text-xl leading-snug font-bold ${tone === 'dark' ? 'text-white' : 'text-brand'}`}>
+              {item.title}
+            </h3>
+            {item.description ? (
+              <p className={`mt-2 leading-relaxed ${tone === 'dark' ? 'text-white/75' : 'text-ink-muted'}`}>{item.description}</p>
+            ) : null}
+          </li>
+        ))}
+      </ol>
     </Shell>
   )
 }
@@ -471,32 +490,37 @@ const Pills = ({ block }: { block: Of<'featureList'> }) => {
   const items = block.items ?? []
   const tone = toneOf(block.background)
   return (
-    <Shell tone={tone} watermark={block.accentWord}>
-      <Heading
-        heading={block.heading}
-        accent={block.accentWord}
-        level={block.headingLevel}
-        aside={block.intro ? <RichText data={block.intro} /> : null}
-      />
-      <ul className="flex flex-wrap gap-3">
-        {items.map((item, i) => (
-          <li key={item.id ?? i} className="sp-pill" data-reveal="pop" style={delay(i, 70)}>
-            <span className="sp-pill__dot" aria-hidden="true">
-              <Check size={16} strokeWidth={3} />
-            </span>
-            <span>
-              {item.title}
-              {item.description ? <span className="block text-sm font-normal opacity-80">{item.description}</span> : null}
-            </span>
-          </li>
-        ))}
-      </ul>
+    <Shell tone={tone}>
+      {/*
+       * A training sheet: the heading holds the left of the band and the
+       * sessions run down the right, one to a ruled line. They were pills with
+       * a tick in each — a tick on every item says nothing about any of them.
+       */}
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)] lg:gap-16">
+        <div>
+          <Heading heading={block.heading} accent={block.accentWord} level={block.headingLevel} />
+          {block.intro ? <RichText data={block.intro} className="sp-muted -mt-4 text-[1.0625rem]" /> : null}
+        </div>
+        <ol className="sp-sheet">
+          {items.map((item, i) => (
+            <li key={item.id ?? i} className="sp-sheet__row" data-reveal style={delay(i, 70)}>
+              <span className="sp-rule__index" aria-hidden="true">
+                {ordinal(i)}
+              </span>
+              <span>
+                <span className="block text-lg leading-snug font-semibold">{item.title}</span>
+                {item.description ? <span className="mt-1 block opacity-80">{item.description}</span> : null}
+              </span>
+            </li>
+          ))}
+        </ol>
+      </div>
     </Shell>
   )
 }
 
 const Honours = ({ block }: { block: Of<'featureList'> }) => (
-  <Shell tone={toneOf(block.background)} watermark={block.accentWord ?? block.heading}>
+  <Shell tone={toneOf(block.background)}>
     <Heading
       heading={block.heading}
       accent={block.accentWord}
@@ -517,14 +541,14 @@ const Honours = ({ block }: { block: Of<'featureList'> }) => (
 const Spec = ({ block }: { block: Of<'featureList'> }) => {
   const items = block.items ?? []
   return (
-    <Shell tone={toneOf(block.background)} watermark={block.accentWord}>
+    <Shell tone={toneOf(block.background)}>
       <Heading
         heading={block.heading}
         accent={block.accentWord}
         level={block.headingLevel}
         aside={block.intro ? <RichText data={block.intro} /> : null}
       />
-      <dl className="grid gap-5 md:grid-cols-2">
+      <dl className="grid gap-x-10 gap-y-10 md:grid-cols-2">
         {items.map((item, i) => {
           const Icon = /locat|where|address/i.test(item.title)
             ? MapPin
@@ -532,14 +556,12 @@ const Spec = ({ block }: { block: Of<'featureList'> }) => {
               ? ClipboardCheck
               : iconFor(item)
           return (
-            <div key={item.id ?? i} className="sp-card flex gap-5 p-6 sm:p-7" data-reveal="pop" style={delay(i, 90)}>
-              <span className="sp-icon" aria-hidden="true">
-                <Icon size={24} strokeWidth={2} />
-              </span>
-              <div>
-                <dt className="t-label text-accent-deep">{item.title}</dt>
-                <dd className="mt-2 text-[1.0625rem] leading-relaxed">{item.description}</dd>
-              </div>
+            <div key={item.id ?? i} className="sp-rule" data-reveal style={delay(i, 90)}>
+              <dt className="sp-rule__label">
+                <Icon size={18} strokeWidth={2.25} aria-hidden="true" />
+                {item.title}
+              </dt>
+              <dd className="mt-3 text-[1.0625rem] leading-relaxed">{item.description}</dd>
             </div>
           )
         })}
@@ -567,7 +589,7 @@ const Strip = ({ block }: { block: Of<'gallery'> }) => {
   const images = (block.images ?? []).filter((row) => row.image && typeof row.image === 'object')
   if (images.length === 0) return null
   return (
-    <Shell tone={toneOf(block.background)} watermark={block.accentWord}>
+    <Shell tone={toneOf(block.background)}>
       <Heading heading={block.heading} accent={block.accentWord} level={block.headingLevel} />
       <ul className="sp-strip">
         {images.map((row, i) => {
@@ -598,7 +620,7 @@ const Scoreboard = ({ block }: { block: Of<'statistics'> }) => {
   return (
     <section className="sp-section sp-dark sp-slant" data-invert="true">
       {block.image ? (
-        <div className="absolute inset-0 -z-10 opacity-20 mix-blend-luminosity" aria-hidden="true">
+        <div className="absolute inset-0 -z-10 opacity-[0.12] mix-blend-luminosity" aria-hidden="true">
           <Media resource={block.image} fill sizes="100vw" className="object-cover" />
         </div>
       ) : null}
@@ -609,9 +631,9 @@ const Scoreboard = ({ block }: { block: Of<'statistics'> }) => {
           level={block.headingLevel}
           aside={block.intro ? <p>{block.intro}</p> : null}
         />
-        <dl className={`grid gap-4 sm:grid-cols-2 ${stats.length >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
+        <dl className={`sp-tally sm:grid-cols-2 ${stats.length >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
           {stats.map((stat, i) => (
-            <div key={stat.id ?? i} className="sp-score p-6" data-reveal="pop" style={delay(i, 110)}>
+            <div key={stat.id ?? i} className="sp-tally__cell" data-reveal style={delay(i, 110)}>
               <dt className="sr-only">{stat.label}</dt>
               <dd>
                 <Count value={stat.value} className="sp-score__value text-[clamp(2.75rem,2rem+3vw,4.5rem)]" />
@@ -634,21 +656,21 @@ const Words = ({ block }: { block: Of<'richText'> }) => {
       <Shell tone={tone}>
         <div className="mx-auto max-w-4xl" data-reveal>
           {block.heading ? (
-            <p className="t-label mb-6 text-accent-deep">
+            <p className="t-label mb-4 text-accent-deep">
               <Accented text={block.heading} />
             </p>
           ) : null}
           <span className="sp-quote-mark block" aria-hidden="true">
             “
           </span>
-          <RichText data={block.content} className="sp-quote mt-6" />
+          <RichText data={block.content} className="sp-quote mt-2" />
         </div>
       </Shell>
     )
   }
 
   return (
-    <Shell tone={tone} watermark={block.accentWord}>
+    <Shell tone={tone}>
       <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)] lg:gap-16">
         <div data-reveal="left">
           {block.heading ? (

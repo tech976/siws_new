@@ -71,35 +71,17 @@
   color: var(--sp-night);
 }
 
+/* Two grounds of the same colour in a row read as one: no double gap. */
+.sp-white + .sp-white,
+.sp-light + .sp-light {
+  padding-top: 0;
+}
+
 /* A slanted top edge, so a section cuts into the one above it. */
 .sp-slant {
   clip-path: polygon(0 3.5vw, 100% 0, 100% 100%, 0 100%);
   margin-top: -3.5vw;
   padding-top: calc(clamp(3.5rem, 2.5rem + 4vw, 6rem) + 3.5vw);
-}
-
-/* A giant outlined word behind a section heading. Decoration only. */
-.sp-watermark {
-  position: absolute;
-  inset-inline: 0;
-  top: clamp(1rem, 2vw, 2.5rem);
-  z-index: -1;
-  overflow: hidden;
-  white-space: nowrap;
-  font-family: var(--font-display), 'Montserrat', sans-serif;
-  font-size: clamp(5rem, 3rem + 12vw, 13rem);
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgb(46 49 146 / 0.08);
-  pointer-events: none;
-  user-select: none;
-  text-align: right;
-}
-
-.sp-dark .sp-watermark {
-  -webkit-text-stroke-color: rgb(255 255 255 / 0.07);
 }
 
 /* --- Headings ---------------------------------------------------------- */
@@ -194,11 +176,6 @@
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.4rem 0.9rem;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 0.1);
-  border: 1px solid rgb(255 255 255 / 0.2);
-  backdrop-filter: blur(6px);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -226,13 +203,31 @@
 
 /* --- Scoreboard cells -------------------------------------------------- */
 
-.sp-score {
+/*
+ * A row of figures read like a scoreboard: no boxes, each figure on a hairline
+ * with a short amber run at its start. These were frosted-glass cards with a
+ * glow on every number.
+ */
+.sp-tally {
+  display: grid;
+  column-gap: 2rem;
+  row-gap: 1.75rem;
+}
+
+.sp-tally__cell {
   position: relative;
-  border-radius: 1.1rem;
-  padding: 1.1rem 1.25rem 1rem;
-  background: linear-gradient(160deg, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.03));
-  border: 1px solid rgb(255 255 255 / 0.16);
-  backdrop-filter: blur(8px);
+  padding-top: 1rem;
+  border-top: 1px solid rgb(255 255 255 / 0.2);
+}
+
+.sp-tally__cell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -2px;
+  width: 2.5rem;
+  height: 3px;
+  background: var(--sp-amber);
 }
 
 .sp-score__value {
@@ -242,7 +237,6 @@
   line-height: 1;
   color: var(--sp-amber);
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 24px rgb(255 175 42 / 0.35);
 }
 
 .sp-score__label {
@@ -307,7 +301,7 @@
 .sp-card {
   position: relative;
   overflow: hidden;
-  border-radius: 1.4rem;
+  border-radius: 1rem;
   background: #ffffff;
   border: 1px solid var(--color-line);
   box-shadow: 0 1px 2px rgb(36 39 111 / 0.05), 0 18px 40px -28px rgb(36 39 111 / 0.35);
@@ -475,6 +469,92 @@
   transform: scale(1.05);
 }
 
+/* --- Ruled lists (coaches, plans, honours, details) ------------------- */
+
+/*
+ * A point under a rule, with a short amber run where it starts — the same
+ * mark as the scoreboard figures, so the lists and the figures are one
+ * system. Hover lengthens the run; nothing lifts or casts a shadow.
+ */
+.sp-rule {
+  position: relative;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.sp-rule::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -2px;
+  width: 2.5rem;
+  height: 3px;
+  background: var(--sp-amber);
+  transition: width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sp-rule:hover::before {
+  width: 5rem;
+}
+
+.sp-dark .sp-rule {
+  border-top-color: rgb(255 255 255 / 0.2);
+}
+
+.sp-rule__index {
+  display: block;
+  font-family: var(--font-display), 'Montserrat', sans-serif;
+  font-size: 1.15rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--sp-amber-deep);
+  font-variant-numeric: tabular-nums;
+}
+
+.sp-dark .sp-rule__index {
+  color: var(--sp-amber);
+}
+
+.sp-rule__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sp-amber-deep);
+}
+
+.sp-dark .sp-rule__label {
+  color: var(--sp-amber);
+}
+
+/* The facilities: a ledger ruled into cells, figures and drawings aligned. */
+.sp-ledger {
+  border-top: 1px solid var(--color-line);
+  border-left: 1px solid var(--color-line);
+}
+
+.sp-ledger__cell {
+  display: flex;
+  min-height: 11rem;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.25rem 1.25rem 1.4rem;
+  border-right: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+  transition: background-color 0.3s ease;
+}
+
+.sp-ledger__cell:hover {
+  background: var(--sp-paper);
+}
+
+.sp-ledger__art {
+  color: var(--color-brand);
+}
+
 /* --- Big-number tiles (facilities) ------------------------------------ */
 
 .sp-figure {
@@ -499,7 +579,7 @@
   content: '';
   position: absolute;
   inset: 1.25rem -1.25rem -1.25rem 1.25rem;
-  border-radius: 1.6rem;
+  border-radius: 1.1rem;
   background: var(--sp-amber);
   z-index: 0;
   transform: rotate(2deg);
@@ -514,7 +594,7 @@
   position: relative;
   z-index: 1;
   overflow: hidden;
-  border-radius: 1.6rem;
+  border-radius: 1.1rem;
   aspect-ratio: 5 / 4;
   box-shadow: 0 30px 60px -30px rgb(10 13 51 / 0.6);
 }
@@ -598,53 +678,63 @@
   color: var(--sp-amber);
 }
 
-/* --- Pills (programmes) ------------------------------------------------- */
+/* --- The training sheet (programmes) ---------------------------------- */
 
-.sp-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.85rem 1.3rem 0.85rem 0.85rem;
-  border-radius: 999px;
-  background: #ffffff;
-  border: 1.5px solid var(--color-line);
-  font-weight: 600;
-  color: var(--color-brand);
-  transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+.sp-sheet {
+  border-top: 1px solid var(--color-line);
 }
 
-.sp-pill:hover {
-  transform: translateY(-3px) rotate(-1deg);
-  background: var(--color-brand);
-  border-color: var(--color-brand);
-  color: #ffffff;
-}
-
-.sp-pill__dot {
+.sp-sheet__row {
+  position: relative;
   display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  align-items: baseline;
+  padding-block: 1.15rem;
+  border-bottom: 1px solid var(--color-line);
+  color: var(--color-brand);
+}
+
+.sp-sheet__row::before {
+  /* The amber run, drawn across the row on hover. */
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 0;
+  height: 2px;
   background: var(--sp-amber);
-  color: var(--sp-night);
-  flex-shrink: 0;
+  transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sp-sheet__row:hover::before {
+  width: 100%;
+}
+
+.sp-dark .sp-sheet,
+.sp-dark .sp-sheet__row {
+  border-color: rgb(255 255 255 / 0.2);
+  color: #ffffff;
 }
 
 /* --- The quote --------------------------------------------------------- */
 
+/*
+ * In the case it was written in. Set in capitals, four lines of Anton read
+ * as shouting and took twice as long to read.
+ */
 .sp-quote {
   font-family: var(--font-display), 'Montserrat', sans-serif;
-  text-transform: uppercase;
-  font-size: clamp(1.6rem, 1.1rem + 2.2vw, 2.9rem);
-  line-height: 1.08;
+  font-size: clamp(1.75rem, 1.2rem + 2.4vw, 3.1rem);
+  line-height: 1.12;
+  letter-spacing: 0.005em;
   text-wrap: balance;
 }
 
 .sp-quote-mark {
   font-family: var(--font-display), 'Montserrat', sans-serif;
-  font-size: clamp(6rem, 4rem + 8vw, 11rem);
-  line-height: 0.6;
+  font-size: clamp(5rem, 3.5rem + 5vw, 8rem);
+  line-height: 0.75;
+  height: 0.45em;
   color: var(--sp-amber);
 }
 
@@ -668,8 +758,7 @@
 }
 
 .sp-tab:focus-visible,
-.sp-card:focus-visible,
-.sp-pill:focus-visible {
+.sp-card:focus-visible {
   outline: 3px solid var(--sp-amber);
   outline-offset: 3px;
 }
