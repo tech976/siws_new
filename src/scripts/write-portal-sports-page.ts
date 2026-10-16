@@ -85,7 +85,13 @@ const FORCE = process.argv.includes('--force')
 /** Already in the library, on the live site as well as here. */
 const PHOTOS = {
   ground: 'jc-yoga-meditation-2026.jpg',
-  children: 'kg-children-together.jpg',
+  /*
+   * Beside "Our philosophy": Devayani Balekar of the Junior College in her
+   * fencing whites with her coach at the district competition, where she won
+   * gold in épée and silver in foil (SIWS asked for a fencing photograph here,
+   * 2026-10-16). Uploaded by the college itself, under its phone filename.
+   */
+  fencer: 'j2.jpeg',
   football: 'secondary-football-league-teams.jpg',
   hall: 'siws-yoga-meditation.jpg',
   race: 'kg-sports-race.jpg',
@@ -199,7 +205,7 @@ const sportsLayout = (photo: Ids, fencingPage: number) => [
     background: 'white',
     imagePosition: 'right',
     imageShape: 'rounded',
-    image: photo.children,
+    image: photo.fencer,
     content: text(
       p([
         t('At SIWS School, we believe sport is an integral part of education, not an add-on. Guided by the motto '),
