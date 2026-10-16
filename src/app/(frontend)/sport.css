@@ -408,9 +408,71 @@
 }
 
 .sp-dark .sp-chip:not(.sp-chip--gold),
-.sp-card--star .sp-chip:not(.sp-chip--gold) {
+.sp-card--star .sp-chip:not(.sp-chip--gold),
+.sp-card--photo .sp-chip:not(.sp-chip--gold) {
   background: rgb(255 255 255 / 0.12);
   color: #ffffff;
+}
+
+/*
+ * A sport tile's picture. Everything else on the tile is lifted above it:
+ * a positioned sibling later in the source paints over an earlier one.
+ */
+.sp-card__art ~ *,
+.sp-card__photo ~ * {
+  position: relative;
+}
+
+/* The pictogram, drawn large and faint, tipped off the tile's corner. */
+.sp-card__art {
+  position: absolute;
+  right: -1.5rem;
+  bottom: -1.5rem;
+  color: var(--color-brand);
+  opacity: 0.07;
+  transform: rotate(-12deg);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.sp-card:hover .sp-card__art {
+  opacity: 0.13;
+  transform: rotate(-4deg) scale(1.06);
+}
+
+.sp-dark .sp-card__art,
+.sp-card--star .sp-card__art {
+  color: var(--sp-amber);
+  opacity: 0.12;
+}
+
+.sp-dark .sp-card:hover .sp-card__art,
+.sp-card--star:hover .sp-card__art {
+  opacity: 0.2;
+}
+
+/* A photograph of the team: the whole tile, shaded so the words still read. */
+.sp-card--photo {
+  min-height: 11rem;
+  border-color: transparent;
+  color: #ffffff;
+}
+
+.sp-card__photo {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sp-card__photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(13 16 64 / 0.35), rgb(13 16 64 / 0.85));
+}
+
+.sp-card--photo:hover .sp-card__photo {
+  transform: scale(1.05);
 }
 
 /* --- Big-number tiles (facilities) ------------------------------------ */

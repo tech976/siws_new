@@ -3,24 +3,15 @@ import {
   Building2,
   Check,
   ChessKnight,
-  CircleDot,
   ClipboardCheck,
   Dumbbell,
   Flag,
-  Flame,
-  Footprints,
-  Goal,
-  HandFist,
   MapPin,
-  Sparkles,
-  Swords,
-  Target,
-  Timer,
   Trophy,
   Volleyball,
-  type LucideIcon,
+  type LucideProps,
 } from 'lucide-react'
-import type { CSSProperties, ReactNode } from 'react'
+import type { ComponentType, CSSProperties, ReactNode } from 'react'
 
 import { CMSLink } from '@/components/CMSLink'
 import { Media } from '@/components/Media'
@@ -31,6 +22,7 @@ import type { Page } from '@/payload-types'
 
 import { HonoursBoard } from './HonoursBoard'
 import { SportMotion } from './SportMotion'
+import * as Pictogram from './SportPictograms'
 
 /**
  * MATCH DAY — the Sports and Fencing pages in a design of their own.
@@ -160,25 +152,29 @@ const delay = (index: number, step = 80): CSSProperties =>
   ({ ['--sp-delay' as string]: `${Math.min(index, 8) * step}ms` }) as CSSProperties
 
 /** An icon for a sport, read from its name. */
-const SPORT_ICONS: [RegExp, LucideIcon][] = [
-  [/fenc/i, Swords],
-  [/foot/i, Goal],
-  [/cricket/i, Target],
-  [/basket|volley|ball/i, Volleyball],
-  [/athlet|track|run/i, Footprints],
-  [/badminton|tennis/i, CircleDot],
+type SportIcon = ComponentType<LucideProps>
+const SPORT_ICONS: [RegExp, SportIcon][] = [
+  [/fenc/i, Pictogram.Fencing],
+  [/foot/i, Pictogram.Football],
+  [/cricket/i, Pictogram.Cricket],
+  [/basket/i, Pictogram.Basketball],
+  [/volley/i, Volleyball],
+  [/athlet|track|run/i, Pictogram.Athletics],
+  [/badminton|shuttle/i, Pictogram.Badminton],
+  [/table tennis|ping/i, Pictogram.TableTennis],
   [/chess/i, ChessKnight],
-  [/kho|kabaddi/i, Flame],
-  [/carrom/i, CircleDot],
-  [/yoga/i, Sparkles],
-  [/karate/i, HandFist],
-  [/skat/i, Timer],
+  [/kho/i, Pictogram.KhoKho],
+  [/kabaddi/i, Pictogram.Kabaddi],
+  [/carrom/i, Pictogram.Carrom],
+  [/yoga/i, Pictogram.Yoga],
+  [/karate|martial/i, Pictogram.Karate],
+  [/skat/i, Pictogram.Skating],
   [/gym|fitness|condition/i, Dumbbell],
 ]
-const sportIcon = (name: string, fallback: LucideIcon = Trophy): LucideIcon =>
+const sportIcon = (name: string, fallback: SportIcon = Trophy): SportIcon =>
   SPORT_ICONS.find(([pattern]) => pattern.test(name))?.[1] ?? fallback
 
-const iconFor = (item: { icon?: string | null; title?: string | null }): LucideIcon =>
+const iconFor = (item: { icon?: string | null; title?: string | null }): SportIcon =>
   (item.icon ? FEATURE_ICONS[item.icon] : undefined) ?? sportIcon(item.title ?? '', Flag)
 
 /* --- the banner and the ticker ----------------------------------------- */
@@ -340,18 +336,32 @@ const SportTiles = ({ block }: { block: Of<'featureList'> }) => {
           const { chips, rest } = sportFacts(item.description)
           const star = chips.some((chip) => chip.gold)
           const Icon = sportIcon(item.title)
+          const photo = item.photo && typeof item.photo === 'object' ? item.photo : null
           return (
             <li
               key={item.id ?? i}
-              className={`sp-card p-5 ${star ? 'sp-card--star col-span-2 sm:p-7 lg:row-span-2' : ''}`}
+              className={`sp-card p-5 ${star ? 'sp-card--star col-span-2 sm:p-7 lg:row-span-2' : ''} ${photo ? 'sp-card--photo' : ''}`}
               data-reveal="pop"
               style={delay(i, 45)}
             >
+              {/*
+               * The tile's picture. A photograph of the school's own team, when
+               * one is uploaded to the point, fills the tile under a shade; until
+               * then the sport's pictogram is drawn large in the corner, so
+               * fifteen tiles of words still read as fifteen different games.
+               */}
+              {photo ? (
+                <div className="sp-card__photo" aria-hidden="true">
+                  <Media resource={photo} fill sizes="(min-width: 1024px) 20vw, 50vw" className="object-cover" />
+                </div>
+              ) : (
+                <Icon className="sp-card__art" size={star ? 220 : 120} strokeWidth={1.25} aria-hidden="true" />
+              )}
               <span className="sp-icon" aria-hidden="true">
                 <Icon size={star ? 28 : 22} strokeWidth={2} />
               </span>
               <h3
-                className={`mt-4 leading-tight font-bold ${star ? 'sp-heading sp-heading--small text-white' : `text-lg ${tone === 'dark' ? 'text-white' : 'text-brand'}`}`}
+                className={`mt-4 leading-tight font-bold ${star ? 'sp-heading sp-heading--small text-white' : `text-lg ${tone === 'dark' || photo ? 'text-white' : 'text-brand'}`}`}
               >
                 {item.title}
               </h3>
