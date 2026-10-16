@@ -6,6 +6,7 @@ import { notFound, permanentRedirect } from 'next/navigation'
 
 import { PostView } from '@/components/blocks/PostView'
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
+import { FINE_ARTS_PAGES, FineArtsPage } from '@/components/fine-arts/FineArtsPage'
 import { SPORT_PAGES, SportPage } from '@/components/sport/SportPage'
 import { tickerItems } from '@/lib/ticker'
 import { EmergencyNoticeBanner } from '@/components/emergency/EmergencyNoticeBanner'
@@ -204,10 +205,13 @@ const DynamicRoute = async ({ params }: RouteProps) => {
             {/*
               The main site's Sports and Fencing pages have a design of their
               own, built from the same blocks (SIWS, 2026-10-16). A school's
-              Sports page keeps its school's look.
+              Sports page keeps its school's look. The Fine Arts page is laid
+              out as a student gallery in the site's own design (2026-10-16).
             */}
             {!unit && SPORT_PAGES.has(page.slug) ? (
               <SportPage blocks={page.layout} />
+            ) : !unit && FINE_ARTS_PAGES.has(page.slug) ? (
+              <FineArtsPage blocks={page.layout} units={units} />
             ) : (
               <RenderBlocks blocks={page.layout} unit={unit} units={units} />
             )}

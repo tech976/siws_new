@@ -1,0 +1,780 @@
+/*
+ * THE FINE ARTS PAGE — a student gallery kept in a sketchbook.
+ *
+ * Unlike the match-day Sports page this is NOT a design of its own: it is the
+ * site's own palette, type and spacing — Montserrat headings in brand navy
+ * with the accent word in amber, white and sea grounds, the 75rem container,
+ * the card shadows — laid out more freely. What is added is the sketchbook:
+ * a dotted-paper ground, photographs mounted on a white mat and taped at a
+ * slight angle, a brushstroke under the accent word, and short handwritten
+ * notes in the site's own chalk face (`--font-chalk`, loaded since the start
+ * for "playful asides" and not used until now).
+ *
+ * Everything is scoped under `.fa`; nothing here reaches another page.
+ * Rendered by `components/fine-arts/FineArtsPage.tsx`.
+ */
+
+.fa {
+  /* A tilted frame may overhang the container by a few pixels; never let it
+     become a sideways scroll on a phone. */
+  overflow-x: clip;
+}
+
+.fa-section {
+  position: relative;
+  padding-block: 3.5rem;
+}
+
+@media (min-width: 40rem) {
+  .fa-section {
+    padding-block: 5rem;
+  }
+}
+
+.fa-white {
+  background-color: var(--color-surface);
+}
+
+.fa-sea {
+  background-color: var(--color-sea);
+}
+
+.fa-brand {
+  background-color: var(--color-brand);
+  color: #fff;
+}
+
+/* Sketchbook paper: a dot grid in brand navy, faint enough to stay paper. */
+.fa-paper {
+  background-color: var(--color-surface);
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-brand) 13%, transparent) 1.1px,
+    transparent 1.4px
+  );
+  background-size: 22px 22px;
+}
+
+.fa-sea.fa-paper {
+  background-color: var(--color-sea);
+}
+
+/* --- type --------------------------------------------------------------- */
+
+/* Section headings: the site's h2, ranged left instead of centred. */
+.fa-heading {
+  margin: 0;
+  text-align: left;
+}
+
+.fa-brand .fa-heading,
+.fa-brand h2,
+.fa-brand h3 {
+  color: #fff;
+}
+
+.fa-brand .heading-accent {
+  color: var(--color-accent);
+}
+
+/*
+ * The brushstroke under a heading's accent word. Drawn, not underlined, so
+ * it reads as a mark made by hand; decorative, so it is a background and
+ * says nothing to a screen reader.
+ */
+.fa-brush {
+  position: relative;
+  white-space: nowrap;
+}
+
+.fa-brush::after {
+  content: '';
+  position: absolute;
+  left: -0.1em;
+  right: -0.1em;
+  bottom: -0.18em;
+  height: 0.32em;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 16' preserveAspectRatio='none'%3E%3Cpath d='M3 11c32-6 68-8 104-6 30 1 58 3 90-1' fill='none' stroke='%23ffaf2a' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M12 13c40-3 90-4 150-2' fill='none' stroke='%23ffaf2a' stroke-width='2.5' stroke-linecap='round' opacity='.55'/%3E%3C/svg%3E")
+    no-repeat center / 100% 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.fa-brush-host {
+  isolation: isolate;
+}
+
+/* A handwritten note. Brand navy on paper — amber text would fail contrast. */
+.fa-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-chalk);
+  font-size: 1.4rem;
+  line-height: 1.1;
+  color: var(--color-brand);
+  rotate: -3deg;
+}
+
+.fa-brand .fa-note {
+  color: var(--color-accent);
+}
+
+.fa-note svg {
+  flex: none;
+}
+
+/* The pill above the banner heading, in the site's eyebrow manner. */
+.fa-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  background: var(--color-brand-tint);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-brand);
+}
+
+.fa-eyebrow::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--color-accent-deep);
+}
+
+/* A school's name, on a photograph or above a chapter. */
+.fa-tag {
+  display: inline-block;
+  border-radius: 999px;
+  background: var(--color-brand);
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #fff;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
+}
+
+.fa-tag--light {
+  background: #fff;
+  color: var(--color-brand);
+}
+
+/* Figures: Anton, which the site keeps for banners and big numbers. */
+.fa-figure {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.6rem + 1.4vw, 2.75rem);
+  line-height: 1;
+  color: var(--color-brand);
+}
+
+/* --- photographs -------------------------------------------------------- */
+
+/* A print on a white mat — the gallery's frame for every photograph. */
+.fa-mat {
+  position: relative;
+  border-radius: 1.1rem;
+  background: #fff;
+  padding: 0.45rem;
+  box-shadow: var(--shadow-raised);
+  transition:
+    rotate 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+    translate 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.5s ease;
+}
+
+.fa-mat__photo {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: var(--color-brand-tint);
+}
+
+.fa-mat__photo img {
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Tape on the top edge. */
+.fa-tape::before {
+  content: '';
+  position: absolute;
+  top: -0.65rem;
+  left: 50%;
+  z-index: 2;
+  width: 5rem;
+  height: 1.35rem;
+  translate: -50% 0;
+  rotate: -4deg;
+  background: color-mix(in srgb, var(--color-accent) 72%, #fff);
+  opacity: 0.9;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
+.fa-tape--corner::before {
+  left: 1.4rem;
+  translate: 0 0;
+  rotate: -32deg;
+  width: 3.75rem;
+}
+
+.fa-tilt-l {
+  rotate: -2.5deg;
+}
+
+.fa-tilt-r {
+  rotate: 2deg;
+}
+
+.fa-tilt-s {
+  rotate: -1deg;
+}
+
+@media (hover: hover) {
+  .fa-mat:hover {
+    rotate: 0deg;
+    translate: 0 -4px;
+    box-shadow: 0 18px 40px rgb(46 49 146 / 0.22);
+  }
+
+  .fa-mat:hover .fa-mat__photo img {
+    transform: scale(1.04);
+  }
+}
+
+/* --- the banner collage ------------------------------------------------- */
+
+.fa-collage {
+  position: relative;
+  aspect-ratio: 1 / 1.02;
+  width: 100%;
+}
+
+.fa-collage__piece {
+  position: absolute;
+}
+
+.fa-collage__piece .fa-mat,
+.fa-collage__piece .fa-mat__photo {
+  height: 100%;
+}
+
+.fa-collage__piece .fa-tag {
+  position: absolute;
+  left: 0.9rem;
+  bottom: 0.9rem;
+  z-index: 3;
+}
+
+/* The main print's lower edge is under the others; its tag goes on top. */
+.fa-collage__piece--0 .fa-tag {
+  top: 0.9rem;
+  bottom: auto;
+}
+
+/* Main: Primary on stage. */
+.fa-collage__piece--0 {
+  left: 0;
+  top: 9%;
+  width: 72%;
+  height: 52%;
+  z-index: 1;
+}
+
+/* Top right, overlapping the main print's corner. */
+.fa-collage__piece--1 {
+  right: 0;
+  top: 0;
+  width: 44%;
+  height: 27%;
+  z-index: 2;
+}
+
+/* Lower right. */
+.fa-collage__piece--2 {
+  right: 1%;
+  top: 55%;
+  width: 58%;
+  height: 31%;
+  z-index: 3;
+}
+
+/* Lower left, upright. */
+.fa-collage__piece--3 {
+  left: 5%;
+  top: 56%;
+  width: 33%;
+  height: 43%;
+  z-index: 2;
+}
+
+.fa-collage__note {
+  position: absolute;
+  right: 3%;
+  bottom: 1%;
+  z-index: 4;
+}
+
+/* --- disciplines -------------------------------------------------------- */
+
+.fa-panel {
+  position: relative;
+  height: 100%;
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+}
+
+@media (min-width: 40rem) {
+  .fa-panel {
+    padding: 2.25rem;
+  }
+}
+
+.fa-panel--brand {
+  background: var(--color-brand);
+  color: #fff;
+}
+
+.fa-panel--brand h3 {
+  color: #fff;
+}
+
+.fa-panel--white {
+  background: #fff;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-line);
+}
+
+.fa-panel--accent {
+  background: var(--color-accent);
+  color: var(--color-brand-ink);
+}
+
+.fa-panel--accent h3 {
+  color: var(--color-brand-ink);
+}
+
+.fa-kicker {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* The script a language is written in, as the tile's picture. */
+.fa-glyph {
+  display: grid;
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 0.1);
+  border: 1px solid rgb(255 255 255 / 0.18);
+  font-size: 2.25rem;
+  line-height: 1;
+  color: var(--color-accent);
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease;
+}
+
+.fa-subject:hover .fa-glyph {
+  background: rgb(255 255 255 / 0.18);
+  transform: translateY(-3px) rotate(-4deg);
+}
+
+.fa-instrument {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  flex: none;
+  border-radius: 999px;
+  background: var(--color-brand-tint);
+  color: var(--color-brand);
+  transition: transform 0.3s ease;
+}
+
+.fa-subject:hover .fa-instrument {
+  transform: rotate(-10deg) scale(1.06);
+}
+
+/* A large word set behind a panel, as an artist's watermark. */
+.fa-watermark {
+  position: absolute;
+  right: 1.25rem;
+  bottom: -0.5rem;
+  font-size: clamp(4.5rem, 3rem + 6vw, 8rem);
+  line-height: 1;
+  opacity: 0.12;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* --- creative journeys -------------------------------------------------- */
+
+.fa-chapter {
+  position: relative;
+  display: grid;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+@media (min-width: 64rem) {
+  .fa-chapter {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 4.5rem;
+  }
+
+  .fa-chapter--flip .fa-chapter__art {
+    order: 2;
+  }
+}
+
+.fa-chapter + .fa-chapter {
+  margin-top: 4.5rem;
+}
+
+@media (min-width: 64rem) {
+  .fa-chapter + .fa-chapter {
+    margin-top: 6rem;
+  }
+}
+
+/* The photographs of one chapter: a large print and smaller ones over it. */
+.fa-stack {
+  position: relative;
+  padding-bottom: 14%;
+}
+
+.fa-stack__lead .fa-mat__photo {
+  aspect-ratio: 4 / 3;
+}
+
+.fa-stack__extra {
+  position: absolute;
+  bottom: 0;
+  width: 40%;
+  z-index: 2;
+}
+
+.fa-stack__extra .fa-mat__photo {
+  aspect-ratio: 1 / 1;
+}
+
+.fa-stack__extra--0 {
+  right: -2%;
+}
+
+.fa-stack__extra--1 {
+  right: 36%;
+  width: 34%;
+  bottom: -4%;
+}
+
+.fa-chapter--flip .fa-stack__extra--0 {
+  right: auto;
+  left: -2%;
+}
+
+.fa-chapter--flip .fa-stack__extra--1 {
+  right: auto;
+  left: 36%;
+}
+
+/* With no smaller prints, the lead needs no room beneath it. */
+.fa-stack--single {
+  padding-bottom: 0;
+}
+
+/* A soft colour block behind each chapter's prints, a different one each. */
+.fa-stack::before {
+  content: '';
+  position: absolute;
+  inset: 8% -4% 4% 10%;
+  z-index: 0;
+  border-radius: 2rem;
+  background: var(--fa-wash, var(--color-brand-tint));
+}
+
+.fa-chapter--flip .fa-stack::before {
+  inset: 8% 10% 4% -4%;
+}
+
+.fa-stack > * {
+  position: relative;
+  z-index: 1;
+}
+
+.fa-stack > .fa-stack__extra {
+  position: absolute;
+  z-index: 2;
+}
+
+.fa-number {
+  font-family: var(--font-display);
+  font-size: 4.5rem;
+  line-height: 0.9;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--color-accent-deep);
+}
+
+.fa-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  color: var(--color-brand);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+  transition: gap 0.25s ease;
+}
+
+.fa-link:hover {
+  gap: 0.7rem;
+}
+
+/* --- featured moment ---------------------------------------------------- */
+
+.fa-feature__main .fa-mat__photo {
+  aspect-ratio: 4 / 3;
+}
+
+.fa-brand .fa-mat {
+  box-shadow: 0 18px 40px rgb(0 0 0 / 0.35);
+}
+
+.fa-feature__small .fa-mat__photo {
+  aspect-ratio: 3 / 4;
+}
+
+/* --- reasons to join ---------------------------------------------------- */
+
+.fa-page {
+  position: relative;
+  height: 100%;
+  border-radius: 1.1rem;
+  background: #fff;
+  padding: 1.6rem 1.5rem 1.5rem;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-line);
+  transition:
+    rotate 0.4s ease,
+    translate 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+/* A ruled margin down the left, as on a page of an exercise book. */
+.fa-page::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0.9rem;
+  width: 1px;
+  background: color-mix(in srgb, var(--color-accent-deep) 45%, transparent);
+}
+
+.fa-page > * {
+  padding-left: 0.6rem;
+}
+
+@media (hover: hover) {
+  .fa-page:hover {
+    rotate: 0deg;
+    translate: 0 -4px;
+    box-shadow: var(--shadow-raised);
+  }
+}
+
+/* --- prose -------------------------------------------------------------- */
+
+.fa-prose--dropcap > p:first-child::first-letter {
+  float: left;
+  margin: 0.08em 0.5rem 0 0;
+  font-family: var(--font-display);
+  font-size: 3.6em;
+  line-height: 0.82;
+  color: var(--color-accent-deep);
+}
+
+.fa-prose ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+/* A list item is a line or two; justified, its words are pulled apart. */
+.fa-prose ul > li {
+  position: relative;
+  padding-left: 1.9rem;
+  text-align: left;
+}
+
+/* A short brushstroke for a bullet. */
+.fa-prose ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 1.1rem;
+  height: 0.45rem;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 10'%3E%3Cpath d='M2 6c6-3 13-4 20-2' fill='none' stroke='%23f39200' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E")
+    no-repeat center / contain;
+}
+
+/* --- the gallery wall --------------------------------------------------- */
+
+.fa-wall {
+  columns: 2;
+  column-gap: 1rem;
+}
+
+@media (min-width: 48rem) {
+  .fa-wall {
+    columns: 3;
+    column-gap: 1.5rem;
+  }
+}
+
+@media (min-width: 72rem) {
+  .fa-wall {
+    columns: 4;
+  }
+}
+
+.fa-wall__item {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 48rem) {
+  .fa-wall__item {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.fa-wall__button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  cursor: zoom-in;
+  border-radius: 1.1rem;
+}
+
+.fa-wall__button:focus-visible {
+  outline: 3px solid var(--color-accent-deep);
+  outline-offset: 4px;
+}
+
+.fa-wall__label {
+  display: block;
+  padding: 0.7rem 0.35rem 0.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--color-ink-soft);
+}
+
+/* --- motion ------------------------------------------------------------- */
+
+/*
+ * Entrances, added only once the script has armed the page — without it, or
+ * with reduced motion asked for, everything is simply there. `translate` and
+ * not `transform`, so a print keeps its tilt while it rises.
+ */
+.fa-armed [data-reveal] {
+  opacity: 0;
+  translate: 0 28px;
+  transition:
+    opacity 0.8s ease,
+    translate 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    rotate 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.5s ease;
+}
+
+.fa-armed [data-reveal='left'] {
+  translate: -36px 0;
+}
+
+.fa-armed [data-reveal='right'] {
+  translate: 36px 0;
+}
+
+.fa-armed [data-reveal][data-shown] {
+  opacity: 1;
+  translate: 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fa *,
+  .fa *::before,
+  .fa *::after {
+    transition: none !important;
+  }
+
+  .fa-mat:hover,
+  .fa-page:hover {
+    translate: 0 0;
+  }
+
+  .fa-mat:hover .fa-mat__photo img {
+    transform: none;
+  }
+}
+
+/* --- small screens ------------------------------------------------------ */
+
+@media (max-width: 47.99rem) {
+  .fa-tilt-l {
+    rotate: -1.5deg;
+  }
+
+  .fa-tilt-r {
+    rotate: 1.25deg;
+  }
+
+  .fa-collage {
+    aspect-ratio: 1 / 1.08;
+  }
+
+  .fa-collage__piece .fa-tag {
+    left: 0.6rem;
+    bottom: 0.6rem;
+    font-size: 0.6875rem;
+  }
+
+  .fa-collage__piece--0 .fa-tag {
+    top: 0.6rem;
+    bottom: auto;
+  }
+
+  .fa-mat {
+    padding: 0.3rem;
+    border-radius: 0.85rem;
+  }
+
+  .fa-mat__photo {
+    border-radius: 0.6rem;
+  }
+
+  .fa-number {
+    font-size: 3.5rem;
+  }
+}
+
+/* High contrast: no tilts, no tape, solid edges. */
+html[data-contrast='high'] .fa-mat,
+html[data-contrast='high'] .fa-page,
+html[data-contrast='high'] .fa-note {
+  rotate: 0deg;
+}
+
+html[data-contrast='high'] .fa-tape::before,
+html[data-contrast='high'] .fa-brush::after {
+  display: none;
+}

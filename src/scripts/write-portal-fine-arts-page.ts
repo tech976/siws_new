@@ -5,6 +5,7 @@ loadEnv()
 const { getPayload } = await import('payload')
 const { default: config } = await import('@payload-config')
 const { bulletList, richTextNodes } = await import('@/seed/lexical')
+const { findMediaId } = await import('@/utilities/media-lookup')
 
 /**
  * Writes the Fine Arts page from the Centre's own website text — "SIWS Arts
@@ -64,6 +65,15 @@ const { bulletList, richTextNodes } = await import('@/seed/lexical')
  * sheet. A teacher already in the panel under the same name is LEFT ALONE —
  * once a record exists the panel is where it is edited, and this must never
  * put back an old qualification over a corrected one.
+ *
+ * THE GALLERY LAYOUT (2026-10-16). The page is now laid out as a student
+ * gallery: a banner with a collage from the four schools, the Centre's text
+ * as before, a chapter for each school's creative work, Primary's Natya
+ * Tarang 2026 as a featured moment, and a gallery wall at the foot. The
+ * Centre's own sections are unchanged word for word; they are only placed
+ * among the new ones. What each block becomes on the page is described in
+ * `components/fine-arts/FineArtsPage.tsx`. The photographs are the schools'
+ * own, already on the live site — see PHOTOS.
  *
  * REFUSES A PAGE SOMEBODY HAS WRITTEN. It stops if the page has sections on
  * it, so it can never overwrite the school's own work. `--force` is there for
@@ -133,7 +143,6 @@ const TEACHERS: { name: string; designation: string; qualifications: string }[] 
 /* --- Lexical, as much of it as this page needs ---------------------------- */
 
 const BOLD = 1
-const ITALIC = 2
 
 /** Shared shape for every element node. Lexical rejects nodes missing these. */
 const element = { format: '' as const, indent: 0, version: 1, direction: 'ltr' as const }
@@ -157,9 +166,6 @@ const p = (children: string | Inline[]) => ({
   textFormat: 0,
   children: typeof children === 'string' ? [t(children)] : children,
 })
-
-/** A line set in the middle: the strapline, not a paragraph of prose. */
-const centred = (children: Inline[]) => ({ ...p(children), format: 'center' as const })
 
 const h3 = (body: string) => ({ type: 'heading', tag: 'h3', ...element, children: [t(body)] })
 
@@ -195,8 +201,8 @@ const section = (
   content: richTextNodes(nodes),
 })
 
-const layout = [
-  section(TITLE, null, [centred([t(STRAPLINE, ITALIC)]), centred([b(FREE_CLASSES)])], 0, 'h1'),
+/** The Centre's own sections, in the order of its document. */
+const centre = [
   section(
     'About the Centre',
     'the Centre',
@@ -327,6 +333,224 @@ const layout = [
   ),
 ]
 
+/* --- the photographs ------------------------------------------------------ */
+
+/**
+ * Every photograph is one the schools have already put on the live site —
+ * found there by filename, chosen by looking at it and not by its name, and
+ * captioned with what it shows and which school it is from. None is of the
+ * Centre's own classes: there are no such photographs yet, and a school's
+ * dance competition captioned as a Bharatanatyam class would be a claim the
+ * Centre has not made.
+ *
+ * Six were uploaded by the schools' own accounts and keep their phone names
+ * (IMG-…, PHOTO-…); they are the right photographs all the same.
+ */
+const PHOTOS = {
+  // Banner collage — one from each school
+  stage: 'natya-tarang-2026-company.jpg',
+  fingerPaint: 'kg-activity-creative.jpg',
+  tshirts: 'secondary-event-05.jpg',
+  rangoliMessage: 'jc-rangoli-2.jpg',
+  // Kindergarten
+  colouring: 'kg-classroom-activity.jpg',
+  handprints: 'kg-classroom-full-class-1.jpg',
+  regionalDance: 'kg-stage-regional-dance.jpg',
+  // Primary
+  paperPortraits: 'IMG-20261001-WA0035.jpg',
+  clay: 'PHOTO-2026-10-08-14-42-13.jpg',
+  pookalam: 'onam-2026-pookalam.jpg',
+  // Secondary
+  craftClass: 'secondary-craft-class.jpg',
+  paperCutting: 'portal-vision-background.jpg',
+  traditionalDress: 'secondary-event-01.jpg',
+  // Junior College
+  rangoliPortrait: 'jc-rangoli.jpg',
+  // Natya Tarang 2026
+  performance: 'natya-tarang-2026-performance.jpg',
+  trophy: 'natya-tarang-2026-trophy.jpg',
+  costumePrize: 'primary-natya-tarang-2026-costume-props-prize.jpg',
+  firstPrize: 'natya-tarang-2026-first-prize.jpg',
+  // The gallery wall
+  earthCostume: 'siws-fancy-dress-environment.jpg',
+  fancyDress: 'kg-fancy-dress-entrants.jpg',
+  janmashtami: 'kg-janmashtami-costumes.jpg',
+  rehearsal: 'kg-dance-rehearsal.jpg',
+  danceWinners: '20260910_160345.jpg',
+  danceTrophy: 'kg-dance-ourladys-garden.jpg',
+  singing: 'IMG-20260909-WA0001.jpg',
+  greetingCard: 'PHOTO-2026-10-09-14-27-10.jpg',
+  peacePosters: 'IMG-20261002-WA0001.jpg',
+  ganeshDisplay: 'primary-ganesh-chaturthi-2026-banner.jpg',
+  activityClass: 'secondary-activity-class.jpg',
+  pongal: 'jc-pongal-day.jpg',
+} as const
+
+type Ids = Record<keyof typeof PHOTOS, number>
+
+/** A photograph in a gallery, its caption opening on the school: "Primary · …". */
+const shot = (image: number, caption: string) => ({ image, caption })
+
+/** A point of the "every age" list: a chapter's lead, or one of its extra prints. */
+const chapter = (school: string, title: string, photo: number, description?: string) => ({
+  chip: school,
+  title,
+  photo,
+  ...(description ? { description } : {}),
+})
+
+/** A button to a section further down this page. */
+const jump = (label: string, pageId: number, anchor: string, appearance: 'primary' | 'secondary') => ({
+  link: { label, type: 'internal', reference: { relationTo: 'pages', value: pageId }, anchor, appearance },
+})
+
+const buildLayout = (photo: Ids, pageId: number) => {
+  const [about, teach, why, journey, teachers, ahead] = centre
+
+  return [
+    /*
+     * The banner. The headline is the brief's; the line under it is the
+     * Centre's own strapline and its free Saturday classes; the three figures
+     * (the most the banner takes) are all in the Centre's text: 1997–98; eight
+     * subjects — Tamil, Malayalam, Sanskrit, vocal, veena, violin,
+     * Bharatanatyam and the Gita; and the 48 who have completed the course.
+     */
+    {
+      blockType: 'hero',
+      eyebrow: TITLE,
+      title: 'Where Creativity Finds Its Voice.',
+      accentWord: 'Creativity',
+      intro: `${STRAPLINE}. ${FREE_CLASSES} — and a love of colour, craft and performance you can see in all four of our schools.`,
+      image: photo.stage,
+      highlights: [
+        { value: '1997–98', label: 'the year the Centre opened' },
+        { value: '8', label: 'subjects, every Saturday' },
+        { value: '48', label: 'graduates of the three-year course' },
+      ],
+      links: [
+        jump('What we teach', pageId, 'what-we-teach', 'primary'),
+        jump('See the student gallery', pageId, 'student-art-gallery', 'secondary'),
+      ],
+    },
+    /* Directly after the banner, so it is drawn as the banner's collage. */
+    {
+      blockType: 'gallery',
+      heading: 'Banner photographs',
+      layout: 'grid',
+      images: [
+        shot(photo.stage, 'Primary · The full company on stage at Natya Tarang 2026'),
+        shot(photo.tshirts, 'Secondary · T-shirts painted for the anti-drug campaign'),
+        shot(photo.fingerPaint, 'Kindergarten · A finger painting, made together'),
+        shot(photo.rangoliMessage, 'Junior College · A rangoli with a message'),
+      ],
+    },
+    about,
+    teach,
+    {
+      blockType: 'featureList',
+      heading: 'Creativity at every age',
+      accentWord: 'every age',
+      headingLevel: 'h2',
+      layout: 'panel',
+      background: 'sea',
+      intro: richTextNodes([
+        p(
+          'Long before a student chooses an instrument or a classical language, they are drawing, making, dressing up and taking the stage. These photographs come from the classrooms and stages of our four schools.',
+        ),
+      ]),
+      items: [
+        chapter(
+          'Kindergarten',
+          'First colours, first stages',
+          photo.colouring,
+          'Crayons, finger paint and handprints come first. Our youngest children colour together at their tables, turn their handprints into a flag and step onto the stage in costume for their first performances.',
+        ),
+        chapter('Kindergarten', 'A flag made of painted handprints', photo.handprints),
+        chapter('Kindergarten', 'On stage at an inter-school dance competition', photo.regionalDance),
+        chapter(
+          'Primary',
+          'Ideas in paper, clay and colour',
+          photo.paperPortraits,
+          'In the Primary School ideas take shape in paper, clay and paint. Std 2 made paper portraits and Swachh Bharat posters, our pupils have brought home prizes in clay moulding from inter-school competitions, and festivals such as Onam are marked with a flower pookalam.',
+        ),
+        chapter('Primary', 'Second prize in clay moulding', photo.clay),
+        chapter('Primary', 'Around the Onam pookalam', photo.pookalam),
+        chapter(
+          'Secondary',
+          'Craft with a purpose',
+          photo.craftClass,
+          'By the Secondary years a whole class works together with paper and scissors, and art begins to carry a message: students painted T-shirts with anti-drug slogans for a school campaign, and dress in traditional costume for the school’s celebrations.',
+        ),
+        chapter('Secondary', 'Cutting coloured paper into a decoration', photo.paperCutting),
+        chapter('Secondary', 'In traditional dress for the occasion', photo.traditionalDress),
+        chapter(
+          'Junior College',
+          'Art that speaks',
+          photo.rangoliPortrait,
+          'At the Junior College students lay rangoli across the college floor — portraits, patterns and messages drawn in coloured powder, among them a call to stop violence.',
+        ),
+      ],
+    },
+    /*
+     * A featured moment: Primary's Natya Tarang 2026. Every fact is in the
+     * photographs' own descriptions in the library — first in Category A,
+     * Pre-Primary to 4th Std (the trophy); the ₹20,000 cheque; the ₹5,000
+     * special prize for costume and props.
+     */
+    {
+      blockType: 'gallery',
+      heading: 'Natya Tarang 2026',
+      accentWord: '2026',
+      layout: 'grid',
+      intro: richTextNodes([
+        p([
+          t('At Natya Tarang 2026, the inter-school dance and music competition, children of our Primary School took '),
+          b('first place in Category A'),
+          t(' (Pre-Primary to Std 4) and a '),
+          b('special prize for costume and props'),
+          t('.'),
+        ]),
+      ]),
+      images: [
+        shot(photo.performance, 'Primary · Arms raised on the Natya Tarang stage'),
+        shot(photo.trophy, 'Primary · First in Category A'),
+        shot(photo.firstPrize, 'Primary · The first prize of ₹20,000'),
+        shot(photo.costumePrize, 'Primary · ₹5,000 for costume and props'),
+      ],
+    },
+    { ...why, background: 'white' },
+    { ...journey, background: 'sea' },
+    { ...teachers, background: 'white' },
+    { ...ahead, background: 'sea' },
+    /* Last, so it is drawn as the gallery wall. */
+    {
+      blockType: 'gallery',
+      heading: 'Student art gallery',
+      accentWord: 'art gallery',
+      layout: 'grid',
+      perPage: '0',
+      background: 'white',
+      intro: richTextNodes([
+        p('Costume, dance, song, craft and colour from all four schools. Select a photograph to see it larger.'),
+      ]),
+      images: [
+        shot(photo.earthCostume, 'Kindergarten · An Earth costume at the inter-school fancy dress competition'),
+        shot(photo.peacePosters, 'Primary · Posters with messages of truth and peace'),
+        shot(photo.rehearsal, 'Kindergarten · Rehearsing a dance for the annual programme'),
+        shot(photo.activityClass, 'Secondary · Writing and cutting coloured paper in an activity session'),
+        shot(photo.janmashtami, 'Kindergarten · Krishna and Radha for Janmashtami'),
+        shot(photo.greetingCard, 'Primary · Third prize in greeting card making at the Josephite competition'),
+        shot(photo.danceWinners, 'Kindergarten · Dance competition winners'),
+        shot(photo.pongal, 'Junior College · Pongal day, with a kolam laid on the floor'),
+        shot(photo.ganeshDisplay, 'Primary · The Ganesh Chaturthi display, with paper flowers and Ganesha crafts'),
+        shot(photo.singing, 'Kindergarten · Sr. KG singing competition winners'),
+        shot(photo.danceTrophy, 'Kindergarten · A trophy for the group dance at Our Lady’s Garden'),
+        shot(photo.fancyDress, 'Kindergarten · The fancy dress competition'),
+      ],
+    },
+  ]
+}
+
 const main = async () => {
   const payload = await getPayload({ config })
 
@@ -375,8 +599,20 @@ const main = async () => {
     })
   }
 
+  /* --- the photographs ---------------------------------------------------- */
+  const photo = {} as Ids
+  const absent: string[] = []
+  for (const [key, filename] of Object.entries(PHOTOS) as [keyof typeof PHOTOS, string][]) {
+    const id = await findMediaId(payload, filename)
+    if (id === null) absent.push(filename)
+    else photo[key] = id
+  }
+  if (absent.length > 0) throw new Error(`Not in the media library: ${absent.join(', ')}. Nothing was written.`)
+  console.log(`  Photographs: all ${Object.keys(PHOTOS).length} found in the library.`)
+
+  const layout = buildLayout(photo, page.id)
   console.log(`\n  ${APPLY ? 'Writing' : 'Would write'} ${layout.length} sections to the Fine Arts page:`)
-  for (const block of layout) console.log(`    ${block.heading}`)
+  for (const block of layout) console.log(`    ${block.blockType}: ${block.heading ?? (block as { title?: string }).title}`)
   if (page.title !== TITLE) console.log(`\n  Title: “${page.title}” → “${TITLE}” (menu label and address unchanged)`)
 
   if (!APPLY) {

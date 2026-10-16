@@ -13,14 +13,21 @@ import { useEffect } from 'react'
  * reduced motion, so a page without JavaScript, or with motion switched off,
  * is simply the finished page.
  */
-export const SportMotion = ({ rootId }: { rootId: string }) => {
+export const SportMotion = ({
+  rootId,
+  armedClass = 'sp-armed',
+}: {
+  rootId: string
+  /** The class that switches a page's entrance styles on. The Fine Arts page has its own. */
+  armedClass?: string
+}) => {
   useEffect(() => {
     const root = document.getElementById(rootId)
     if (!root) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     if (!('IntersectionObserver' in window)) return
 
-    root.classList.add('sp-armed')
+    root.classList.add(armedClass)
 
     const countUp = (el: HTMLElement) => {
       const target = Number(el.dataset.count)
@@ -72,9 +79,9 @@ export const SportMotion = ({ rootId }: { rootId: string }) => {
     return () => {
       window.clearTimeout(fallback)
       observer.disconnect()
-      root.classList.remove('sp-armed')
+      root.classList.remove(armedClass)
     }
-  }, [rootId])
+  }, [rootId, armedClass])
 
   return null
 }

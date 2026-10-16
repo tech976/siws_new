@@ -12,6 +12,8 @@
 @import './prose.css' layer(components);
 /* The Sports and Fencing pages' own design, scoped under `.sp`. */
 @import './sport.css' layer(components);
+/* The Fine Arts page: the site's own design, laid out as a sketchbook gallery. */
+@import './fine-arts.css' layer(components);
 
 /* ==========================================================================
    SIWS DESIGN SYSTEM
