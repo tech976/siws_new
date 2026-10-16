@@ -1,3 +1,6 @@
+import fs from 'fs'
+import path from 'path'
+
 import { loadEnv } from '@/utilities/load-env'
 
 loadEnv()
@@ -75,6 +78,27 @@ const { findMediaId } = await import('@/utilities/media-lookup')
  * `components/fine-arts/FineArtsPage.tsx`. The photographs are the schools'
  * own, already on the live site — see PHOTOS.
  *
+ * THE CENTRE'S WEBSITE INFORMATION FORM (sent 2026-10-16, with photographs of
+ * its classes). From it: the name, "Philosophical" (question 1); who may join,
+ * the timings and the room, how to enrol and that seats are not limited
+ * (2–7); whom parents should contact (9); each class's teacher and standards
+ * (10); the two examinations and the Chinmaya Mission Gita competition (11);
+ * Convocation Day in April (12); the scholarships and their sponsors, the
+ * retired teachers (13–15); the Gita chanting prizes (16); the Centre's year
+ * (18); and its first teachers (21). Two things in the form are NOT used:
+ * question 3 says "7–8 years", which the class table contradicts (Std 1 to 9),
+ * so the table is followed; and question 8 does not give the year of the 48.
+ *
+ * THE CENTRE'S PHOTOGRAPHS, and parental permission. Its three photographs
+ * show students who can be recognised, so they are uploaded marked as showing
+ * children — and the site will not publish a page with such a photograph
+ * until written parental permission is recorded against it (FR-PRV-11). The
+ * form asks for that record (question 19) and it was left blank. So this
+ * script uploads them and PLACES ONLY THOSE WITH PERMISSION RECORDED; the
+ * rest of the page is written either way, with the schools' photographs in
+ * their place. Once the office ticks "Written parental permission has been
+ * obtained" on each in the Media library, re-run with --apply --force.
+ *
  * REFUSES A PAGE SOMEBODY HAS WRITTEN. It stops if the page has sections on
  * it, so it can never overwrite the school's own work. `--force` is there for
  * a re-run after a change to this script — which is what this is.
@@ -88,8 +112,11 @@ const FORCE = process.argv.includes('--force')
 /** The address and the menu label, neither of which this script changes. */
 const SLUG = 'fine-arts'
 
-/** The Centre's name as the document heads it. */
-const TITLE = 'SIWS Arts, Fine Arts & Philosophy Centre'
+/**
+ * The Centre's name, as its Website Information Form confirms it (question 1,
+ * answered "Yes") and as the banners at its Convocation Day read.
+ */
+const TITLE = 'SIWS Arts, Fine Arts & Philosophical Centre'
 
 const STRAPLINE = 'Nurturing young minds through language, music, dance and timeless wisdom'
 const FREE_CLASSES = 'Free Saturday classes for SIWS School students'
@@ -208,7 +235,7 @@ const centre = [
     'the Centre',
     [
       p(
-        'Started in the academic year 1997–98 under the South Indians’ Welfare Society, the SIWS Arts, Fine Arts & Philosophy Centre was founded with a noble aim: to nurture young minds through culture, creativity and values. We seek to enhance each student’s intellectual and emotional growth by encouraging self-expression, building analytical skills and fostering a deeper appreciation of culture, ideas and the human condition.',
+        'Started in the academic year 1997–98 under the South Indians’ Welfare Society, the SIWS Arts, Fine Arts & Philosophical Centre was founded with a noble aim: to nurture young minds through culture, creativity and values. We seek to enhance each student’s intellectual and emotional growth by encouraging self-expression, building analytical skills and fostering a deeper appreciation of culture, ideas and the human condition.',
       ),
       p([
         t(
@@ -264,7 +291,7 @@ const centre = [
         ],
         [
           'Recognition',
-          'annual awards for the best outgoing students in each section, sponsored by our well-wishers.',
+          'four scholarships every year for the best outgoing students of each section, sponsored by our retired teachers.',
         ],
         [
           'Values and confidence',
@@ -285,9 +312,12 @@ const centre = [
         t('Many have gone on to excel in their chosen fields. '),
         b('48 students'),
         t(
-          ' have successfully completed the full three-year programme and received the Centre’s certificate, and each year our sponsors present awards to the best outgoing student in every section.',
+          ' have successfully completed the full three-year programme and received the Centre’s certificate. Certificates are presented on Convocation Day, the Centre’s own function on a Saturday in the second week of April, and every year four scholarships, sponsored by our retired teachers, go to the best outgoing students of each section.',
         ),
       ]),
+      p(
+        'The Centre was started by the Society’s management in 1997. Its first teachers were Ms Bhavana Narayanan, Ms Vanati Rajuswami, Ms Jayshree, Ms Kamalam, Ms Susheela, Ms Ganga, Dr. Vishalakshi and Ms Priya.',
+      ),
       p([
         t('The Centre is led by '),
         b('Mrs. Bhavana Narayanan, Head'),
@@ -388,6 +418,39 @@ const PHOTOS = {
 
 type Ids = Record<keyof typeof PHOTOS, number>
 
+/**
+ * The Centre's own photographs, sent with its form on 2026-10-16 and uploaded
+ * by this script from `assets/images`. The violin photograph is a print that
+ * was scanned with a teal border, trimmed off here; the group performance is
+ * a still from one of the two videos sent with them.
+ */
+const CENTRE_PHOTOS = {
+  bharatanatyam: {
+    filename: 'arts-centre-bharatanatyam-convocation.jpg',
+    alt: 'Girls in Bharatanatyam costume and jewellery dancing on a red stage, hands joined before them, with musicians seated at the side playing a mridangam, beneath the banner of the Arts, Fine Arts & Philosophical Centre’s Convocation Day.',
+    caption: 'Bharatanatyam on Convocation Day',
+    focalX: 62,
+    focalY: 42,
+  },
+  violin: {
+    filename: 'arts-centre-violin-convocation.jpg',
+    alt: 'Five children seated cross-legged on a striped mat on stage, each playing a violin into a microphone, beneath a banner reading “Welcome to S.I.W. Society’s Arts, Fine Arts & Philosophical Centre — Convocation Day”.',
+    caption: 'A violin ensemble on Convocation Day',
+    focalX: 50,
+    focalY: 62,
+  },
+  groupPerformance: {
+    filename: 'arts-centre-group-performance-convocation.jpg',
+    alt: 'Children in white shirts with shawls and checked wraps performing a group piece on a red stage, in front of a white backdrop and the Centre’s Convocation Day banner.',
+    caption: 'A group performance on Convocation Day',
+    focalX: 50,
+    focalY: 50,
+  },
+} as const
+
+/** Only those with parental permission recorded — see the note at the top. */
+type CentreIds = Partial<Record<keyof typeof CENTRE_PHOTOS, number>>
+
 /** A photograph in a gallery, its caption opening on the school: "Primary · …". */
 const shot = (image: number, caption: string) => ({ image, caption })
 
@@ -404,7 +467,7 @@ const jump = (label: string, pageId: number, anchor: string, appearance: 'primar
   link: { label, type: 'internal', reference: { relationTo: 'pages', value: pageId }, anchor, appearance },
 })
 
-const buildLayout = (photo: Ids, pageId: number) => {
+const buildLayout = (photo: Ids, centrePhoto: CentreIds, pageId: number) => {
   const [about, teach, why, journey, teachers, ahead] = centre
 
   return [
@@ -437,22 +500,99 @@ const buildLayout = (photo: Ids, pageId: number) => {
       blockType: 'gallery',
       heading: 'Banner photographs',
       layout: 'grid',
+      /*
+       * The Centre's own two photographs lead when they may be shown; until
+       * then the schools' stand in for them.
+       */
       images: [
-        shot(photo.stage, 'Primary · The full company on stage at Natya Tarang 2026'),
-        shot(photo.tshirts, 'Secondary · T-shirts painted for the anti-drug campaign'),
+        centrePhoto.bharatanatyam
+          ? shot(centrePhoto.bharatanatyam, 'Bharatanatyam · On stage on Convocation Day')
+          : shot(photo.stage, 'Primary · The full company on stage at Natya Tarang 2026'),
+        centrePhoto.violin
+          ? shot(centrePhoto.violin, 'Violin · A violin ensemble on Convocation Day')
+          : shot(photo.tshirts, 'Secondary · T-shirts painted for the anti-drug campaign'),
         shot(photo.fingerPaint, 'Kindergarten · A finger painting, made together'),
         shot(photo.rangoliMessage, 'Junior College · A rangoli with a message'),
       ],
     },
     about,
     teach,
+    /*
+     * Each class's teacher and standards, from question 10 of the form.
+     * Placed directly after "What we teach", so the page reads it into those
+     * panels rather than showing it as a section of its own.
+     */
+    {
+      blockType: 'featureList',
+      heading: 'The classes',
+      headingLevel: 'h2',
+      layout: 'spec',
+      background: 'white',
+      intro: richTextNodes([
+        p('Saturdays, 10 am to 1 pm, on the ground floor. Every class sits two examinations a year, a terminal and an annual.'),
+      ]),
+      items: [
+        { title: 'Tamil', chip: 'Std 3 to 8', description: 'Dr. Mahalakshmi V.' },
+        { title: 'Malayalam', chip: 'Std 3 to 8', description: 'Mrs. Rekha Raveendran' },
+        { title: 'Sanskrit', chip: 'Std 4 to 8', description: 'Mrs. Priya Rohit Neroy' },
+        { title: 'Vocal music', chip: 'Std 3 to 8', description: 'Mrs. Ramalakshmi' },
+        {
+          title: 'Violin',
+          chip: 'Std 4 to 8',
+          description: 'Mr. Sekhar Janardhan Tanjorkar',
+          ...(centrePhoto.violin ? { photo: centrePhoto.violin } : {}),
+        },
+        { title: 'Veena', chip: 'Std 4 to 8', description: 'Mr. Vinit Sawant' },
+        {
+          title: 'Bharatanatyam',
+          chip: 'Std 4 to 8',
+          description: 'Miss Kimaya Shantaram Kamble and Sampada Shivani Rajesh Tambe',
+          ...(centrePhoto.bharatanatyam ? { photo: centrePhoto.bharatanatyam } : {}),
+        },
+        {
+          title: 'Bhagavad Gita chanting',
+          chip: 'Std 1 to 9',
+          description:
+            'Mrs. Bhavana Narayanan\n12 noon to 1 pm. Students also enter the Gita chanting competition held by Chinmaya Mission.',
+        },
+      ],
+    },
+    /* Questions 2 and 4–9 of the form. */
+    {
+      blockType: 'featureList',
+      heading: 'How to join',
+      accentWord: 'join',
+      headingLevel: 'h2',
+      layout: 'list',
+      marker: 'number',
+      background: 'sea',
+      intro: richTextNodes([
+        p('The classes are for students of the SIWS schools, and every one of them is free.'),
+      ]),
+      items: [
+        {
+          title: 'Collect a form in June',
+          description: 'The Centre’s forms are handed out in school when the schools reopen in June.',
+        },
+        {
+          title: 'Return it by the first week of July',
+          description: 'That is the last date. No class has a limit on seats.',
+        },
+        {
+          title: 'Come along on Saturdays',
+          description:
+            'Classes run from 10 am to 1 pm on the ground floor, and Bhagavad Gita chanting from 12 noon to 1 pm.',
+        },
+      ],
+      footnote: 'Questions? Bhavana Narayanan, Head · 8779616969 · bhavana.n@siwsschool.edu.in',
+    },
     {
       blockType: 'featureList',
       heading: 'Creativity at every age',
       accentWord: 'every age',
       headingLevel: 'h2',
       layout: 'panel',
-      background: 'sea',
+      background: 'white',
       intro: richTextNodes([
         p(
           'Long before a student chooses an instrument or a classical language, they are drawing, making, dressing up and taking the stage. These photographs come from the classrooms and stages of our four schools.',
@@ -519,7 +659,54 @@ const buildLayout = (photo: Ids, pageId: number) => {
       ],
     },
     { ...why, background: 'white' },
-    { ...journey, background: 'sea' },
+    /* Question 16 of the form. The student is named as the Centre named him. */
+    {
+      blockType: 'statistics',
+      heading: 'Prizes in Gita chanting',
+      accentWord: 'Gita chanting',
+      headingLevel: 'h2',
+      background: 'sea',
+      intro:
+        'Our Bhagavad Gita students take part in the Gita chanting competition held by Chinmaya Mission. Their prizes in the last three years:',
+      stats: [
+        { value: '1st', label: '2024 · Vihang' },
+        { value: '2nd', label: '2025 · Vihang' },
+        { value: '2nd & 3rd', label: '2026 · plus a consolation prize' },
+      ],
+    },
+    { ...journey, background: 'white' },
+    /* Questions 12 and 18 of the form, in the order of the school year. */
+    {
+      blockType: 'featureList',
+      heading: 'The Centre’s year',
+      accentWord: 'year',
+      headingLevel: 'h2',
+      layout: 'compact',
+      background: 'sea',
+      items: [
+        {
+          chip: 'August',
+          title: 'Independence Day',
+          description: 'A speech in one of the Centre’s languages, and an instrumental concert.',
+        },
+        { chip: 'October', title: 'Saraswati Pooja', description: 'An instrumental concert.' },
+        {
+          chip: 'December',
+          title: 'The SIWS Annual Programme',
+          description: 'Bharatanatyam, Bhagavad Gita chanting and a live concert with every instrument.',
+        },
+        {
+          chip: 'January',
+          title: 'Republic Day',
+          description: 'A speech in one of the languages, and patriotic songs.',
+        },
+        {
+          chip: 'April',
+          title: 'Convocation Day',
+          description: 'Certificates and awards, at the Centre’s own function on a Saturday in the second week of April.',
+        },
+      ],
+    },
     { ...teachers, background: 'white' },
     { ...ahead, background: 'sea' },
     /* Last, so it is drawn as the gallery wall. */
@@ -534,6 +721,9 @@ const buildLayout = (photo: Ids, pageId: number) => {
         p('Costume, dance, song, craft and colour from all four schools. Select a photograph to see it larger.'),
       ]),
       images: [
+        ...(centrePhoto.groupPerformance
+          ? [shot(centrePhoto.groupPerformance, 'Arts Centre · A group performance on Convocation Day')]
+          : []),
         shot(photo.earthCostume, 'Kindergarten · An Earth costume at the inter-school fancy dress competition'),
         shot(photo.peacePosters, 'Primary · Posters with messages of truth and peace'),
         shot(photo.rehearsal, 'Kindergarten · Rehearsing a dance for the annual programme'),
@@ -610,7 +800,49 @@ const main = async () => {
   if (absent.length > 0) throw new Error(`Not in the media library: ${absent.join(', ')}. Nothing was written.`)
   console.log(`  Photographs: all ${Object.keys(PHOTOS).length} found in the library.`)
 
-  const layout = buildLayout(photo, page.id)
+  /* --- the Centre's own photographs -------------------------------------- */
+  const centrePhoto: CentreIds = {}
+  for (const [key, entry] of Object.entries(CENTRE_PHOTOS) as [
+    keyof typeof CENTRE_PHOTOS,
+    (typeof CENTRE_PHOTOS)[keyof typeof CENTRE_PHOTOS],
+  ][]) {
+    let id = await findMediaId(payload, entry.filename)
+    if (id === null) {
+      const source = path.resolve(process.cwd(), 'assets/images', entry.filename)
+      if (!fs.existsSync(source)) throw new Error(`The Centre's photograph is not at ${source}.`)
+      console.log(`  Centre photograph: ${APPLY ? 'uploading' : 'would upload'} ${entry.filename}`)
+      if (!APPLY) continue
+      const created = await payload.create({
+        collection: 'media',
+        data: {
+          alt: entry.alt,
+          caption: entry.caption,
+          showInGallery: false,
+          // Students can be recognised. Permission is recorded by the office, never here.
+          depictsChildren: true,
+          focalX: entry.focalX,
+          focalY: entry.focalY,
+        } as never,
+        filePath: source,
+        overrideAccess: true,
+      })
+      id = created.id as number
+    }
+    const record = (await payload.findByID({ collection: 'media', id, depth: 0, overrideAccess: true })) as {
+      depictsChildren?: boolean | null
+      parentalConsent?: { obtained?: boolean | null } | null
+      withdrawn?: { isWithdrawn?: boolean | null } | null
+    }
+    const allowed =
+      record.withdrawn?.isWithdrawn !== true &&
+      (record.depictsChildren !== true || record.parentalConsent?.obtained === true)
+    if (allowed) centrePhoto[key] = id
+    console.log(
+      `  Centre photograph: ${entry.filename} — ${allowed ? 'placed on the page' : 'NOT placed: no parental permission recorded yet'}`,
+    )
+  }
+
+  const layout = buildLayout(photo, centrePhoto, page.id)
   console.log(`\n  ${APPLY ? 'Writing' : 'Would write'} ${layout.length} sections to the Fine Arts page:`)
   for (const block of layout) console.log(`    ${block.blockType}: ${block.heading ?? (block as { title?: string }).title}`)
   if (page.title !== TITLE) console.log(`\n  Title: “${page.title}” → “${TITLE}” (menu label and address unchanged)`)

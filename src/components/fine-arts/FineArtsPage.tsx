@@ -34,6 +34,14 @@ import { ArtGallery, type ArtPiece } from './ArtGallery'
  *     first with a description leads it and the others are its extra prints.
  *     A label naming a school ("Kindergarten", "Junior College") links the
  *     chapter to that school's site.
+ *   - a SPECIFICATION points list straight after the disciplines (below) is
+ *     their class details — title, standards as the label, teacher as the
+ *     first line of the text, a photograph of the class — read into the
+ *     panels and not shown on its own;
+ *   - a points list as a numbered LIST is the steps to join, its closing
+ *     line the contact, with a phone number and an email made into links;
+ *   - a COMPACT points list with labels is the year, the label the month;
+ *   - KEY FIGURES are prizes, each on a rosette;
  *   - a TEXT section with sub-headings and lists is drawn as the discipline
  *     panels; one whose list items open on a bold term ("Free of cost: …") as
  *     the reasons to join; any other as an editorial column.
@@ -42,10 +50,10 @@ import { ArtGallery, type ArtPiece } from './ArtGallery'
  *   - a caption written "Primary · On stage at Natya Tarang" shows "Primary"
  *     as the school's tag and the rest as the caption.
  *
- * THE PHOTOGRAPHS ARE THE SCHOOLS', NOT THE CENTRE'S. There are no
- * photographs of the Centre's own Saturday classes yet, so the discipline
- * panels are drawn rather than photographed, and nothing captions a school
- * photograph as a Centre class.
+ * WHOSE PHOTOGRAPHS. The Centre's own photographs appear only where its
+ * classes are (the panels, the banner, the gallery); everywhere else the
+ * photographs are the schools', and nothing captions a school photograph as
+ * a Centre class.
  */
 
 /** The main-site pages that get this design. */
@@ -350,91 +358,306 @@ const splitTitle = (title: string) => {
   return parts.length > 1 ? { kicker: parts[0], name: parts.slice(1).join(' – ') } : { kicker: null, name: title }
 }
 
-const Disciplines = ({ block, groups }: { block: Of<'richText'>; groups: Discipline[] }) => (
-  <Shell tone={toneOf(block.background)} paper id={headingAnchor(block.heading)}>
-    <div className="mb-12 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end" data-reveal>
-      <div>
-        <span className="fa-note mb-3" aria-hidden="true">
-          Every Saturday
-          <Squiggle />
-        </span>
-        <Heading heading={block.heading} accent={block.accentWord} level={block.headingLevel} />
+/** One class's particulars, from the points list placed after "What we teach". */
+interface ClassDetail {
+  title: string
+  standards?: string | null
+  teacher?: string | null
+  note?: string | null
+  photo: MediaDoc | null
+}
+
+const detailsOf = (block: Of<'featureList'> | null): ClassDetail[] =>
+  (block?.items ?? []).map((item) => {
+    const [teacher, ...rest] = (item.description ?? '').split('\n')
+    return {
+      title: item.title,
+      standards: item.chip,
+      teacher: teacher?.trim() || null,
+      note: rest.join(' ').trim() || null,
+      photo: asMedia(item.photo),
+    }
+  })
+
+/*
+ * Which class a subject in the Centre's text is. The lists say "Carnatic
+ * Vocal" and "Bhagavad Gita: recitation, meaning and life lessons"; the form
+ * says "Vocal music" and "Bhagavad Gita chanting". The first word of the
+ * class's name is enough to tell them apart and to find each.
+ */
+const detailFor = (subject: string, details: ClassDetail[]) =>
+  details.find((detail) => {
+    const word = detail.title.toLowerCase().match(/[a-z]+/)?.[0]
+    return word ? subject.toLowerCase().includes(word) : false
+  })
+
+/** "Std 3 to 8 · Mrs. Rekha Raveendran" — what a parent looks for first. */
+const DetailLine = ({ detail, light }: { detail?: ClassDetail; light?: boolean }) =>
+  detail && (detail.standards || detail.teacher) ? (
+    <span className={`mt-1 block text-[0.8125rem] leading-snug ${light ? 'text-white/75' : 'text-ink-muted'}`}>
+      {detail.standards ? <strong className={light ? 'text-accent' : 'text-accent-deep'}>{detail.standards}</strong> : null}
+      {detail.standards && detail.teacher ? ' · ' : null}
+      {detail.teacher}
+    </span>
+  ) : null
+
+const Disciplines = ({
+  block,
+  groups,
+  details: detailsBlock,
+}: {
+  block: Of<'richText'>
+  groups: Discipline[]
+  details: Of<'featureList'> | null
+}) => {
+  const details = detailsOf(detailsBlock)
+
+  return (
+    <Shell tone={toneOf(block.background)} paper id={headingAnchor(block.heading)}>
+      <div className="mb-12 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end" data-reveal>
+        <div>
+          <span className="fa-note mb-3" aria-hidden="true">
+            Every Saturday
+            <Squiggle />
+          </span>
+          <Heading heading={block.heading} accent={block.accentWord} level={block.headingLevel} />
+        </div>
+        {detailsBlock?.intro ? (
+          <RichText data={detailsBlock.intro} className="max-w-xl text-lg text-ink-soft lg:justify-self-end" />
+        ) : (
+          <p className="max-w-xl text-lg leading-relaxed text-ink-soft lg:justify-self-end">
+            {groups.map((group) => splitTitle(group.title).name).join(', ').replace(/, ([^,]*)$/, ' and $1')} —{' '}
+            {groups.reduce((sum, group) => sum + group.subjects.length, 0)} subjects at the Centre.
+          </p>
+        )}
       </div>
-      <p className="max-w-xl text-lg leading-relaxed text-ink-soft lg:justify-self-end">
-        {groups.map((group) => splitTitle(group.title).name).join(', ').replace(/, ([^,]*)$/, ' and $1')} —{' '}
-        {groups.reduce((sum, group) => sum + group.subjects.length, 0)} subjects at the Centre.
-      </p>
-    </div>
 
-    <div className="grid gap-6 lg:grid-cols-12">
-      {groups.map((group, index) => {
-        const { kicker, name } = splitTitle(group.title)
-        const scripted = group.subjects.every((subject) => SCRIPTS.some(([pattern]) => pattern.test(subject)))
-        const variant = index === 0 ? 'brand' : index === groups.length - 1 && groups.length > 2 ? 'accent' : 'white'
-        const span =
-          groups.length > 2 ? (index === groups.length - 1 ? 'lg:col-span-12' : index === 0 ? 'lg:col-span-5' : 'lg:col-span-7') : 'lg:col-span-6'
+      {/* `items-start`: a panel is as tall as its own subjects, not its neighbour's. */}
+      <div className="grid items-start gap-6 lg:grid-cols-12">
+        {groups.map((group, index) => {
+          const { kicker, name } = splitTitle(group.title)
+          const scripted = group.subjects.every((subject) => SCRIPTS.some(([pattern]) => pattern.test(subject)))
+          const variant = index === 0 ? 'brand' : index === groups.length - 1 && groups.length > 2 ? 'accent' : 'white'
+          const span =
+            groups.length > 2
+              ? index === groups.length - 1
+                ? 'lg:col-span-12'
+                : index === 0
+                  ? 'lg:col-span-5'
+                  : 'lg:col-span-7'
+              : 'lg:col-span-6'
+          const photos = group.subjects
+            .map((subject) => detailFor(subject, details))
+            .filter((detail): detail is ClassDetail & { photo: MediaDoc } => Boolean(detail?.photo))
 
-        return (
-          <article
-            key={group.title}
-            className={`${span} ${variant === 'white' ? 'fa-tape' : ''} relative`}
-            data-reveal
-            style={delay(index, 120)}
-          >
-            <div className={`fa-panel fa-panel--${variant} overflow-hidden`}>
-              {variant === 'accent' ? (
-                <span className="fa-watermark font-display" aria-hidden="true" lang="sa">
-                  गीता
-                </span>
-              ) : null}
-              <div className={variant === 'accent' ? 'relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-center' : 'relative'}>
-                <div>
-                  {kicker ? <span className="fa-kicker">{kicker}</span> : null}
-                  <h3 className="mt-1">{name}</h3>
-                  {group.paragraphs.map((text) => (
-                    <p
-                      key={text}
-                      className={`mt-3 leading-relaxed ${variant === 'brand' ? 'text-white/85' : variant === 'accent' ? 'text-brand-ink' : 'text-ink-soft'}`}
-                    >
-                      {text}
-                    </p>
-                  ))}
-                </div>
-
-                {scripted ? (
-                  <ul className="mt-7 grid grid-cols-3 gap-3">
-                    {group.subjects.map((subject) => (
-                      <li key={subject} className="fa-subject flex flex-col items-center gap-2 text-center">
-                        <span className="fa-glyph" aria-hidden="true">
-                          {SCRIPTS.find(([pattern]) => pattern.test(subject))?.[1]}
-                        </span>
-                        <span className="text-sm font-bold text-white">{subject}</span>
-                      </li>
+          return (
+            <article
+              key={group.title}
+              className={`${span} ${variant === 'white' ? 'fa-tape' : ''} relative`}
+              data-reveal
+              style={delay(index, 120)}
+            >
+              <div className={`fa-panel fa-panel--${variant} overflow-hidden`}>
+                {variant === 'accent' ? (
+                  <span className="fa-watermark font-display" aria-hidden="true" lang="sa">
+                    गीता
+                  </span>
+                ) : null}
+                <div
+                  className={
+                    variant === 'accent'
+                      ? 'relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-center'
+                      : 'relative'
+                  }
+                >
+                  <div>
+                    {kicker ? <span className="fa-kicker">{kicker}</span> : null}
+                    <h3 className="mt-1">{name}</h3>
+                    {group.paragraphs.map((text) => (
+                      <p
+                        key={text}
+                        className={`mt-3 leading-relaxed ${variant === 'brand' ? 'text-white/85' : variant === 'accent' ? 'text-brand-ink' : 'text-ink-soft'}`}
+                      >
+                        {text}
+                      </p>
                     ))}
-                  </ul>
-                ) : (
-                  <ul className={`grid gap-3 ${variant === 'accent' ? '' : 'mt-7 sm:grid-cols-2'}`}>
-                    {group.subjects.map((subject) => {
-                      const Icon = iconFor(subject)
-                      return (
+                  </div>
+
+                  {scripted ? (
+                    <ul className="mt-7 grid gap-3 sm:grid-cols-3">
+                      {group.subjects.map((subject) => (
                         <li
                           key={subject}
-                          className={`fa-subject flex items-center gap-3 rounded-2xl p-3 ${variant === 'accent' ? 'bg-white/70' : 'bg-sea'}`}
+                          className="fa-subject flex items-center gap-3 text-left sm:flex-col sm:items-center sm:text-center"
                         >
-                          <span className="fa-instrument" aria-hidden="true">
-                            <Icon size={20} strokeWidth={1.8} />
+                          <span className="fa-glyph flex-none" aria-hidden="true">
+                            {SCRIPTS.find(([pattern]) => pattern.test(subject))?.[1]}
                           </span>
-                          <span className="font-bold text-brand">{subject}</span>
+                          <span>
+                            <span className="block text-sm font-bold text-white">{subject}</span>
+                            <DetailLine detail={detailFor(subject, details)} light />
+                          </span>
                         </li>
-                      )
-                    })}
-                  </ul>
-                )}
+                      ))}
+                    </ul>
+                  ) : (
+                    <ul className={`grid gap-3 ${variant === 'accent' ? '' : 'mt-7 sm:grid-cols-2'}`}>
+                      {group.subjects.map((subject) => {
+                        const Icon = iconFor(subject)
+                        const detail = detailFor(subject, details)
+                        return (
+                          <li
+                            key={subject}
+                            className={`fa-subject flex items-center gap-3 rounded-2xl p-3 ${variant === 'accent' ? 'bg-white/75' : 'bg-sea'}`}
+                          >
+                            <span className="fa-instrument" aria-hidden="true">
+                              <Icon size={20} strokeWidth={1.8} />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block font-bold text-brand">{subject}</span>
+                              <DetailLine detail={detail} />
+                              {detail?.note ? (
+                                <span className="mt-1 block text-[0.8125rem] leading-snug text-ink-soft">
+                                  {detail.note}
+                                </span>
+                              ) : null}
+                            </span>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  )}
+
+                  {/* The Centre's own photographs of these classes, where there are any. */}
+                  {photos.length ? (
+                    <ul className="mt-8 grid grid-cols-2 gap-5">
+                      {photos.slice(0, 2).map((detail, i) => (
+                        <li key={detail.title}>
+                          <figure className="m-0">
+                            <Print
+                              media={detail.photo}
+                              sizes="(min-width: 64rem) 300px, 45vw"
+                              tilt={i % 2 ? 'r' : 'l'}
+                              tape={i === 0 ? 'corner' : undefined}
+                            />
+                            <figcaption className="mt-3 text-[0.8125rem] leading-snug text-ink-muted">
+                              {detail.photo.caption?.toLowerCase().includes(detail.title.toLowerCase()) ? (
+                                detail.photo.caption
+                              ) : (
+                                <>
+                                  <strong className="text-brand">{detail.title}</strong>
+                                  {detail.photo.caption ? ` · ${detail.photo.caption}` : null}
+                                </>
+                              )}
+                            </figcaption>
+                          </figure>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
               </div>
-            </div>
-          </article>
+            </article>
+          )
+        })}
+      </div>
+    </Shell>
+  )
+}
+
+/* --- how to join -------------------------------------------------------- */
+
+/** "Head · 8779616969 · name@school" → the number and the address as links. */
+const Linked = ({ text }: { text: string }) => (
+  <>
+    {text.split(/(\s·\s)/).map((part, i) => {
+      const value = part.trim()
+      if (/^[\w.+-]+@[\w-]+(\.[\w-]+)+$/.test(value))
+        return (
+          <a key={i} href={`mailto:${value}`} className="font-bold text-brand underline decoration-accent decoration-2 underline-offset-4">
+            {value}
+          </a>
         )
-      })}
+      if (/^\+?[\d\s-]{8,}$/.test(value))
+        return (
+          <a key={i} href={`tel:${value.replace(/[^\d+]/g, '')}`} className="font-bold whitespace-nowrap text-brand underline decoration-accent decoration-2 underline-offset-4">
+            {value}
+          </a>
+        )
+      return <span key={i}>{part}</span>
+    })}
+  </>
+)
+
+const Steps = ({ block }: { block: Of<'featureList'> }) => (
+  <Shell tone={toneOf(block.background)} id={headingAnchor(block.heading)}>
+    <div className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)] lg:gap-16">
+      <div data-reveal="left">
+        <Heading heading={block.heading} accent={block.accentWord} level={block.headingLevel} />
+        {block.intro ? <RichText data={block.intro} className="mt-5 text-lg text-ink-soft" /> : null}
+        {block.footnote ? (
+          <p className="fa-page fa-tilt-s mt-8 !h-auto !pl-9 text-[0.95rem] leading-relaxed text-ink-soft">
+            <Linked text={block.footnote} />
+          </p>
+        ) : null}
+      </div>
+      <ol className="fa-steps">
+        {(block.items ?? []).map((item, index) => (
+          <li key={item.id ?? index} className="fa-step" data-reveal style={delay(index, 120)}>
+            <span className="fa-number" aria-hidden="true">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <div>
+              <h3 className="card-title">{item.title}</h3>
+              {item.description ? <p className="mt-2 leading-relaxed text-ink-soft">{item.description}</p> : null}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </Shell>
+)
+
+/* --- the Centre's year -------------------------------------------------- */
+
+const Calendar = ({ block }: { block: Of<'featureList'> }) => (
+  <Shell tone={toneOf(block.background)} id={headingAnchor(block.heading)}>
+    <div className="mb-12" data-reveal>
+      <Heading heading={block.heading} accent={block.accentWord} level={block.headingLevel} />
+      {block.intro ? <RichText data={block.intro} className="mt-4 max-w-2xl text-lg text-ink-soft" /> : null}
+    </div>
+    <ol className="fa-calendar">
+      {(block.items ?? []).map((item, index) => (
+        <li key={item.id ?? index} className="fa-calendar__item" data-reveal style={delay(index, 90)}>
+          {item.chip ? <span className="fa-note fa-calendar__month">{item.chip}</span> : null}
+          <span className="fa-calendar__dot" aria-hidden="true" />
+          <h3 className="card-title mt-4">{item.title}</h3>
+          {item.description ? <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">{item.description}</p> : null}
+        </li>
+      ))}
+    </ol>
+  </Shell>
+)
+
+/* --- prizes ------------------------------------------------------------- */
+
+const Prizes = ({ block }: { block: Of<'statistics'> }) => (
+  <Shell tone={toneOf(block.background)} paper id={headingAnchor(block.heading)}>
+    <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)]">
+      <div data-reveal="left">
+        <Heading heading={block.heading} accent={block.accentWord} level={block.headingLevel} />
+        {block.intro ? <p className="mt-5 text-lg leading-relaxed text-ink-soft">{block.intro}</p> : null}
+      </div>
+      <ul className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+        {(block.stats ?? []).map((stat, index) => (
+          <li key={stat.id ?? index} className="flex flex-col items-center text-center" data-reveal style={delay(index, 120)}>
+            <span className={`fa-rosette ${index % 2 ? 'fa-tilt-r' : 'fa-tilt-l'}`}>
+              <span className="fa-figure">{stat.value}</span>
+            </span>
+            <span className="mt-5 font-bold text-brand">{stat.label}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   </Shell>
 )
@@ -703,26 +926,42 @@ export const FineArtsPage = ({ blocks, units }: { blocks: Page['layout']; units:
   const afterHero = heroAt === -1 ? undefined : list[heroAt + 1]
   const collage = afterHero?.blockType === 'gallery' ? afterHero : null
   const lastGallery = list.findLastIndex((block) => block.blockType === 'gallery' && block !== collage)
+  /* A specification list straight after the disciplines is their class details. */
+  const detailsAfter = (index: number) => {
+    const next = list[index + 1]
+    return next?.blockType === 'featureList' && next.layout === 'spec' ? next : null
+  }
+  const absorbed = new Set<Block>()
+  list.forEach((block, index) => {
+    if (block.blockType !== 'richText' || !disciplinesOf(block.content)) return
+    const details = detailsAfter(index)
+    if (details) absorbed.add(details)
+  })
 
   return (
     <div id={ROOT_ID} className="fa">
       {list.map((block, index) => {
         const key = block.id ?? `${block.blockType}-${index}`
-        if (block === collage) return null
+        if (block === collage || absorbed.has(block)) return null
         switch (block.blockType) {
           case 'hero':
             return <Hero key={key} block={block} collage={collage} />
           case 'richText': {
             const groups = disciplinesOf(block.content)
-            if (groups) return <Disciplines key={key} block={block} groups={groups} />
+            if (groups) return <Disciplines key={key} block={block} groups={groups} details={detailsAfter(index)} />
             const reasons = reasonsOf(block.content)
             if (reasons) return <Reasons key={key} block={block} reasons={reasons} />
             return <Prose key={key} block={block} />
           }
-          case 'featureList':
-            if ((block.items ?? []).some((item) => item.chip?.trim()))
-              return <Journeys key={key} block={block} units={units} />
+          case 'featureList': {
+            const chipped = (block.items ?? []).some((item) => item.chip?.trim())
+            if (block.layout === 'list') return <Steps key={key} block={block} />
+            if (block.layout === 'compact' && chipped) return <Calendar key={key} block={block} />
+            if (chipped && block.layout !== 'spec') return <Journeys key={key} block={block} units={units} />
             break
+          }
+          case 'statistics':
+            return <Prizes key={key} block={block} />
           case 'gallery':
             return index === lastGallery ? <Wall key={key} block={block} /> : <Feature key={key} block={block} />
         }
