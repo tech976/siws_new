@@ -7,9 +7,11 @@ import { RichText } from '@/components/RichText'
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
 import { SportMotion } from '@/components/sport/SportMotion'
 import { headingAnchor } from '@/lib/anchor'
+import { baseName } from '@/utilities/media-lookup'
 import type { Media as MediaDoc, Page, Unit } from '@/payload-types'
 
 import { ArtGallery, type ArtPiece } from './ArtGallery'
+import { StageVideo } from './StageVideo'
 
 /**
  * THE FINE ARTS PAGE — a curated student gallery kept in a sketchbook.
@@ -45,6 +47,8 @@ import { ArtGallery, type ArtPiece } from './ArtGallery'
  *   - a TEXT section with sub-headings and lists is drawn as the discipline
  *     panels; one whose list items open on a bold term ("Free of cost: …") as
  *     the reasons to join; any other as an editorial column.
+ *   - a photo gallery holding one of the Centre's VIDEOS (below) is the stage:
+ *     the first clip large, the rest beneath it;
  *   - the LAST photo gallery is the student art gallery wall; any other
  *     gallery is a featured moment, its first photograph large.
  *   - a caption written "Primary · On stage at Natya Tarang" shows "Primary"
@@ -890,6 +894,93 @@ const Feature = ({ block }: { block: Of<'gallery'> }) => {
   )
 }
 
+/* --- on the Centre's stage --------------------------------------------- */
+
+/**
+ * The Centre's two videos, from its Convocation Day, keyed by the photograph
+ * that stands for each in the library. The library takes images only, so the
+ * clips are served with the site (`public/videos/fine-arts`), as the reels
+ * are; tying each to its photograph means a clip is on the page exactly when
+ * its photograph is — and the photograph carries the parental-permission
+ * record that decides that.
+ */
+const VIDEOS: Record<string, string> = {
+  'arts-centre-bharatanatyam-convocation.jpg': '/videos/fine-arts/arts-centre-bharatanatyam-convocation.mp4',
+  'arts-centre-group-performance-convocation.jpg': '/videos/fine-arts/arts-centre-group-performance-convocation.mp4',
+}
+
+const videoFor = (media: MediaDoc | null) => (media?.filename ? VIDEOS[baseName(media.filename)] : undefined)
+
+const posterOf = (media: MediaDoc) =>
+  (media.sizes as Record<string, { url?: string | null } | undefined> | undefined)?.medium?.url ?? media.url ?? undefined
+
+interface StageItem {
+  media: MediaDoc
+  video?: string
+  text?: string
+}
+
+/** A print that plays, or a photograph, in the same white mat. */
+const StagePrint = ({ item, tilt, wide }: { item: StageItem; tilt?: 'l' | 'r' | 's'; wide?: boolean }) => (
+  <figure className="m-0">
+    <div className={`fa-mat ${tilt ? `fa-tilt-${tilt}` : ''}`}>
+      <div className={`fa-mat__photo ${wide || item.video ? 'aspect-video' : 'aspect-[4/3]'}`}>
+        {item.video ? (
+          <StageVideo src={item.video} poster={posterOf(item.media)} label={item.media.alt ?? item.text ?? 'Video'} />
+        ) : (
+          <Media resource={item.media} fill sizes="(min-width: 64rem) 420px, 90vw" className="object-cover" />
+        )}
+      </div>
+    </div>
+    {item.text ? (
+      <figcaption className="mt-3 flex items-center gap-2 text-sm text-white/80">
+        {item.video ? <span className="fa-tag fa-tag--light !py-0.5 !text-[0.65rem]">Video</span> : null}
+        {item.text}
+      </figcaption>
+    ) : null}
+  </figure>
+)
+
+const Stage = ({ block }: { block: Of<'gallery'> }) => {
+  const items: StageItem[] = (block.images ?? []).flatMap((entry) => {
+    const media = asMedia(entry.image)
+    if (!media) return []
+    return [{ media, video: videoFor(media), text: splitCaption(entry.caption ?? media.caption).text }]
+  })
+  // The first clip leads; everything else sits beneath it.
+  const leadAt = Math.max(0, items.findIndex((item) => item.video))
+  const lead = items[leadAt]
+  const rest = items.filter((_, i) => i !== leadAt)
+  if (!lead) return null
+
+  return (
+    <Shell tone="brand" id={headingAnchor(block.heading)} className="fa-stage">
+      <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
+        <div className="lg:col-span-7" data-reveal="left">
+          <StagePrint item={lead} tilt="s" wide />
+        </div>
+        <div className="lg:col-span-5" data-reveal style={delay(1)}>
+          <span className="fa-note" aria-hidden="true">
+            Press play
+            <Squiggle />
+          </span>
+          <Heading heading={block.heading} accent={block.accentWord} className="mt-3 !text-white" />
+          {block.intro ? <RichText data={block.intro} className="mt-5 text-[1.0625rem] text-white/85" /> : null}
+        </div>
+      </div>
+      {rest.length ? (
+        <ul className={`mt-12 grid gap-8 sm:grid-cols-2 ${rest.length > 2 ? 'lg:grid-cols-3' : ''} lg:gap-10`}>
+          {rest.map((item, i) => (
+            <li key={item.media.id} data-reveal style={delay(i, 120)}>
+              <StagePrint item={item} tilt={i % 2 ? 'r' : 'l'} />
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </Shell>
+  )
+}
+
 /* --- the gallery wall --------------------------------------------------- */
 
 const Wall = ({ block }: { block: Of<'gallery'> }) => {
@@ -963,6 +1054,8 @@ export const FineArtsPage = ({ blocks, units }: { blocks: Page['layout']; units:
           case 'statistics':
             return <Prizes key={key} block={block} />
           case 'gallery':
+            if ((block.images ?? []).some((entry) => videoFor(asMedia(entry.image))))
+              return <Stage key={key} block={block} />
             return index === lastGallery ? <Wall key={key} block={block} /> : <Feature key={key} block={block} />
         }
         return <RenderBlocks key={key} blocks={[block]} units={units} />

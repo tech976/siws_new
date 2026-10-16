@@ -515,6 +515,43 @@ const buildLayout = (photo: Ids, centrePhoto: CentreIds, pageId: number) => {
         shot(photo.rangoliMessage, 'Junior College · A rangoli with a message'),
       ],
     },
+    /*
+     * The Centre on its own stage — the section SIWS asked to be the page's
+     * focus (2026-10-16): the Bharatanatyam clip large, the violin ensemble
+     * and the group performance beneath it. The two clips play from the
+     * photographs that stand for them (see VIDEOS in FineArtsPage.tsx), so
+     * the section holds only what has parental permission recorded, and is
+     * left out altogether until something has.
+     */
+    ...(centrePhoto.bharatanatyam || centrePhoto.violin || centrePhoto.groupPerformance
+      ? [
+          {
+            blockType: 'gallery',
+            heading: 'On the Centre’s stage',
+            accentWord: 'stage',
+            layout: 'grid',
+            background: 'brand',
+            intro: richTextNodes([
+              p([
+                t('Every April the Centre presents its certificates and awards at '),
+                b('Convocation Day'),
+                t(
+                  ', its own function — and its students take the stage. Bharatanatyam, a violin ensemble and a group performance from the Centre’s Convocation Days.',
+                ),
+              ]),
+            ]),
+            images: [
+              ...(centrePhoto.bharatanatyam
+                ? [shot(centrePhoto.bharatanatyam, 'Arts Centre · Bharatanatyam on Convocation Day')]
+                : []),
+              ...(centrePhoto.violin ? [shot(centrePhoto.violin, 'Arts Centre · A violin ensemble on Convocation Day')] : []),
+              ...(centrePhoto.groupPerformance
+                ? [shot(centrePhoto.groupPerformance, 'Arts Centre · A group performance on Convocation Day')]
+                : []),
+            ],
+          },
+        ]
+      : []),
     about,
     teach,
     /*
@@ -721,9 +758,6 @@ const buildLayout = (photo: Ids, centrePhoto: CentreIds, pageId: number) => {
         p('Costume, dance, song, craft and colour from all four schools. Select a photograph to see it larger.'),
       ]),
       images: [
-        ...(centrePhoto.groupPerformance
-          ? [shot(centrePhoto.groupPerformance, 'Arts Centre · A group performance on Convocation Day')]
-          : []),
         shot(photo.earthCostume, 'Kindergarten · An Earth costume at the inter-school fancy dress competition'),
         shot(photo.peacePosters, 'Primary · Posters with messages of truth and peace'),
         shot(photo.rehearsal, 'Kindergarten · Rehearsing a dance for the annual programme'),
