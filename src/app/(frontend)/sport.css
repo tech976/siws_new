@@ -1,0 +1,703 @@
+/* ==========================================================================
+   MATCH DAY — the Sports and Fencing pages.
+
+   SIWS, 2026-10-16: "the sport section should look more cool, it's boring…
+   it can have a different design from the rest of the website, but it should
+   be cool and fun to watch — different elements, different formats, different
+   styles, more modern. Keep the fonts the same."
+
+   So these two pages leave the site's white-and-pale-blue rhythm for a
+   stadium at night: deep navy grounds under floodlight amber, with the white
+   sections between them as the pitch. The fonts are the site's own — Anton,
+   which the site keeps for its banners, carries every heading and figure here,
+   and Montserrat the text.
+
+   Everything is scoped under `.sp`, the wrapper `SportPage` renders, so none
+   of it can reach another page. Motion is opt-in: `.sp-armed` is added by
+   `SportMotion` only when the visitor has not asked for reduced motion, and
+   without it every element is simply visible.
+   ========================================================================== */
+
+.sp {
+  --sp-night: #0a0d33;
+  --sp-night-2: #141873;
+  --sp-glow: #3376c2;
+  --sp-amber: var(--color-accent);
+  --sp-amber-deep: var(--color-accent-deep);
+  --sp-paper: #f4f7ff;
+  --sp-line-dark: rgb(255 255 255 / 0.12);
+  overflow-x: clip;
+}
+
+/* --- Grounds ----------------------------------------------------------- */
+
+.sp-section {
+  position: relative;
+  isolation: isolate;
+  padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+}
+
+.sp-light {
+  background: var(--sp-paper);
+  color: var(--color-ink);
+}
+
+.sp-white {
+  background: #ffffff;
+  color: var(--color-ink);
+}
+
+.sp-dark {
+  background:
+    radial-gradient(900px 420px at 85% -10%, rgb(51 118 194 / 0.35), transparent 60%),
+    radial-gradient(700px 380px at 0% 110%, rgb(255 175 42 / 0.12), transparent 60%),
+    var(--sp-night);
+  color: #ffffff;
+}
+
+.sp-dark .siws-prose,
+.sp-dark .sp-muted {
+  color: rgb(255 255 255 / 0.82);
+}
+
+.sp-dark .siws-prose :is(strong, a) {
+  color: var(--sp-amber);
+}
+
+.sp-amber {
+  background:
+    repeating-linear-gradient(-45deg, rgb(10 13 51 / 0.06) 0 14px, transparent 14px 28px),
+    var(--sp-amber);
+  color: var(--sp-night);
+}
+
+/* A slanted top edge, so a section cuts into the one above it. */
+.sp-slant {
+  clip-path: polygon(0 3.5vw, 100% 0, 100% 100%, 0 100%);
+  margin-top: -3.5vw;
+  padding-top: calc(clamp(3.5rem, 2.5rem + 4vw, 6rem) + 3.5vw);
+}
+
+/* A giant outlined word behind a section heading. Decoration only. */
+.sp-watermark {
+  position: absolute;
+  inset-inline: 0;
+  top: clamp(1rem, 2vw, 2.5rem);
+  z-index: -1;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: var(--font-display), 'Montserrat', sans-serif;
+  font-size: clamp(5rem, 3rem + 12vw, 13rem);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgb(46 49 146 / 0.08);
+  pointer-events: none;
+  user-select: none;
+  text-align: right;
+}
+
+.sp-dark .sp-watermark {
+  -webkit-text-stroke-color: rgb(255 255 255 / 0.07);
+}
+
+/* --- Headings ---------------------------------------------------------- */
+
+.sp-heading {
+  font-family: var(--font-display), 'Montserrat', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 0.98;
+  font-size: clamp(2.25rem, 1.6rem + 3vw, 4rem);
+  color: var(--color-brand);
+  text-wrap: balance;
+}
+
+.sp-heading--small {
+  font-size: clamp(1.75rem, 1.3rem + 2vw, 2.75rem);
+}
+
+.sp-dark .sp-heading {
+  color: #ffffff;
+}
+
+.sp-amber .sp-heading {
+  color: var(--sp-night);
+}
+
+.sp-heading .heading-accent {
+  color: var(--sp-amber-deep);
+}
+
+.sp-dark .sp-heading .heading-accent {
+  color: var(--sp-amber);
+}
+
+/* The short amber bar a heading sits on. */
+.sp-bar {
+  display: block;
+  width: 3.5rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background: var(--sp-amber);
+  margin-bottom: 1.1rem;
+  transform: skewX(-20deg);
+}
+
+/* --- The banner -------------------------------------------------------- */
+
+.sp-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: min(88vh, 54rem);
+  display: flex;
+  align-items: flex-end;
+  color: #ffffff;
+  background: var(--sp-night);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 4vw), 0 100%);
+  padding-bottom: calc(3rem + 4vw);
+}
+
+.sp-hero__photo {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.sp-hero__shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(100deg, rgb(10 13 51 / 0.96) 0%, rgb(10 13 51 / 0.82) 42%, rgb(10 13 51 / 0.35) 75%, rgb(10 13 51 / 0.2) 100%),
+    linear-gradient(to top, rgb(10 13 51 / 0.9), transparent 45%);
+}
+
+.sp-hero__title {
+  font-family: var(--font-display), 'Montserrat', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: 0.005em;
+  font-size: clamp(3rem, 1.6rem + 7vw, 7.5rem);
+  color: #ffffff;
+  text-wrap: balance;
+}
+
+.sp-hero__title .heading-accent {
+  color: var(--sp-amber);
+}
+
+.sp-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.1);
+  border: 1px solid rgb(255 255 255 / 0.2);
+  backdrop-filter: blur(6px);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.sp-live::before {
+  content: '';
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--sp-amber);
+  box-shadow: 0 0 0 0 rgb(255 175 42 / 0.7);
+}
+
+.sp-armed .sp-live::before {
+  animation: sp-pulse 1.8s ease-out infinite;
+}
+
+@keyframes sp-pulse {
+  0% { box-shadow: 0 0 0 0 rgb(255 175 42 / 0.7); }
+  70% { box-shadow: 0 0 0 0.6rem rgb(255 175 42 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(255 175 42 / 0); }
+}
+
+/* --- Scoreboard cells -------------------------------------------------- */
+
+.sp-score {
+  position: relative;
+  border-radius: 1.1rem;
+  padding: 1.1rem 1.25rem 1rem;
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.03));
+  border: 1px solid rgb(255 255 255 / 0.16);
+  backdrop-filter: blur(8px);
+}
+
+.sp-score__value {
+  display: block;
+  font-family: var(--font-display), 'Montserrat', sans-serif;
+  font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.5rem);
+  line-height: 1;
+  color: var(--sp-amber);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 24px rgb(255 175 42 / 0.35);
+}
+
+.sp-score__label {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  color: rgb(255 255 255 / 0.82);
+}
+
+/* --- The ticker band --------------------------------------------------- */
+
+.sp-ticker {
+  position: relative;
+  z-index: 2;
+  margin-top: -2.2rem;
+  transform: rotate(-2deg);
+  background: var(--sp-amber);
+  color: var(--sp-night);
+  box-shadow: 0 14px 40px -18px rgb(10 13 51 / 0.6);
+  overflow: hidden;
+}
+
+.sp-ticker__track {
+  display: flex;
+  width: max-content;
+  padding-block: 0.85rem;
+}
+
+.sp-armed .sp-ticker__track {
+  animation: sp-scroll 38s linear infinite;
+}
+
+.sp-ticker:hover .sp-ticker__track {
+  animation-play-state: paused;
+}
+
+.sp-ticker__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding-inline: 0.75rem;
+  font-family: var(--font-display), 'Montserrat', sans-serif;
+  font-size: clamp(1.4rem, 1rem + 1.6vw, 2.25rem);
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.sp-ticker__item::after {
+  content: '✦';
+  font-size: 0.6em;
+}
+
+@keyframes sp-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* --- Cards ------------------------------------------------------------- */
+
+.sp-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.4rem;
+  background: #ffffff;
+  border: 1px solid var(--color-line);
+  box-shadow: 0 1px 2px rgb(36 39 111 / 0.05), 0 18px 40px -28px rgb(36 39 111 / 0.35);
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.sp-card::after {
+  /* The amber line that sweeps in along the foot of a card on hover. */
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--sp-amber), var(--sp-amber-deep));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sp-card:hover {
+  transform: translateY(-6px);
+  border-color: transparent;
+  box-shadow: 0 2px 6px rgb(36 39 111 / 0.08), 0 30px 60px -30px rgb(36 39 111 / 0.55);
+}
+
+.sp-card:hover::after {
+  transform: scaleX(1);
+}
+
+.sp-dark .sp-card {
+  background: linear-gradient(165deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.03));
+  border-color: var(--sp-line-dark);
+  box-shadow: none;
+  color: #ffffff;
+}
+
+.sp-dark .sp-card:hover {
+  border-color: rgb(255 175 42 / 0.45);
+  box-shadow: 0 30px 60px -34px rgb(0 0 0 / 0.8);
+}
+
+/* The featured tile: the flagship sport. */
+.sp-card--star {
+  background:
+    radial-gradient(420px 220px at 100% 0%, rgb(255 175 42 / 0.35), transparent 70%),
+    linear-gradient(150deg, var(--sp-night-2), var(--sp-night));
+  border-color: rgb(255 175 42 / 0.5);
+  color: #ffffff;
+}
+
+.sp-dark .sp-card--star {
+  background:
+    radial-gradient(420px 220px at 100% 0%, rgb(255 175 42 / 0.4), transparent 70%),
+    linear-gradient(150deg, #1d2290, var(--sp-night-2));
+}
+
+.sp-icon {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 1rem;
+  background: var(--color-brand);
+  color: #ffffff;
+  transform: rotate(-6deg);
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.sp-card:hover .sp-icon {
+  transform: rotate(0deg) scale(1.08);
+}
+
+.sp-dark .sp-icon,
+.sp-card--star .sp-icon {
+  background: var(--sp-amber);
+  color: var(--sp-night);
+}
+
+.sp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--color-brand-tint);
+  color: var(--color-brand);
+}
+
+.sp-chip--gold {
+  background: var(--sp-amber);
+  color: var(--sp-night);
+}
+
+.sp-dark .sp-chip:not(.sp-chip--gold),
+.sp-card--star .sp-chip:not(.sp-chip--gold) {
+  background: rgb(255 255 255 / 0.12);
+  color: #ffffff;
+}
+
+/* --- Big-number tiles (facilities) ------------------------------------ */
+
+.sp-figure {
+  font-family: var(--font-display), 'Montserrat', sans-serif;
+  font-size: clamp(3rem, 2rem + 3vw, 4.5rem);
+  line-height: 0.9;
+  color: var(--color-brand);
+}
+
+.sp-dark .sp-figure {
+  color: var(--sp-amber);
+}
+
+/* --- Photographs -------------------------------------------------------- */
+
+.sp-frame {
+  position: relative;
+}
+
+.sp-frame::before {
+  /* The amber block offset behind a photograph. */
+  content: '';
+  position: absolute;
+  inset: 1.25rem -1.25rem -1.25rem 1.25rem;
+  border-radius: 1.6rem;
+  background: var(--sp-amber);
+  z-index: 0;
+  transform: rotate(2deg);
+}
+
+.sp-frame--left::before {
+  inset: 1.25rem 1.25rem -1.25rem -1.25rem;
+  transform: rotate(-2deg);
+}
+
+.sp-frame__inner {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 1.6rem;
+  aspect-ratio: 5 / 4;
+  box-shadow: 0 30px 60px -30px rgb(10 13 51 / 0.6);
+}
+
+.sp-frame__inner img {
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sp-frame:hover .sp-frame__inner img {
+  transform: scale(1.05);
+}
+
+/* The filmstrip: photographs pinned at an angle, straightened on hover. */
+.sp-strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(16rem, 1fr);
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 1.5rem 0.5rem 2rem;
+  scrollbar-width: thin;
+}
+
+.sp-polaroid {
+  scroll-snap-align: center;
+  background: #ffffff;
+  padding: 0.75rem 0.75rem 1.1rem;
+  border-radius: 0.9rem;
+  box-shadow: 0 22px 40px -24px rgb(10 13 51 / 0.55);
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.45s ease;
+}
+
+.sp-polaroid:nth-child(odd) { transform: rotate(-2.5deg); }
+.sp-polaroid:nth-child(even) { transform: rotate(2deg) translateY(0.75rem); }
+
+.sp-polaroid:hover,
+.sp-polaroid:focus-within {
+  transform: rotate(0deg) translateY(-0.5rem) scale(1.03);
+  box-shadow: 0 34px 60px -28px rgb(10 13 51 / 0.7);
+  z-index: 1;
+}
+
+/* --- Prose inside these pages ------------------------------------------ */
+
+.sp .siws-prose {
+  text-align: left;
+  hyphens: manual;
+}
+
+.sp .siws-prose ul {
+  list-style: none;
+  padding-inline-start: 0;
+}
+
+.sp .siws-prose li {
+  position: relative;
+  padding-inline-start: 1.6rem;
+}
+
+.sp .siws-prose li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 0.8rem;
+  height: 0.3rem;
+  border-radius: 999px;
+  background: var(--sp-amber);
+  transform: skewX(-20deg);
+}
+
+.sp .siws-prose h3 {
+  font-family: var(--font-display), 'Montserrat', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.sp-dark .siws-prose h3 {
+  color: var(--sp-amber);
+}
+
+/* --- Pills (programmes) ------------------------------------------------- */
+
+.sp-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.85rem 1.3rem 0.85rem 0.85rem;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1.5px solid var(--color-line);
+  font-weight: 600;
+  color: var(--color-brand);
+  transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.sp-pill:hover {
+  transform: translateY(-3px) rotate(-1deg);
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  color: #ffffff;
+}
+
+.sp-pill__dot {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--sp-amber);
+  color: var(--sp-night);
+  flex-shrink: 0;
+}
+
+/* --- The quote --------------------------------------------------------- */
+
+.sp-quote {
+  font-family: var(--font-display), 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(1.6rem, 1.1rem + 2.2vw, 2.9rem);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.sp-quote-mark {
+  font-family: var(--font-display), 'Montserrat', sans-serif;
+  font-size: clamp(6rem, 4rem + 8vw, 11rem);
+  line-height: 0.6;
+  color: var(--sp-amber);
+}
+
+/* --- Filter tabs (honours) --------------------------------------------- */
+
+.sp-tab {
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-line);
+  background: #ffffff;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--color-brand);
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.sp-tab[aria-pressed='true'] {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  color: #ffffff;
+}
+
+.sp-tab:focus-visible,
+.sp-card:focus-visible,
+.sp-pill:focus-visible {
+  outline: 3px solid var(--sp-amber);
+  outline-offset: 3px;
+}
+
+/* --- Buttons on these pages -------------------------------------------- */
+
+.sp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.95rem 1.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  background: var(--sp-amber);
+  color: var(--sp-night);
+  box-shadow: 0 12px 30px -12px rgb(255 175 42 / 0.65);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.sp-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px -12px rgb(255 175 42 / 0.75);
+}
+
+.sp-btn--dark {
+  background: var(--sp-night);
+  color: #ffffff;
+  box-shadow: 0 12px 30px -12px rgb(10 13 51 / 0.6);
+}
+
+.sp-btn--ghost {
+  background: transparent;
+  color: inherit;
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+
+.sp-btn:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* --- Entrances ---------------------------------------------------------- */
+
+.sp-armed [data-reveal] {
+  transition: opacity 0.7s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: var(--sp-delay, 0ms);
+}
+
+.sp-armed [data-reveal]:not([data-shown]) {
+  opacity: 0;
+  transform: translateY(2rem);
+}
+
+.sp-armed [data-reveal='left']:not([data-shown]) {
+  transform: translateX(-2.5rem);
+}
+
+.sp-armed [data-reveal='right']:not([data-shown]) {
+  transform: translateX(2.5rem);
+}
+
+.sp-armed [data-reveal='pop']:not([data-shown]) {
+  transform: scale(0.92);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp *,
+  .sp *::before,
+  .sp *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .sp-polaroid:nth-child(n) {
+    transform: none;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .sp-slant {
+    clip-path: polygon(0 1.5rem, 100% 0, 100% 100%, 0 100%);
+    margin-top: -1.5rem;
+    padding-top: calc(3.5rem + 1.5rem);
+  }
+
+  .sp-hero {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 1.5rem), 0 100%);
+  }
+
+  .sp-frame::before {
+    inset: 0.75rem -0.6rem -0.75rem 0.6rem;
+  }
+}

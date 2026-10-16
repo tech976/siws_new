@@ -10,6 +10,8 @@
  * two rules on equal footing so the more specific one wins, as intended.
  */
 @import './prose.css' layer(components);
+/* The Sports and Fencing pages' own design, scoped under `.sp`. */
+@import './sport.css' layer(components);
 
 /* ==========================================================================
    SIWS DESIGN SYSTEM

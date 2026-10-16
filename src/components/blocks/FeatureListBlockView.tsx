@@ -40,7 +40,7 @@ import type { FeatureListBlock } from '@/payload-types'
 import { Section, SectionHeading, type BlockBackground } from './Section'
 
 /** Keyed by the values in `FEATURE_ICON_OPTIONS`. */
-const FEATURE_ICONS: Record<string, LucideIcon> = {
+export const FEATURE_ICONS: Record<string, LucideIcon> = {
   classroom: School,
   security: ShieldCheck,
   play: ToyBrick,

@@ -6,6 +6,7 @@ import { notFound, permanentRedirect } from 'next/navigation'
 
 import { PostView } from '@/components/blocks/PostView'
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
+import { SPORT_PAGES, SportPage } from '@/components/sport/SportPage'
 import { tickerItems } from '@/lib/ticker'
 import { EmergencyNoticeBanner } from '@/components/emergency/EmergencyNoticeBanner'
 import { findRedirect } from '@/lib/redirects'
@@ -200,7 +201,16 @@ const DynamicRoute = async ({ params }: RouteProps) => {
                 . Earlier versions are kept on record and are available on request.
               </p>
             ) : null}
-            <RenderBlocks blocks={page.layout} unit={unit} units={units} />
+            {/*
+              The main site's Sports and Fencing pages have a design of their
+              own, built from the same blocks (SIWS, 2026-10-16). A school's
+              Sports page keeps its school's look.
+            */}
+            {!unit && SPORT_PAGES.has(page.slug) ? (
+              <SportPage blocks={page.layout} />
+            ) : (
+              <RenderBlocks blocks={page.layout} unit={unit} units={units} />
+            )}
           </>
         ) : null}
       </main>
