@@ -10,6 +10,7 @@ import {
   isAdmin,
   isDPO,
   unitIdsOf,
+  usesSimpleScreen,
 } from './user'
 
 export * from './roles'
@@ -166,6 +167,33 @@ export const deleteScoped =
      * this does not reach pages or faculty.
      */
     if (!hasRole(user, ROLES.unitHead, ROLES.contentManager, ROLES.hod)) return false
+    if (!canTouchSection(user, section)) return false
+    return withinAssignedUnits(user)
+  }
+
+/**
+ * Delete access for what a school writes for itself: News & Events — news,
+ * events, achievements and notices.
+ *
+ * Everything `deleteScoped` allows, and also the school's own account on the
+ * simple screen, inside its own school. The schools' accounts on the live
+ * site are Editors, or HODs and Editors, and Editors may not delete — so a
+ * school could write and publish an achievement and then had no way to take
+ * it down: the panel answered "You are not allowed to perform this action"
+ * (SIWS, 2026-10-19). The reasoning that let HODs delete applies to them
+ * unchanged: it is their own item, and the alternative is asking an
+ * administrator to remove a typo.
+ *
+ * Kept to this one collection. Pages, faculty and the media library still
+ * stop at Content Manager.
+ */
+export const deleteOwnWriting =
+  (section: SectionKey): Access =>
+  (args) => {
+    const scoped = deleteScoped(section)(args)
+    if (scoped !== false) return scoped
+    const user = asUser(args.req.user)
+    if (!isActiveUser(user) || !usesSimpleScreen(user)) return false
     if (!canTouchSection(user, section)) return false
     return withinAssignedUnits(user)
   }

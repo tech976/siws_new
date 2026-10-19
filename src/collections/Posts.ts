@@ -4,7 +4,7 @@ import type { Post } from '@/payload-types'
 
 import {
   createScoped,
-  deleteScoped,
+  deleteOwnWriting,
   readPublishedOrScoped,
   updateScoped,
 } from '@/access'
@@ -45,7 +45,7 @@ export const Posts: CollectionConfig = {
     read: readPublishedOrScoped,
     create: createScoped(SECTIONS.events),
     update: updateScoped(SECTIONS.events),
-    delete: deleteScoped(SECTIONS.events),
+    delete: deleteOwnWriting(SECTIONS.events),
   },
 
   admin: {
