@@ -16,6 +16,7 @@ import { Media } from '@/components/Media'
 import { RichText } from '@/components/RichText'
 import { FEATURE_ICONS } from '@/components/blocks/FeatureListBlockView'
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
+import { headingAnchor } from '@/lib/anchor'
 import type { Page } from '@/payload-types'
 
 import { HonoursBoard } from './HonoursBoard'
@@ -63,16 +64,20 @@ const toneOf = (background: unknown): Tone =>
  */
 const Shell = ({
   tone,
+  anchor,
   slant = tone === 'dark',
   className,
   children,
 }: {
   tone: Tone
+  /** The heading the section is addressed by: `/sports#our-facilities`. */
+  anchor?: string | null
   slant?: boolean
   className?: string
   children: ReactNode
 }) => (
   <section
+    id={headingAnchor(anchor)}
     className={['sp-section', `sp-${tone}`, slant ? 'sp-slant' : '', className].filter(Boolean).join(' ')}
     data-invert={tone === 'dark' ? 'true' : undefined}
   >
@@ -267,7 +272,7 @@ const Split = ({ block }: { block: Of<'mediaText'> }) => {
   const tone = toneOf(block.background)
   const imageLeft = block.imagePosition === 'left'
   return (
-    <Shell tone={tone}>
+    <Shell anchor={block.heading} tone={tone}>
       <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <div
           className={`sp-frame ${imageLeft ? 'sp-frame--left lg:order-1' : 'lg:order-2'}`}
@@ -328,7 +333,7 @@ const SportTiles = ({ block }: { block: Of<'featureList'> }) => {
   const items = block.items ?? []
   const tone = toneOf(block.background)
   return (
-    <Shell tone={tone}>
+    <Shell anchor={block.heading} tone={tone}>
       <Heading
         heading={block.heading}
         accent={block.accentWord}
@@ -404,7 +409,7 @@ const FigureTiles = ({ block }: { block: Of<'featureList'> }) => {
   const items = block.items ?? []
   const tone = toneOf(block.background)
   return (
-    <Shell tone={tone}>
+    <Shell anchor={block.heading} tone={tone}>
       <Heading
         heading={block.heading}
         accent={block.accentWord}
@@ -451,7 +456,7 @@ const Cards = ({ block }: { block: Of<'featureList'> }) => {
   const columns =
     items.length === 2 ? 'md:grid-cols-2' : items.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-4'
   return (
-    <Shell tone={tone}>
+    <Shell anchor={block.heading} tone={tone}>
       <Heading
         heading={block.heading}
         accent={block.accentWord}
@@ -490,7 +495,7 @@ const Pills = ({ block }: { block: Of<'featureList'> }) => {
   const items = block.items ?? []
   const tone = toneOf(block.background)
   return (
-    <Shell tone={tone}>
+    <Shell anchor={block.heading} tone={tone}>
       {/*
        * A training sheet: the heading holds the left of the band and the
        * sessions run down the right, one to a ruled line. They were pills with
@@ -520,7 +525,7 @@ const Pills = ({ block }: { block: Of<'featureList'> }) => {
 }
 
 const Honours = ({ block }: { block: Of<'featureList'> }) => (
-  <Shell tone={toneOf(block.background)}>
+  <Shell anchor={block.heading} tone={toneOf(block.background)}>
     <Heading
       heading={block.heading}
       accent={block.accentWord}
@@ -541,7 +546,7 @@ const Honours = ({ block }: { block: Of<'featureList'> }) => (
 const Spec = ({ block }: { block: Of<'featureList'> }) => {
   const items = block.items ?? []
   return (
-    <Shell tone={toneOf(block.background)}>
+    <Shell anchor={block.heading} tone={toneOf(block.background)}>
       <Heading
         heading={block.heading}
         accent={block.accentWord}
@@ -589,7 +594,7 @@ const Strip = ({ block }: { block: Of<'gallery'> }) => {
   const images = (block.images ?? []).filter((row) => row.image && typeof row.image === 'object')
   if (images.length === 0) return null
   return (
-    <Shell tone={toneOf(block.background)}>
+    <Shell anchor={block.heading} tone={toneOf(block.background)}>
       <Heading heading={block.heading} accent={block.accentWord} level={block.headingLevel} />
       <ul className="sp-strip">
         {images.map((row, i) => {
@@ -629,7 +634,7 @@ const Bento = ({ block }: { block: Of<'gallery'> }) => {
   const images = (block.images ?? []).filter((row) => row.image && typeof row.image === 'object')
   if (images.length === 0) return null
   return (
-    <Shell tone={toneOf(block.background)}>
+    <Shell anchor={block.heading} tone={toneOf(block.background)}>
       <Heading
         heading={block.heading}
         accent={block.accentWord}
@@ -662,7 +667,7 @@ const Bento = ({ block }: { block: Of<'gallery'> }) => {
 const Scoreboard = ({ block }: { block: Of<'statistics'> }) => {
   const stats = block.stats ?? []
   return (
-    <section className="sp-section sp-dark sp-slant" data-invert="true">
+    <section id={headingAnchor(block.heading)} className="sp-section sp-dark sp-slant" data-invert="true">
       {block.image ? (
         <div className="absolute inset-0 -z-10 opacity-[0.12] mix-blend-luminosity" aria-hidden="true">
           <Media resource={block.image} fill sizes="100vw" className="object-cover" />
@@ -697,7 +702,7 @@ const Words = ({ block }: { block: Of<'richText'> }) => {
   /* A short statement, given the whole band. */
   if (block.width === 'narrow') {
     return (
-      <Shell tone={tone}>
+      <Shell anchor={block.heading} tone={tone}>
         <div className="mx-auto max-w-4xl" data-reveal>
           {block.heading ? (
             <p className="t-label mb-4 text-accent-deep">
@@ -714,7 +719,7 @@ const Words = ({ block }: { block: Of<'richText'> }) => {
   }
 
   return (
-    <Shell tone={tone}>
+    <Shell anchor={block.heading} tone={tone}>
       <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)] lg:gap-16">
         <div data-reveal="left">
           {block.heading ? (

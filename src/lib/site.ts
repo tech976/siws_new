@@ -5,6 +5,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import type { NavItem } from '@/components/layout/PrimaryNav'
+import { headingAnchor } from '@/lib/anchor'
 import type { Page, Post, Unit } from '@/payload-types'
 import type { QuickLink } from '@/components/layout/QuickLinks'
 
@@ -155,6 +156,28 @@ export const getQuickLinks = cache(
   },
 )
 
+/**
+ * Drop-down entries that open one SECTION of a main-site page rather than a
+ * page of their own — the Sports page's four parts (SIWS, 2026-10-21).
+ *
+ * The menu is otherwise made of pages, and a section is not one: it has no
+ * record to tick "Show in the main menu" on. So the sections are named here,
+ * by the page they belong to and the heading they open at. The link's
+ * address is the heading's own id (`headingAnchor`), the same one the page
+ * renders, so the two cannot disagree; renaming a heading in the panel means
+ * changing it here too, or the link lands at the top of the page.
+ *
+ * Listed after any pages already under the item, and only on the main site.
+ */
+const SECTION_LINKS: Record<string, { label: string; heading: string }[]> = {
+  sports: [
+    { label: 'Sports & Activities', heading: 'Sports we offer' },
+    { label: 'Fencing at SIWS', heading: 'Spotlight: Fencing at SIWS' },
+    { label: 'Facilities & Coaching', heading: 'Our facilities' },
+    { label: 'Achievements & Events', heading: 'Achievements and alumni' },
+  ],
+}
+
 export const getNavItems = cache(
   async (unitId: number | string | null, unitSlug: string | null): Promise<NavItem[]> => {
     const payload = await payloadClient()
@@ -241,6 +264,12 @@ export const getNavItems = cache(
           )
           .sort((a, b) => (a.navOrder ?? 100) - (b.navOrder ?? 100))
           .map((child) => ({ label: label(child), href: href(child.slug) }))
+
+        if (!unitSlug) {
+          for (const section of SECTION_LINKS[page.slug] ?? []) {
+            children.push({ label: section.label, href: `${href(page.slug)}#${headingAnchor(section.heading)}` })
+          }
+        }
 
         return {
           label: label(page),

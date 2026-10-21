@@ -184,6 +184,38 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
 
   const isCurrent = (href: string) => pathname === href || pathname.startsWith(`${href}/`)
 
+  /**
+   * A link to a section of the page already open (`/sports#our-facilities`
+   * while on /sports) changes no route, so the route-change close above never
+   * runs. Closing at the click is not enough either: on a phone the panel is
+   * in the flow of the page, and collapsing it moves every section up — or
+   * unmounts the link before it is followed — so the jump lands in the wrong
+   * place or not at all. So the menu closes first, and the page scrolls once
+   * the layout has settled. The smoothness, and its absence for visitors who
+   * ask for reduced motion, come from `scroll-behavior` on the root.
+   *
+   * Focus moves to the section, so a keyboard or screen-reader user continues
+   * from where they asked to go rather than from the top of the menu.
+   *
+   * A section link to another page navigates as any link does.
+   */
+  const followSection = (event: React.MouseEvent<HTMLAnchorElement>, href: string, close: () => void) => {
+    const [path, hash] = href.split('#')
+    if (!hash || path !== pathname) return
+    event.preventDefault()
+    close()
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        const target = document.getElementById(hash)
+        if (!target) return
+        window.history.pushState(null, '', `#${hash}`)
+        target.scrollIntoView({ block: 'start' })
+        if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1')
+        target.focus({ preventScroll: true })
+      }),
+    )
+  }
+
   const linkClass = (extra: string) =>
     `font-medium text-brand transition-colors hover:text-brand-deep aria-[current=page]:underline aria-[current=page]:decoration-accent-deep aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-8 ${extra}`
 
@@ -375,6 +407,7 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
                           <Link
                             href={child.href}
                             aria-current={isCurrent(child.href) ? 'page' : undefined}
+                            onClick={(event) => followSection(event, child.href, () => setOpenMenu(null))}
                             className="block px-4 py-2.5 text-ink-soft transition-colors hover:bg-brand-tint hover:text-brand aria-[current=page]:font-semibold aria-[current=page]:text-brand"
                           >
                             {child.label}
@@ -545,6 +578,7 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
                           <Link
                             href={child.href}
                             aria-current={isCurrent(child.href) ? 'page' : undefined}
+                            onClick={(event) => followSection(event, child.href, () => setOpen(false))}
                             className="block py-2.5 text-ink-soft transition-colors hover:text-brand aria-[current=page]:font-semibold aria-[current=page]:text-brand"
                           >
                             {child.label}
