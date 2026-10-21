@@ -615,6 +615,50 @@ const Strip = ({ block }: { block: Of<'gallery'> }) => {
   )
 }
 
+/**
+ * A bento of photographs: the first large, the rest stacked beside it. Used
+ * for a gallery set to "A grid" — the pinned filmstrip above stays the
+ * "wall" setting's — so photographs that belong to no section of the page
+ * have a place at its foot without crowding the sections they are not about.
+ *
+ * Captions sit on the photograph under a shade rather than beneath it: a
+ * bento is read as one picture first, and a caption under each tile would
+ * break it back into cards.
+ */
+const Bento = ({ block }: { block: Of<'gallery'> }) => {
+  const images = (block.images ?? []).filter((row) => row.image && typeof row.image === 'object')
+  if (images.length === 0) return null
+  return (
+    <Shell tone={toneOf(block.background)}>
+      <Heading
+        heading={block.heading}
+        accent={block.accentWord}
+        level={block.headingLevel}
+        aside={block.intro ? <RichText data={block.intro} /> : null}
+      />
+      <ul className="sp-bento">
+        {images.map((row, i) => {
+          const media = row.image as { caption?: string | null }
+          const caption = row.caption || media.caption
+          return (
+            <li key={row.id ?? i} className="sp-bento__tile" data-reveal style={delay(i, 110)}>
+              <figure className="h-full">
+                <Media
+                  resource={row.image}
+                  fill
+                  sizes={i === 0 ? '(min-width: 1024px) 60vw, 100vw' : '(min-width: 1024px) 30vw, 100vw'}
+                  className="object-cover"
+                />
+                {caption ? <figcaption className="sp-bento__caption">{caption}</figcaption> : null}
+              </figure>
+            </li>
+          )
+        })}
+      </ul>
+    </Shell>
+  )
+}
+
 const Scoreboard = ({ block }: { block: Of<'statistics'> }) => {
   const stats = block.stats ?? []
   return (
@@ -748,7 +792,7 @@ export const SportPage = ({ blocks }: { blocks: Page['layout'] }) => {
           case 'featureList':
             return <FeatureList key={key} block={block} />
           case 'gallery':
-            return <Strip key={key} block={block} />
+            return block.layout === 'grid' ? <Bento key={key} block={block} /> : <Strip key={key} block={block} />
           case 'statistics':
             return <Scoreboard key={key} block={block} />
           case 'richText':
