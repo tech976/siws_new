@@ -1,5 +1,6 @@
 import { loadEnv } from '@/utilities/load-env'
 import { yearsOfService } from './founding'
+import { JC_STAFF, designationOf } from './data/jc-staff'
 
 loadEnv()
 
@@ -50,61 +51,23 @@ const { richText } = await import('./lexical')
  * decision as the other three sections.
  */
 /**
- * The teaching staff, as SIWS supplied the list (2026-09-02).
+ * The teaching staff. SIWS supplied a first list on 2026-09-02 — forty-seven
+ * names, several by first name only, eight with a qualification — and the
+ * college's printed staff list on 2026-10-21, which replaces it.
  *
- * ALL FORTY-SEVEN ARE ASSISTANT TEACHERS, which is what the list states for
- * every one of them, so the designation is set once below rather than repeated
- * on each row. No head of department or principal was named; when one is, the
- * designation goes on that row and the block will lead with it.
- *
- * MOST CARRY NO QUALIFICATION, and that is the list rather than an omission
- * here — eight of the forty-seven have one against their name. The field is
- * left off entirely for the rest, so the card shows a name and a designation
- * and nothing where a qualification would be. Inventing a degree for a teacher
- * is not a small error, and a blank is honest and easily filled in later.
- *
- * Several are given by first name only, again as supplied. They are seeded as
- * written: a surname guessed to make a card look tidier would be somebody
- * else's name.
+ * No head of department or principal is named on either; when one is, the
+ * designation goes on that row and the block will lead with it. A teacher
+ * with no qualification on the sheet is given none: inventing a degree is not
+ * a small error, and a blank is honest and easily filled in later.
  */
-const FACULTY: { name: string; qualifications?: string }[] = [
-  { name: 'Kalyani Deshpande', qualifications: 'MSc (Physics), B.Ed.' },
-  { name: 'Bharti Pandey', qualifications: 'M.A. (Hindi)' },
-  { name: 'Shilpa Raje', qualifications: 'MSc (Physics), B.Ed.' },
-  { name: 'Jinsy Thomas', qualifications: 'MSc (Chemistry), B.Ed.' },
-  { name: 'Sangeeta Kashid' },
-  { name: 'Kalmashi Dholakia' },
-  { name: 'Manjari', qualifications: 'M.A. (English)' },
-  { name: 'Sheela Krishnan' },
-  { name: 'Anamika Rath' },
-  { name: 'Sunil Mhadik' },
-  { name: 'Pratima Tiwari' },
-  { name: 'Jagruti Joshi' },
-  { name: 'Bhoopesh' },
-  { name: 'Mangesh' },
-  { name: 'Gayathri Sridhar' },
-  { name: 'Trupti Sawant' },
-  { name: 'Anil Arya' },
-  { name: 'Dilip Singh' },
-  { name: 'Umesh Ingole' },
-  { name: 'Sandeep Pandit' },
-  { name: 'Priyanka Sawant' },
-  { name: 'Ishwari K' },
-  { name: 'Smita Bhole', qualifications: 'MSc (Physics), B.Ed., PGDIT' },
-  { name: 'Nilesh Karbhari' },
-  { name: 'Karthik' },
-  { name: 'Suraj Bhosale' },
-  { name: 'Uma' },
-  { name: 'Komal Komavat' },
-  { name: 'Hema Patil' },
-  { name: 'Girish' },
-  { name: 'Sateesh Sawant' },
-  { name: 'Anjali' },
-  { name: 'Gauri Sawant' },
-  { name: 'Pranay Juvatkar' },
-  { name: 'Aditi' },
-  { name: 'Abhishek Madhav' },
-  { name: 'Sanjaya' },
+/*
+ * THE ROSTER IS THE COLLEGE'S PRINTED STAFF LIST since 2026-10-21 — full
+ * names, subjects, qualifications and its order — kept in
+ * `./data/jc-staff.ts`, which `scripts/update-jc-staff-list.ts` also reads
+ * to bring the live site to it. The ten below are from September's list and
+ * are not on the sheet; they are kept until SIWS says whether they have left.
+ */
+const NOT_ON_THE_SHEET: { name: string; qualifications?: string }[] = [
   { name: 'Manju Sharma', qualifications: 'MSc (Physics), B.Ed.' },
   { name: 'Suchitra Jena', qualifications: 'MSc (Physics), B.Ed.' },
   { name: 'Manoj Kawankar' },
@@ -115,6 +78,16 @@ const FACULTY: { name: string; qualifications?: string }[] = [
   { name: 'Babita Jaiswar' },
   { name: 'Vaishali' },
   { name: 'SeturamLaxmi' },
+]
+
+const FACULTY: { name: string; qualifications?: string; designation: string; order: number }[] = [
+  ...JC_STAFF.map((teacher) => ({
+    name: teacher.name,
+    qualifications: teacher.qualifications,
+    designation: designationOf(teacher),
+    order: teacher.order,
+  })),
+  ...NOT_ON_THE_SHEET.map((teacher) => ({ ...teacher, designation: 'Assistant Teacher', order: 100 })),
 ]
 
 const PARENT_QUOTES: { quote: string; attribution: string }[] = [
@@ -778,7 +751,6 @@ const main = async () => {
     const data = {
       ...teacher,
       unit: college.id,
-      designation: 'Assistant Teacher',
       /*
        * Spelled out even when absent. `payload.update` leaves a field it is
        * not given exactly as it was, so a qualification entered once by hand
