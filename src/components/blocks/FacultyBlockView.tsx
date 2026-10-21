@@ -20,9 +20,16 @@ import { Section, SectionHeading, type BlockBackground } from './Section'
 export const FacultyBlockView = async ({
   block,
   unit,
+  messagesShownElsewhere,
 }: {
   block: FacultyBlock
   unit: Unit | null
+  /**
+   * Teachers whose message the page shows somewhere better than their card —
+   * the Fine Arts page puts a teacher's own words in their class's panel — so
+   * the card does not repeat it.
+   */
+  messagesShownElsewhere?: Set<string>
 }) => {
   const payload = await getPayload({ config })
 
@@ -133,7 +140,9 @@ export const FacultyBlockView = async ({
         <span className="mt-1 block text-sm text-ink-muted">{teacher.qualifications}</span>
       ) : null}
 
-      {teacher.message ? <RichText data={teacher.message} className="mt-2 text-sm" /> : null}
+      {teacher.message && !messagesShownElsewhere?.has(teacher.name) ? (
+        <RichText data={teacher.message} className="mt-2 text-sm" />
+      ) : null}
     </span>
   )
 

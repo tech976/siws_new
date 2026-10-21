@@ -4,11 +4,14 @@ import type { CSSProperties, ReactNode } from 'react'
 import { CMSLink } from '@/components/CMSLink'
 import { Media } from '@/components/Media'
 import { RichText } from '@/components/RichText'
+import { FacultyBlockView } from '@/components/blocks/FacultyBlockView'
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
 import { SportMotion } from '@/components/sport/SportMotion'
 import { headingAnchor } from '@/lib/anchor'
 import { baseName } from '@/utilities/media-lookup'
-import type { Media as MediaDoc, Page, Unit } from '@/payload-types'
+import type { Faculty, Media as MediaDoc, Page, Unit } from '@/payload-types'
+import config from '@payload-config'
+import { getPayload } from 'payload'
 
 import { ArtGallery, type ArtPiece } from './ArtGallery'
 import { StageVideo } from './StageVideo'
@@ -405,14 +408,28 @@ const DetailLine = ({ detail, light }: { detail?: ClassDetail; light?: boolean }
     </span>
   ) : null
 
+/** A teacher's own words, matched to the class they teach by their designation. */
+interface TeacherNote {
+  name: string
+  designation: string
+  message: NonNullable<Faculty['message']>
+}
+
+const notesFor = (subjects: string[], notes: TeacherNote[]) =>
+  notes.filter((note) =>
+    subjects.some((subject) => note.designation.toLowerCase().startsWith(subject.toLowerCase())),
+  )
+
 const Disciplines = ({
   block,
   groups,
   details: detailsBlock,
+  notes = [],
 }: {
   block: Of<'richText'>
   groups: Discipline[]
   details: Of<'featureList'> | null
+  notes?: TeacherNote[]
 }) => {
   const details = detailsOf(detailsBlock)
 
@@ -457,6 +474,7 @@ const Disciplines = ({
           return (
             <article
               key={group.title}
+              id={headingAnchor(name)}
               className={`${span} ${variant === 'white' ? 'fa-tape' : ''} relative`}
               data-reveal
               style={delay(index, 120)}
@@ -532,19 +550,60 @@ const Disciplines = ({
                     </ul>
                   )}
 
-                  {/* The Centre's own photographs of these classes, where there are any. */}
+                  {/*
+                    A teacher's own words, pinned in their class's panel as a
+                    note — Mr. Tanjorkar's write-up of his violin teaching
+                    (SIWS, 2026-10-21). They come from "A message from this
+                    teacher" on the teacher's record, so they are edited
+                    there; the card in "Our teachers" then leaves them out.
+                  */}
+                  {notesFor(group.subjects, notes).map((note, i) => (
+                    <figure key={note.name} className={`fa-teacher-note fa-tape ${i % 2 ? 'fa-tilt-r' : 'fa-tilt-s'}`}>
+                      <span className="fa-note" aria-hidden="true">
+                        From the {note.designation.replace(/\s*teacher$/i, '').toLowerCase()} class
+                        <Squiggle />
+                      </span>
+                      <RichText data={note.message} className="mt-3 text-[0.95rem]" />
+                      <figcaption className="mt-3 text-sm font-semibold text-brand">
+                        — {note.name}, {note.designation}
+                      </figcaption>
+                    </figure>
+                  ))}
+
+                  {/*
+                    The Centre's own photographs of these classes, where there
+                    are any — and a class's own clip, where its photograph has
+                    one, plays in the same white mat (Bharatanatyam, from
+                    Convocation Day). A clip takes the panel's full width: at
+                    half of it the dancers were too small to see.
+                  */}
                   {photos.length ? (
                     <ul className="mt-8 grid grid-cols-2 gap-5">
                       {photos.slice(0, 2).map((detail, i) => (
-                        <li key={detail.title}>
+                        <li key={detail.title} className={videoFor(detail.photo) ? 'col-span-2' : undefined}>
                           <figure className="m-0">
-                            <Print
-                              media={detail.photo}
-                              sizes="(min-width: 64rem) 300px, 45vw"
-                              tilt={i % 2 ? 'r' : 'l'}
-                              tape={i === 0 ? 'corner' : undefined}
-                            />
+                            {videoFor(detail.photo) ? (
+                              <div className={`fa-mat fa-tilt-${i % 2 ? 'r' : 's'} fa-tape fa-tape--corner`}>
+                                <div className="fa-mat__photo aspect-video">
+                                  <StageVideo
+                                    src={videoFor(detail.photo)!}
+                                    poster={posterOf(detail.photo)}
+                                    label={detail.photo.alt ?? detail.title}
+                                  />
+                                </div>
+                              </div>
+                            ) : (
+                              <Print
+                                media={detail.photo}
+                                sizes="(min-width: 64rem) 300px, 45vw"
+                                tilt={i % 2 ? 'r' : 'l'}
+                                tape={i === 0 ? 'corner' : undefined}
+                              />
+                            )}
                             <figcaption className="mt-3 text-[0.8125rem] leading-snug text-ink-muted">
+                              {videoFor(detail.photo) ? (
+                                <span className="fa-tag mr-2 !py-0.5 !text-[0.65rem]">Video</span>
+                              ) : null}
                               {detail.photo.caption?.toLowerCase().includes(detail.title.toLowerCase()) ? (
                                 detail.photo.caption
                               ) : (
@@ -640,6 +699,32 @@ const Calendar = ({ block }: { block: Of<'featureList'> }) => (
         </li>
       ))}
     </ol>
+    {/*
+      An occasion with a photograph of its own shows it under the timeline,
+      pinned beneath the year's end where the occasions with clips fall —
+      Convocation Day's group performance. A photograph that has a clip plays.
+    */}
+    {(block.items ?? []).flatMap((item) => {
+      const media = asMedia(item.photo)
+      return media ? [{ item, media, video: videoFor(media) }] : []
+    }).map(({ item, media, video }, i) => (
+      <figure key={item.id ?? i} className="m-0 mt-14 lg:ml-auto lg:w-7/12" data-reveal>
+        <div className={`fa-mat fa-tilt-${i % 2 ? 'l' : 'r'} fa-tape`}>
+          <div className={`fa-mat__photo ${video ? 'aspect-video' : 'aspect-[4/3]'}`}>
+            {video ? (
+              <StageVideo src={video} poster={posterOf(media)} label={media.alt ?? item.title} />
+            ) : (
+              <Media resource={media} fill sizes="(min-width: 64rem) 640px, 90vw" className="object-cover" />
+            )}
+          </div>
+        </div>
+        <figcaption className="mt-4 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
+          {video ? <span className="fa-tag !py-0.5 !text-[0.65rem]">Video</span> : null}
+          <strong className="text-brand">{item.title}</strong>
+          {media.caption ? <span>· {media.caption}</span> : null}
+        </figcaption>
+      </figure>
+    ))}
   </Shell>
 )
 
@@ -1011,8 +1096,30 @@ const Wall = ({ block }: { block: Of<'gallery'> }) => {
 
 /* --- the page ----------------------------------------------------------- */
 
-export const FineArtsPage = ({ blocks, units }: { blocks: Page['layout']; units: Unit[] }) => {
+export const FineArtsPage = async ({ blocks, units }: { blocks: Page['layout']; units: Unit[] }) => {
   const list = blocks ?? []
+
+  /* The Centre's teachers who have written something of their own. */
+  const payload = await getPayload({ config })
+  const { docs: teachers } = await payload
+    .find({
+      collection: 'faculty',
+      where: { and: [{ unit: { exists: false } }, { message: { exists: true } }] },
+      limit: 50,
+      depth: 0,
+      overrideAccess: false,
+    })
+    .catch(() => ({ docs: [] as Faculty[] }))
+  const notes: TeacherNote[] = teachers.flatMap((teacher) =>
+    teacher.message && teacher.designation
+      ? [{ name: teacher.name, designation: teacher.designation, message: teacher.message }]
+      : [],
+  )
+  const taught = new Set(
+    list.flatMap((block) => (block.blockType === 'richText' ? (disciplinesOf(block.content) ?? []) : []))
+      .flatMap((group) => notesFor(group.subjects, notes))
+      .map((note) => note.name),
+  )
   const heroAt = list.findIndex((block) => block.blockType === 'hero')
   const afterHero = heroAt === -1 ? undefined : list[heroAt + 1]
   const collage = afterHero?.blockType === 'gallery' ? afterHero : null
@@ -1039,7 +1146,8 @@ export const FineArtsPage = ({ blocks, units }: { blocks: Page['layout']; units:
             return <Hero key={key} block={block} collage={collage} />
           case 'richText': {
             const groups = disciplinesOf(block.content)
-            if (groups) return <Disciplines key={key} block={block} groups={groups} details={detailsAfter(index)} />
+            if (groups)
+              return <Disciplines key={key} block={block} groups={groups} details={detailsAfter(index)} notes={notes} />
             const reasons = reasonsOf(block.content)
             if (reasons) return <Reasons key={key} block={block} reasons={reasons} />
             return <Prose key={key} block={block} />
@@ -1053,6 +1161,8 @@ export const FineArtsPage = ({ blocks, units }: { blocks: Page['layout']; units:
           }
           case 'statistics':
             return <Prizes key={key} block={block} />
+          case 'faculty':
+            return <FacultyBlockView key={key} block={block} unit={null} messagesShownElsewhere={taught} />
           case 'gallery':
             if ((block.images ?? []).some((entry) => videoFor(asMedia(entry.image))))
               return <Stage key={key} block={block} />

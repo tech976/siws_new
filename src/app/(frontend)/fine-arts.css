@@ -220,6 +220,30 @@
   width: 3.75rem;
 }
 
+/*
+ * A teacher's own words, pinned in their class's panel: a slip of lined
+ * paper under a strip of tape, tilted like the prints. Left-aligned and
+ * unhyphenated — set narrow and justified, the text broke words in two.
+ */
+.fa-teacher-note {
+  position: relative;
+  margin: 2rem 0.25rem 0;
+  padding: 1.5rem 1.4rem 1.25rem;
+  border-radius: 0.4rem;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 1.6rem, rgb(46 49 146 / 0.07) 1.6rem calc(1.6rem + 1px)),
+    #fffdf4;
+  box-shadow: var(--shadow-raised);
+}
+
+.fa-teacher-note .siws-prose,
+.fa-teacher-note p {
+  text-align: left;
+  hyphens: manual;
+  color: var(--color-ink-soft);
+  line-height: 1.6;
+}
+
 .fa-tilt-l {
   rotate: -2.5deg;
 }
@@ -318,6 +342,15 @@
 }
 
 /* --- disciplines -------------------------------------------------------- */
+
+/*
+ * A class panel opened from the menu (/fine-arts#music-dance) stops with
+ * room above it for its tape, and for the slide it makes as it appears —
+ * without this the jump measured it mid-slide and cut its top off.
+ */
+.fa article[id] {
+  scroll-margin-top: 3rem;
+}
 
 .fa-panel {
   position: relative;

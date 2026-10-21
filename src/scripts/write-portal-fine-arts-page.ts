@@ -516,42 +516,14 @@ const buildLayout = (photo: Ids, centrePhoto: CentreIds, pageId: number) => {
       ],
     },
     /*
-     * The Centre on its own stage — the section SIWS asked to be the page's
-     * focus (2026-10-16): the Bharatanatyam clip large, the violin ensemble
-     * and the group performance beneath it. The two clips play from the
-     * photographs that stand for them (see VIDEOS in FineArtsPage.tsx), so
-     * the section holds only what has parental permission recorded, and is
-     * left out altogether until something has.
+     * NO "ON THE CENTRE'S STAGE" SECTION since 2026-10-21. It held the
+     * Centre's three Convocation Day pieces together after the banner; SIWS
+     * then asked for each to sit with its own class. The violin ensemble and
+     * the Bharatanatyam clip are on their classes in "What we teach" (below),
+     * the group performance on Convocation Day in "The Centre's year", and the
+     * banner still leads with the first two. Kept as a section as well, the
+     * same three would have been on the page three times.
      */
-    ...(centrePhoto.bharatanatyam || centrePhoto.violin || centrePhoto.groupPerformance
-      ? [
-          {
-            blockType: 'gallery',
-            heading: 'On the Centre’s stage',
-            accentWord: 'stage',
-            layout: 'grid',
-            background: 'brand',
-            intro: richTextNodes([
-              p([
-                t('Every April the Centre presents its certificates and awards at '),
-                b('Convocation Day'),
-                t(
-                  ', its own function — and its students take the stage. Bharatanatyam, a violin ensemble and a group performance from the Centre’s Convocation Days.',
-                ),
-              ]),
-            ]),
-            images: [
-              ...(centrePhoto.bharatanatyam
-                ? [shot(centrePhoto.bharatanatyam, 'Arts Centre · Bharatanatyam on Convocation Day')]
-                : []),
-              ...(centrePhoto.violin ? [shot(centrePhoto.violin, 'Arts Centre · A violin ensemble on Convocation Day')] : []),
-              ...(centrePhoto.groupPerformance
-                ? [shot(centrePhoto.groupPerformance, 'Arts Centre · A group performance on Convocation Day')]
-                : []),
-            ],
-          },
-        ]
-      : []),
     about,
     teach,
     /*
@@ -741,6 +713,8 @@ const buildLayout = (photo: Ids, centrePhoto: CentreIds, pageId: number) => {
           chip: 'April',
           title: 'Convocation Day',
           description: 'Certificates and awards, at the Centre’s own function on a Saturday in the second week of April.',
+          // Its students' group performance, which plays here — see Calendar in FineArtsPage.tsx.
+          ...(centrePhoto.groupPerformance ? { photo: centrePhoto.groupPerformance } : {}),
         },
       ],
     },
@@ -821,6 +795,48 @@ const main = async () => {
       data: { ...teacher, _status: 'published', reviewStatus: 'approved' } as never,
       overrideAccess: true,
     })
+  }
+
+  /*
+   * MR. TANJORKAR'S OWN WRITE-UP, on his card as "A message from this
+   * teacher" — from the Arts & Activities page of his site
+   * (tanjorkarswarams.in), which SIWS asked to be on this page (2026-10-21).
+   * His words, as he wrote them, with two things left out: the line that he
+   * teaches online "via Skype", a service that closed in May 2025, and the
+   * caption of a photograph of his disciples at another institution. The
+   * "à" before "Vocal and Instruments" is a mis-encoded arrow on his page
+   * and is a dash here; "impact his knowledge" is read as the "impart" it
+   * means; and the caption "Students under his training at S.I.W.S.
+   * (Wadala)" and the sentence after it ("They are trained under Guru Shri
+   * S.J.Tanjorkar, thus linked to…") are joined into one.
+   *
+   * Only written to a card with no message: one entered in the panel is his
+   * or the school's, and is left alone.
+   */
+  const tanjorkar = listed.find(
+    (doc) => String((doc as { name?: unknown }).name ?? '').trim() === 'Mr. Sekhar Janardhan Tanjorkar',
+  ) as { id: number; message?: unknown } | undefined
+  if (tanjorkar && !tanjorkar.message) {
+    console.log(`  Teachers: ${APPLY ? 'adding' : 'would add'} Mr. Tanjorkar's own write-up to his card`)
+    if (APPLY) {
+      await payload.update({
+        collection: 'faculty',
+        id: tanjorkar.id,
+        data: {
+          message: richTextNodes([
+            p(
+              'Apart from his dedication towards his performances, S.J. Tanjorkar has also valued to impart his knowledge of music to more than 300 disciples who are being moulded to this art of Hindustani and Carnatic systems not only in Violin but also in other instruments – Harmonium, Tabla etc. as well as Vocal in both styles.',
+            ),
+            p(
+              'Students under his training at S.I.W.S. (Wadala) are thus linked to the renowned institute of “Gandharva MahaVidhyalay” for the graduations in the respected faculty – Vocal and Instruments.',
+            ),
+          ]),
+        } as never,
+        overrideAccess: true,
+      })
+    }
+  } else if (tanjorkar) {
+    console.log('  Teachers: Mr. Tanjorkar’s card already has a message — left as it is.')
   }
 
   /* --- the photographs ---------------------------------------------------- */
