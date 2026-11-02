@@ -1,9 +1,9 @@
-import { Images, Medal, Newspaper, Trophy } from 'lucide-react'
+import { AppWindow, Images, Medal, Newspaper, Trophy } from 'lucide-react'
 import Link from 'next/link'
 import type { CSSProperties } from 'react'
 import type { Payload, TypedUser, Where } from 'payload'
 
-import { unitIdsOf } from '@/access'
+import { SECTIONS, canTouchSection, unitIdsOf } from '@/access'
 import type { AccessUser } from '@/access'
 
 /**
@@ -125,7 +125,7 @@ const countLine = (n: number, one: string, many: string) =>
 
 export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProps) => {
   /** Counts scoped by the user's own access, so they only ever see their own. */
-  const count = async (collection: 'posts' | 'media', where?: Where) => {
+  const count = async (collection: 'posts' | 'media' | 'popups', where?: Where) => {
     try {
       const result = await payload.count({
         collection,
@@ -160,7 +160,13 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
           ],
         }
 
-  const [news, events, notices, written, sports, achievements, photos] = await Promise.all([
+  /*
+   * Popups are an HOD section; an Editor sees the box only if they were given
+   * it. Counted for their own school, as the Popups list shows them.
+   */
+  const showPopups = canTouchSection(user as AccessUser | null | undefined, SECTIONS.popups)
+
+  const [news, events, notices, written, sports, achievements, photos, popups] = await Promise.all([
     count('posts', { kind: { equals: 'news' } }),
     count('posts', { kind: { equals: 'event' } }),
     count('posts', { kind: { equals: 'announcement' } }),
@@ -168,6 +174,9 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
     count('media', inMyLibrary({ category: { equals: 'Sports' } })),
     count('media', inMyLibrary({ category: { equals: 'Achievements' } })),
     count('media', inMyLibrary({ showInGallery: { equals: true } })),
+    showPopups && ownUnits.length > 0
+      ? count('popups', { unit: { in: ownUnits } })
+      : Promise.resolve(0),
   ])
 
   /*
@@ -182,7 +191,7 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
     <div style={{ padding: '2.5rem 2rem', maxWidth: '62rem' }}>
       <h1 style={{ margin: 0 }}>{heading}</h1>
       <p style={{ marginTop: '0.5rem', color: 'var(--theme-elevation-600)', fontSize: '1.05rem' }}>
-        The four parts of your school&rsquo;s website you can add to. Anything you publish here
+        The parts of your school&rsquo;s website you can add to. Anything you publish here
         appears on those pages.
       </p>
 
@@ -297,6 +306,27 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
             </Link>
           </span>
         </div>
+
+        {showPopups && (
+          <div style={card}>
+            <AppWindow size={28} strokeWidth={1.7} aria-hidden="true" style={{ flexShrink: 0 }} />
+            <span>
+              <span style={cardTitle}>Popup</span>
+              <span style={cardBody}>
+                A window that opens over your school&rsquo;s website when someone visits — for
+                example &ldquo;Admissions open&rdquo;.
+              </span>
+              <span style={{ display: 'block', marginTop: '0.75rem' }}>
+                <Link href="/admin/collections/popups" style={quickLink}>
+                  Your popups — {countLine(popups, 'popup', 'popups')}
+                </Link>
+              </span>
+              <Link href="/admin/collections/popups/create" style={addLink}>
+                + Add a popup
+              </Link>
+            </span>
+          </div>
+        )}
       </div>
 
       <p

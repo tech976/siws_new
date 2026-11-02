@@ -481,6 +481,7 @@ export interface User {
         | 'pages'
         | 'facilities'
         | 'transport'
+        | 'popups'
       )[]
     | null;
   /**

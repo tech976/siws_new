@@ -3,11 +3,15 @@ import { APIError, type CollectionBeforeChangeHook, type CollectionConfig } from
 import {
   createScoped,
   deleteScoped,
+  isActiveUser,
+  isAdmin,
   readPublishedOrScoped,
+  unitIdsOf,
   updateScoped,
+  type AccessUser,
 } from '@/access'
-import { hiddenFromHod } from '@/access/admin-nav'
 import { SECTIONS } from '@/access/roles'
+import { hideFromHod } from '@/fields/hod-simple'
 import { richTextField } from '@/fields/richText'
 import { schedulingFields } from '@/fields/publishing'
 import { constrainUnitToScope } from '@/hooks/workflow'
@@ -49,13 +53,24 @@ export const Popups: CollectionConfig = {
 
   access: {
     read: readPublishedOrScoped,
-    create: createScoped(SECTIONS.pages),
-    update: updateScoped(SECTIONS.pages),
-    delete: deleteScoped(SECTIONS.pages),
+    create: createScoped(SECTIONS.popups),
+    update: updateScoped(SECTIONS.popups),
+    delete: deleteScoped(SECTIONS.popups),
   },
 
   admin: {
-    hidden: hiddenFromHod,
+    /*
+     * A school's staff see their own school's popups in the list. The main
+     * SIWS site's popup is readable by them (it is public once published) but
+     * not theirs to change, so listing it would only offer a row they cannot
+     * edit. Presentation only — `access` above is the permission.
+     */
+    baseFilter: ({ req }) => {
+      const user = req.user as AccessUser | null
+      if (!isActiveUser(user) || isAdmin(user)) return null
+      const ids = unitIdsOf(user)
+      return ids.length === 0 ? null : { unit: { in: ids } }
+    },
     useAsTitle: 'title',
     defaultColumns: ['title', 'unit', 'showOn', 'delaySeconds', '_status', 'updatedAt'],
     description:
@@ -94,6 +109,9 @@ export const Popups: CollectionConfig = {
         position: 'sidebar',
         description:
           'Leave empty for the main SIWS website. Choose a school for that school’s website.',
+        // A head of department's popup always goes on their own school's
+        // website; the save hook fills it in, so there is nothing to choose.
+        condition: hideFromHod,
       },
     },
     {

@@ -62,6 +62,7 @@ export const SECTIONS = {
   pages: 'pages',
   facilities: 'facilities',
   transport: 'transport',
+  popups: 'popups',
 } as const
 
 export type SectionKey = (typeof SECTIONS)[keyof typeof SECTIONS]
@@ -82,6 +83,7 @@ export const SECTION_OPTIONS: { label: string; value: SectionKey }[] = [
   { label: 'Pages', value: SECTIONS.pages },
   { label: 'Facilities & Campus', value: SECTIONS.facilities },
   { label: 'Transport', value: SECTIONS.transport },
+  { label: 'Popups', value: SECTIONS.popups },
 ]
 
 /**
@@ -91,10 +93,16 @@ export const SECTION_OPTIONS: { label: string; value: SectionKey }[] = [
  * to configure it: give someone `hod` plus their unit and they can publish that
  * department's news and nothing else. `pages` is absent on purpose — an HOD
  * writes content, and the page it lands on is built by a template.
+ *
+ * `popups` is here because a school's popup ("Admissions open") is the same
+ * kind of thing as a notice: the school writes it, and it lands on their own
+ * website only — the save hook pins it to their school, so the main SIWS
+ * site's popup stays with administrators.
  */
 export const HOD_SECTIONS: SectionKey[] = [
   SECTIONS.news,
   SECTIONS.events,
   SECTIONS.gallery,
   SECTIONS.achievements,
+  SECTIONS.popups,
 ]

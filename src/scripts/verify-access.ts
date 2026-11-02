@@ -577,6 +577,8 @@ const main = async () => {
     const hod = await makeUser('hod', ['hod'], { units: [primary.id] })
     const createdPosts: number[] = []
     const createdAnnouncements: number[] = []
+    const createdPopups: number[] = []
+    let hodPopupId: number | null = null
 
     await check({
       name: 'An HOD can publish a news item in their own unit',
@@ -821,6 +823,112 @@ const main = async () => {
           user: hod,
         })
         createdAnnouncements.push(item.id as number)
+      },
+    })
+
+    /*
+     * Popups: an HOD runs their own school's popup ("Admissions open"), and
+     * only that one. The main SIWS site's popup and other schools' stay out
+     * of reach.
+     */
+    await check({
+      name: 'An HOD can publish a popup, and it goes on their own school’s website',
+      run: async () => {
+        const popup = await payload.create({
+          collection: 'popups',
+          data: {
+            title: `Verify HOD popup ${stamp}`,
+            heading: 'Admissions open',
+            content: {
+              root: {
+                type: 'root',
+                version: 1,
+                direction: null,
+                format: '',
+                indent: 0,
+                children: [
+                  {
+                    type: 'paragraph',
+                    version: 1,
+                    direction: null,
+                    format: '',
+                    indent: 0,
+                    children: [{ type: 'text', version: 1, text: 'Enquire today.' }],
+                  },
+                ],
+              },
+            },
+            _status: 'published',
+          } as never,
+          overrideAccess: false,
+          user: hod,
+        })
+        createdPopups.push(popup.id as number)
+        hodPopupId = popup.id as number
+        const unit = (popup as { unit?: unknown }).unit
+        const unitId = unit && typeof unit === 'object' ? (unit as { id: unknown }).id : unit
+        assert(String(unitId) === String(primary.id), 'The popup was not filed under the HOD’s school.')
+
+        await payload.update({
+          collection: 'popups',
+          id: popup.id,
+          data: { heading: 'Admissions open for 2027' } as never,
+          overrideAccess: false,
+          user: hod,
+        })
+      },
+    })
+
+    await check({
+      name: 'An HOD CANNOT put a popup on another school’s website',
+      run: () =>
+        expectRejection(
+          () =>
+            payload.create({
+              collection: 'popups',
+              data: { title: `Verify cross-unit popup ${stamp}`, heading: 'x', unit: kg.id } as never,
+              overrideAccess: false,
+              user: hod,
+            }),
+          'an HOD made a popup for a school they do not belong to',
+        ),
+    })
+
+    await check({
+      name: 'An HOD CANNOT change the main SIWS website’s popup',
+      run: async () => {
+        const main = await payload.create({
+          collection: 'popups',
+          data: { title: `Verify main popup ${stamp}`, heading: 'Main site' } as never,
+          overrideAccess: true,
+        })
+        createdPopups.push(main.id as number)
+        await expectRejection(
+          () =>
+            payload.update({
+              collection: 'popups',
+              id: main.id,
+              data: { heading: 'Changed by an HOD' } as never,
+              overrideAccess: false,
+              user: hod,
+            }),
+          'an HOD edited the main website’s popup',
+        )
+        await expectRejection(
+          () =>
+            payload.delete({ collection: 'popups', id: main.id, overrideAccess: false, user: hod }),
+          'an HOD deleted the main website’s popup',
+        )
+      },
+    })
+
+    await check({
+      name: 'An HOD can delete their own school’s popup',
+      run: async () => {
+        const id = hodPopupId
+        assert(id !== null, 'No HOD popup was created to delete.')
+        await payload.delete({ collection: 'popups', id: id!, overrideAccess: false, user: hod })
+        createdPopups.splice(createdPopups.indexOf(id!), 1)
       },
     })
 
@@ -1244,6 +1352,9 @@ const main = async () => {
       await payload
         .delete({ collection: 'announcements', id, overrideAccess: true })
         .catch(() => undefined)
+    }
+    for (const id of createdPopups) {
+      await payload.delete({ collection: 'popups', id, overrideAccess: true }).catch(() => undefined)
     }
   } finally {
     for (const id of createdPages) {
