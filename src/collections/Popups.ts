@@ -117,7 +117,7 @@ export const Popups: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'unit', 'showOn', 'delaySeconds', '_status', 'updatedAt'],
     description:
-      'A window that opens over the website when someone visits. Choose the website, add a picture and text, then Publish.',
+      'A window that opens over a website when someone visits. Add a picture and text, then Publish. A school’s popup appears only on that school’s website.',
     group: 'Content',
   },
 
@@ -164,10 +164,14 @@ export const Popups: CollectionConfig = {
       defaultValue: 'home',
       label: 'Show on',
       options: [
-        { label: 'Home page only', value: 'home' },
+        { label: 'Only the first page of this website', value: 'home' },
         { label: 'Every page of this website', value: 'all' },
       ],
-      admin: { position: 'sidebar' },
+      admin: {
+        position: 'sidebar',
+        description:
+          'A school’s popup only ever appears on that school’s own website: its first page is, for example, /primary. Only administrators can put a popup on the main SIWS home page.',
+      },
     },
     {
       name: 'delaySeconds',
