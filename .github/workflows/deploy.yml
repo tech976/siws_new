@@ -1,0 +1,41 @@
+# Every push to main updates the live site on the VPS.
+#
+# Needs these repository secrets (Settings -> Secrets and variables -> Actions):
+#   VPS_HOST     server IP, e.g. 200.234.34.243
+#   VPS_USER     the user that owns the app on the server, e.g. siws
+#   VPS_SSH_KEY  private half of the deploy key (its .pub goes in the server's
+#                ~/.ssh/authorized_keys for VPS_USER)
+# Optional repository variables: APP_DIR, PM2_NAME.
+
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # lets you re-run a deploy from the Actions tab
+
+# Never run two deploys at once; a newer push waits for the current one.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Pull, build and restart on the VPS
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          command_timeout: 25m
+          script: |
+            export APP_DIR="${{ vars.APP_DIR || '/home/siws/app' }}"
+            export PM2_NAME="${{ vars.PM2_NAME || 'siws' }}"
+            cd "$APP_DIR"
+            # Fetch first so the newest deploy script is the one that runs.
+            git fetch origin main
+            git show origin/main:scripts/deploy.sh > /tmp/siws-deploy.sh
+            bash /tmp/siws-deploy.sh
