@@ -96,7 +96,7 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
         <Link href={home} className="shrink-0" aria-label={`${title} — home`}>
           <Image
             src="/brand/logo.png"
-            alt=""
+            alt="South Indians' Welfare Society (SIWS) crest"
             width={220}
             height={220}
             priority
@@ -139,7 +139,20 @@ export const SiteHeader = ({ unit, units = [], navItems, quickLinks = [], infoTe
                 the same wording the section's own contact page uses, so
                 the pair reads the same wherever it is met.
               */}
-              {phones.length > 0 ? ` | ${phones.join(' or ')}` : ''}
+              {/*
+                Tap-to-call links since the SEO audit (2026-10-21): on a phone
+                a parent can ring the office straight from the header, and the
+                call can be counted as an enquiry.
+              */}
+              {phones.length > 0 ? ' | ' : null}
+              {phones.map((number, index) => (
+                <span key={number}>
+                  {index > 0 ? ' or ' : null}
+                  <a href={`tel:${number.replace(/[^\d+]/g, '')}`} className="hover:underline">
+                    {number}
+                  </a>
+                </span>
+              ))}
             </p>
           ) : null}
         </div>

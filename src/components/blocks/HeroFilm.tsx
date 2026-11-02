@@ -102,7 +102,40 @@ export const HeroFilm = ({ src, still }: { src: string; still?: MediaDoc | null 
     return () => window.removeEventListener('resize', measure)
   }, [])
 
-  const poster = still && typeof still.url === 'string' ? toImageSrc(still.url) : undefined
+  /*
+   * THE FILM WAITS FOR THE PAGE (SEO audit, 2026-10-21).
+   *
+   * It is 13 MB and was set to download in full the moment the page opened,
+   * competing with everything else the page needs; on a phone that is most of
+   * why the home page scored 73 for speed. Now the banner opens on its still,
+   * and the film is attached once the page has finished loading and the
+   * browser is idle. A visitor sees the same banner; the page is usable first.
+   */
+  const [filmReady, setFilmReady] = useState(false)
+  useEffect(() => {
+    const start = () => {
+      const idle =
+        (window as { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback ??
+        ((cb: () => void) => window.setTimeout(cb, 300))
+      idle(() => setFilmReady(true))
+    }
+    if (document.readyState === 'complete') {
+      start()
+      return
+    }
+    window.addEventListener('load', start, { once: true })
+    return () => window.removeEventListener('load', start)
+  }, [])
+
+  /*
+   * The poster through the image optimiser (AVIF/WebP at screen width) rather
+   * than the original upload: it is the first thing painted, so it is what
+   * the "largest contentful paint" speed score measures.
+   */
+  const poster =
+    still && typeof still.url === 'string'
+      ? `/_next/image?url=${encodeURIComponent(toImageSrc(still.url))}&w=1920&q=75`
+      : undefined
 
   return (
     <section
@@ -141,16 +174,17 @@ export const HeroFilm = ({ src, still }: { src: string; still?: MediaDoc | null 
           ) : null
         ) : (
           <video
-            key={src}
-            autoPlay
+            // A new element once the film may load, so autoplay starts it.
+            key={filmReady ? src : 'poster'}
+            autoPlay={filmReady}
             muted
             loop
             playsInline
-            preload="auto"
+            preload={filmReady ? 'auto' : 'none'}
             poster={poster}
             className="absolute inset-0 h-full w-full object-cover"
           >
-            <source src={src} type="video/mp4" />
+            {filmReady ? <source src={src} type="video/mp4" /> : null}
           </video>
         )}
       </div>

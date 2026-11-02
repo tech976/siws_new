@@ -124,8 +124,12 @@ export const ReelShowcaseBlockView = ({ block }: { block: ReelShowcaseBlock }) =
                    * stops. These are several megabytes each, and three of them
                    * fetched in full on page load is most of a mobile data
                    * allowance for a section nobody has scrolled to yet.
+                   *
+                   * `none` since the SEO audit (2026-10-21): each film has its
+                   * own poster, so nothing at all is fetched until the film is
+                   * scrolled into view and played.
                    */
-                  preload="metadata"
+                  preload="none"
                   aria-label={reel.label ?? undefined}
                   className={`w-full object-cover ${portrait ? 'aspect-[9/16]' : 'aspect-video'}`}
                 />

@@ -210,7 +210,7 @@ export const SiteFooter = async ({ unit, quickLinks, units }: SiteFooterProps) =
             */}
             <Image
               src="/brand/logo.png"
-              alt=""
+              alt="South Indians' Welfare Society (SIWS) crest"
               width={200}
               height={200}
               className="h-20 w-auto brightness-0 invert"

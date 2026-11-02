@@ -380,9 +380,17 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
                   </svg>
                 </button>
 
-                {isOpen ? (
-                  <div
+                {/*
+                  ALWAYS IN THE PAGE, hidden while closed. It used to be added
+                  only when opened, so the pages under About, Academics,
+                  Admissions… were not links in the HTML at all and search
+                  engines could not follow the menu to them (SEO audit,
+                  2026-10-21). `hidden` keeps it out of sight and out of the
+                  keyboard order exactly as before.
+                */}
+                <div
                     id={`menu-${item.href}`}
+                    hidden={!isOpen}
                     className={`absolute top-full z-50 min-w-68 rounded-b-xl border-t-4 border-accent bg-white py-2 shadow-raised ${
                       flipped ? 'right-0' : 'left-0'
                     }`}
@@ -416,7 +424,6 @@ export const PrimaryNav = ({ items, quickLinks = [], cta }: PrimaryNavProps) => 
                       ))}
                     </ul>
                   </div>
-                ) : null}
               </div>
             )
           })}

@@ -72,7 +72,8 @@ const WallGallery = ({ images }: { images: NonNullable<GalleryBlock['images']> }
             <Media
               resource={media}
               sizes={tile.sizes}
-              priority={index < 2}
+              // No `priority`: a gallery sits below the banner, and a preloaded
+              // picture there delays the banner the speed score measures.
               fill
               className={tile.measured ? 'object-cover' : 'object-contain'}
             />
@@ -269,8 +270,8 @@ export const GalleryBlockView = async ({
                 ? '(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw'
                 : '(min-width: 1024px) 22rem, (min-width: 640px) 20rem, 17rem'
             }
-            // Only the first image is likely above the fold.
-            priority={index === 0}
+            // No `priority` (SEO audit): every gallery preloaded its first
+            // picture, even far down the page, ahead of the banner.
             fill
             className="pointer-events-none object-cover transition-transform duration-500 select-none group-hover:scale-[1.06]"
           />

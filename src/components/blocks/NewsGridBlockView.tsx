@@ -240,7 +240,6 @@ export const NewsGridBlockView = async ({
                 resource={lead.photo as MediaDoc}
                 fill
                 sizes="(min-width: 1024px) 48vw, 100vw"
-                priority
                 className="object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.03]"
               />
             </div>

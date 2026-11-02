@@ -44,6 +44,18 @@ const nextConfig = {
         ],
       },
       {
+        /*
+         * The banner film and the reels are several megabytes each and change
+         * rarely. They were served with max-age=0, so every visit asked for
+         * them again (SEO audit, 2026-10-21). A week, then re-checked; a file
+         * replaced under the same name is picked up within that week.
+         */
+        source: '/:dir(hero|reels)/:file*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' },
+        ],
+      },
+      {
         // BR-MED-06 / FR-CAR-07: restricted media must never be cached by a
         // shared cache, and must never be indexed.
         source: '/api/protected-media/:path*',

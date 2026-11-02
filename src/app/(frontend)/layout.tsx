@@ -10,6 +10,8 @@ import { fontVariables } from '@/fonts'
 
 import './globals.css'
 import { TranslateLoader } from '@/components/translate/TranslateLoader'
+import { Analytics } from '@/components/analytics/Analytics'
+import { hasConsent } from '@/lib/cookie-consent'
 import { CookieBanner } from '@/components/consent/CookieBanner'
 import {
   acceptAllCookies,
@@ -49,6 +51,11 @@ export const metadata: Metadata = {
   },
   // FR-SOC-07 — shared links render correctly on social platforms.
   twitter: { card: 'summary_large_image' },
+  // Google Search Console ownership check, when its code is set in .env
+  // (GOOGLE_SITE_VERIFICATION). A DNS record works just as well.
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
+    : {}),
 }
 
 export const viewport: Viewport = {
@@ -147,6 +154,9 @@ const FrontendLayout = async ({ children }: { children: ReactNode }) => {
           cookie (FR-PRV-02). See `TranslateLoader`.
         */}
         <TranslateLoader />
+
+        {/* Analytics, only for a visitor who accepted analytics cookies. */}
+        <Analytics allowed={hasConsent(consent, 'analytics')} />
 
         {/*
           FR-PRV-01 — the consent banner, on every page until it is answered.

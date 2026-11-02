@@ -22,6 +22,8 @@ import { getNavItems, getQuickLinks, getUnits } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Your data rights',
+  // A form page, not something to find through Google. Links stay followed.
+  robots: { index: false, follow: true },
   description:
     'Ask South Indians’ Welfare Society to show you, correct or delete the personal information it holds about you or your child, or withdraw a consent you gave.',
 }

@@ -16,7 +16,10 @@ import {
   getUnits,
 } from '@/lib/site'
 import { tickerItems } from '@/lib/ticker'
-import { organisationSchema, serialise } from '@/lib/structured-data'
+import { organisationSchema, serialise, websiteSchema } from '@/lib/structured-data'
+
+/** Banners that print the page's H1 themselves. */
+const H1_BANNERS = new Set(['hero', 'heroEnquiry', 'heroMarquee'])
 
 /**
  * Regenerate at most once a minute.
@@ -64,6 +67,11 @@ const PortalHome = async () => {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serialise(organisationSchema(null)) }}
       />
+      {/* The website and its search box, which Google can show under the result. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serialise(websiteSchema()) }}
+      />
 
       {/* FR-EMG-01 — the portal belongs to no school, so institution-wide notices only. */}
       <EmergencyNoticeBanner unitId={null} units={units} />
@@ -74,7 +82,17 @@ const PortalHome = async () => {
 
       <main id="main-content">
         {page ? (
-          <RenderBlocks blocks={page.layout} units={units} />
+          <>
+            {/*
+              The banner normally carries the page's one H1. If the page is ever
+              rebuilt to start with something else, the H1 is kept for search
+              engines and screen readers so the home page is never without one.
+            */}
+            {H1_BANNERS.has(String((page.layout?.[0] as { blockType?: string } | undefined)?.blockType)) ? null : (
+              <h1 className="sr-only">{page.title || "South Indians' Welfare Society (SIWS)"}</h1>
+            )}
+            <RenderBlocks blocks={page.layout} units={units} />
+          </>
         ) : (
           <FallbackIntro unitCount={units.length} />
         )}
@@ -119,7 +137,10 @@ export const generateMetadata = async (): Promise<Metadata> => {
   const page = await getInstitutionPage('home')
 
   return {
-    title: page?.metaTitle || "South Indians' Welfare Society (SIWS)",
+    // Absolute, so the site name is not added to it a second time.
+    title: {
+      absolute: page?.metaTitle?.trim() || "SIWS Wadala, Mumbai | KG to PG School & Junior College since 1934",
+    },
     description:
       page?.metaDescription ||
       page?.intro ||

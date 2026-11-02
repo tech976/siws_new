@@ -1,9 +1,10 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useEffect } from 'react'
 import { useFormStatus } from 'react-dom'
 
 import { submitEnquiry } from '@/app/(frontend)/actions/enquiry'
+import { trackEvent } from '@/lib/analytics'
 import { ADMISSION_ENQUIRY_NOTICE, type ConsentNotice } from '@/lib/consent-notices'
 import { idleFormState } from '@/lib/form-state'
 import { HONEYPOT_FIELD } from '@/lib/form-guard'
@@ -64,6 +65,19 @@ export const EnquiryForm = ({
   notice = ADMISSION_ENQUIRY_NOTICE,
 }: EnquiryFormProps) => {
   const [state, formAction] = useActionState(submitEnquiry, idleFormState)
+
+  /*
+   * A sent enquiry is the conversion the SEO work is measured by. Reported to
+   * Google Analytics, which only runs for visitors who accepted analytics
+   * cookies; otherwise this does nothing. No form contents are sent.
+   */
+  useEffect(() => {
+    if (state.status !== 'success') return
+    trackEvent('generate_lead', {
+      form: sendTo === 'general' ? 'campus_tour' : 'admission_enquiry',
+      page: window.location.pathname,
+    })
+  }, [state.status, sendTo])
 
   const fieldError = (name: string) => state.errors?.[name]
   const previous = (name: string) => state.values?.[name] ?? ''

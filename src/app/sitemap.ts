@@ -73,6 +73,22 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
 
     const { docs: pages } = await payload.find({
       collection: 'pages',
+      // A page set to "Hide this page from search engines" is not invited in.
+      where: { noIndex: { not_equals: true } },
+      limit: 2000,
+      depth: 0,
+      overrideAccess: false,
+    })
+
+    /*
+     * News, events and achievements each have their own address
+     * (`/kindergarten/annual-competitions-2026`). They are what changes most
+     * often, so they are the entries a crawler most needs told about. Only
+     * posts that belong to a school have a public address.
+     */
+    const { docs: posts } = await payload.find({
+      collection: 'posts',
+      where: { unit: { exists: true } },
       limit: 2000,
       depth: 0,
       overrideAccess: false,
@@ -92,8 +108,11 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
       })
     }
 
-    // The portal itself.
-    push('/', undefined, 1)
+    // The portal itself, dated by its own home page when there is one.
+    const portalHome = (pages as unknown as PageRow[]).find(
+      (page) => page.slug === UNIT_HOME_SLUG && !page.unit,
+    )
+    push('/', portalHome?.updatedAt, 1)
 
     for (const page of pages as unknown as PageRow[]) {
       const slug = typeof page.slug === 'string' ? page.slug : null
@@ -111,6 +130,13 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
       } else {
         push(slug === UNIT_HOME_SLUG ? '/' : `/${slug}`, page.updatedAt, 0.7)
       }
+    }
+
+    for (const post of posts as unknown as PageRow[]) {
+      const slug = typeof post.slug === 'string' ? post.slug : null
+      const unitSlug = unitSlugOf(post.unit, units)
+      if (!slug || !unitSlug) continue
+      push(`/${unitSlug}/${slug}`, post.updatedAt, 0.5)
     }
 
     return entries

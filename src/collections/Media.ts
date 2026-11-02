@@ -16,6 +16,14 @@ import { describeMediaUsage, removeFromPictureLists } from '@/utilities/media-us
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
+/**
+ * Readable by signed-in staff only. For the record-keeping fields on a
+ * photograph (who uploaded it, the parental permission record, why it was
+ * withdrawn): the public website gets the picture and never these.
+ */
+const staffOnlyRead = ({ req }: { req: { user?: unknown } }): boolean =>
+  isActiveUser(req.user as AccessUser | null)
+
 /** BR-MED-04 — file-size ceilings, applied per kind rather than one blanket cap. */
 /**
  * An HOD and nothing broader. Someone who also holds an editor or manager role
@@ -533,6 +541,14 @@ export const Media: CollectionConfig = {
       name: 'parentalConsent',
       type: 'group',
       label: 'Parental permission',
+      /*
+       * STAFF ONLY. A photograph is public, its permission record is not. Pages
+       * pass photographs to the browser whole, so before this the public HTML
+       * carried where each family's signed record is filed and when it was
+       * recorded (found 2026-11-02). The consent check on publishing reads with
+       * full access and is unaffected.
+       */
+      access: { read: staffOnlyRead },
       admin: {
         position: 'sidebar',
         condition: (data) => Boolean(data?.depictsChildren),
@@ -626,13 +642,16 @@ export const Media: CollectionConfig = {
           name: 'reason',
           type: 'textarea',
           label: 'Why it was withdrawn',
+          // Staff only: the reason a family asked. `isWithdrawn` stays public,
+          // because the site reads it to stop showing the picture.
+          access: { read: staffOnlyRead },
           admin: { condition: (_data, siblingData) => Boolean(siblingData?.isWithdrawn) },
         },
         {
           name: 'withdrawnAt',
           type: 'date',
           label: 'Withdrawn on',
-          access: { update: () => false },
+          access: { update: () => false, read: staffOnlyRead },
           admin: { readOnly: true, date: { pickerAppearance: 'dayAndTime' } },
         },
       ],
@@ -642,7 +661,8 @@ export const Media: CollectionConfig = {
       type: 'relationship',
       relationTo: 'users',
       label: 'Added by',
-      access: { update: () => false },
+      // Staff only: which member of staff uploaded it is not public.
+      access: { update: () => false, read: staffOnlyRead },
       admin: {
         position: 'sidebar',
         readOnly: true,

@@ -12,8 +12,12 @@ import { tickerItems } from '@/lib/ticker'
 import { EmergencyNoticeBanner } from '@/components/emergency/EmergencyNoticeBanner'
 import { findRedirect } from '@/lib/redirects'
 import { NewsTicker } from '@/components/layout/NewsTicker'
+import Link from 'next/link'
+
 import {
+  breadcrumbItems,
   breadcrumbSchema,
+  eventSchema,
   faqSchema,
   newsArticleSchema,
   organisationSchema,
@@ -95,9 +99,18 @@ const DynamicRoute = async ({ params }: RouteProps) => {
   const schemas = [
     organisationSchema(unit),
     kind === 'post' && post ? newsArticleSchema(post, unit) : null,
+    kind === 'post' && post ? eventSchema(post, unit) : null,
     breadcrumbSchema(segments ?? [], unit, page ?? post),
     kind === 'post' ? null : faqSchema(page),
   ].filter(Boolean)
+
+  /*
+   * The visible trail (Home › Kindergarten › Admissions). The same items as the
+   * BreadcrumbList above, so the page and Google agree. Not on a school's home
+   * page, where it would only say "Home › Kindergarten".
+   */
+  const crumbs = kind === 'unit-home' ? [] : breadcrumbItems(segments ?? [], unit, page ?? post)
+  const pageHeading = page ? headingState(page.layout, page.title) : 'route'
 
   return (
     <>
@@ -165,6 +178,8 @@ const DynamicRoute = async ({ params }: RouteProps) => {
       <NewsTicker items={tickerItems(updates, units)} />
 
       <main id="main-content">
+        {crumbs.length > 1 ? <Breadcrumbs items={crumbs} /> : null}
+
         {/* A department write-up, laid out by the template its author chose. */}
         {kind === 'post' && post ? <PostView post={post} /> : null}
 
@@ -177,7 +192,15 @@ const DynamicRoute = async ({ params }: RouteProps) => {
               A hero block carries its own H1, so rendering the page title above
               it too would put two H1s on the page and break the heading outline.
             */}
-            {hasOwnHeading(page.layout, page.title) ? null : (
+            {pageHeading === 'block-h1' ? null : pageHeading === 'block-repeats-title' ? (
+              /*
+               * The first section repeats the page title but as a smaller
+               * heading. Printing the title again would show it twice, so the
+               * page's one H1 is kept for search engines and screen readers
+               * only. Without it the page had no H1 at all.
+               */
+              <h1 className="sr-only">{page.title}</h1>
+            ) : (
               <header className="siws-container pt-12 pb-2">
                 <h1>{page.title}</h1>
                 {page.intro ? (
@@ -284,7 +307,7 @@ export const generateMetadata = async ({ params }: RouteProps): Promise<Metadata
    */
   if (kind === 'post' && post) {
     return {
-      title: post.title,
+      title: { absolute: withSite(post.title, unit) },
       description: post.summary ?? undefined,
       alternates: {
         canonical: unit?.slug ? `/${unit.slug}/${post.slug}` : `/${post.slug}`,
@@ -319,20 +342,94 @@ export const generateMetadata = async ({ params }: RouteProps): Promise<Metadata
   const description = page.metaDescription || page.intro || unit?.description || undefined
   const shareImage = resolveShareImage(page, unit)
 
+  /*
+   * The title Google shows. A title written under "Search engines" is used
+   * exactly as written. Otherwise the page name is followed by its school and
+   * Wadala ("Admissions | SIWS Kindergarten, Wadala"): it used to be followed
+   * only by the society's name, so a search result never said which school or
+   * where. A school's home page is already named after the school.
+   */
+  const title = page.metaTitle?.trim()
+    ? page.metaTitle.trim()
+    : kind === 'unit-home'
+      ? `${page.title} | South Indians' Welfare Society, Mumbai`
+      : withSite(page.title, unit)
+
   return {
-    title: page.metaTitle || page.title,
+    title: { absolute: title },
     description,
     // BR-SEO-04 — canonical URLs, and per-page indexing directives.
     alternates: { canonical },
     robots: page.noIndex ? { index: false, follow: true } : undefined,
     openGraph: {
-      title: page.metaTitle || page.title,
+      title,
       description,
       url: canonical,
-      type: 'article',
+      // A page is part of a website; only news write-ups are articles.
+      type: 'website',
       ...(shareImage ? { images: [{ url: shareImage }] } : {}),
     },
   }
+}
+
+/** "Wadala" is added unless the school's name already says it. */
+const schoolLabel = (unit: Unit): string => {
+  const name = unit.name ?? 'SIWS'
+  return /wadala/i.test(name) ? name : `${name}, Wadala`
+}
+
+/** A page or post name followed by where it is: its school, or SIWS Wadala. */
+const withSite = (name: string, unit: Unit | null): string =>
+  `${name} | ${unit ? schoolLabel(unit) : 'SIWS Wadala, Mumbai'}`
+
+/** Home › School › Page, as links. */
+const Breadcrumbs = ({ items }: { items: { name: string; path: string }[] }) => (
+  <nav aria-label="Breadcrumb" className="siws-container pt-5 text-sm text-ink-muted">
+    <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
+      {items.map((item, index) => {
+        const last = index === items.length - 1
+        return (
+          <li key={item.path} className="flex items-center gap-x-2">
+            {index > 0 ? <span aria-hidden="true">›</span> : null}
+            {last ? (
+              <span aria-current="page">{item.name}</span>
+            ) : (
+              <Link href={item.path} className="underline-offset-2 hover:underline">
+                {item.name}
+              </Link>
+            )}
+          </li>
+        )
+      })}
+    </ol>
+  </nav>
+)
+
+/**
+ * Who carries the page's one H1.
+ *
+ * - `block-h1`: the first section renders it (a banner, or a section whose
+ *   heading is the page title set as a main heading).
+ * - `block-repeats-title`: the first section shows the title, but as a smaller
+ *   heading, so the H1 is added for search engines only.
+ * - `route`: the route prints the title as the H1 above the sections.
+ */
+const headingState = (
+  layout: Page['layout'],
+  title?: string,
+): 'block-h1' | 'block-repeats-title' | 'route' => {
+  if (!hasOwnHeading(layout, title)) return 'route'
+  const first = (Array.isArray(layout) ? layout[0] : undefined) as
+    | { blockType?: string; headingLevel?: unknown }
+    | undefined
+  if (
+    first?.blockType === 'heroEnquiry' ||
+    first?.blockType === 'hero' ||
+    first?.blockType === 'heroMarquee' ||
+    first?.headingLevel === 'h1'
+  )
+    return 'block-h1'
+  return 'block-repeats-title'
 }
 
 /**

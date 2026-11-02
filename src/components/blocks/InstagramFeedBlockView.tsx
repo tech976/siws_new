@@ -322,7 +322,9 @@ export const InstagramFeedBlockView = async ({ block }: { block: InstagramFeedBl
                      */
                     <Image
                       src={tile.remoteUrl}
-                      alt={line ?? ''}
+                      // A post with no caption still shows a picture, so it is
+                      // still described rather than left blank.
+                      alt={line || 'A post from the SIWS Instagram account'}
                       fill
                       unoptimized
                       sizes="(min-width: 640px) 33vw, 32vw"
@@ -332,7 +334,9 @@ export const InstagramFeedBlockView = async ({ block }: { block: InstagramFeedBl
                     <Media
                       resource={tile.mediaDoc}
                       fill
-                      alt={line ?? ''}
+                      // No caption: fall back to the photograph's own library
+                      // description instead of a blank one.
+                      alt={line || undefined}
                       sizes="(min-width: 640px) 33vw, 32vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                     />
