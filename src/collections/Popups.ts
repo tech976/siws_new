@@ -164,13 +164,15 @@ export const Popups: CollectionConfig = {
       defaultValue: 'home',
       label: 'Show on',
       options: [
-        { label: 'Only the first page of this website', value: 'home' },
-        { label: 'Every page of this website', value: 'all' },
+        // Short, for the list. The edit screen names the school instead:
+        // see PopupShowOnField.
+        { label: 'Home page only', value: 'home' },
+        { label: 'Every page', value: 'all' },
       ],
       admin: {
         position: 'sidebar',
-        description:
-          'A school’s popup only ever appears on that school’s own website: its first page is, for example, /primary. Only administrators can put a popup on the main SIWS home page.',
+        // Names the school in the two choices, e.g. "Every Primary School page".
+        components: { Field: '@/components/admin/PopupShowOnField#PopupShowOnField' },
       },
     },
     {
