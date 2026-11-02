@@ -1,11 +1,16 @@
-import { APIError, type CollectionBeforeChangeHook, type CollectionConfig } from 'payload'
+import {
+  APIError,
+  type Access,
+  type CollectionBeforeChangeHook,
+  type CollectionConfig,
+} from 'payload'
 
 import {
   createScoped,
   deleteScoped,
   isActiveUser,
   isAdmin,
-  readPublishedOrScoped,
+  publishedWhere,
   unitIdsOf,
   updateScoped,
   type AccessUser,
@@ -27,6 +32,46 @@ const requireImageOrMessage: CollectionBeforeChangeHook = ({ data, originalDoc }
   if (merged._status !== 'published') return data
   if (merged.image || richTextHasText(merged.content)) return data
   throw new APIError('Add an image or a message before publishing this popup.', 400)
+}
+
+/**
+ * Who can see which popups.
+ *
+ * Visitors (no login) see published popups; the website itself loads them this
+ * way. Administrators see all of them. Everyone else, a head of department for
+ * example, sees only their own school's popups: not the main SIWS website's,
+ * and not another school's. This is stricter than other content, where staff
+ * can also read the main site's items, because the main site's popup belongs
+ * to the administrators.
+ */
+const readPopups: Access = ({ req }) => {
+  const user = req.user as AccessUser | null
+  if (!isActiveUser(user)) return publishedWhere()
+  if (isAdmin(user)) return true
+  const ids = unitIdsOf(user)
+  if (ids.length === 0) return publishedWhere()
+  return { unit: { in: ids } }
+}
+
+/**
+ * A school's staff cannot take their popup off their school. Clearing the
+ * school on save would otherwise turn it into the main SIWS website's popup,
+ * which only administrators may run. If the school comes through empty on an
+ * edit, keep the one it already had.
+ */
+const keepPopupOnOwnSchool: CollectionBeforeChangeHook = ({ data, operation, originalDoc, req }) => {
+  const user = req.user as AccessUser | null
+  if (!data || operation !== 'update' || !isActiveUser(user) || isAdmin(user)) return data
+  if (unitIdsOf(user).length === 0) return data
+  const unit = (data as { unit?: unknown }).unit
+  if ('unit' in data && (unit === null || unit === undefined || unit === '')) {
+    const original = (originalDoc as { unit?: unknown } | undefined)?.unit
+    data.unit =
+      original && typeof original === 'object' && 'id' in original
+        ? (original as { id: unknown }).id
+        : original
+  }
+  return data
 }
 
 /** The button needs both its text and its link, or neither. */
@@ -52,7 +97,7 @@ export const Popups: CollectionConfig = {
   labels: { singular: 'Popup', plural: 'Popups' },
 
   access: {
-    read: readPublishedOrScoped,
+    read: readPopups,
     create: createScoped(SECTIONS.popups),
     update: updateScoped(SECTIONS.popups),
     delete: deleteScoped(SECTIONS.popups),
@@ -60,10 +105,8 @@ export const Popups: CollectionConfig = {
 
   admin: {
     /*
-     * A school's staff see their own school's popups in the list. The main
-     * SIWS site's popup is readable by them (it is public once published) but
-     * not theirs to change, so listing it would only offer a row they cannot
-     * edit. Presentation only — `access` above is the permission.
+     * A school's staff see only their own school's popups in the list.
+     * `readPopups` above enforces it; this keeps the list query matching.
      */
     baseFilter: ({ req }) => {
       const user = req.user as AccessUser | null
@@ -81,7 +124,7 @@ export const Popups: CollectionConfig = {
   versions: { drafts: true, maxPerDoc: 10 },
 
   hooks: {
-    beforeChange: [constrainUnitToScope, requireImageOrMessage],
+    beforeChange: [keepPopupOnOwnSchool, constrainUnitToScope, requireImageOrMessage],
     // The popup is rendered on cached pages, so clear them when it changes.
     afterChange: [revalidateAfterChange],
     afterDelete: [revalidateAfterDelete],

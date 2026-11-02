@@ -919,6 +919,72 @@ const main = async () => {
             payload.delete({ collection: 'popups', id: main.id, overrideAccess: false, user: hod }),
           'an HOD deleted the main website’s popup',
         )
+        await expectRejection(
+          () =>
+            payload.findByID({ collection: 'popups', id: main.id, overrideAccess: false, user: hod }),
+          'an HOD opened the main website’s popup',
+        )
+      },
+    })
+
+    await check({
+      name: 'An HOD CANNOT see another school’s popup',
+      run: async () => {
+        const other = await payload.create({
+          collection: 'popups',
+          data: {
+            title: `Verify KG popup ${stamp}`,
+            heading: 'Kindergarten',
+            unit: kg.id,
+            _status: 'published',
+            content: {
+              root: {
+                type: 'root',
+                version: 1,
+                direction: null,
+                format: '',
+                indent: 0,
+                children: [
+                  {
+                    type: 'paragraph',
+                    version: 1,
+                    direction: null,
+                    format: '',
+                    indent: 0,
+                    children: [{ type: 'text', version: 1, text: 'KG only.' }],
+                  },
+                ],
+              },
+            },
+          } as never,
+          overrideAccess: true,
+        })
+        createdPopups.push(other.id as number)
+        const seen = await payload.find({
+          collection: 'popups',
+          where: { id: { equals: other.id } },
+          overrideAccess: false,
+          user: hod,
+        })
+        assert(seen.totalDocs === 0, 'An HOD can see another school’s popup.')
+      },
+    })
+
+    await check({
+      name: 'An HOD CANNOT turn their popup into the main website’s popup',
+      run: async () => {
+        const id = hodPopupId
+        assert(id !== null, 'No HOD popup was created to move.')
+        const moved = await payload.update({
+          collection: 'popups',
+          id: id!,
+          data: { unit: null } as never,
+          overrideAccess: false,
+          user: hod,
+        })
+        const unit = (moved as { unit?: unknown }).unit
+        const unitId = unit && typeof unit === 'object' ? (unit as { id: unknown }).id : unit
+        assert(String(unitId) === String(primary.id), 'The popup left the HOD’s school.')
       },
     })
 
