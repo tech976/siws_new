@@ -1,4 +1,4 @@
-import { AppWindow, Images, Medal, Newspaper, Trophy } from 'lucide-react'
+import { AppWindow, FileText, Images, Medal, Newspaper, Trophy } from 'lucide-react'
 import Link from 'next/link'
 import type { CSSProperties } from 'react'
 import type { Payload, TypedUser, Where } from 'payload'
@@ -125,7 +125,7 @@ const countLine = (n: number, one: string, many: string) =>
 
 export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProps) => {
   /** Counts scoped by the user's own access, so they only ever see their own. */
-  const count = async (collection: 'posts' | 'media' | 'popups', where?: Where) => {
+  const count = async (collection: 'posts' | 'media' | 'popups' | 'pages', where?: Where) => {
     try {
       const result = await payload.count({
         collection,
@@ -166,7 +166,10 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
    */
   const showPopups = canTouchSection(user as AccessUser | null | undefined, SECTIONS.popups)
 
-  const [news, events, notices, written, sports, achievements, photos, popups] = await Promise.all([
+  /* Pages: every HOD, and an Editor given Pages. Their own school's only. */
+  const showPages = canTouchSection(user as AccessUser | null | undefined, SECTIONS.pages)
+
+  const [news, events, notices, written, sports, achievements, photos, popups, pages] = await Promise.all([
     count('posts', { kind: { equals: 'news' } }),
     count('posts', { kind: { equals: 'event' } }),
     count('posts', { kind: { equals: 'announcement' } }),
@@ -176,6 +179,9 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
     count('media', inMyLibrary({ showInGallery: { equals: true } })),
     showPopups && ownUnits.length > 0
       ? count('popups', { unit: { in: ownUnits } })
+      : Promise.resolve(0),
+    showPages && ownUnits.length > 0
+      ? count('pages', { unit: { in: ownUnits } })
       : Promise.resolve(0),
   ])
 
@@ -323,6 +329,27 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
               </span>
               <Link href="/admin/collections/popups/create" style={addLink}>
                 + Add a popup
+              </Link>
+            </span>
+          </div>
+        )}
+
+        {showPages && (
+          <div style={card}>
+            <FileText size={28} strokeWidth={1.7} aria-hidden="true" style={{ flexShrink: 0 }} />
+            <span>
+              <span style={cardTitle}>Pages</span>
+              <span style={cardBody}>
+                Every page of your school&rsquo;s website. Open one to change any of its words or
+                pictures, then Publish.
+              </span>
+              <span style={{ display: 'block', marginTop: '0.75rem' }}>
+                <Link href="/admin/collections/pages" style={quickLink}>
+                  Your pages — {countLine(pages, 'page', 'pages')}
+                </Link>
+              </span>
+              <Link href="/admin/collections/pages/create" style={addLink}>
+                + Add a page
               </Link>
             </span>
           </div>

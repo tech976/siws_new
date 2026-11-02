@@ -1,16 +1,18 @@
-import type { CollectionConfig, Where } from 'payload'
+import type { Access, CollectionConfig, Where } from 'payload'
 
 import {
   SECTIONS,
+  canTouchSection,
   createScoped,
-  deleteScoped,
+  isActiveUser,
   isAdmin,
   readPublishedOrScoped,
+  unitIdsOf,
   updateScoped,
 } from '@/access'
 import type { AccessUser } from '@/access'
-import { hiddenFromHod } from '@/access/admin-nav'
 import { contentBlocks } from '@/blocks'
+import { hideFromHod } from '@/fields/hod-simple'
 import { schedulingFields, workflowFields } from '@/fields/publishing'
 import { slugField } from '@/fields/slug'
 import { auditChange, auditDelete } from '@/hooks/audit'
@@ -21,10 +23,35 @@ import { ensureUniqueSlugPerUnit } from '@/hooks/unique-slug'
 import { recordRedirectOnMove } from '@/lib/redirects'
 import {
   constrainUnitToScope,
-  enforcePublishPermission,
+  enforcePublishPermissionFor,
   notifyWorkflowParticipants,
+  pinToOwnUnit,
   stampWorkflowTransitions,
 } from '@/hooks/workflow'
+
+/**
+ * Deleting a page: administrators anywhere; anyone who holds the Pages section
+ * (an HOD, an Editor given Pages, a Content Manager) for their own school's
+ * pages only.
+ */
+const deletePages: Access = ({ req }) => {
+  const user = req.user as AccessUser | null
+  if (!isActiveUser(user)) return false
+  if (isAdmin(user)) return true
+  if (!canTouchSection(user, SECTIONS.pages)) return false
+  const ids = unitIdsOf(user)
+  return ids.length === 0 ? false : { unit: { in: ids } }
+}
+
+/** The school whose menu a page sits in: the one chosen, else the editor's own. */
+const menuUnitOf = (data: unknown, user: unknown): unknown => {
+  const chosen = (data as { unit?: unknown } | undefined)?.unit
+  if (chosen) return typeof chosen === 'object' && 'id' in chosen ? (chosen as { id: unknown }).id : chosen
+  const account = user as AccessUser | null
+  if (isAdmin(account)) return null
+  const own = unitIdsOf(account)
+  return own.length === 1 ? own[0] : null
+}
 
 /**
  * SRS 5.1 — the general-purpose page type behind FR-CMS-01 through FR-CMS-07.
@@ -41,7 +68,18 @@ export const Pages: CollectionConfig = {
   labels: { singular: 'Page', plural: 'Pages' },
 
   admin: {
-    hidden: hiddenFromHod,
+    /*
+     * A school's staff see only their own school's pages in the list. The main
+     * SIWS site's pages are readable by them (they are public) but belong to
+     * the administrators, so listing them would only offer rows they cannot
+     * change. `access` below is the permission; this is the list.
+     */
+    baseFilter: ({ req }) => {
+      const user = req.user as AccessUser | null
+      if (!isActiveUser(user) || isAdmin(user)) return null
+      const ids = unitIdsOf(user)
+      return ids.length === 0 ? null : { unit: { in: ids } }
+    },
     useAsTitle: 'title',
     defaultColumns: ['title', 'unit', '_status', 'reviewStatus', 'updatedAt'],
     group: 'Content',
@@ -100,14 +138,16 @@ export const Pages: CollectionConfig = {
     read: readPublishedOrScoped,
     create: createScoped(SECTIONS.pages),
     update: updateScoped(SECTIONS.pages),
-    delete: deleteScoped(SECTIONS.pages),
+    delete: deletePages,
   },
 
   hooks: {
-    beforeValidate: [ensureUniqueSlugPerUnit('pages')],
+    // pinToOwnUnit first, so the address check looks in the right school.
+    beforeValidate: [pinToOwnUnit, ensureUniqueSlugPerUnit('pages')],
     beforeChange: [
       constrainUnitToScope,
-      enforcePublishPermission,
+      // A school's section holders publish their own school's pages directly.
+      enforcePublishPermissionFor(SECTIONS.pages),
       // Runs after the permission check, so an unauthorised publish attempt is
       // refused on the clearer of the two grounds.
       blockUnconsentedChildImages,
@@ -215,6 +255,9 @@ export const Pages: CollectionConfig = {
         position: 'sidebar',
         description:
           'Which school this page belongs to. Only an administrator can leave this empty to put a page on the main SIWS site.',
+        // An HOD's pages always belong to their own school; it is filled in
+        // for them on save.
+        condition: hideFromHod,
       },
       // Only an administrator may create or move institution-wide content
       // (SRS 3.4). Unit staff have their choice constrained by
@@ -302,6 +345,16 @@ export const Pages: CollectionConfig = {
           'Optional, and rarely wanted. Repeats this page in a second drop-down as well as its own. Use only where a page truly belongs in both.',
         condition: (data) => Boolean(data?.showInNav),
       },
+      // Top-level items from the same school's menu only.
+      filterOptions: ({ id, data, user }) => {
+        const unit = menuUnitOf(data, user)
+        const and: Where[] = [
+          { id: { not_equals: id } },
+          { navParent: { exists: false } },
+          unit ? { unit: { equals: unit } } : { unit: { exists: false } },
+        ]
+        return { and }
+      },
     },
     {
       name: 'navParent',
@@ -313,7 +366,8 @@ export const Pages: CollectionConfig = {
           'Optional. Puts this page in the drop-down beneath another menu item. Leave blank to make it a top-level item.',
         condition: (data) => Boolean(data?.showInNav),
       },
-      filterOptions: ({ id, data }) => {
+      filterOptions: ({ id, data, user }) => {
+        const unit = menuUnitOf(data, user)
         const and: Where[] = [
           // A page cannot be its own parent.
           { id: { not_equals: id } },
@@ -322,7 +376,8 @@ export const Pages: CollectionConfig = {
           { navParent: { exists: false } },
           // Parents must come from the same site, or a unit's menu could point
           // at another unit's page under its own branding.
-          data?.unit ? { unit: { equals: data.unit } } : { unit: { exists: false } },
+          // An HOD never sees the school box, so their own school stands in.
+          unit ? { unit: { equals: unit } } : { unit: { exists: false } },
         ]
         return { and }
       },

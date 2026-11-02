@@ -19,7 +19,7 @@ import { SECTIONS } from '@/access/roles'
 import { hideFromHod } from '@/fields/hod-simple'
 import { richTextField } from '@/fields/richText'
 import { schedulingFields } from '@/fields/publishing'
-import { constrainUnitToScope } from '@/hooks/workflow'
+import { constrainUnitToScope, pinToOwnUnit } from '@/hooks/workflow'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 import { richTextHasText } from '@/lib/rich-text-has-text'
 
@@ -51,27 +51,6 @@ const readPopups: Access = ({ req }) => {
   const ids = unitIdsOf(user)
   if (ids.length === 0) return publishedWhere()
   return { unit: { in: ids } }
-}
-
-/**
- * A school's staff cannot take their popup off their school. Clearing the
- * school on save would otherwise turn it into the main SIWS website's popup,
- * which only administrators may run. If the school comes through empty on an
- * edit, keep the one it already had.
- */
-const keepPopupOnOwnSchool: CollectionBeforeChangeHook = ({ data, operation, originalDoc, req }) => {
-  const user = req.user as AccessUser | null
-  if (!data || operation !== 'update' || !isActiveUser(user) || isAdmin(user)) return data
-  if (unitIdsOf(user).length === 0) return data
-  const unit = (data as { unit?: unknown }).unit
-  if ('unit' in data && (unit === null || unit === undefined || unit === '')) {
-    const original = (originalDoc as { unit?: unknown } | undefined)?.unit
-    data.unit =
-      original && typeof original === 'object' && 'id' in original
-        ? (original as { id: unknown }).id
-        : original
-  }
-  return data
 }
 
 /** The button needs both its text and its link, or neither. */
@@ -124,7 +103,10 @@ export const Popups: CollectionConfig = {
   versions: { drafts: true, maxPerDoc: 10 },
 
   hooks: {
-    beforeChange: [keepPopupOnOwnSchool, constrainUnitToScope, requireImageOrMessage],
+    // A school's popup stays on that school's website, even if the school is
+    // cleared on save.
+    beforeValidate: [pinToOwnUnit],
+    beforeChange: [constrainUnitToScope, requireImageOrMessage],
     // The popup is rendered on cached pages, so clear them when it changes.
     afterChange: [revalidateAfterChange],
     afterDelete: [revalidateAfterDelete],

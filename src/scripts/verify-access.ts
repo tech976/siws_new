@@ -182,21 +182,30 @@ const main = async () => {
       },
     })
 
-    // ---- 2. BR-PUB-02 — publishing is an approver's act -----------------
+    // ---- 2. Publishing pages ----------------------------------------------
+    /*
+     * Since 2026-11-02 a school's section holders publish their own school's
+     * pages directly (SIWS's request: page edits should not wait for an
+     * administrator). A Content Manager holds every section of their school.
+     */
     await check({
-      name: 'Content Manager CANNOT publish (BR-PUB-02)',
-      run: () =>
-        expectRejection(
-          () =>
-            payload.update({
-              collection: 'pages',
-              id: draftId as number,
-              data: { _status: 'published' } as never,
-              user: contentManager,
-              overrideAccess: false,
-            }),
-          'a Content Manager must not be able to self-publish',
-        ),
+      name: 'Content Manager CAN publish their own school’s page',
+      run: async () => {
+        await payload.update({
+          collection: 'pages',
+          id: draftId as number,
+          data: { _status: 'published' } as never,
+          user: contentManager,
+          overrideAccess: false,
+        })
+        // Back to draft for the Unit Head check below.
+        await payload.update({
+          collection: 'pages',
+          id: draftId as number,
+          data: { _status: 'draft' } as never,
+          overrideAccess: true,
+        })
+      },
     })
 
     await check({
@@ -998,24 +1007,130 @@ const main = async () => {
       },
     })
 
+    /*
+     * Pages: since 2026-11-02 an HOD runs every page of their own school's
+     * website (add, edit, publish, delete), and nothing beyond it.
+     */
+    let hodPageId: number | null = null
+
     await check({
-      name: 'An HOD CANNOT create a page — layout is not their job',
-      run: () =>
-        expectRejection(
-          () =>
-            payload.create({
-              collection: 'pages',
-              data: {
-                title: `Verify HOD page ${stamp}`,
-                slug: `verify-hod-page-${stamp}`,
-                unit: primary.id,
-                layout: [],
-              } as never,
-              overrideAccess: false,
-              user: hod,
-            }),
-          'an HOD built a page, which the design brief reserves to templates',
-        ),
+      name: 'An HOD can add and publish a page, and it goes on their own school’s website',
+      run: async () => {
+        const page = await payload.create({
+          collection: 'pages',
+          data: {
+            title: `Verify HOD page ${stamp}`,
+            slug: `verify-hod-page-${stamp}`,
+            layout: [],
+            _status: 'published',
+          } as never,
+          overrideAccess: false,
+          user: hod,
+        })
+        createdPages.push(page.id as number)
+        hodPageId = page.id as number
+        const unit = (page as { unit?: unknown }).unit
+        const unitId = unit && typeof unit === 'object' ? (unit as { id: unknown }).id : unit
+        assert(String(unitId) === String(primary.id), 'The page was not filed under the HOD’s school.')
+
+        await payload.update({
+          collection: 'pages',
+          id: page.id,
+          data: { title: `Verify HOD page edited ${stamp}` } as never,
+          overrideAccess: false,
+          user: hod,
+        })
+      },
+    })
+
+    await check({
+      name: 'An HOD CANNOT move their page onto the main SIWS website',
+      run: async () => {
+        const id = hodPageId
+        assert(id !== null, 'No HOD page was created to move.')
+        const moved = await payload.update({
+          collection: 'pages',
+          id: id!,
+          data: { unit: null } as never,
+          overrideAccess: false,
+          user: hod,
+        })
+        const unit = (moved as { unit?: unknown }).unit
+        const unitId = unit && typeof unit === 'object' ? (unit as { id: unknown }).id : unit
+        assert(String(unitId) === String(primary.id), 'The page left the HOD’s school.')
+      },
+    })
+
+    await check({
+      name: 'An HOD CANNOT edit another school’s page or the main website’s',
+      run: async () => {
+        const kgPage = await payload.create({
+          collection: 'pages',
+          data: { title: 'Verify KG page', slug: `verify-kg-page-${stamp}`, unit: kg.id, layout: [] } as never,
+          overrideAccess: true,
+        })
+        createdPages.push(kgPage.id as number)
+        const mainPage = await payload.create({
+          collection: 'pages',
+          data: { title: 'Verify main page', slug: `verify-main-page-${stamp}`, layout: [] } as never,
+          overrideAccess: true,
+        })
+        createdPages.push(mainPage.id as number)
+
+        for (const target of [kgPage, mainPage]) {
+          await expectRejection(
+            () =>
+              payload.update({
+                collection: 'pages',
+                id: target.id,
+                data: { title: 'Changed by an HOD' } as never,
+                overrideAccess: false,
+                user: hod,
+              }),
+            `an HOD edited ${target === kgPage ? 'another school’s' : 'the main website’s'} page`,
+          )
+          await expectRejection(
+            () => payload.delete({ collection: 'pages', id: target.id, overrideAccess: false, user: hod }),
+            `an HOD deleted ${target === kgPage ? 'another school’s' : 'the main website’s'} page`,
+          )
+        }
+      },
+    })
+
+    await check({
+      name: 'An HOD can delete their own school’s page',
+      run: async () => {
+        const id = hodPageId
+        assert(id !== null, 'No HOD page was created to delete.')
+        await payload.delete({ collection: 'pages', id: id!, overrideAccess: false, user: hod })
+        createdPages.splice(createdPages.indexOf(id!), 1)
+      },
+    })
+
+    await check({
+      name: 'An Editor given Pages can edit, publish and delete their school’s pages',
+      run: async () => {
+        const pagesEditor = await makeUser('pages-editor', ['editor'], {
+          units: [primary.id],
+          editableSections: ['pages'],
+        })
+        const page = await payload.create({
+          collection: 'pages',
+          data: { title: 'Verify editor page', slug: `verify-editor-page-${stamp}`, unit: primary.id, layout: [] } as never,
+          overrideAccess: false,
+          user: pagesEditor,
+        })
+        createdPages.push(page.id as number)
+        await payload.update({
+          collection: 'pages',
+          id: page.id,
+          data: { title: 'Verify editor page edited', _status: 'published' } as never,
+          overrideAccess: false,
+          user: pagesEditor,
+        })
+        await payload.delete({ collection: 'pages', id: page.id, overrideAccess: false, user: pagesEditor })
+        createdPages.splice(createdPages.indexOf(page.id as number), 1)
+      },
     })
 
     await check({
@@ -1071,7 +1186,7 @@ const main = async () => {
     })
 
     await check({
-      name: 'An HOD can delete their own announcement, but not a page',
+      name: 'An HOD can delete their own announcement, but not another school’s page',
       run: async () => {
         const doomed = await payload.create({
           collection: 'announcements',
@@ -1091,14 +1206,14 @@ const main = async () => {
           user: hod,
         })
 
-        // The same right must not reach a page — deletion is still scoped by
-        // section, and `pages` is not one of an HOD's.
+        // Pages are an HOD section since 2026-11-02, but only their own
+        // school's: another school's page stays out of reach.
         const page = await payload.create({
           collection: 'pages',
           data: {
             title: `Verify hod-delete ${stamp}`,
             slug: `verify-hod-delete-${stamp}`,
-            unit: primary.id,
+            unit: kg.id,
             layout: [],
           } as never,
           overrideAccess: true,
@@ -1113,7 +1228,7 @@ const main = async () => {
               overrideAccess: false,
               user: hod,
             }),
-          'an HOD deleted a page',
+          'an HOD deleted another school’s page',
         )
       },
     })

@@ -2728,7 +2728,7 @@ export interface Announcement {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * A window that opens over the website when someone visits. Choose the website, add a picture and text, then Publish.
+ * A window that opens over a website when someone visits. Add a picture and text, then Publish. A school’s popup appears only on that school’s website.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "popups".

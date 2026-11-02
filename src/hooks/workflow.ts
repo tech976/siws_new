@@ -1,8 +1,12 @@
-import type { CollectionAfterChangeHook, CollectionBeforeChangeHook } from 'payload'
+import type {
+  CollectionAfterChangeHook,
+  CollectionBeforeChangeHook,
+  CollectionBeforeValidateHook,
+} from 'payload'
 import { APIError } from 'payload'
 
-import { ROLES, canApprove, unitIdsOf } from '@/access'
-import type { AccessUser } from '@/access'
+import { ROLES, canApprove, canTouchSection, isAdmin, unitIdsOf } from '@/access'
+import type { AccessUser, SectionKey } from '@/access'
 import { REVIEW_STATUS } from '@/fields/publishing'
 
 /**
@@ -40,6 +44,65 @@ export const enforcePublishPermission: CollectionBeforeChangeHook = ({
     )
   }
 
+  return data
+}
+
+/**
+ * Publishing for collections whose section holders publish their own work.
+ *
+ * Anyone who holds `section` (an HOD, an Editor given that section, a Content
+ * Manager) may publish and unpublish it directly. Which documents they can
+ * reach is still decided by the collection's `update` access and
+ * `constrainUnitToScope`, so this only ever covers their own school's.
+ * Everyone else falls back to the approver rule above.
+ */
+export const enforcePublishPermissionFor =
+  (section: SectionKey): CollectionBeforeChangeHook =>
+  (args) => {
+    const user = args.req.user as AccessUser | null
+    if (user && canTouchSection(user, section)) return args.data
+    return enforcePublishPermission(args)
+  }
+
+/**
+ * Keeps a school's staff's work filed under their own school.
+ *
+ * Runs before validation, so checks such as "is this address already used in
+ * this school?" see the right school.
+ *
+ * - On create with no school given, a member of staff who belongs to exactly
+ *   one school gets theirs. (`constrainUnitToScope` refuses the ambiguous case.)
+ * - On update, clearing the school would turn the document into the main SIWS
+ *   website's, which only administrators may run, so the school it already had
+ *   is kept.
+ *
+ * Administrators and server-side scripts (no user) are left alone.
+ */
+export const pinToOwnUnit: CollectionBeforeValidateHook = ({ data, operation, originalDoc, req }) => {
+  const user = req.user as AccessUser | null
+  if (!data || !user || isAdmin(user)) return data
+  const assigned = unitIdsOf(user)
+  if (assigned.length === 0) return data
+
+  const unit = (data as { unit?: unknown }).unit
+  const empty = unit === null || unit === undefined || unit === ''
+  if (!empty) return data
+
+  if (operation === 'create') {
+    if (assigned.length === 1) {
+      const only = assigned[0]!
+      data.unit = /^\d+$/.test(only) ? Number(only) : only
+    }
+    return data
+  }
+
+  if ('unit' in data) {
+    const original = (originalDoc as { unit?: unknown } | undefined)?.unit
+    data.unit =
+      original && typeof original === 'object' && 'id' in original
+        ? (original as { id: unknown }).id
+        : original
+  }
   return data
 }
 
