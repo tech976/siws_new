@@ -1464,3 +1464,209 @@ main > header + section[data-ground]:not([data-ground='white']) {
   }
 }
 
+
+/* ==========================================================================
+   SITE POPUP — the window a website opens on arrival (admin: Content → Popups).
+   Built from the theme: brand navy, accent orange, Montserrat headings, the
+   pill eyebrow and pill button, 24px card radius and the raised navy shadow.
+   Above the sticky header (z-50) and the cookie banner (z-40).
+   ========================================================================== */
+
+.siws-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(36 39 111 / 0.62);
+  backdrop-filter: blur(3px);
+  animation: siws-popup-fade 0.3s ease-out;
+}
+
+.siws-popup__dialog {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 34rem);
+  min-width: 0;
+  max-height: calc(100dvh - 2rem);
+  overflow: hidden;
+  border-radius: 1.5rem;
+  border-top: 5px solid var(--color-accent);
+  background: var(--color-surface);
+  box-shadow:
+    0 2px 4px rgb(36 39 111 / 0.08),
+    0 28px 64px -18px rgb(15 17 64 / 0.55);
+  animation: siws-popup-rise 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* With a picture: side by side from tablet width, picture on the left. */
+@media (min-width: 768px) {
+  .siws-popup__dialog--media {
+    flex-direction: row;
+    width: min(100%, 56rem);
+    min-height: 22rem;
+  }
+}
+
+.siws-popup__close {
+  position: absolute;
+  top: 0.875rem;
+  right: 0.875rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-brand);
+  color: #ffffff;
+  box-shadow: 0 6px 16px -4px rgb(36 39 111 / 0.45);
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.siws-popup__close:hover {
+  background: var(--color-accent);
+  color: var(--color-brand);
+  transform: rotate(90deg);
+}
+
+.siws-popup__close:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.siws-popup__media {
+  position: relative;
+  flex-shrink: 0;
+  aspect-ratio: 16 / 9;
+  background: var(--color-brand-tint);
+}
+
+@media (min-width: 768px) {
+  .siws-popup__dialog--media .siws-popup__media {
+    flex: 0 0 46%;
+    aspect-ratio: auto;
+  }
+}
+
+.siws-popup__img {
+  object-fit: cover;
+}
+
+.siws-popup__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 2rem 1.75rem 1.75rem;
+}
+
+@media (min-width: 768px) {
+  .siws-popup__body {
+    justify-content: center;
+    padding: 2.75rem 2.5rem 2.5rem;
+  }
+}
+
+/* The theme's pill eyebrow, naming whose website this is. */
+.siws-popup__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: calc(100% - 3rem);
+  margin: 0 0 1rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-brand-tint);
+  color: var(--color-brand);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.siws-popup__dialog--media .siws-popup__eyebrow {
+  max-width: 100%;
+}
+
+.siws-popup__eyebrow svg {
+  flex-shrink: 0;
+  color: var(--color-accent-deep);
+}
+
+.siws-popup__heading {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+}
+
+/* Short accent rule under the heading, as on the site's section headings. */
+.siws-popup__heading::after {
+  content: '';
+  display: block;
+  width: 3.5rem;
+  height: 4px;
+  margin-top: 0.875rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+}
+
+.siws-popup__text {
+  margin-top: 1rem;
+  color: var(--color-ink-soft);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.siws-popup__text > :first-child {
+  margin-top: 0;
+}
+
+.siws-popup__text > :last-child {
+  margin-bottom: 0;
+}
+
+.siws-popup__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+@keyframes siws-popup-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes siws-popup-rise {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .siws-popup,
+  .siws-popup__dialog {
+    animation: none;
+  }
+
+  .siws-popup__close:hover {
+    transform: none;
+  }
+}
+
+/* High-contrast mode (accessibility controls): solid backdrop, no blur. */
+html[data-contrast='high'] .siws-popup {
+  background: rgb(0 0 0 / 0.8);
+  backdrop-filter: none;
+}

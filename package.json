@@ -75,7 +75,8 @@
     "remove:primary-campus-pages": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/remove-primary-campus-pages.ts",
     "remove:secondary-admissions": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/remove-secondary-admissions-pages.ts",
     "publish:menu-parents": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/publish-menu-parents.ts",
-    "seed:image-filing": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/image-filing.ts"
+    "seed:image-filing": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/image-filing.ts",
+    "seed:popups": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/popups.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.86.0",

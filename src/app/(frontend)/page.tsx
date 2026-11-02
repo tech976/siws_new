@@ -4,6 +4,7 @@ import Link from 'next/link'
 
 import { RenderBlocks } from '@/components/blocks/RenderBlocks'
 import { EmergencyNoticeBanner } from '@/components/emergency/EmergencyNoticeBanner'
+import { SitePopup } from '@/components/popup/SitePopup'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { NewsTicker } from '@/components/layout/NewsTicker'
@@ -80,6 +81,9 @@ const PortalHome = async () => {
       </main>
 
       <SiteFooter quickLinks={navItems} units={footerUnits} />
+
+      {/* The main SIWS website's popup (Content → Popups, no school chosen). */}
+      <SitePopup unitId={null} isHome />
     </>
   )
 }

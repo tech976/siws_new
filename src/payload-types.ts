@@ -71,6 +71,7 @@ export interface Config {
     posts: Post;
     announcements: Announcement;
     pages: Page;
+    popups: Popup;
     faculty: Faculty;
     media: Media;
     enquiries: Enquiry;
@@ -94,6 +95,7 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    popups: PopupsSelect<false> | PopupsSelect<true>;
     faculty: FacultySelect<false> | FacultySelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     enquiries: EnquiriesSelect<false> | EnquiriesSelect<true>;
@@ -2725,6 +2727,73 @@ export interface Announcement {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * A window that opens over the website when someone visits. Choose the website, add a picture and text, then Publish.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "popups".
+ */
+export interface Popup {
+  id: number;
+  /**
+   * For your own reference in this list — for example “Admissions 2027 – Kindergarten”. Visitors do not see it.
+   */
+  title: string;
+  /**
+   * Leave empty for the main SIWS website. Choose a school for that school’s website.
+   */
+  unit?: (number | null) | Unit;
+  showOn: 'home' | 'all';
+  /**
+   * How long after the page loads the popup appears. It stays open until the visitor closes it.
+   */
+  delaySeconds: number;
+  /**
+   * “Once per visit” shows it again only after the visitor closes the browser and comes back.
+   */
+  frequency: 'always' | 'session';
+  /**
+   * About 1200 × 900 works best. The edges may be trimmed to fit, so keep the important part in the middle. A popup needs an image, a message, or both.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Optional. Shown in large text above your message.
+   */
+  heading?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Add both to show a button, for example “Enquire now” → /kindergarten/contact
+   */
+  button?: {
+    label?: string | null;
+    url?: string | null;
+  };
+  /**
+   * Optional. Keeps this hidden until the date and time you choose, even after you publish it.
+   */
+  publishAt?: string | null;
+  /**
+   * Optional. Takes this off the website automatically — useful for a notice that expires.
+   */
+  unpublishAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Teacher profiles shown on your school’s website. Lower “Order” numbers appear first.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3140,6 +3209,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'popups';
+        value: number | Popup;
       } | null)
     | ({
         relationTo: 'faculty';
@@ -4182,6 +4255,31 @@ export interface DpoContactBlockSelect<T extends boolean = true> {
   background?: T;
   id?: T;
   blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "popups_select".
+ */
+export interface PopupsSelect<T extends boolean = true> {
+  title?: T;
+  unit?: T;
+  showOn?: T;
+  delaySeconds?: T;
+  frequency?: T;
+  image?: T;
+  heading?: T;
+  content?: T;
+  button?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+      };
+  publishAt?: T;
+  unpublishAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -19,6 +19,7 @@ import {
   organisationSchema,
   serialise,
 } from '@/lib/structured-data'
+import { SitePopup } from '@/components/popup/SitePopup'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import {
@@ -220,6 +221,9 @@ const DynamicRoute = async ({ params }: RouteProps) => {
       </main>
 
       <SiteFooter unit={unit} quickLinks={navItems} units={footerUnits} />
+
+      {/* This website's popup: a school's own, or the main SIWS site's. */}
+      <SitePopup unitId={unit?.id ?? null} isHome={kind === 'unit-home'} />
     </>
   )
 }

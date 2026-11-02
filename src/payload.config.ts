@@ -19,6 +19,7 @@ import { QuickLinks } from '@/collections/QuickLinks'
 import { Redirects } from '@/collections/Redirects'
 import { DataRequests } from '@/collections/DataRequests'
 import { EmergencyNotices } from '@/collections/EmergencyNotices'
+import { Popups } from '@/collections/Popups'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
@@ -95,6 +96,7 @@ export default buildConfig({
     Posts,
     Announcements,
     Pages,
+    Popups,
     Faculty,
     Media,
     Enquiries,
