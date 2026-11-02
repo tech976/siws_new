@@ -40,7 +40,7 @@ const PLAN: Record<string, Record<string, Entry>> = {
     admissions: {
       title: 'SIWS School Admissions in Wadala, Mumbai',
       description:
-        'Admissions at SIWS, Wadala, Mumbai: Jr. KG and Sr. KG, Primary (Grades 1 to 4) and Junior College (Science and Commerce). How to enquire and who to contact.',
+        'Admissions at SIWS, Wadala, Mumbai: the admission process for each SIWS school section, how to enquire, and who to contact at the admissions office.',
     },
     'admissions-faq': {
       title: 'SIWS Admissions FAQ | School & Junior College, Wadala',
