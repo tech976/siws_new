@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { APIError, AuthenticationError, LockedAuth } from 'payload'
 
 import {
+  MAIN_SITE_SECTIONS,
   ROLES,
   ROLE_OPTIONS,
   SECTION_OPTIONS,
@@ -10,7 +11,7 @@ import {
   hasRole,
   isAdmin,
 } from '@/access'
-import type { AccessUser, Role } from '@/access'
+import type { AccessUser, Role, SectionKey } from '@/access'
 import { hiddenFromHod } from '@/access/admin-nav'
 import { checkPasswordStrength } from '@/auth/password-policy'
 import { auditChange, auditDelete } from '@/hooks/audit'
@@ -380,11 +381,26 @@ export const Users: CollectionConfig = {
           'Which school this person works in. Administrators can already work in all four, so they do not need one.',
         condition: (data) => holdsAny(data?.roles, UNIT_SCOPED_ROLES),
       },
-      validate: (value: unknown, { data }: { data?: Partial<{ roles: string[] }> }) => {
+      validate: (
+        value: unknown,
+        { data }: { data?: Partial<{ roles: string[]; editableSections: string[] }> },
+      ) => {
         const roles = data?.roles
         if (!Array.isArray(roles)) return true
 
-        const needsUnit = holdsAny(roles, UNIT_SCOPED_ROLES)
+        /*
+         * A sports or fine arts teacher works on the MAIN SIWS website's
+         * Sports or Fine Arts pages, which belong to no school. An Editor
+         * whose sections are all main-site ones therefore has no school.
+         */
+        const sections = Array.isArray(data?.editableSections) ? data.editableSections : []
+        const mainSiteOnly =
+          roles.length === 1 &&
+          roles[0] === ROLES.editor &&
+          sections.length > 0 &&
+          sections.every((section) => Boolean(MAIN_SITE_SECTIONS[section as SectionKey]))
+
+        const needsUnit = holdsAny(roles, UNIT_SCOPED_ROLES) && !mainSiteOnly
         // An unscoped content user would silently be able to do nothing at all,
         // which reads as a broken account rather than a permissions decision.
         if (needsUnit && (!Array.isArray(value) || value.length === 0)) {
@@ -401,7 +417,7 @@ export const Users: CollectionConfig = {
       access: { create: adminFieldOnly, update: adminFieldOnly },
       admin: {
         description:
-          'Restricts an Editor to just these parts of the website. Only applies to Editors.',
+          'Restricts an Editor to just these parts of the website. Only applies to Editors. For a sports or fine arts teacher, choose "Main SIWS website: Sports pages" or "…: Fine Arts pages" and leave the school empty.',
         condition: (data) => Array.isArray(data?.roles) && data.roles.includes(ROLES.editor),
       },
     },

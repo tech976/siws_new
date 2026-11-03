@@ -63,6 +63,10 @@ export const SECTIONS = {
   facilities: 'facilities',
   transport: 'transport',
   popups: 'popups',
+  /** The main SIWS website's Sports pages (see MAIN_SITE_SECTIONS). */
+  mainSports: 'mainSports',
+  /** The main SIWS website's Fine Arts pages (see MAIN_SITE_SECTIONS). */
+  mainFineArts: 'mainFineArts',
 } as const
 
 export type SectionKey = (typeof SECTIONS)[keyof typeof SECTIONS]
@@ -84,7 +88,24 @@ export const SECTION_OPTIONS: { label: string; value: SectionKey }[] = [
   { label: 'Facilities & Campus', value: SECTIONS.facilities },
   { label: 'Transport', value: SECTIONS.transport },
   { label: 'Popups', value: SECTIONS.popups },
+  { label: 'Main SIWS website: Sports pages', value: SECTIONS.mainSports },
+  { label: 'Main SIWS website: Fine Arts pages', value: SECTIONS.mainFineArts },
 ]
+
+/**
+ * Sections of the MAIN SIWS website that a teacher can be given (SIWS,
+ * 2026-11-03): the sports teachers run the Sports pages, the fine arts
+ * teachers the Fine Arts pages, and nothing on the four school websites.
+ *
+ * `roots` are the section's own pages, by address. A section also owns every
+ * main-site page filed under one of them in the menu ("Puts this page in the
+ * drop-down beneath" Sports / Fine Arts), which is how its teachers add new
+ * pages. `home` is the root a new page is filed under by default.
+ */
+export const MAIN_SITE_SECTIONS: Partial<Record<SectionKey, { roots: string[]; home: string; label: string }>> = {
+  mainSports: { roots: ['sports', 'fencing'], home: 'sports', label: 'Sports' },
+  mainFineArts: { roots: ['fine-arts'], home: 'fine-arts', label: 'Fine Arts' },
+}
 
 /**
  * Everything an HOD may work in, whatever else is assigned to them.

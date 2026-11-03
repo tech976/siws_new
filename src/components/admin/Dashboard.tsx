@@ -19,11 +19,21 @@ import {
 import Link from 'next/link'
 import type { Payload, TypedUser } from 'payload'
 
-import { ROLES, canRaiseEmergency, hasRole, isAdmin, isDPO, unitIdsOf, usesSimpleScreen } from '@/access'
+import {
+  ROLES,
+  canRaiseEmergency,
+  hasRole,
+  isAdmin,
+  isDPO,
+  isMainSiteOnlyEditor,
+  unitIdsOf,
+  usesSimpleScreen,
+} from '@/access'
 import type { AccessUser } from '@/access'
 import { REVIEW_STATUS } from '@/fields/publishing'
 
 import { HodDashboard } from './HodDashboard'
+import { MainSectionDashboard } from './MainSectionDashboard'
 import { MainHomepagePanel } from './MainHomepagePanel'
 
 /**
@@ -137,6 +147,11 @@ export const Dashboard = async ({ payload, user }: DashboardProps) => {
    * nowhere to do either.
    */
   const simpleScreen = usesSimpleScreen(accessUser)
+
+  // A sports or fine arts teacher: their section's pages on the main site.
+  if (isMainSiteOnlyEditor(accessUser)) {
+    return <MainSectionDashboard payload={payload} user={user} />
+  }
 
   if (simpleScreen) {
     const unitIds = unitIdsOf(accessUser)

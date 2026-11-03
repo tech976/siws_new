@@ -57,10 +57,13 @@ export const enforcePublishPermission: CollectionBeforeChangeHook = ({
  * Everyone else falls back to the approver rule above.
  */
 export const enforcePublishPermissionFor =
-  (section: SectionKey): CollectionBeforeChangeHook =>
+  (section: SectionKey, alsoAllowed?: (user: AccessUser) => boolean): CollectionBeforeChangeHook =>
   (args) => {
     const user = args.req.user as AccessUser | null
     if (user && canTouchSection(user, section)) return args.data
+    // Others the collection names, e.g. a main-site section's teachers on
+    // Pages. Which documents they reach is still the access rules' decision.
+    if (user && alsoAllowed?.(user)) return args.data
     return enforcePublishPermission(args)
   }
 

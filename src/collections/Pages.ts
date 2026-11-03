@@ -1,4 +1,5 @@
-import type { Access, CollectionConfig, Where } from 'payload'
+import type { Access, CollectionBeforeChangeHook, CollectionConfig, Where } from 'payload'
+import { APIError } from 'payload'
 
 import {
   SECTIONS,
@@ -6,7 +7,11 @@ import {
   createScoped,
   isActiveUser,
   isAdmin,
+  isMainSiteOnlyEditor,
+  mainSiteRootsOf,
+  mainSiteSectionsOf,
   readPublishedOrScoped,
+  toId,
   unitIdsOf,
   updateScoped,
 } from '@/access'
@@ -29,18 +34,132 @@ import {
   stampWorkflowTransitions,
 } from '@/hooks/workflow'
 
+/*
+ * ---------------------------------------------------------------------------
+ * Main SIWS website sections (Sports, Fine Arts) — SIWS, 2026-11-03.
+ *
+ * A sports or fine arts teacher's account is an Editor given "Main SIWS
+ * website: Sports pages" (or Fine Arts). It runs the section's own pages
+ * (/sports and /fencing, or /fine-arts) and any main-site page filed under
+ * them in the menu, which is how the teacher adds new ones. It has no school,
+ * so nothing on the four school websites is within reach, and no other
+ * main-site page either.
+ * ---------------------------------------------------------------------------
+ */
+
+/** The main-site pages a set of section roots covers. */
+const mainSectionWhere = (roots: string[]): Where => ({
+  and: [
+    { unit: { exists: false } },
+    { or: [{ slug: { in: roots } }, { 'navParent.slug': { in: roots } }] },
+  ],
+})
+
+/** One rule OR another; `false` and `true` simplified away. */
+const either = (a: boolean | Where, b: Where | null): boolean | Where => {
+  if (!b) return a
+  if (a === true) return true
+  if (a === false) return b
+  return { or: [a, b] }
+}
+
+const sectionRulesFor = (req: { user?: unknown }) => {
+  const roots = mainSiteRootsOf(req.user as AccessUser | null)
+  return roots.length > 0 ? mainSectionWhere(roots) : null
+}
+
+const readPages: Access = (args) =>
+  either(readPublishedOrScoped(args) as boolean | Where, sectionRulesFor(args.req))
+
+const createPages: Access = (args) =>
+  createScoped(SECTIONS.pages)(args) === true || sectionRulesFor(args.req) !== null
+
+const updatePages: Access = (args) =>
+  either(updateScoped(SECTIONS.pages)(args) as boolean | Where, sectionRulesFor(args.req))
+
 /**
  * Deleting a page: administrators anywhere; anyone who holds the Pages section
  * (an HOD, an Editor given Pages, a Content Manager) for their own school's
- * pages only.
+ * pages only; a main-site section's teachers for the pages they added under
+ * it, but never the section's own page (/sports, /fine-arts…).
  */
 const deletePages: Access = ({ req }) => {
   const user = req.user as AccessUser | null
   if (!isActiveUser(user)) return false
   if (isAdmin(user)) return true
-  if (!canTouchSection(user, SECTIONS.pages)) return false
+
   const ids = unitIdsOf(user)
-  return ids.length === 0 ? false : { unit: { in: ids } }
+  const school: boolean | Where =
+    canTouchSection(user, SECTIONS.pages) && ids.length > 0 ? { unit: { in: ids } } : false
+
+  const roots = mainSiteRootsOf(user)
+  const added: Where | null =
+    roots.length > 0 ? { and: [mainSectionWhere(roots), { slug: { not_in: roots } }] } : null
+
+  return either(school, added)
+}
+
+/**
+ * Keeps a main-site section teacher's work inside their section.
+ *
+ * Access decides which existing pages they can open; this decides what a save
+ * may turn a page into. A page they save must stay on the main site (no
+ * school), be one of the section's own pages or be filed under one, and a
+ * section's own page keeps its address, which the menu and the design use.
+ * A new page with no menu placement is filed under the section's main page.
+ */
+const keepInMainSection: CollectionBeforeChangeHook = async ({ data, originalDoc, operation, req }) => {
+  const user = req.user as AccessUser | null
+  if (!data || !user || isAdmin(user)) return data
+  const sections = mainSiteSectionsOf(user)
+  if (sections.length === 0) return data
+
+  const merged = { ...(originalDoc ?? {}), ...data } as {
+    unit?: unknown
+    slug?: unknown
+    navParent?: unknown
+  }
+  const unitId = toId(merged.unit as never)
+  // A page of their own school (an Editor who also has a school) is judged by
+  // the school rules, not these.
+  if (unitId !== null && unitIdsOf(user).includes(unitId)) return data
+  if (unitId !== null) {
+    throw new APIError('You can only work on the main SIWS website’s Sports or Fine Arts pages.', 403)
+  }
+
+  const roots = sections.flatMap((section) => section.roots)
+  const originalSlug = (originalDoc as { slug?: unknown } | undefined)?.slug
+  if (operation === 'update' && typeof originalSlug === 'string' && roots.includes(originalSlug)) {
+    if (merged.slug !== originalSlug) {
+      throw new APIError(`The address of the /${originalSlug} page cannot be changed.`, 403)
+    }
+    return data
+  }
+
+  const { docs: rootPages } = await req.payload.find({
+    collection: 'pages',
+    where: { and: [{ slug: { in: roots } }, { unit: { exists: false } }] },
+    depth: 0,
+    limit: 20,
+    overrideAccess: true,
+    req,
+  })
+  const rootIds = rootPages.map((page) => String(page.id))
+
+  if (operation === 'create' && toId(merged.navParent as never) === null) {
+    const home = rootPages.find((page) => page.slug === sections[0]!.home) ?? rootPages[0]
+    if (home) {
+      data.navParent = home.id
+      merged.navParent = home.id
+    }
+  }
+
+  const parentId = toId(merged.navParent as never)
+  if (parentId === null || !rootIds.includes(parentId)) {
+    const names = sections.map((section) => section.label).join(' or ')
+    throw new APIError(`File this page under ${names} in the menu settings.`, 403)
+  }
+  return data
 }
 
 /** The school whose menu a page sits in: the one chosen, else the editor's own. */
@@ -78,7 +197,11 @@ export const Pages: CollectionConfig = {
       const user = req.user as AccessUser | null
       if (!isActiveUser(user) || isAdmin(user)) return null
       const ids = unitIdsOf(user)
-      return ids.length === 0 ? null : { unit: { in: ids } }
+      const school: Where | null = ids.length === 0 ? null : { unit: { in: ids } }
+      // A sports / fine arts teacher's list is their section's pages.
+      const section = sectionRulesFor(req)
+      if (school && section) return { or: [school, section] }
+      return school ?? section
     },
     useAsTitle: 'title',
     defaultColumns: ['title', 'unit', '_status', 'reviewStatus', 'updatedAt'],
@@ -135,9 +258,9 @@ export const Pages: CollectionConfig = {
   },
 
   access: {
-    read: readPublishedOrScoped,
-    create: createScoped(SECTIONS.pages),
-    update: updateScoped(SECTIONS.pages),
+    read: readPages,
+    create: createPages,
+    update: updatePages,
     delete: deletePages,
   },
 
@@ -146,8 +269,11 @@ export const Pages: CollectionConfig = {
     beforeValidate: [pinToOwnUnit, ensureUniqueSlugPerUnit('pages')],
     beforeChange: [
       constrainUnitToScope,
-      // A school's section holders publish their own school's pages directly.
-      enforcePublishPermissionFor(SECTIONS.pages),
+      // A main-site section teacher stays inside Sports / Fine Arts.
+      keepInMainSection,
+      // A school's section holders publish their own school's pages directly,
+      // and so do the main-site section teachers, inside their section.
+      enforcePublishPermissionFor(SECTIONS.pages, (user) => mainSiteRootsOf(user).length > 0),
       // Runs after the permission check, so an unauthorised publish attempt is
       // refused on the clearer of the two grounds.
       blockUnconsentedChildImages,
@@ -256,8 +382,10 @@ export const Pages: CollectionConfig = {
         description:
           'Which school this page belongs to. Only an administrator can leave this empty to put a page on the main SIWS site.',
         // An HOD's pages always belong to their own school; it is filled in
-        // for them on save.
-        condition: hideFromHod,
+        // for them on save. A sports / fine arts teacher's pages belong to
+        // the main site, so there is nothing for either to choose.
+        condition: (data, siblingData, ctx) =>
+          hideFromHod(data, siblingData, ctx) && !isMainSiteOnlyEditor(ctx.user as AccessUser | null),
       },
       // Only an administrator may create or move institution-wide content
       // (SRS 3.4). Unit staff have their choice constrained by
@@ -353,6 +481,8 @@ export const Pages: CollectionConfig = {
           { navParent: { exists: false } },
           unit ? { unit: { equals: unit } } : { unit: { exists: false } },
         ]
+        const roots = mainSiteRootsOf(user as AccessUser | null)
+        if (!unit && roots.length > 0) and.push({ slug: { in: roots } })
         return { and }
       },
     },
@@ -379,6 +509,9 @@ export const Pages: CollectionConfig = {
           // An HOD never sees the school box, so their own school stands in.
           unit ? { unit: { equals: unit } } : { unit: { exists: false } },
         ]
+        // A sports / fine arts teacher files pages under their section only.
+        const roots = mainSiteRootsOf(user as AccessUser | null)
+        if (!unit && roots.length > 0) and.push({ slug: { in: roots } })
         return { and }
       },
     },

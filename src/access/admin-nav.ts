@@ -1,5 +1,5 @@
 import type { AccessUser } from './user'
-import { isAdmin, isHod } from './user'
+import { isAdmin, isHod, isMainSiteOnlyEditor } from './user'
 
 /**
  * Whether a collection is hidden from a user's admin sidebar.
@@ -17,5 +17,6 @@ import { isAdmin, isHod } from './user'
 export const hiddenFromHod = ({ user }: { user: unknown }): boolean => {
   const account = user as AccessUser | null
   if (isAdmin(account)) return false
-  return isHod(account)
+  // A sports / fine arts teacher's account is as narrow as an HOD's.
+  return isHod(account) || isMainSiteOnlyEditor(account)
 }

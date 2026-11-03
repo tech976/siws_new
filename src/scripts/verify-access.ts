@@ -1133,6 +1133,147 @@ const main = async () => {
       },
     })
 
+    /*
+     * Main SIWS website sections (2026-11-03): a sports teacher runs the main
+     * site's Sports pages and nothing else.
+     */
+    const rootPage = async (slug: string) => {
+      const { docs } = await payload.find({
+        collection: 'pages',
+        where: { and: [{ slug: { equals: slug } }, { unit: { exists: false } }] },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      })
+      if (docs[0]) return { id: docs[0].id as number, temporary: false }
+      const made = await payload.create({
+        collection: 'pages',
+        data: { title: `Verify ${slug}`, slug, layout: [] } as never,
+        overrideAccess: true,
+      })
+      return { id: made.id as number, temporary: true }
+    }
+    const sportsRoot = await rootPage('sports')
+    const artsRoot = await rootPage('fine-arts')
+    const sportsTeacher = await makeUser('sports', ['editor'], { editableSections: ['mainSports'] })
+    let sportsChildId: number | null = null
+
+    await check({
+      name: 'A sports teacher can edit and publish the main site’s Sports page',
+      run: async () => {
+        await payload.update({
+          collection: 'pages',
+          id: sportsRoot.id,
+          data: { _status: 'published' } as never,
+          overrideAccess: false,
+          user: sportsTeacher,
+        })
+      },
+    })
+
+    await check({
+      name: 'A sports teacher can add a page, and it is filed under Sports',
+      run: async () => {
+        const page = await payload.create({
+          collection: 'pages',
+          data: { title: 'Verify sports page', slug: `verify-sports-page-${stamp}`, layout: [], _status: 'published' } as never,
+          overrideAccess: false,
+          user: sportsTeacher,
+        })
+        createdPages.push(page.id as number)
+        sportsChildId = page.id as number
+        const parent = (page as { navParent?: unknown }).navParent
+        const parentId = parent && typeof parent === 'object' ? (parent as { id: unknown }).id : parent
+        assert(String(parentId) === String(sportsRoot.id), 'The new page was not filed under Sports.')
+        const unit = (page as { unit?: unknown }).unit
+        assert(unit === null || unit === undefined, 'The new page was put on a school website.')
+      },
+    })
+
+    await check({
+      name: 'A sports teacher CANNOT touch other main-site pages, Fine Arts, or any school',
+      run: async () => {
+        const about = await payload.create({
+          collection: 'pages',
+          data: { title: 'Verify about', slug: `verify-about-${stamp}`, layout: [] } as never,
+          overrideAccess: true,
+        })
+        createdPages.push(about.id as number)
+        const kgPage = await payload.create({
+          collection: 'pages',
+          data: { title: 'Verify KG sports', slug: `verify-kg-sports-${stamp}`, unit: kg.id, layout: [] } as never,
+          overrideAccess: true,
+        })
+        createdPages.push(kgPage.id as number)
+
+        for (const [id, what] of [
+          [about.id, 'another main-site page'],
+          [artsRoot.id, 'the Fine Arts page'],
+          [kgPage.id, 'a Kindergarten page'],
+        ] as const) {
+          await expectRejection(
+            () =>
+              payload.update({
+                collection: 'pages',
+                id,
+                data: { title: 'Changed by a sports teacher' } as never,
+                overrideAccess: false,
+                user: sportsTeacher,
+              }),
+            `a sports teacher edited ${what}`,
+          )
+        }
+        await expectRejection(
+          () =>
+            payload.create({
+              collection: 'pages',
+              data: { title: 'x', slug: `verify-sports-kg-${stamp}`, unit: kg.id, layout: [] } as never,
+              overrideAccess: false,
+              user: sportsTeacher,
+            }),
+          'a sports teacher made a page on a school website',
+        )
+        await expectRejection(
+          () =>
+            payload.create({
+              collection: 'pages',
+              data: { title: 'x', slug: `verify-sports-about-${stamp}`, navParent: about.id, layout: [] } as never,
+              overrideAccess: false,
+              user: sportsTeacher,
+            }),
+          'a sports teacher filed a page outside Sports',
+        )
+      },
+    })
+
+    await check({
+      name: 'A sports teacher CANNOT rename or delete the Sports page, but can delete pages they added',
+      run: async () => {
+        await expectRejection(
+          () =>
+            payload.update({
+              collection: 'pages',
+              id: sportsRoot.id,
+              data: { slug: `verify-renamed-${stamp}` } as never,
+              overrideAccess: false,
+              user: sportsTeacher,
+            }),
+          'a sports teacher changed the address of /sports',
+        )
+        await expectRejection(
+          () => payload.delete({ collection: 'pages', id: sportsRoot.id, overrideAccess: false, user: sportsTeacher }),
+          'a sports teacher deleted the Sports page',
+        )
+        assert(sportsChildId !== null, 'No page was added to delete.')
+        await payload.delete({ collection: 'pages', id: sportsChildId!, overrideAccess: false, user: sportsTeacher })
+        createdPages.splice(createdPages.indexOf(sportsChildId!), 1)
+      },
+    })
+
+    for (const root of [sportsRoot, artsRoot]) {
+      if (root.temporary) createdPages.push(root.id)
+    }
+
     await check({
       name: 'An HOD CANNOT edit faculty records',
       run: () =>

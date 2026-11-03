@@ -5,7 +5,15 @@ import type { CollectionConfig, Condition, Where } from 'payload'
 import { APIError } from 'payload'
 import type { CollectionBeforeChangeHook } from 'payload'
 
-import { ROLES, hasRole, isActiveUser, isAdmin, unitIdsOf, usesSimpleScreen } from '@/access'
+import {
+  ROLES,
+  hasRole,
+  isActiveUser,
+  isAdmin,
+  isMainSiteOnlyEditor,
+  unitIdsOf,
+  usesSimpleScreen,
+} from '@/access'
 import type { AccessUser } from '@/access'
 import { campusField } from '@/fields/campus'
 import { auditChange, auditDelete } from '@/hooks/audit'
@@ -67,6 +75,16 @@ const hodPictures = (user: AccessUser): Where => {
  */
 const keepStaffUploadsInTheirSchool: CollectionBeforeChangeHook = (args) => {
   const { data, originalDoc, operation, req } = args
+  /*
+   * A sports or fine arts teacher (main SIWS website only) has no school, so
+   * their uploads belong to the main site and never to a school's library,
+   * where they would appear in that school's galleries.
+   */
+  if (data && isMainSiteOnlyEditor(req.user as AccessUser | null)) {
+    if (operation === 'create') data.unit = null
+    else if ('unit' in data) data.unit = originalDoc?.unit ?? null
+    return data
+  }
   if (!data || !usesSimpleScreen(req.user as AccessUser | null)) return data
   if (operation === 'update' && 'unit' in data && data.unit == null && originalDoc?.unit) {
     data.unit = originalDoc.unit
@@ -81,6 +99,7 @@ const keepStaffUploadsInTheirSchool: CollectionBeforeChangeHook = (args) => {
  */
 const hideWhenFiledForThem: Condition = (_data, _siblingData, { user }) => {
   const account = user as AccessUser | null
+  if (isMainSiteOnlyEditor(account)) return false
   return !(usesSimpleScreen(account) && unitIdsOf(account).length === 1)
 }
 
@@ -229,6 +248,9 @@ export const Media: CollectionConfig = {
       if (!isActiveUser(user)) return false
 
       if (isHodOnly(user)) return hodPictures(user)
+      // A sports / fine arts teacher edits their own uploads, not the
+      // pictures every school shares.
+      if (isMainSiteOnlyEditor(user)) return { uploadedBy: { equals: user.id } }
 
       const ids = unitIdsOf(user)
       if (!hasRole(user, ROLES.unitHead, ROLES.contentManager, ROLES.editor)) return false

@@ -462,7 +462,7 @@ export interface User {
    */
   units?: (number | Unit)[] | null;
   /**
-   * Restricts an Editor to just these parts of the website. Only applies to Editors.
+   * Restricts an Editor to just these parts of the website. Only applies to Editors. For a sports or fine arts teacher, choose "Main SIWS website: Sports pages" or "…: Fine Arts pages" and leave the school empty.
    */
   editableSections?:
     | (
@@ -482,6 +482,8 @@ export interface User {
         | 'facilities'
         | 'transport'
         | 'popups'
+        | 'mainSports'
+        | 'mainFineArts'
       )[]
     | null;
   /**

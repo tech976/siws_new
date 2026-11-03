@@ -1,4 +1,4 @@
-import { HOD_SECTIONS, ROLES, type Role, type SectionKey } from './roles'
+import { HOD_SECTIONS, MAIN_SITE_SECTIONS, ROLES, type Role, type SectionKey } from './roles'
 
 /**
  * The subset of the authenticated user that access decisions are made from.
@@ -116,6 +116,35 @@ export const canTouchSection = (
   const assigned = user.editableSections
   return Array.isArray(assigned) && assigned.includes(section)
 }
+
+/**
+ * The main SIWS website's sections this person runs (Sports, Fine Arts), as
+ * the addresses of those sections' own pages, e.g. ['sports', 'fencing'].
+ *
+ * Only Editors given a "Main SIWS website" section have any. Administrators
+ * already run the whole main site and are not listed here.
+ */
+export const mainSiteRootsOf = (user: AccessUser | null | undefined): string[] => {
+  if (!isActiveUser(user) || isAdmin(user) || !hasRole(user, ROLES.editor)) return []
+  const assigned = Array.isArray(user.editableSections) ? user.editableSections : []
+  return assigned.flatMap((section) => MAIN_SITE_SECTIONS[section as SectionKey]?.roots ?? [])
+}
+
+/** The main-site sections themselves, e.g. [{ home: 'sports', … }]. */
+export const mainSiteSectionsOf = (user: AccessUser | null | undefined) => {
+  if (!isActiveUser(user) || isAdmin(user) || !hasRole(user, ROLES.editor)) return []
+  const assigned = Array.isArray(user.editableSections) ? user.editableSections : []
+  return assigned
+    .map((section) => MAIN_SITE_SECTIONS[section as SectionKey])
+    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+}
+
+/**
+ * Someone who works only on main-site sections, with no school of their own:
+ * a sports or fine arts teacher's account.
+ */
+export const isMainSiteOnlyEditor = (user: AccessUser | null | undefined): boolean =>
+  mainSiteRootsOf(user).length > 0 && unitIdsOf(user).length === 0
 
 /**
  * SRS 8.2 — "Approve & publish content": Administrator (all units), Unit Head
