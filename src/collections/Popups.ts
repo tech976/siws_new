@@ -10,6 +10,7 @@ import {
   deleteScoped,
   isActiveUser,
   isAdmin,
+  isMainSiteOnlyEditor,
   publishedWhere,
   unitIdsOf,
   updateScoped,
@@ -93,6 +94,9 @@ export const Popups: CollectionConfig = {
       const ids = unitIdsOf(user)
       return ids.length === 0 ? null : { unit: { in: ids } }
     },
+    // Not in a sports / fine arts teacher's menu: popups belong to the schools
+    // and the administrators.
+    hidden: ({ user }) => isMainSiteOnlyEditor(user as unknown as AccessUser | null),
     useAsTitle: 'title',
     defaultColumns: ['title', 'unit', 'showOn', 'delaySeconds', '_status', 'updatedAt'],
     description:

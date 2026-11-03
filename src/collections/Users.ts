@@ -20,7 +20,13 @@ import { auditChange, auditDelete } from '@/hooks/audit'
 const SESSION_SECONDS = 2 * 60 * 60
 
 /** Roles that are meaningless without a unit assignment. */
-const UNIT_SCOPED_ROLES: Role[] = [ROLES.unitHead, ROLES.contentManager, ROLES.editor]
+/*
+ * Roles that work inside one school, so must be given one. The HOD was
+ * missing, which let an HOD account be saved with no school at all (an
+ * account meant for a sports teacher, 2026-11-03): it could change nothing
+ * and was shown every school's published news.
+ */
+const UNIT_SCOPED_ROLES: Role[] = [ROLES.unitHead, ROLES.contentManager, ROLES.editor, ROLES.hod]
 
 /** Roles that may be nominated to raise an emergency notice (BR-USER-03). */
 const EMERGENCY_ELIGIBLE_ROLES: Role[] = [ROLES.unitHead, ROLES.contentManager]

@@ -9,7 +9,7 @@ import {
   updateScoped,
 } from '@/access'
 import { SECTIONS } from '@/access/roles'
-import { isAdmin, type AccessUser } from '@/access/user'
+import { isAdmin, isMainSiteOnlyEditor, type AccessUser } from '@/access/user'
 import { slugField } from '@/fields/slug'
 import { scheduledUnless } from '@/fields/publishing'
 import { constrainUnitToScope } from '@/hooks/workflow'
@@ -60,6 +60,9 @@ export const Posts: CollectionConfig = {
     description:
       'Fill in the steps below, then use the eye icon at the top to see the page beside your writing, or the arrow to open it in a new tab. Nothing is public until you press Publish. To take a published item off the website again, open the ⋮ menu beside the Publish button and choose Unpublish.',
     group: 'Content',
+    // Not in a sports / fine arts teacher's menu: their account runs main-site
+    // pages only, and the schools' news is not theirs (SIWS, 2026-11-03).
+    hidden: ({ user }) => isMainSiteOnlyEditor(user as unknown as AccessUser | null),
 
     /*
      * BR-EDIT-04, and the trustees' own words: the HOD "should be able to
