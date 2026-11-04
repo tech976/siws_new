@@ -582,6 +582,13 @@ export interface Post {
    */
   showOnHome?: boolean | null;
   /**
+   * Untick to keep this item out of the sliding bar. It still appears on your News or Events page.
+   */
+  showInStrip?: boolean | null;
+  stripDuration?: ('lifetime' | 'window') | null;
+  stripFrom?: string | null;
+  stripUntil?: string | null;
+  /**
    * The web address, made from the title. Filled in automatically.
    */
   slug?: string | null;
@@ -3348,6 +3355,10 @@ export interface PostsSelect<T extends boolean = true> {
       };
   unit?: T;
   showOnHome?: T;
+  showInStrip?: T;
+  stripDuration?: T;
+  stripFrom?: T;
+  stripUntil?: T;
   slug?: T;
   publishAt?: T;
   unpublishAt?: T;

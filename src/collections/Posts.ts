@@ -17,6 +17,7 @@ import { ensureUniqueSlugPerUnit } from '@/hooks/unique-slug'
 import { richTextField } from '@/fields/richText'
 import { hideFromHod } from '@/fields/hod-simple'
 import { mainHomepageField } from '@/fields/main-homepage'
+import { newsStripFields, tidyNewsStripDates } from '@/fields/news-strip'
 import { mainHomepageEndpoint } from '@/endpoints/main-homepage'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 import { recordRedirectOnMove } from '@/lib/redirects'
@@ -103,7 +104,7 @@ export const Posts: CollectionConfig = {
 
   hooks: {
     beforeValidate: [ensureUniqueSlugPerUnit('posts')],
-    beforeChange: [constrainUnitToScope],
+    beforeChange: [constrainUnitToScope, tidyNewsStripDates],
     /*
      * News appears in the ticker, on section home pages and on the news
      * listing, none of which is the post's own address — so a teacher who
@@ -310,6 +311,7 @@ export const Posts: CollectionConfig = {
       },
     },
     mainHomepageField('item'),
+    ...newsStripFields,
     /*
      * Built from the title, and shown read-only. The trustees were explicit
      * that an HOD should not be handling addresses; leaving the field visible
