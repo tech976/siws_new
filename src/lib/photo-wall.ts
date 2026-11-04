@@ -168,7 +168,8 @@ const placeRows = (shapes: Shape[], capacity: number): Placement[] => {
        * of a full wall, it came out as small thumbnails in a big empty
        * section, so let it grow to up to half the width tall.
        */
-      span = Math.max(row.sum, Math.min(capacity, SOLO_ROW_SPAN))
+      // On a phone the row simply fills the width.
+      span = capacity <= CAPACITY[0] ? row.sum : Math.max(row.sum, Math.min(capacity, SOLO_ROW_SPAN))
     } else if (index === rows.length - 1) {
       const lift = row.featured ? FEATURE : 1
       const settled = usual / lift
