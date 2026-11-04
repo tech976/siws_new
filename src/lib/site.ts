@@ -1,4 +1,5 @@
 import { headers as nextHeaders } from 'next/headers'
+import { inNewsStripNow } from '@/fields/news-strip'
 import { cache } from 'react'
 
 import config from '@payload-config'
@@ -443,7 +444,13 @@ export const getLatestUpdates = cache(async (unitId: number | null): Promise<Pos
   const payload = await payloadClient()
   const { docs } = await payload.find({
     collection: 'posts',
-    where: unitId === null ? { showOnHome: { equals: true } } : { unit: { equals: unitId } },
+    where: {
+      and: [
+        unitId === null ? { showOnHome: { equals: true } } : { unit: { equals: unitId } },
+        // The "Show in the news strip" switch and its dates on each item.
+        inNewsStripNow(),
+      ],
+    },
     sort: '-date',
     limit: 8,
     depth: 1,
