@@ -75,6 +75,9 @@ const FEATURE = 0.6
  */
 const LAST_ROW_STRETCH = 1.2
 
+/** A wall that is a single row is at most this many "heights" wide. */
+const SOLO_ROW_SPAN = 2
+
 /** Used only for a record with no dimensions at all. */
 const UNKNOWN_RATIO = 3 / 2
 
@@ -159,7 +162,14 @@ const placeRows = (shapes: Shape[], capacity: number): Placement[] => {
   return rows.flatMap((row, index) => {
     let span = row.sum
 
-    if (index === rows.length - 1) {
+    if (rows.length === 1) {
+      /*
+       * A wall of only two or three photographs is one row. Sized like a row
+       * of a full wall, it came out as small thumbnails in a big empty
+       * section, so let it grow to up to half the width tall.
+       */
+      span = Math.max(row.sum, Math.min(capacity, SOLO_ROW_SPAN))
+    } else if (index === rows.length - 1) {
       const lift = row.featured ? FEATURE : 1
       const settled = usual / lift
       const planned = 1 / (capacity * lift)

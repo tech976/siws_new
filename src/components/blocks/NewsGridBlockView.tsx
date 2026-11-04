@@ -7,6 +7,7 @@ import { newestFirst } from '@/lib/newest-first'
 import type { NewsGridBlock, Media as MediaDoc, Unit } from '@/payload-types'
 import { hiddenTwins, sameTitle } from '@/utilities/typed-news'
 
+import { AchievementCards } from './AchievementCards'
 import { Section, SectionHeading, type BlockBackground } from './Section'
 
 /**
@@ -168,7 +169,14 @@ export const NewsGridBlockView = async ({
         .filter((doc) => !seen.has(String(doc.title ?? '').trim().toLowerCase()))
         .map((doc) => {
           const photo = Array.isArray(doc.photos) ? doc.photos[0] : null
+          const unitRef = doc.unit as unknown
+          const unitSlug =
+            unitRef && typeof unitRef === 'object' && 'slug' in unitRef
+              ? String((unitRef as { slug: string }).slug)
+              : null
           return {
+            /** The item's own page. */
+            href: doc.slug ? (unitSlug ? `/${unitSlug}/${doc.slug}` : `/${doc.slug}`) : null,
             id: `post-${doc.id}`,
             /** For placing it among the typed stories; not rendered. */
             at: new Date(doc.date).getTime(),
@@ -205,6 +213,41 @@ export const NewsGridBlockView = async ({
    * follow, and for the same reason.
    */
   const StoryTitle = block.heading && block.headingLevel === 'h3' ? 'h4' : 'h3'
+
+  /*
+   * Achievements are cards of one shape, each opening onto its own page, so a
+   * win published without a photograph gets a trophy panel instead of
+   * appearing as a bare headline.
+   */
+  if (shows === 'achievement') {
+    return (
+      <Section background={block.background as BlockBackground}>
+        <SectionHeading
+          heading={block.heading}
+          accentWord={block.accentWord}
+          level={block.headingLevel}
+          className={block.intro ? 'mb-4' : 'mb-10'}
+        />
+        {block.intro ? (
+          <RichText data={block.intro} className="mb-10 siws-centre mx-auto max-w-3xl" />
+        ) : null}
+        <AchievementCards
+          titleTag={StoryTitle}
+          items={items.map((item) => {
+            const entry = item as typeof item & { href?: string | null }
+            return {
+              id: item.id ?? null,
+              title: item.title,
+              date: item.date ?? null,
+              summary: item.summary ?? null,
+              photo: (item.photo && typeof item.photo === 'object' ? item.photo : null) as MediaDoc | null,
+              href: entry.href ?? null,
+            }
+          })}
+        />
+      </Section>
+    )
+  }
 
   return (
     <Section background={block.background as BlockBackground}>
