@@ -1,4 +1,4 @@
-import type { Field, Payload, PayloadRequest, Where } from 'payload'
+import type { Field, Payload, PayloadRequest } from 'payload'
 
 /**
  * Where a picture appears on the website, and the words shown with it there.
@@ -177,17 +177,17 @@ export const findMediaPlacements = async ({
     collectUploadFields(collection.fields as Field[], 'media', '', found)
     if (found.paths.size === 0) continue
 
-    const where: Where = {
-      or: Array.from(found.paths).map((path) => ({ [path]: { equals: id } })),
-    }
-
+    /*
+     * Every document is read and searched here rather than filtered by a
+     * database query: queries through page sections ("layout.items.photo")
+     * miss rows in some sections, and there are only a few hundred documents.
+     */
     let docs: Record<string, unknown>[] = []
     try {
       const result = await payload.find({
         collection: collection.slug,
-        where,
         depth: 0,
-        limit: 100,
+        pagination: false,
         draft: Boolean(collection.versions && typeof collection.versions === 'object' && collection.versions.drafts),
         overrideAccess: true,
         req,
@@ -218,6 +218,7 @@ export const findMediaPlacements = async ({
     for (const doc of docs) {
       const hits: Hit[] = []
       walk(doc, id, found.names, hits)
+      if (hits.length === 0) continue
       const titleField = collection.admin?.useAsTitle ?? 'title'
       const docTitle = textOf(doc[titleField]) || textOf(doc.title) || `#${String(doc.id)}`
       const unitRef = doc.unit
@@ -228,7 +229,7 @@ export const findMediaPlacements = async ({
             : ''
           : (unitName.get(String(typeof unitRef === 'object' ? (unitRef as { id: unknown }).id : unitRef)) ?? '')
 
-      for (const hit of hits.length > 0 ? hits : [{ holder: doc, block: null, sectionNumber: null, rowNumber: null }]) {
+      for (const hit of hits) {
         const texts = Object.entries(TEXT_LABELS)
           .map(([key, label]) => ({ label, value: textOf(hit.holder[key]) }))
           .filter((t) => t.value)
