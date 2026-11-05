@@ -21,6 +21,7 @@ import { constrainUnitToScope } from '@/hooks/workflow'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 import { IMAGE_AND_DOCUMENT_TYPES, validateFileContent } from '@/utilities/file-signature'
 import { describeMediaUsage, removeFromPictureLists } from '@/utilities/media-usage'
+import { findMediaPlacements } from '@/utilities/media-placements'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -280,6 +281,26 @@ export const Media: CollectionConfig = {
     },
   },
 
+  /*
+   * "Where is this picture on the website, and what does it say there?" — for
+   * the panel at the top of a media item. See `media-placements.ts`.
+   */
+  endpoints: [
+    {
+      path: '/:id/placements',
+      method: 'get',
+      handler: async (req) => {
+        if (!req.user) return Response.json({ error: 'Sign in first.' }, { status: 401 })
+        const id = req.routeParams?.id
+        if (typeof id !== 'string' && typeof id !== 'number') {
+          return Response.json({ error: 'No picture given.' }, { status: 400 })
+        }
+        const placements = await findMediaPlacements({ payload: req.payload, req, id })
+        return Response.json({ placements })
+      },
+    },
+  ],
+
   hooks: {
     beforeOperation: [
       /**
@@ -401,6 +422,13 @@ export const Media: CollectionConfig = {
   },
 
   fields: [
+    {
+      name: 'wherePlaced',
+      type: 'ui',
+      admin: {
+        components: { Field: '@/components/admin/MediaPlacements#MediaPlacements' },
+      },
+    },
     {
       name: 'alt',
       type: 'text',

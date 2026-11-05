@@ -1,4 +1,4 @@
-import type { Block } from 'payload'
+import type { Block, Field } from 'payload'
 
 import { AccordionBlock } from './AccordionBlock'
 import { AchievementWallBlock } from './AchievementWallBlock'
@@ -44,7 +44,34 @@ import { TestimonialsBlock } from './TestimonialsBlock'
  * Ordered roughly by how often a content manager reaches for each one, since
  * this is the order they appear in the "add section" menu.
  */
-export const contentBlocks: Block[] = [
+/**
+ * Gives every list inside a section rows named by their own words ("Andhra
+ * Education Society — One prize") instead of "Item 01". A list that already
+ * has its own row label keeps it.
+ */
+const labelRows = (fields: Field[]): void => {
+  for (const field of fields) {
+    if (field.type === 'array') {
+      field.admin = field.admin ?? {}
+      field.admin.components = field.admin.components ?? {}
+      if (!field.admin.components.RowLabel) {
+        field.admin.components.RowLabel = '@/components/admin/ItemRowLabel#ItemRowLabel'
+      }
+      labelRows(field.fields)
+    } else if (field.type === 'tabs') {
+      for (const tab of field.tabs) labelRows(tab.fields)
+    } else if ('fields' in field && Array.isArray(field.fields)) {
+      labelRows(field.fields as Field[])
+    }
+  }
+}
+
+const withRowLabels = (blocks: Block[]): Block[] => {
+  for (const block of blocks) labelRows(block.fields)
+  return blocks
+}
+
+export const contentBlocks: Block[] = withRowLabels([
   HeroBlock,
   HeroCarouselBlock,
   HeroMarqueeBlock,
@@ -78,7 +105,7 @@ export const contentBlocks: Block[] = [
   FeedbackBlock,
   CookieInventoryBlock,
   DpoContactBlock,
-]
+])
 
 export {
   AccordionBlock,
