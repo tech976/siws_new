@@ -80,6 +80,15 @@ const toneOf = (background: unknown): Tone =>
 const asMedia = (value: unknown): MediaDoc | null =>
   value && typeof value === 'object' && 'url' in value ? (value as MediaDoc) : null
 
+/**
+ * The handwritten note beside a section's heading. It is the section's "Block
+ * name" in the admin panel when one is set, so the words can follow the
+ * photographs (the banner's note said "KG to Junior College" long after its
+ * pictures stopped being one from each school).
+ */
+const noteOf = (block: { blockName?: string | null } | null, fallback: string) =>
+  block?.blockName?.trim() || fallback
+
 /** "Primary · On stage" → { label: "Primary", text: "On stage" }. */
 const splitCaption = (caption?: string | null): { label?: string; text?: string } => {
   const value = caption?.trim()
@@ -326,7 +335,7 @@ const Hero = ({ block, collage }: { block: Of<'hero'>; collage: Of<'gallery'> | 
               <span className="fa-collage__note hidden sm:inline-flex" aria-hidden="true">
                 <span className="fa-note">
                   <Squiggle flip />
-                  KG to Junior College
+                  {noteOf(collage, 'KG to Junior College')}
                 </span>
               </span>
             ) : null}
@@ -953,7 +962,7 @@ const Feature = ({ block }: { block: Of<'gallery'> }) => {
 
         <div className="lg:col-span-5" data-reveal style={delay(1)}>
           <span className="fa-note" aria-hidden="true">
-            Featured moment
+            {noteOf(block, 'Featured moment')}
             <Squiggle />
           </span>
           <Heading heading={block.heading} accent={block.accentWord} className="mt-3 !text-white" />
@@ -1082,7 +1091,7 @@ const Wall = ({ block }: { block: Of<'gallery'> }) => {
       <div className="mb-12 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end" data-reveal>
         <div>
           <span className="fa-note mb-3" aria-hidden="true">
-            From all four schools
+            {noteOf(block, 'From all four schools')}
             <Squiggle />
           </span>
           <Heading heading={block.heading} accent={block.accentWord} />
