@@ -19,6 +19,7 @@ import { OrderedListFeatureClient as OrderedListFeatureClient_e70f5e05f09f93e00b
 import { ChecklistFeatureClient as ChecklistFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { LinkFeatureClient as LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { RelationshipFeatureClient as RelationshipFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { AddManyPhotos as AddManyPhotos_7999caead9a6d9608e145de2e32e3bcb } from '@/components/admin/AddManyPhotos'
 import { MainHomepageCell as MainHomepageCell_6220165273e634b89c947c0c2793a374 } from '@/components/admin/MainHomepageCell'
 import { ItemRowLabel as ItemRowLabel_7f17f271d9ba74a0b6c80024ff7c5858 } from '@/components/admin/ItemRowLabel'
 import { SectionLabel as SectionLabel_2867838a5bd2bea20d36a7ab26d60171 } from '@/components/admin/SectionLabel'
@@ -70,6 +71,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ChecklistFeatureClient": ChecklistFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#LinkFeatureClient": LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#RelationshipFeatureClient": RelationshipFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/components/admin/AddManyPhotos#AddManyPhotos": AddManyPhotos_7999caead9a6d9608e145de2e32e3bcb,
   "@/components/admin/MainHomepageCell#MainHomepageCell": MainHomepageCell_6220165273e634b89c947c0c2793a374,
   "@/components/admin/ItemRowLabel#ItemRowLabel": ItemRowLabel_7f17f271d9ba74a0b6c80024ff7c5858,
   "@/components/admin/SectionLabel#SectionLabel": SectionLabel_2867838a5bd2bea20d36a7ab26d60171,

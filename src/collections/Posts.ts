@@ -21,6 +21,7 @@ import { newsStripFields, tidyNewsStripDates } from '@/fields/news-strip'
 import { mainHomepageEndpoint } from '@/endpoints/main-homepage'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
 import { recordRedirectOnMove } from '@/lib/redirects'
+import { nameNewsPhotos } from '@/hooks/name-news-photos'
 import { removeTypedTwins } from '@/utilities/typed-news'
 
 /**
@@ -112,7 +113,7 @@ export const Posts: CollectionConfig = {
      * the whole tree is what every other rendered collection does, for the
      * same reason.
      */
-    afterChange: [recordRedirectOnMove, revalidateAfterChange],
+    afterChange: [recordRedirectOnMove, nameNewsPhotos, revalidateAfterChange],
     afterDelete: [
       /*
        * A deleted story is deleted from the page as well. Some stories are on
@@ -249,6 +250,15 @@ export const Posts: CollectionConfig = {
           'Only if you want to say more. A photo album often needs nothing here at all.',
       },
     }),
+    /*
+     * "Add many photos at once": a drop box that uploads every file chosen and
+     * adds them to the photographs below. See the component.
+     */
+    {
+      name: 'addPhotos',
+      type: 'ui',
+      admin: { components: { Field: '@/components/admin/AddManyPhotos#AddManyPhotos' } },
+    },
     {
       name: 'photos',
       type: 'upload',
@@ -257,7 +267,7 @@ export const Posts: CollectionConfig = {
       label: 'Step 7 — Photographs',
       admin: {
         description:
-          'Drag them in, as many as you like. Each one needs a line saying what is in it — that line is what a blind visitor hears instead of the picture.',
+          'Use the box above to add many photos at once. All of them are shown on this item’s page; lists show the first one with a “See all photos” link.',
       },
     },
     {

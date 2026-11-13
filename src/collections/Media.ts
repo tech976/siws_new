@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url'
 
 import type { CollectionConfig, Condition, Where } from 'payload'
 import { APIError } from 'payload'
-import type { CollectionBeforeChangeHook } from 'payload'
+import type { CollectionBeforeChangeHook, CollectionBeforeValidateHook } from 'payload'
 
 import {
   ROLES,
@@ -22,6 +22,7 @@ import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate
 import { IMAGE_AND_DOCUMENT_TYPES, validateFileContent } from '@/utilities/file-signature'
 import { describeMediaUsage, removeFromPictureLists } from '@/utilities/media-usage'
 import { findMediaPlacements } from '@/utilities/media-placements'
+import { AUTO_ALT } from '@/lib/media-alt'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -116,6 +117,22 @@ const MAX_PDF_BYTES = 25 * 1024 * 1024 // 25 MB
  * `protected-media`, which is access-restricted and non-addressable
  * (BR-MED-06, FR-CAR-07).
  */
+/**
+ * The description every picture needs, written for the teacher when they
+ * leave it empty — typing one per photo was what made uploading twenty
+ * photographs at once so slow. Photos added to a News & Events item are then
+ * renamed from its title (see `nameNewsPhotos` in Posts).
+ */
+
+const fillMissingAlt: CollectionBeforeValidateHook = ({ data, originalDoc }) => {
+  if (!data) return data
+  const current = typeof data.alt === 'string' ? data.alt.trim() : undefined
+  if (current) return data
+  if (current === undefined && originalDoc?.alt) return data
+  data.alt = AUTO_ALT
+  return data
+}
+
 /**
  * A picture that is THE picture of something (a banner, a card, a school's
  * logo) cannot go to the Trash while it is used — the page would be left with
@@ -367,6 +384,8 @@ export const Media: CollectionConfig = {
       },
     ],
 
+    beforeValidate: [fillMissingAlt],
+
     beforeChange: [
       refuseTrashWhileInUse,
       keepStaffUploadsInTheirSchool,
@@ -467,17 +486,16 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
+      // The column stays NOT NULL; an empty box is filled in on save (see
+      // `fillMissingAlt`), so `validate` below lets it through.
       required: true,
-      label: 'Describe this image',
+      label: 'Describe this image (optional)',
       admin: {
         description:
-          'What does the picture show? This is read aloud to visitors who cannot see it. If the image is just decoration, type a hyphen ( - ).',
+          'What does the picture show? This is read aloud to visitors who cannot see it. Leave it empty and it is filled in for you — from the news title when the photo is added to News & Events.',
       },
       validate: (value: unknown) => {
-        if (typeof value !== 'string' || value.trim().length === 0) {
-          return 'Please describe the image, or type a hyphen if it is just decoration.'
-        }
-        if (value.trim().length > 250) {
+        if (typeof value === 'string' && value.trim().length > 250) {
           return 'Please keep the description under 250 characters.'
         }
         return true
