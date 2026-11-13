@@ -11,7 +11,7 @@ import {
 import { SECTIONS } from '@/access/roles'
 import { isAdmin, isMainSiteOnlyEditor, type AccessUser } from '@/access/user'
 import { slugField } from '@/fields/slug'
-import { scheduledUnless } from '@/fields/publishing'
+import { timerBox } from '@/fields/publishing'
 import { constrainUnitToScope } from '@/hooks/workflow'
 import { ensureUniqueSlugPerUnit } from '@/hooks/unique-slug'
 import { richTextField } from '@/fields/richText'
@@ -333,7 +333,9 @@ export const Posts: CollectionConfig = {
      * genuinely confusing pair of fields to meet when all you wanted was to put
      * up yesterday's sports day. They press Publish; the office schedules.
      */
-    ...scheduledUnless(hideFromHod),
+    // Teachers set their own timer (SIWS, 2026-11-13: "from which time to which
+    // time the news or event should be live").
+    timerBox('news or event'),
   ],
 }
 

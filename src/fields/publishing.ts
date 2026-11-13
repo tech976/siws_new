@@ -149,3 +149,44 @@ export const schedulingFields: Field[] = [
     },
   },
 ]
+
+/**
+ * The same two dates as a "Timer" box any author can see — for News & Events,
+ * where teachers asked to choose when an item goes live and when it comes
+ * down. The columns are unchanged (`publishAt`, `unpublishAt`); a collapsible
+ * adds no database path.
+ *
+ * Going live is enforced when the site reads (`publishedWhere`), to the
+ * minute. Coming down is enforced the same way, and the item is also switched
+ * back to Draft by `unpublish-expired.ts`, so the list shows the truth.
+ */
+export const timerBox = (what = 'item'): Field => ({
+  type: 'collapsible',
+  label: 'Timer (optional) — when it is live',
+  admin: {
+    position: 'sidebar',
+    initCollapsed: false,
+    description: `Leave both empty to keep it live from when you press Publish until you remove it.`,
+  },
+  fields: schedulingFields.map((field) => {
+    if (field.type !== 'date') return field
+    if (field.name === 'publishAt') {
+      return {
+        ...field,
+        label: 'Go live on',
+        admin: {
+          ...field.admin,
+          description: `Optional. Press Publish now; the ${what} appears on the website at this date and time.`,
+        },
+      }
+    }
+    return {
+      ...field,
+      label: 'Take it off on',
+      admin: {
+        ...field.admin,
+        description: `Optional. At this date and time the ${what} comes off the website by itself and goes back to Draft. Nothing is deleted.`,
+      },
+    }
+  }),
+})

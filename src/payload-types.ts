@@ -387,6 +387,7 @@ export interface Media {
   uploadedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
   url?: string | null;
   thumbnailURL?: string | null;
   filename?: string | null;
@@ -593,11 +594,11 @@ export interface Post {
    */
   slug?: string | null;
   /**
-   * Optional. Keeps this hidden until the date and time you choose, even after you publish it.
+   * Optional. Press Publish now; the news or event appears on the website at this date and time.
    */
   publishAt?: string | null;
   /**
-   * Optional. Takes this off the website automatically — useful for a notice that expires.
+   * Optional. At this date and time the news or event comes off the website by itself and goes back to Draft. Nothing is deleted.
    */
   unpublishAt?: string | null;
   updatedAt: string;
@@ -4354,6 +4355,7 @@ export interface MediaSelect<T extends boolean = true> {
   uploadedBy?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
   url?: T;
   thumbnailURL?: T;
   filename?: T;

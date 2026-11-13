@@ -116,9 +116,33 @@ const MAX_PDF_BYTES = 25 * 1024 * 1024 // 25 MB
  * `protected-media`, which is access-restricted and non-addressable
  * (BR-MED-06, FR-CAR-07).
  */
+/**
+ * A picture that is THE picture of something (a banner, a card, a school's
+ * logo) cannot go to the Trash while it is used — the page would be left with
+ * a hole. The same rule a permanent delete has always had. Photos in a gallery
+ * list are fine: the gallery simply skips a binned photo, and it comes back
+ * when the photo is restored.
+ */
+const refuseTrashWhileInUse: CollectionBeforeChangeHook = async ({ data, originalDoc, req, operation }) => {
+  if (operation !== 'update') return data
+  const trashing = Boolean(data?.deletedAt) && !originalDoc?.deletedAt
+  if (!trashing || !originalDoc?.id) return data
+  const usage = await describeMediaUsage({ payload: req.payload, collection: 'media', id: originalDoc.id })
+  if (usage.total > 0) {
+    throw new APIError(
+      `This picture is still used in ${usage.total} place${usage.total === 1 ? '' : 's'}: ${usage.summary}. Remove it there first, then move it to the Trash.`,
+      409,
+    )
+  }
+  return data
+}
+
 export const Media: CollectionConfig = {
   slug: 'media',
   labels: { singular: 'Media item', plural: 'Media library' },
+
+  // Deleting moves a picture to the Trash (a recycle bin); see `access.delete`.
+  trash: true,
 
   admin: {
     group: 'Content',
@@ -263,9 +287,19 @@ export const Media: CollectionConfig = {
       return { or: clauses }
     },
 
-    delete: ({ req }) => {
+    /*
+     * RECYCLE BIN (SIWS, 2026-11-13: "the image even if deleted… should not be
+     * deleted from backend"). With `trash: true` below, "Delete" moves a
+     * picture to the Trash, where the file stays on the server and anyone who
+     * could delete it can restore it. Payload marks that move with
+     * `data.deletedAt`; any delete WITHOUT it is the permanent kind, emptying
+     * the Trash, and only an administrator may do that.
+     */
+    delete: ({ req, data }) => {
       const user = req.user as AccessUser | null
       if (isAdmin(user)) return true
+      const movingToTrash = Boolean((data as { deletedAt?: unknown } | undefined)?.deletedAt)
+      if (!movingToTrash) return false
       if (hasRole(user, ROLES.unitHead, ROLES.contentManager)) {
         const ids = unitIdsOf(user)
         return ids.length > 0 ? { unit: { in: ids } } : false
@@ -334,6 +368,7 @@ export const Media: CollectionConfig = {
     ],
 
     beforeChange: [
+      refuseTrashWhileInUse,
       keepStaffUploadsInTheirSchool,
       ({ data, operation, req }) => {
         if (operation === 'create' && req.user) {
