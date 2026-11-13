@@ -185,11 +185,13 @@ const SECTION_LINKS: Record<string, { label: string; heading: string }[]> = {
    *
    * "Visual Arts & Crafts" is gone: school arts and craft moved to the
    * Primary School's own "Arts and Craft (Creative)" page (SIWS, 2026-11-13).
+   * The gallery wall became performance photographs the same day, so its
+   * link follows its new heading.
    */
   'fine-arts': [
     { label: 'Music & Dance', heading: 'Music & Dance' },
     { label: 'Cultural Activities & Events', heading: 'The Centre’s year' },
-    { label: 'Student Artwork Gallery', heading: 'Student art gallery' },
+    { label: 'Performance Gallery', heading: 'On stage: dance and music' },
   ],
 }
 
