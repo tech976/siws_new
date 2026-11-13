@@ -179,13 +179,14 @@ const SECTION_LINKS: Record<string, { label: string; heading: string }[]> = {
   ],
   /*
    * The Fine Arts page has no section by each of these names, so each opens
-   * the one that holds it: painting, clay, paper and rangoli are "Creativity
-   * at every age"; music and dance are the panel of that name inside "What
-   * we teach" (each panel carries its own id); the Centre's occasions, from
-   * Independence Day to Convocation Day, are "The Centre's year".
+   * the one that holds it: music and dance are the panel of that name inside
+   * "What we teach" (each panel carries its own id); the Centre's occasions,
+   * from Independence Day to Convocation Day, are "The Centre's year".
+   *
+   * "Visual Arts & Crafts" is gone: school arts and craft moved to the
+   * Primary School's own "Arts and Craft (Creative)" page (SIWS, 2026-11-13).
    */
   'fine-arts': [
-    { label: 'Visual Arts & Crafts', heading: 'Creativity at every age' },
     { label: 'Music & Dance', heading: 'Music & Dance' },
     { label: 'Cultural Activities & Events', heading: 'The Centre’s year' },
     { label: 'Student Artwork Gallery', heading: 'Student art gallery' },
