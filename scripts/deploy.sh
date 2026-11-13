@@ -45,21 +45,38 @@ if echo "$CHANGED" | grep -qE '^(package\.json|package-lock\.json)$'; then
   npm ci
 fi
 
+# DATABASE FIRST. New code that reads a column the database does not have yet
+# takes every page down (2026-11-04). So when the collections change, back up
+# the database and add the new tables/columns before building. Additive
+# changes only: anything that would delete data stops the deploy here, and
+# the site keeps running the previous build.
+if echo "$CHANGED" | grep -qE '^(src/collections/|src/blocks/|src/fields/|src/globals/|src/payload\.config\.ts)'; then
+  echo "==> Collections changed: backing up the database"
+  set -a; . ./.env; set +a
+  BACKUP="$HOME/backup-before-$(date +%Y%m%d-%H%M%S)-${AFTER:0:7}.sql.gz"
+  pg_dump "$DATABASE_URI" | gzip > "$BACKUP"
+  echo "    saved $BACKUP"
+  # Keep the newest 15 automatic backups.
+  ls -1t "$HOME"/backup-before-2*.sql.gz 2>/dev/null | tail -n +16 | xargs -r rm -f
+
+  echo "==> Updating the database tables"
+  SYNC_LOG=$(NODE_ENV=development PAYLOAD_ALLOW_SCHEMA_PUSH=true SIWS_NO_TIMERS=true     timeout 300 npx tsx src/scripts/schema-sync.ts 2>&1 || true)
+  echo "$SYNC_LOG" | grep -v "Pulling schema" | tail -15
+  if ! echo "$SYNC_LOG" | grep -q "SCHEMA-SYNC-OK"; then
+    echo "!! The database could not be updated automatically (the change may"
+    echo "!! delete data). Stopping before the build: the site keeps running"
+    echo "!! the previous version. Backup: $BACKUP"
+    git reset --hard "$BEFORE"
+    exit 1
+  fi
+fi
+
 echo "==> Building"
 npm run build
 
 echo "==> Restarting $PM2_NAME"
 pm2 restart "$PM2_NAME" --update-env
 
-# A build does not change the database. Collections and blocks describe the
-# schema, and seeds describe content, so flag them loudly.
-if echo "$CHANGED" | grep -qE '^(src/collections/|src/blocks/|src/migrations/|payload\.config\.ts)'; then
-  echo ""
-  echo "!! WARNING: this push changed collections/blocks (the database schema)."
-  echo "!! Production does not update the schema by itself. Follow"
-  echo "!! 'Adding tables' in docs/DEPLOYMENT.md, or pages using the new"
-  echo "!! fields will error."
-fi
 if echo "$CHANGED" | grep -qE '^src/seed/'; then
   echo ""
   echo "!! NOTE: seed scripts changed. The live database still has the old"
