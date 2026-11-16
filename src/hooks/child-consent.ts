@@ -5,79 +5,45 @@ import type { Media } from '@/payload-types'
 import { collectUploadIds } from '@/utilities/collect-uploads'
 
 /**
- * FR-SW-03 / FR-PRV-11 — "content without a recorded consent shall not be
- * publishable", and the platform "shall block publication where no consent is
- * recorded".
+ * Stops a page, news item or popup from being published with a photograph that
+ * was WITHDRAWN at a parent's request — so a picture taken down cannot quietly
+ * return on the next unrelated edit.
  *
- * The check runs on the transition into `published` only. Saving a draft that
- * uses a photograph still awaiting its permission record is deliberately
- * allowed: staff need to be able to build the page while the office chases the
- * paperwork. What they cannot do is put it in front of the public.
- *
- * It also blocks re-publishing a page whose photograph has since been withdrawn
- * (FR-SW-05), which is the case that matters most in practice — a parent asks
- * for a picture to come down, and the page must not quietly restore it on the
- * next unrelated edit.
+ * A missing parental-permission record does NOT block anything. The school's
+ * rule (2026-11-16): a photograph uploaded by a teacher already has the
+ * parents' permission, so publishing and the galleries never wait on the
+ * permission record. Withdrawing a picture is the one deliberate "take it
+ * down" control, and that is what this enforces.
  */
 export const blockUnconsentedChildImages: CollectionBeforeChangeHook = async ({
   data,
-  originalDoc,
   req,
   collection,
 }) => {
-  const nextStatus = (data as { _status?: string })?._status
-  const previousStatus = (originalDoc as { _status?: string } | undefined)?._status
-
-  // Only guard the moment content becomes, or stays, public.
-  if (nextStatus !== 'published') return data
+  if ((data as { _status?: string })?._status !== 'published') return data
 
   const mediaIds = collectUploadIds(collection.fields, data, 'media')
   if (mediaIds.length === 0) return data
 
   const { docs } = await req.payload.find({
     collection: 'media',
-    where: { id: { in: mediaIds } },
+    where: { and: [{ id: { in: mediaIds } }, { 'withdrawn.isWithdrawn': { equals: true } }] },
     limit: mediaIds.length,
     depth: 0,
     overrideAccess: true,
   })
 
-  const problems: string[] = []
-
-  for (const media of docs as Media[]) {
-    if (media.depictsChildren !== true) continue
-
-    const name = media.filename || media.alt || `media #${media.id}`
-
-    if (media.withdrawn?.isWithdrawn === true) {
-      problems.push(`“${name}” has been withdrawn at a parent’s request`)
-      continue
-    }
-
-    if (media.parentalConsent?.obtained !== true) {
-      problems.push(`“${name}” has no parental permission recorded`)
-    }
-  }
-
-  if (problems.length > 0) {
+  if (docs.length > 0) {
+    const what = collection.slug === 'posts' ? 'news item' : collection.slug === 'popups' ? 'popup' : 'page'
     throw new APIError(
       [
-        `This ${collection.slug === 'posts' ? 'news item' : collection.slug === 'popups' ? 'popup' : 'page'} cannot be published yet, because it shows students whose parental permission is not recorded:`,
+        `This ${what} cannot be published, because it uses a picture that was taken down at a parent’s request:`,
         '',
-        ...problems.map((problem) => `• ${problem}`),
+        ...(docs as Media[]).map((media) => `• “${media.filename || media.alt || `media #${media.id}`}”`),
         '',
-        'Open each picture in the Media library, tick “Written parental permission has been obtained” and fill in how and when it was given. Then publish again.',
-      ].join('\n'),
-      // 422: the request is well-formed but cannot be acted on in this state.
+        'Remove that picture from this item, then publish again.',
+      ].join(String.fromCharCode(10)),
       422,
-    )
-  }
-
-  // Publishing was previously blocked and is now allowed — worth a log line, so
-  // the audit trail shows when the content actually went live.
-  if (previousStatus !== 'published') {
-    req.payload.logger.info(
-      `Published ${collection.slug} with ${mediaIds.length} media item(s); child-image consent checks passed.`,
     )
   }
 

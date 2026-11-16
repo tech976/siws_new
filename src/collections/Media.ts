@@ -154,42 +154,6 @@ const refuseTrashWhileInUse: CollectionBeforeChangeHook = async ({ data, origina
   return data
 }
 
-/**
- * Ticking "Students are recognisable" on a picture that is already on the
- * website, with no permission recorded, used to save without a word — and the
- * picture stayed on those pages, because only publishing checks permission
- * (found in testing, 2026-11-16). Now the save is refused and the pages are
- * named, so the permission is recorded at the same time or the picture is
- * taken off them first. Withdrawing a picture is a separate control and is
- * never blocked.
- */
-const refuseUnclearedWhileInUse: CollectionBeforeChangeHook = async ({ data, originalDoc, req, operation }) => {
-  if (operation !== 'update' || !originalDoc?.id) return data
-  const merged = {
-    depictsChildren: data?.depictsChildren ?? originalDoc.depictsChildren,
-    obtained: data?.parentalConsent?.obtained ?? originalDoc.parentalConsent?.obtained,
-  }
-  const blockedNow = merged.depictsChildren === true && merged.obtained !== true
-  const blockedBefore = originalDoc.depictsChildren === true && originalDoc.parentalConsent?.obtained !== true
-  if (!blockedNow || blockedBefore) return data
-
-  const places = await findMediaPlacements({ payload: req.payload, req, id: originalDoc.id })
-  if (places.length === 0) return data
-  const names = Array.from(
-    new Set(places.map((place) => `${place.school ? `${place.school} › ` : ''}${place.docTitle}`)),
-  )
-  throw new APIError(
-    [
-      'This picture is already on the website, so it cannot be marked as showing recognisable students without a parental permission record.',
-      '',
-      `It is used on: ${names.slice(0, 8).join('; ')}${names.length > 8 ? ` and ${names.length - 8} more` : ''}.`,
-      '',
-      'Either tick “Written parental permission has been obtained” and fill in the details in the same save, or remove the picture from those pages first. To take it down at a parent’s request, use “Withdraw this picture from public display” instead.',
-    ].join(String.fromCharCode(10)),
-    422,
-  )
-}
-
 export const Media: CollectionConfig = {
   slug: 'media',
   labels: { singular: 'Media item', plural: 'Media library' },
@@ -424,7 +388,6 @@ export const Media: CollectionConfig = {
 
     beforeChange: [
       refuseTrashWhileInUse,
-      refuseUnclearedWhileInUse,
       keepStaffUploadsInTheirSchool,
       ({ data, operation, req }) => {
         if (operation === 'create' && req.user) {
@@ -659,7 +622,7 @@ export const Media: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description:
-          'Tick this if a student can be identified. A parental permission record is then required before this picture can go on the website.',
+          'Optional. Tick this if a student can be identified, to keep a note of the parental permission. It never stops the picture going on the website.',
       },
     },
 
@@ -692,7 +655,7 @@ export const Media: CollectionConfig = {
       admin: {
         position: 'sidebar',
         condition: (data) => Boolean(data?.depictsChildren),
-        description: 'Required before a picture of an identifiable student can be published.',
+        description: 'Optional record of the permission. Photos uploaded by teachers are treated as having permission, so this never blocks publishing.',
       },
       fields: [
         {
