@@ -81,13 +81,14 @@ const asMedia = (value: unknown): MediaDoc | null =>
   value && typeof value === 'object' && 'url' in value ? (value as MediaDoc) : null
 
 /**
- * The handwritten note beside a section's heading. It is the section's "Block
- * name" in the admin panel when one is set, so the words can follow the
+ * The handwritten note beside a section's heading. It is the section's
+ * "Handwritten note" field in the admin panel when one is set (older sections
+ * may still carry it as their hidden block name), so the words can follow the
  * photographs (the banner's note said "KG to Junior College" long after its
  * pictures stopped being one from each school).
  */
-const noteOf = (block: { blockName?: string | null } | null, fallback: string) =>
-  block?.blockName?.trim() || fallback
+const noteOf = (block: { note?: string | null; blockName?: string | null } | null, fallback: string) =>
+  block?.note?.trim() || block?.blockName?.trim() || fallback
 
 /** "Primary · On stage" → { label: "Primary", text: "On stage" }. */
 const splitCaption = (caption?: string | null): { label?: string; text?: string } => {

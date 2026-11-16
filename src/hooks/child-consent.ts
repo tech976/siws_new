@@ -62,7 +62,7 @@ export const blockUnconsentedChildImages: CollectionBeforeChangeHook = async ({
   if (problems.length > 0) {
     throw new APIError(
       [
-        'This page cannot be published yet, because it shows students whose parental permission is not recorded:',
+        `This ${collection.slug === 'posts' ? 'news item' : collection.slug === 'popups' ? 'popup' : 'page'} cannot be published yet, because it shows students whose parental permission is not recorded:`,
         '',
         ...problems.map((problem) => `• ${problem}`),
         '',

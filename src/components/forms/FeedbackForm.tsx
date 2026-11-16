@@ -3,6 +3,8 @@
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 
+import { useFormResult } from './use-form-result'
+
 import { submitFeedback } from '@/app/(frontend)/actions/feedback'
 import { FEEDBACK_NOTICE, type ConsentNotice } from '@/lib/consent-notices'
 import { FEEDBACK_RELATIONSHIPS, FEEDBACK_SUBJECTS } from '@/lib/feedback-options'
@@ -50,6 +52,7 @@ const SubmitButton = () => {
 
 export const FeedbackForm = ({ unitId, formToken, privacyHref, notice = FEEDBACK_NOTICE }: FeedbackFormProps) => {
   const [state, formAction] = useActionState(submitFeedback, idleFormState)
+  const { token, resultId } = useFormResult(formToken, state)
 
   const fieldError = (name: string) => state.errors?.[name]
   const previous = (name: string) => state.values?.[name] ?? ''
@@ -70,7 +73,7 @@ export const FeedbackForm = ({ unitId, formToken, privacyHref, notice = FEEDBACK
         className="rounded-2xl border border-line bg-sea-soft p-6 text-center"
         // `alert` announces immediately, which is right for a confirmation the
         // visitor is waiting on.
-        role="alert"
+        role="alert" id={resultId}
       >
         <p className="text-lg font-semibold text-brand">Thank you</p>
         <p className="mt-2 text-sm text-ink-soft">{state.message}</p>
@@ -81,13 +84,13 @@ export const FeedbackForm = ({ unitId, formToken, privacyHref, notice = FEEDBACK
   return (
     <form action={formAction} noValidate className="grid gap-5">
       <input type="hidden" name="unitId" value={String(unitId)} />
-      <input type="hidden" name="formToken" value={formToken} />
+      <input type="hidden" name="formToken" value={token} />
 
       <Honeypot name={HONEYPOT_FIELD} idPrefix="feedback-" />
 
       {state.status === 'error' && state.message ? (
         <p
-          role="alert"
+          role="alert" id={resultId}
           className="rounded-2xl bg-[#ffe8ea] px-5 py-3.5 t-small font-medium text-[#b02330]"
         >
           {state.message}

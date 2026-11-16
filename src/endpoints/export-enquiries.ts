@@ -30,7 +30,14 @@ const CSV_NOTICE =
 /** RFC 4180 quoting. Excel additionally needs the BOM added at the top level. */
 const cell = (value: unknown): string => {
   if (value === null || value === undefined) return ''
-  const text = String(value)
+  /*
+   * A cell a parent typed starting with = + - @ (or a tab / carriage return)
+   * is run as a FORMULA by Excel when the office opens the export, e.g.
+   * =HYPERLINK(...) (found in testing, 2026-11-16). A leading apostrophe
+   * makes the spreadsheet show it as plain text.
+   */
+  const raw = String(value)
+  const text = /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw
   return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text
 }
 

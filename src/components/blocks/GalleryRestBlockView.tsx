@@ -1,4 +1,5 @@
 import config from '@payload-config'
+import { excludeUncleared } from '@/lib/uncleared-media'
 import type { Media as MediaDoc, Unit } from '@/payload-types'
 import { getPayload } from 'payload'
 import type { Where } from 'payload'
@@ -41,6 +42,8 @@ export const GalleryRestBlockView = async ({
         and: [
           { showInGallery: { equals: true } },
           { category: { exists: true } },
+          // Never a student photograph still waiting for parental permission.
+          ...(await excludeUncleared(payload)),
           // A photograph with no school is shared by all four.
           unit
             ? ({ or: [{ unit: { equals: unit.id } }, { unit: { exists: false } }] } as Where)

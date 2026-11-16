@@ -1,8 +1,9 @@
 import type { CollectionConfig } from 'payload'
 
+import { blockUnconsentedChildImages } from '@/hooks/child-consent'
 import type { Post } from '@/payload-types'
 
-import {
+import { readVersionsLike,
   createScoped,
   deleteOwnWriting,
   readPublishedOrScoped,
@@ -47,6 +48,7 @@ export const Posts: CollectionConfig = {
     read: readPublishedOrScoped,
     create: createScoped(SECTIONS.events),
     update: updateScoped(SECTIONS.events),
+    readVersions: readVersionsLike(updateScoped(SECTIONS.events)),
     delete: deleteOwnWriting(SECTIONS.events),
   },
 
@@ -105,7 +107,7 @@ export const Posts: CollectionConfig = {
 
   hooks: {
     beforeValidate: [ensureUniqueSlugPerUnit('posts')],
-    beforeChange: [constrainUnitToScope, tidyNewsStripDates],
+    beforeChange: [constrainUnitToScope, tidyNewsStripDates, blockUnconsentedChildImages],
     /*
      * News appears in the ticker, on section home pages and on the news
      * listing, none of which is the post's own address — so a teacher who

@@ -9,7 +9,7 @@ import { getConsentNotice } from '@/lib/consent-notices-server'
 import { recordConsent } from '@/lib/consent-register'
 import { FEEDBACK_RELATIONSHIPS, FEEDBACK_SUBJECTS } from '@/lib/feedback-options'
 import type { FormState } from '@/lib/form-state'
-import { HONEYPOT_FIELD, guardSubmission } from '@/lib/form-guard'
+import { HONEYPOT_FIELD, clientAddress, guardSubmission, recordSubmission } from '@/lib/form-guard'
 
 /**
  * Receives feedback from a school's Contact page and routes it to that
@@ -54,8 +54,7 @@ export const submitFeedback = async (
 
   // -- Spam checks first, so a bot costs us no database work ---------------
   const headerList = await headers()
-  const forwarded = headerList.get('x-forwarded-for') ?? ''
-  const rateKey = (forwarded.split(',')[0] || headerList.get('x-real-ip') || 'unknown').trim()
+  const rateKey = clientAddress(headerList)
 
   const guard = guardSubmission({
     token: formData.get('formToken'),
@@ -125,6 +124,9 @@ export const submitFeedback = async (
   if (Object.keys(errors).length > 0) {
     return { status: 'error', message: 'Please check the highlighted fields.', errors, values }
   }
+
+  // Valid: this one counts towards the limit.
+  recordSubmission(rateKey)
 
   /*
    * Matched against the lists rather than trusted. Both arrive from a select,

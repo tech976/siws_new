@@ -321,7 +321,7 @@ export interface Unit {
 export interface Media {
   id: number;
   /**
-   * What does the picture show? This is read aloud to visitors who cannot see it. If the image is just decoration, type a hyphen ( - ).
+   * What does the picture show? This is read aloud to visitors who cannot see it. Leave it empty and it is filled in for you — from the news title when the photo is added to News & Events.
    */
   alt: string;
   /**
@@ -561,7 +561,7 @@ export interface Post {
     [k: string]: unknown;
   } | null;
   /**
-   * Drag them in, as many as you like. Each one needs a line saying what is in it — that line is what a blind visitor hears instead of the picture.
+   * Use the box above to add many photos at once. All of them are shown on this item’s page; lists show the first one with a “See all photos” link.
    */
   photos?: (number | Media)[] | null;
   /**
@@ -1527,6 +1527,10 @@ export interface GalleryBlock {
    * Optional.
    */
   heading?: string | null;
+  /**
+   * The small handwritten line beside the heading on the Arts, Fine Arts & Philosophical Centre page, e.g. “Dance, music and song”. Leave blank for the usual one. Not shown on other pages.
+   */
+  note?: string | null;
   /**
    * Optional line above the photographs.
    */
@@ -3768,6 +3772,7 @@ export interface FacultyBlockSelect<T extends boolean = true> {
  */
 export interface GalleryBlockSelect<T extends boolean = true> {
   heading?: T;
+  note?: T;
   intro?: T;
   images?:
     | T

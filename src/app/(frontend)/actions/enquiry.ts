@@ -9,7 +9,7 @@ import { CAMPUS_LABELS, CAMPUS_VALUES, type Campus } from '@/fields/campus'
 import { getConsentNotice } from '@/lib/consent-notices-server'
 import { recordConsent } from '@/lib/consent-register'
 import type { FormState } from '@/lib/form-state'
-import { HONEYPOT_FIELD, guardSubmission } from '@/lib/form-guard'
+import { HONEYPOT_FIELD, clientAddress, guardSubmission, recordSubmission } from '@/lib/form-guard'
 
 /**
  * FR-ADM-03 — receives an admission enquiry and routes it to the unit's
@@ -87,8 +87,7 @@ export const submitEnquiry = async (
 
   // -- Spam checks first, so a bot costs us no database work ---------------
   const headerList = await headers()
-  const forwarded = headerList.get('x-forwarded-for') ?? ''
-  const rateKey = (forwarded.split(',')[0] || headerList.get('x-real-ip') || 'unknown').trim()
+  const rateKey = clientAddress(headerList)
 
   const guard = guardSubmission({
     token: formData.get('formToken'),
@@ -186,6 +185,9 @@ export const submitEnquiry = async (
       values,
     }
   }
+
+  // Valid: this one counts towards the limit.
+  recordSubmission(rateKey)
 
   // -- Store and notify ---------------------------------------------------
   try {

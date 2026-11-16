@@ -1,3 +1,4 @@
+import { clientAddress } from '@/lib/form-guard'
 import type { CollectionConfig } from 'payload'
 import { APIError, AuthenticationError, LockedAuth } from 'payload'
 
@@ -145,8 +146,7 @@ export const Users: CollectionConfig = {
         const name = locked ? 'LockedAuth' : 'AuthenticationError'
 
         const attempted = typeof req.data?.email === 'string' ? req.data.email.slice(0, 200) : ''
-        const forwarded = req.headers?.get('x-forwarded-for') ?? ''
-        const from = (forwarded.split(',')[0] || req.headers?.get('x-real-ip') || 'unknown').trim()
+        const from = clientAddress(req.headers)
 
         try {
           await req.payload.create({

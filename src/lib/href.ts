@@ -32,15 +32,22 @@ export const pageHref = (page: MaybePopulated<Page>): string | null => {
   if (!isPopulated(page)) return null
   if (typeof page.slug !== 'string' || page.slug.length === 0) return null
 
+  /*
+   * A home page lives at its site's root, not under "/home": a link to the
+   * Secondary School's home page went to /secondary/home and got a 404
+   * (found on /junior-college/admissions in testing, 2026-11-16).
+   */
+  const isHome = page.slug === 'home'
+
   const unit = page.unit
   if (isPopulated(unit) && typeof unit.slug === 'string' && unit.slug.length > 0) {
-    return `/${unit.slug}/${page.slug}`
+    return isHome ? `/${unit.slug}` : `/${unit.slug}/${page.slug}`
   }
 
   // A page whose `unit` is an unpopulated ID cannot be addressed correctly —
   // guessing the institution-wide path would produce a 404. The caller falls
   // back to plain text instead.
-  if (unit === null || unit === undefined) return `/${page.slug}`
+  if (unit === null || unit === undefined) return isHome ? '/' : `/${page.slug}`
 
   return null
 }

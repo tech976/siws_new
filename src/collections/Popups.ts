@@ -5,7 +5,8 @@ import {
   type CollectionConfig,
 } from 'payload'
 
-import {
+import { blockUnconsentedChildImages } from '@/hooks/child-consent'
+import { readVersionsLike,
   createScoped,
   deleteScoped,
   isActiveUser,
@@ -80,6 +81,7 @@ export const Popups: CollectionConfig = {
     read: readPopups,
     create: createScoped(SECTIONS.popups),
     update: updateScoped(SECTIONS.popups),
+    readVersions: readVersionsLike(updateScoped(SECTIONS.popups)),
     delete: deleteScoped(SECTIONS.popups),
   },
 
@@ -110,7 +112,7 @@ export const Popups: CollectionConfig = {
     // A school's popup stays on that school's website, even if the school is
     // cleared on save.
     beforeValidate: [pinToOwnUnit],
-    beforeChange: [constrainUnitToScope, requireImageOrMessage],
+    beforeChange: [constrainUnitToScope, requireImageOrMessage, blockUnconsentedChildImages],
     // The popup is rendered on cached pages, so clear them when it changes.
     afterChange: [revalidateAfterChange],
     afterDelete: [revalidateAfterDelete],

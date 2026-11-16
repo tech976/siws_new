@@ -8,8 +8,11 @@ import type { GalleryBlock, Media as MediaDoc, Unit } from '@/payload-types'
 
 import { GalleryCarousel } from './GalleryCarousel'
 import { GalleryPager } from './GalleryPager'
+import { LightboxGroup } from '@/components/gallery/LightboxGroup'
+import { lightboxTile } from '@/components/gallery/lightbox-tile'
 import { headingAnchor } from '@/lib/anchor'
 import { layWall } from '@/lib/photo-wall'
+import { excludeUncleared } from '@/lib/uncleared-media'
 
 import { Section, SectionHeading, type BlockBackground } from './Section'
 
@@ -50,7 +53,14 @@ import { Section, SectionHeading, type BlockBackground } from './Section'
 const WallGallery = ({ images }: { images: NonNullable<GalleryBlock['images']> }) => {
   const tiles = layWall(images.map((entry) => ({ media: entry.image as MediaDoc })))
 
+  /* Click a tile to see the photograph full screen (see `LightboxGroup`). */
   return (
+    <LightboxGroup
+      items={images.map((entry) => ({
+        media: entry.image as MediaDoc,
+        caption: entry.caption || (entry.image as MediaDoc).caption,
+      }))}
+    >
     <ul className="siws-wall">
       {images.map((entry, index) => {
         const media = entry.image as MediaDoc
@@ -61,7 +71,8 @@ const WallGallery = ({ images }: { images: NonNullable<GalleryBlock['images']> }
           <li
             key={entry.id ?? index}
             style={tile.style}
-            className="@container group relative overflow-hidden rounded-2xl bg-brand-tint ring-1 ring-line/60 shadow-[0_1px_2px_rgba(36,39,111,0.04),0_10px_28px_-14px_rgba(36,39,111,0.22)] transition-shadow duration-300 hover:shadow-[0_2px_6px_rgba(36,39,111,0.08),0_22px_46px_-18px_rgba(36,39,111,0.34)]"
+            {...lightboxTile(index, images.length, caption)}
+            className="@container group relative cursor-zoom-in overflow-hidden rounded-2xl focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-brand bg-brand-tint ring-1 ring-line/60 shadow-[0_1px_2px_rgba(36,39,111,0.04),0_10px_28px_-14px_rgba(36,39,111,0.22)] transition-shadow duration-300 hover:shadow-[0_2px_6px_rgba(36,39,111,0.08),0_22px_46px_-18px_rgba(36,39,111,0.34)]"
           >
             {/*
               No zoom on hover. The tile is exactly the photograph's shape, so
@@ -109,6 +120,7 @@ const WallGallery = ({ images }: { images: NonNullable<GalleryBlock['images']> }
         )
       })}
     </ul>
+    </LightboxGroup>
   )
 }
 
@@ -174,6 +186,8 @@ export const GalleryBlockView = async ({
       const clauses: Where[] = [
         { category: { equals: section } },
         { showInGallery: { equals: true } },
+        // Never a student photograph still waiting for parental permission.
+        ...(await excludeUncleared(payload)),
       ]
       /*
        * A photograph with no school is shared by all four, so it belongs on

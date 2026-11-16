@@ -56,7 +56,16 @@ export const SectionSwitcher = ({ units, currentSlug }: SectionSwitcherProps) =>
         edge and takes no space in the tabs' row at all.
       */}
       <div className="siws-container overflow-x-auto">
-        <nav aria-label="SIWS sections" className="flex min-w-max justify-end">
+        {/*
+          `pr-36` keeps the last tab clear of the language selector. The
+          selector sits over the bar's right edge (about 140px wide), and below
+          ~1480px the page margin is narrower than that, so "Junior College"
+          was half hidden under it and a click on it opened the language list
+          instead (found in testing, 2026-11-16 — on phones the tab could not
+          be reached at all). On wide screens the margin holds the selector and
+          the tabs stay where they always were.
+        */}
+        <nav aria-label="SIWS sections" className="flex min-w-max justify-end pr-36 min-[1480px]:pr-0">
           {links.map((link) => {
             const current = link.slug === (currentSlug ?? null)
             return (

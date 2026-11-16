@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import {
+import { readVersionsLike,
   SECTIONS,
   createScoped,
   deleteScoped,
@@ -68,6 +68,7 @@ export const Faculty: CollectionConfig = {
     read: readPublishedOrScoped,
     create: createScoped(SECTIONS.faculty),
     update: updateScoped(SECTIONS.faculty),
+    readVersions: readVersionsLike(updateScoped(SECTIONS.faculty)),
     delete: deleteScoped(SECTIONS.faculty),
   },
 

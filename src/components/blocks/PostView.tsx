@@ -2,6 +2,8 @@ import { CalendarDays } from 'lucide-react'
 import { youtubeEmbed } from '@/lib/youtube'
 
 import { GalleryPager } from '@/components/blocks/GalleryPager'
+import { LightboxGroup } from '@/components/gallery/LightboxGroup'
+import { lightboxTile } from '@/components/gallery/lightbox-tile'
 import { Media } from '@/components/Media'
 import { RichText } from '@/components/RichText'
 import type { Post } from '@/payload-types'
@@ -71,8 +73,12 @@ const PostPhotos = ({ post }: { post: Post }) => {
    * ancestor; with none, the first version escaped its frame and covered the
    * whole page.
    */
-  const tiles = photos.map((photo) => (
-    <figure key={photo.id} className="relative aspect-4/3 overflow-hidden rounded-2xl bg-sea">
+  const tiles = photos.map((photo, index) => (
+    <figure
+      key={photo.id}
+      {...lightboxTile(index, photos.length, photo.caption)}
+      className="relative aspect-4/3 cursor-zoom-in overflow-hidden rounded-2xl bg-sea focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-brand"
+    >
       <Media
         resource={photo}
         fill
@@ -85,7 +91,10 @@ const PostPhotos = ({ post }: { post: Post }) => {
   // Paged, so a sixty-photograph album is not one endless scroll.
   return (
     <div className="mt-10">
-      <GalleryPager items={tiles} perPage={12} />
+      {/* Click a photograph to see it full screen and step through the album. */}
+      <LightboxGroup items={photos.map((photo) => ({ media: photo, caption: photo.caption }))}>
+        <GalleryPager items={tiles} perPage={12} />
+      </LightboxGroup>
     </div>
   )
 }

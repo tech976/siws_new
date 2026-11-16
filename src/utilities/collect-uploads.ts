@@ -50,8 +50,17 @@ export const collectUploadIds = (
     switch (field.type) {
       case 'upload': {
         if (name && pointsAt(field.relationTo, target)) {
-          const id = toId(record[name])
-          if (id !== null) found.push(id)
+          /*
+           * A "choose several" upload (a news item's Photos) holds an ARRAY.
+           * Read as a single value it gave nothing, so the parental-permission
+           * check never saw a news item's photographs (found in testing,
+           * 2026-11-16).
+           */
+          const value = record[name]
+          for (const entry of Array.isArray(value) ? value : [value]) {
+            const id = toId(entry)
+            if (id !== null) found.push(id)
+          }
         }
         break
       }

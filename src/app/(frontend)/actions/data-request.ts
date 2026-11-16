@@ -7,7 +7,7 @@ import { getPayload } from 'payload'
 import { getConsentNotice } from '@/lib/consent-notices-server'
 import { recordConsent } from '@/lib/consent-register'
 import { REQUEST_RELATIONSHIPS, REQUEST_TYPES, normaliseEmail } from '@/lib/data-protection'
-import { HONEYPOT_FIELD, guardSubmission } from '@/lib/form-guard'
+import { HONEYPOT_FIELD, clientAddress, guardSubmission, recordSubmission } from '@/lib/form-guard'
 import type { FormState } from '@/lib/form-state'
 
 /**
@@ -50,8 +50,7 @@ export const submitDataRequest = async (
   }
 
   const headerList = await headers()
-  const forwarded = headerList.get('x-forwarded-for') ?? ''
-  const rateKey = (forwarded.split(',')[0] || headerList.get('x-real-ip') || 'unknown').trim()
+  const rateKey = clientAddress(headerList)
 
   const guard = guardSubmission({
     token: formData.get('formToken'),
@@ -100,6 +99,9 @@ export const submitDataRequest = async (
   if (Object.keys(errors).length > 0 || !email || !requestType) {
     return { status: 'error', message: 'Please check the highlighted fields.', errors, values }
   }
+
+  // Valid: this one counts towards the limit.
+  recordSubmission(rateKey)
 
   try {
     const payload = await getPayload({ config })

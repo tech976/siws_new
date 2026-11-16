@@ -1,7 +1,7 @@
 import type { Access, CollectionBeforeChangeHook, CollectionConfig, Where } from 'payload'
 import { APIError } from 'payload'
 
-import {
+import { readVersionsLike,
   SECTIONS,
   canTouchSection,
   createScoped,
@@ -261,6 +261,7 @@ export const Pages: CollectionConfig = {
     read: readPages,
     create: createPages,
     update: updatePages,
+    readVersions: readVersionsLike(updatePages),
     delete: deletePages,
   },
 

@@ -3,6 +3,8 @@
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 
+import { useFormResult } from './use-form-result'
+
 import { submitDataRequest } from '@/app/(frontend)/actions/data-request'
 import { DATA_REQUEST_NOTICE, type ConsentNotice } from '@/lib/consent-notices'
 import { REQUEST_RELATIONSHIPS, REQUEST_TYPES } from '@/lib/data-protection'
@@ -46,6 +48,7 @@ export const DataRequestForm = ({
   notice?: ConsentNotice
 }) => {
   const [state, formAction] = useActionState(submitDataRequest, idleFormState)
+  const { token, resultId } = useFormResult(formToken, state)
 
   const fieldError = (name: string) => state.errors?.[name]
   const previous = (name: string) => state.values?.[name] ?? ''
@@ -53,7 +56,7 @@ export const DataRequestForm = ({
 
   if (state.status === 'success') {
     return (
-      <div className="rounded-2xl border border-line bg-sea-soft p-6" role="alert">
+      <div className="rounded-2xl border border-line bg-sea-soft p-6" role="alert" id={resultId}>
         <p className="text-lg font-semibold text-brand">Request received</p>
         <p className="mt-2 text-sm text-ink-soft">{state.message}</p>
       </div>
@@ -62,11 +65,11 @@ export const DataRequestForm = ({
 
   return (
     <form action={formAction} noValidate className="grid gap-5">
-      <input type="hidden" name="formToken" value={formToken} />
+      <input type="hidden" name="formToken" value={token} />
       <Honeypot name={HONEYPOT_FIELD} idPrefix="dsr-" />
 
       {state.status === 'error' && state.message ? (
-        <p role="alert" className="rounded-2xl bg-[#ffe8ea] px-5 py-3.5 t-small font-medium text-[#b02330]">
+        <p role="alert" id={resultId} className="rounded-2xl bg-[#ffe8ea] px-5 py-3.5 t-small font-medium text-[#b02330]">
           {state.message}
         </p>
       ) : null}

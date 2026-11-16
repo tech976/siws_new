@@ -160,6 +160,76 @@ interface DescribeArgs {
   id: number | string
 }
 
+const sameId = (value: unknown, id: number | string): boolean => {
+  if (value === null || value === undefined) return false
+  if (typeof value === 'object' && 'id' in (value as object)) {
+    return String((value as { id: unknown }).id) === String(id)
+  }
+  return String(value) === String(id)
+}
+
+/**
+ * How many times `data` uses the picture as THE picture of something, walked
+ * alongside its field config so that a photograph in a list (a gallery row, a
+ * "choose several" field) is told apart from a block's single image.
+ */
+const countPictureUses = (
+  fields: Field[],
+  data: unknown,
+  target: string,
+  id: number | string,
+  inList = false,
+): number => {
+  if (!data || typeof data !== 'object') return 0
+  const record = data as Record<string, unknown>
+  let count = 0
+
+  for (const field of fields) {
+    const name = isNamed(field) ? field.name : null
+    const value = name ? record[name] : undefined
+
+    switch (field.type) {
+      case 'upload':
+      case 'relationship':
+        if (name && pointsAt(field.relationTo, target) && !inList && field.hasMany !== true) {
+          if (sameId(value, id)) count += 1
+        }
+        break
+      case 'group':
+        count += countPictureUses(field.fields, value, target, id, inList)
+        break
+      case 'array':
+        if (Array.isArray(value)) {
+          for (const row of value) count += countPictureUses(field.fields, row, target, id, isPictureList(field))
+        }
+        break
+      case 'row':
+      case 'collapsible':
+        count += countPictureUses(field.fields, data, target, id, inList)
+        break
+      case 'tabs':
+        for (const tab of field.tabs) {
+          const tabData = 'name' in tab && typeof tab.name === 'string' ? record[tab.name] : data
+          count += countPictureUses(tab.fields, tabData, target, id, inList)
+        }
+        break
+      case 'blocks':
+        if (Array.isArray(value)) {
+          for (const row of value) {
+            const type = (row as { blockType?: string } | null)?.blockType
+            const block = field.blocks.find((candidate) => candidate.slug === type)
+            if (block) count += countPictureUses(block.fields, row, target, id)
+          }
+        }
+        break
+      default:
+        break
+    }
+  }
+
+  return count
+}
+
 export const describeMediaUsage = async ({
   payload,
   collection,
@@ -167,38 +237,63 @@ export const describeMediaUsage = async ({
 }: DescribeArgs): Promise<MediaUsage> => {
   const locations: MediaUsage['locations'] = []
 
+  /*
+   * EVERY DOCUMENT IS READ AND WALKED, not counted with a query.
+   *
+   * The query this replaced (`layout.image equals id`) only matched the
+   * banner block: the image of an "Image with text", a statistics band or a
+   * divider was never found, so a picture still on a live page went to the
+   * Trash — or was deleted outright — and left an empty frame (found in
+   * testing, 2026-11-16). There are a few hundred documents; reading them on
+   * a delete is cheap. Both the published version and the latest draft are
+   * checked, so a picture is not removed from under either.
+   */
   const checks: Promise<void>[] = []
 
   for (const candidate of payload.config.collections) {
     // A media collection never references itself.
     if (candidate.slug === collection) continue
+    if (blockingPaths(candidate.fields as Field[], collection).length === 0) continue
 
-    const paths = blockingPaths(candidate.fields as Field[], collection)
-    if (paths.length === 0) continue
+    const hasDrafts = Boolean(
+      candidate.versions && typeof candidate.versions === 'object' && candidate.versions.drafts,
+    )
 
-    for (const path of paths) {
-      checks.push(
-        payload
-          .count({
+    checks.push(
+      (async () => {
+        const users = new Set<string>()
+        for (const draft of hasDrafts ? [false, true] : [false]) {
+          const { docs } = await payload.find({
             collection: candidate.slug,
-            where: { [path]: { equals: id } },
+            depth: 0,
+            pagination: false,
+            draft,
             overrideAccess: true,
           })
-          .then((result) => {
-            if (result.totalDocs > 0) {
-              locations.push({
-                collection: candidate.slug,
-                label: String(candidate.labels?.plural ?? candidate.slug),
-                count: result.totalDocs,
-              })
+          for (const doc of docs as unknown as Record<string, unknown>[]) {
+            if (countPictureUses(candidate.fields as Field[], doc, collection, id) > 0) {
+              users.add(String(doc.id))
             }
+          }
+        }
+        if (users.size > 0) {
+          locations.push({
+            collection: candidate.slug,
+            label: String(candidate.labels?.plural ?? candidate.slug),
+            count: users.size,
           })
-          .catch(() => {
-            // A single unqueryable path must not block the delete check as a
-            // whole; the remaining paths still report accurately.
-          }),
-      )
-    }
+        }
+      })().catch((error: unknown) => {
+        // Failing open here would let a picture in use be deleted, so a
+        // collection that cannot be read counts as using it.
+        payload.logger.error({ err: error }, `Media usage check failed for ${candidate.slug}`)
+        locations.push({
+          collection: candidate.slug,
+          label: String(candidate.labels?.plural ?? candidate.slug),
+          count: 1,
+        })
+      }),
+    )
   }
 
   await Promise.all(checks)

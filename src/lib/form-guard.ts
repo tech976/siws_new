@@ -115,7 +115,7 @@ const verifyToken = (token: unknown): GuardResult => {
  * telling them exactly what to change.
  */
 const GENERIC_MESSAGE =
-  'We could not send your enquiry. Please reload the page and try again.'
+  'We could not send this form. Please wait a moment and press Send again.'
 
 // ---------------------------------------------------------------------------
 // Rate limiting
@@ -141,7 +141,7 @@ const MAX_TRACKED_KEYS = 5_000
  * hard control; if SIWS's hosting runs multiple instances this must move to a
  * shared store (Redis) or the edge/CDN layer.
  */
-export const checkRateLimit = (key: string): GuardResult => {
+export const checkRateLimit = (key: string, record = true): GuardResult => {
   const now = Date.now()
 
   if (buckets.size > MAX_TRACKED_KEYS) {
@@ -163,9 +163,37 @@ export const checkRateLimit = (key: string): GuardResult => {
     }
   }
 
-  bucket.hits.push(now)
+  if (record) bucket.hits.push(now)
   buckets.set(key, bucket)
   return { ok: true }
+}
+
+/**
+ * Counts a submission that passed every check and is about to be stored.
+ *
+ * The limit used to count every POST, mistakes included, so a parent who got
+ * five fields wrong in a row was locked out of every form on the site for ten
+ * minutes (found in testing, 2026-11-16). Only messages that actually reach
+ * the school count now; `guardSubmission` still refuses once the limit is hit.
+ */
+export const recordSubmission = (key: string): void => {
+  checkRateLimit(key, true)
+}
+
+/**
+ * The visitor's address, for rate limiting and the sign-in log.
+ *
+ * `X-Real-IP` first: nginx sets it to the connecting address and overwrites
+ * whatever the browser sent. The LEFTMOST `X-Forwarded-For` value, used
+ * before, is whatever the client chose to put there, so changing that header
+ * walked straight past the limit. Failing `X-Real-IP`, the rightmost
+ * forwarded value is the one our own proxy appended.
+ */
+export const clientAddress = (headers: { get: (name: string) => string | null } | undefined): string => {
+  const real = headers?.get('x-real-ip')?.trim()
+  if (real) return real
+  const forwarded = (headers?.get('x-forwarded-for') ?? '').split(',').map((part) => part.trim()).filter(Boolean)
+  return forwarded[forwarded.length - 1] ?? 'unknown'
 }
 
 // ---------------------------------------------------------------------------
@@ -195,5 +223,7 @@ export const guardSubmission = ({ token, honeypot, rateKey }: GuardInput): Guard
   const tokenResult = verifyToken(token)
   if (!tokenResult.ok) return tokenResult
 
-  return checkRateLimit(rateKey)
+  // Refuses once the limit is reached, but does not count this attempt: see
+  // `recordSubmission`, which each form calls once its fields are valid.
+  return checkRateLimit(rateKey, false)
 }

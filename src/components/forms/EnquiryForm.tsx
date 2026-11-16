@@ -3,6 +3,8 @@
 import { useActionState, useEffect } from 'react'
 import { useFormStatus } from 'react-dom'
 
+import { useFormResult } from './use-form-result'
+
 import { submitEnquiry } from '@/app/(frontend)/actions/enquiry'
 import { trackEvent } from '@/lib/analytics'
 import { ADMISSION_ENQUIRY_NOTICE, type ConsentNotice } from '@/lib/consent-notices'
@@ -65,6 +67,7 @@ export const EnquiryForm = ({
   notice = ADMISSION_ENQUIRY_NOTICE,
 }: EnquiryFormProps) => {
   const [state, formAction] = useActionState(submitEnquiry, idleFormState)
+  const { token, resultId } = useFormResult(formToken, state)
 
   /*
    * A sent enquiry is the conversion the SEO work is measured by. Reported to
@@ -88,7 +91,7 @@ export const EnquiryForm = ({
         className="rounded-2xl border border-line bg-sea-soft p-6 text-center"
         // `alert` announces immediately, which is right for a confirmation the
         // visitor is waiting on.
-        role="alert"
+        role="alert" id={resultId}
       >
         <p className="text-lg font-semibold text-brand">Enquiry sent</p>
         <p className="mt-2 text-sm text-ink-soft">{state.message}</p>
@@ -101,14 +104,14 @@ export const EnquiryForm = ({
   return (
     <form action={formAction} noValidate className="grid gap-5">
       <input type="hidden" name="unitId" value={String(unitId)} />
-      <input type="hidden" name="formToken" value={formToken} />
+      <input type="hidden" name="formToken" value={token} />
       <input type="hidden" name="sendTo" value={sendTo} />
 
       <Honeypot name={HONEYPOT_FIELD} />
 
       {state.status === 'error' && state.message ? (
         <p
-          role="alert"
+          role="alert" id={resultId}
           className="rounded-2xl bg-[#ffe8ea] px-5 py-3.5 t-small font-medium text-[#b02330]"
         >
           {state.message}

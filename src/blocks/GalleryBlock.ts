@@ -21,6 +21,22 @@ export const GalleryBlock: Block = {
   admin: blockAdmin(BLOCK_GROUPS.words),
   fields: [
     headingField,
+    {
+      /*
+       * The small handwritten note beside the heading on the Fine Arts page.
+       * It used to be read from the section's "Block name", which this site
+       * hides from the panel, so the Fine Arts teacher had no way to change it
+       * (found in testing, 2026-11-16). Other pages ignore it.
+       */
+      name: 'note',
+      type: 'text',
+      label: 'Handwritten note (Fine Arts page only)',
+      maxLength: 60,
+      admin: {
+        description:
+          'The small handwritten line beside the heading on the Arts, Fine Arts & Philosophical Centre page, e.g. “Dance, music and song”. Leave blank for the usual one. Not shown on other pages.',
+      },
+    },
     richTextField({
       name: 'intro',
       simple: true,

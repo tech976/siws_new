@@ -230,3 +230,41 @@ export const adminFieldOnly: FieldAccess = ({ req }) => isAdmin(asUser(req.user)
  * submit for review but cannot self-publish.
  */
 export const approverFieldOnly: FieldAccess = ({ req }) => canApprove(asUser(req.user))
+
+// ---------------------------------------------------------------------------
+// Version history
+// ---------------------------------------------------------------------------
+
+/** `{ unit: … }` → `{ 'version.unit': … }`, through and/or. */
+const prefixVersionWhere = (where: Where): Where => {
+  const out: Where = {}
+  for (const [key, value] of Object.entries(where)) {
+    if ((key === 'and' || key === 'or') && Array.isArray(value)) {
+      out[key] = (value as Where[]).map(prefixVersionWhere)
+    } else if (key === 'id' || key === 'parent') {
+      // The parent document's id is stored as `parent` on a version.
+      out.parent = value as Where[string]
+    } else {
+      out[`version.${key}`] = value as Where[string]
+    }
+  }
+  return out
+}
+
+/**
+ * Who may read a collection's saved versions: the people who may edit it.
+ *
+ * Without this Payload lets ANY signed-in member of staff read every version,
+ * so a Primary HOD could read the Kindergarten's unpublished drafts through
+ * `/api/pages/versions` — while the document itself was correctly hidden
+ * (found in testing, 2026-11-16). A version stores the document under
+ * `version`, so the edit rule's conditions are moved under it.
+ */
+export const readVersionsLike =
+  (editAccess: Access): Access =>
+  async (args) => {
+    if (!args.req.user) return false
+    const result = await editAccess(args)
+    if (typeof result === 'boolean') return result
+    return prefixVersionWhere(result)
+  }
