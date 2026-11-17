@@ -6,6 +6,8 @@ import type { Payload, TypedUser, Where } from 'payload'
 import { SECTIONS, canTouchSection, unitIdsOf } from '@/access'
 import type { AccessUser } from '@/access'
 
+import { StorageMeters } from './StorageMeters'
+
 /**
  * What a Head of Department or a teacher sees when they sign in.
  *
@@ -200,6 +202,9 @@ export const HodDashboard = async ({ payload, user, unitName }: HodDashboardProp
         The parts of your school&rsquo;s website you can add to. Anything you publish here
         appears on those pages.
       </p>
+
+      {/* Photo storage for this school: information only, never blocks an upload. */}
+      <StorageMeters payload={payload} user={user} />
 
       <h2 style={sectionLabel}>Your sections</h2>
 

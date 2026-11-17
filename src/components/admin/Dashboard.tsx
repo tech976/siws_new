@@ -35,6 +35,7 @@ import { REVIEW_STATUS } from '@/fields/publishing'
 import { HodDashboard } from './HodDashboard'
 import { MainSectionDashboard } from './MainSectionDashboard'
 import { MainHomepagePanel } from './MainHomepagePanel'
+import { StorageMeters } from './StorageMeters'
 
 /**
  * The SIWS admin dashboard, replacing Payload's default collection grid.
@@ -541,6 +542,9 @@ export const Dashboard = async ({ payload, user }: DashboardProps) => {
         chooses what runs there, so nobody else is shown it.
       */}
       {isAdmin(accessUser) ? <MainHomepagePanel payload={payload} user={user} /> : null}
+
+      {/* Photo storage per school: information only, never blocks an upload. */}
+      <StorageMeters payload={payload} user={user} />
 
       {/* --- Manage content --------------------------------------------- */}
       <section aria-labelledby="siws-manage-heading">

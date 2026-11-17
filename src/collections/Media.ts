@@ -188,6 +188,11 @@ export const Media: CollectionConfig = {
      * already lets them edit, so the list never shows less than they can work
      * with.
      */
+    components: {
+      // Photo storage per school (2 GB each). Information only; never blocks an upload.
+      beforeList: ['@/components/admin/StorageMeters#MediaLibraryStorage'],
+    },
+
     baseFilter: ({ req }) => {
       const user = req.user as AccessUser | null
       if (!isActiveUser(user) || isAdmin(user)) return null

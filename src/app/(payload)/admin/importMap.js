@@ -33,6 +33,7 @@ import { UploadFeatureClient as UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { PopupShowOnField as PopupShowOnField_e494217261101ef137f30ddff7d017de } from '@/components/admin/PopupShowOnField'
 import { MediaPlacements as MediaPlacements_e0cf725b8b39c4d46a93cb7a3c65922d } from '@/components/admin/MediaPlacements'
 import { GallerySectionField as GallerySectionField_c2778135b391975cf45ad2157a720e4e } from '@/components/admin/GallerySectionField'
+import { MediaLibraryStorage as MediaLibraryStorage_45e355afa08eafbcede9b83226f06f8a } from '@/components/admin/StorageMeters'
 import { RetentionNotice as RetentionNotice_85c660b779d4c69ef5b5267d8d3b6115 } from '@/components/admin/RetentionNotice'
 import { ExportEnquiriesButton as ExportEnquiriesButton_1167363ec6bcd4f3b4bd454449b94f30 } from '@/components/admin/ExportEnquiries'
 import { ExportFeedbackButton as ExportFeedbackButton_1167363ec6bcd4f3b4bd454449b94f30 } from '@/components/admin/ExportEnquiries'
@@ -85,6 +86,7 @@ export const importMap = {
   "@/components/admin/PopupShowOnField#PopupShowOnField": PopupShowOnField_e494217261101ef137f30ddff7d017de,
   "@/components/admin/MediaPlacements#MediaPlacements": MediaPlacements_e0cf725b8b39c4d46a93cb7a3c65922d,
   "@/components/admin/GallerySectionField#GallerySectionField": GallerySectionField_c2778135b391975cf45ad2157a720e4e,
+  "@/components/admin/StorageMeters#MediaLibraryStorage": MediaLibraryStorage_45e355afa08eafbcede9b83226f06f8a,
   "@/components/admin/RetentionNotice#RetentionNotice": RetentionNotice_85c660b779d4c69ef5b5267d8d3b6115,
   "@/components/admin/ExportEnquiries#ExportEnquiriesButton": ExportEnquiriesButton_1167363ec6bcd4f3b4bd454449b94f30,
   "@/components/admin/ExportEnquiries#ExportFeedbackButton": ExportFeedbackButton_1167363ec6bcd4f3b4bd454449b94f30,
